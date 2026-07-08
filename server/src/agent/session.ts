@@ -1,7 +1,7 @@
-import { appendEvent, createSession, getSession, readEventsSince, setSdkSessionId } from './chat-store.js'
+import { appendEvent, createSession, getSession, getSessionBySdkId, readEventsSince, setSdkSessionId } from './chat-store.js'
 import { toModelConfig } from './runner.js'
 import type { AgentRunner, AgentModelConfig } from './runner.js'
-import type { ChatSession } from './chat-store.js'
+import type { ChatEvent, ChatSession } from './chat-store.js'
 import type { ProviderSnapshot } from '../providers/snapshot.js'
 import type { DatabaseSync } from 'node:sqlite'
 
@@ -35,6 +35,41 @@ export interface AgentSessionOptions {
   enableTools?: boolean
 }
 
+/** A subscribe() envelope from the SDK (loose — exact shape bound at runtime). */
+export interface SdkEnvelope {
+  type?: string
+  sessionId?: string
+  payload?: { sessionId?: string, event?: { type?: string, text?: string } } & Record<string, unknown>
+}
+
+/**
+ * Map an SDK subscribe envelope to a persisted chat event, or null to ignore.
+ * The SDK envelope types (status / agent_event / chunk / session_snapshot /
+ * ended) map onto our SSE event types; agent_event carries an inner event whose
+ * `text` is cumulative assistant output (findings m00-10 #9).
+ */
+export function translateSdkEvent (env: SdkEnvelope): { type: string, payload: unknown } | null {
+  switch (env.type) {
+    case 'agent_event':
+      return { type: 'agent_event', payload: env.payload?.event ?? null }
+    case 'chunk':
+      return { type: 'chunk', payload: env.payload ?? null }
+    case 'status':
+      return { type: 'status', payload: env.payload ?? null }
+    case 'session_snapshot':
+      return { type: 'session_snapshot', payload: env.payload ?? null }
+    case 'ended':
+      return { type: 'ended', payload: env.payload ?? null }
+    default:
+      return null
+  }
+}
+
+/** Extract the SDK session id from an envelope (top-level or nested). */
+function envelopeSdkSessionId (env: SdkEnvelope): string | undefined {
+  return env.sessionId ?? env.payload?.sessionId
+}
+
 function capturedFromSnapshot (snap: ProviderSnapshot): CapturedConfig {
   return {
     providerProfileId: snap.profileId,
@@ -48,12 +83,58 @@ function capturedFromSnapshot (snap: ProviderSnapshot): CapturedConfig {
 export class AgentSessionService {
   /** chatSessionId → live SDK session id (this process only). */
   private readonly live = new Map<string, string>()
+  /** chatSessionId → SSE listeners for live events. */
+  private readonly subscribers = new Map<string, Set<(event: ChatEvent) => void>>()
+  private readonly unsubscribeRunner: () => void
 
   constructor (
     private readonly db: DatabaseSync,
     private readonly runner: AgentRunner,
     private readonly opts: AgentSessionOptions
-  ) {}
+  ) {
+    // One global subscription bridges every SDK session event into the store
+    // and out to connected SSE clients.
+    this.unsubscribeRunner = this.runner.subscribe((event) => { this.handleSdkEvent(event as SdkEnvelope) })
+  }
+
+  /** Persist an SDK event against its chat session and fan it out to SSE clients. */
+  private handleSdkEvent (env: SdkEnvelope): void {
+    const sdkSessionId = envelopeSdkSessionId(env)
+    if (sdkSessionId === undefined) return
+    const session = getSessionBySdkId(this.db, sdkSessionId)
+    if (session === undefined) return
+    const translated = translateSdkEvent(env)
+    if (translated === null) return
+    const event = appendEvent(this.db, session.id, translated.type, translated.payload)
+    this.fanOut(session.id, event)
+  }
+
+  private fanOut (chatSessionId: string, event: ChatEvent): void {
+    const set = this.subscribers.get(chatSessionId)
+    if (set === undefined) return
+    for (const listener of set) {
+      try { listener(event) } catch { /* a slow/broken client must not break persistence */ }
+    }
+  }
+
+  /** Subscribe to live events for a chat session (SSE). Returns an unsubscribe. */
+  onEvent (chatSessionId: string, listener: (event: ChatEvent) => void): () => void {
+    let set = this.subscribers.get(chatSessionId)
+    if (set === undefined) { set = new Set(); this.subscribers.set(chatSessionId, set) }
+    set.add(listener)
+    return () => {
+      const s = this.subscribers.get(chatSessionId)
+      if (s === undefined) return
+      s.delete(listener)
+      if (s.size === 0) this.subscribers.delete(chatSessionId)
+    }
+  }
+
+  /** Stop bridging SDK events (call on app shutdown). */
+  dispose (): void {
+    this.unsubscribeRunner()
+    this.subscribers.clear()
+  }
 
   /** Create a chat session and capture its provider config. Does not start the SDK yet. */
   create (input: { title: string, providerProfileId?: string | null }): ChatSession {

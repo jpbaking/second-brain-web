@@ -15,7 +15,6 @@ import type { FastifyInstance } from 'fastify'
  */
 export function registerChatRoutes (app: FastifyInstance, config: AppConfig, runner: AgentRunner): void {
   const db = openCoreDb(config.dataDir)
-  app.addHook('onClose', () => { db.close() })
 
   const secretsEnv = { SECOND_BRAIN_WEB_SECRETS_KEY: config.secretsKey }
   const service = new AgentSessionService(db, runner, {
@@ -24,6 +23,7 @@ export function registerChatRoutes (app: FastifyInstance, config: AppConfig, run
       : resolveSnapshot(db, profileId, secretsEnv),
     vaultCwd: vaultWorkspacePath(config.dataDir),
   })
+  app.addHook('onClose', () => { service.dispose(); db.close() })
 
   function str (value: unknown): string | undefined {
     return typeof value === 'string' && value.trim() !== '' ? value.trim() : undefined
@@ -65,6 +65,51 @@ export function registerChatRoutes (app: FastifyInstance, config: AppConfig, run
     const id = (req.params as { id: string }).id
     if (!closeSession(db, id)) return await reply.code(404).send({ error: 'session not found' })
     return { ok: true }
+  })
+
+  app.get('/api/chat/sessions/:id/events', async (req, reply) => {
+    const id = (req.params as { id: string }).id
+    if (getSession(db, id) === undefined) return await reply.code(404).send({ error: 'session not found' })
+
+    // Reconnect/replay cursor: Last-Event-ID header wins, else ?since=.
+    const lastEventId = req.headers['last-event-id']
+    const sinceQuery = (req.query as { since?: string }).since
+    const since = Number((Array.isArray(lastEventId) ? lastEventId[0] : lastEventId) ?? sinceQuery ?? 0) || 0
+
+    reply.hijack()
+    const raw = reply.raw
+    raw.writeHead(200, {
+      'content-type': 'text/event-stream',
+      'cache-control': 'no-cache',
+      connection: 'keep-alive',
+      'x-accel-buffering': 'no',
+    })
+
+    let lastWritten = since
+    const write = (event: { seq: number, type: string }): void => {
+      raw.write(`id: ${event.seq}\nevent: ${event.type}\ndata: ${JSON.stringify(event)}\n\n`)
+      lastWritten = event.seq
+    }
+
+    // Subscribe BEFORE replay so nothing is missed; buffer live events until
+    // the replay finishes, then drain only those newer than what we replayed.
+    let replaying = true
+    const buffer: Array<{ seq: number, type: string }> = []
+    const unsubscribe = service.onEvent(id, (event) => {
+      if (replaying) buffer.push(event)
+      else if (event.seq > lastWritten) write(event)
+    })
+
+    for (const event of readEventsSince(db, id, since)) write(event)
+    replaying = false
+    for (const event of buffer) if (event.seq > lastWritten) write(event)
+
+    const heartbeat = setInterval(() => raw.write(': ping\n\n'), 15_000)
+    req.raw.on('close', () => {
+      clearInterval(heartbeat)
+      unsubscribe()
+      raw.end()
+    })
   })
 
   app.post('/api/chat/sessions/:id/messages', async (req, reply) => {

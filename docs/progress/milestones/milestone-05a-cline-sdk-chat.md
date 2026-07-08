@@ -73,7 +73,7 @@ in `/v1`.
       Verify: `npm test --workspace server -- chat-api.test.ts` — 401 unauth;
       create→list→get→post-message happy paths with a fake runner; bodyless
       POSTs accepted (no content-type/empty-body 400).
-- [ ] **m5a-06** — SSE event stream: `GET /api/chat/sessions/:id/events` streams
+- [x] **m5a-06** — SSE event stream: `GET /api/chat/sessions/:id/events` streams
       persisted + live events mapped from the SDK `subscribe` envelopes
       (status / agent_event / chunk / session_snapshot / ended), with monotonic
       event IDs, a heartbeat, and `Last-Event-ID` reconnect/replay from the

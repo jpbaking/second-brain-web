@@ -13,6 +13,8 @@ import type { AgentRunner, AgentStartInput, AgentStartResult } from './runner.js
  */
 export class ClineAgentRunner implements AgentRunner {
   private core: ClineCore | undefined
+  /** Listeners registered before the SDK core exists; attached on creation. */
+  private readonly listeners = new Set<(event: unknown) => void>()
 
   constructor (private readonly dataDir: string, private readonly clientName = 'second-brain-web') {}
 
@@ -20,7 +22,10 @@ export class ClineAgentRunner implements AgentRunner {
     if (this.core === undefined) {
       // Point SDK storage under our 0700 data root before it resolves paths.
       Object.assign(process.env, agentStorageEnv(this.dataDir))
-      this.core = await ClineCore.create({ clientName: this.clientName, backendMode: 'local' })
+      const core = await ClineCore.create({ clientName: this.clientName, backendMode: 'local' })
+      // Attach any listeners registered before start() (e.g. the SSE bridge).
+      for (const listener of this.listeners) core.subscribe(listener)
+      this.core = core
     }
     return this.core
   }
@@ -41,8 +46,13 @@ export class ClineAgentRunner implements AgentRunner {
   }
 
   subscribe (listener: (event: unknown) => void): () => void {
-    if (this.core === undefined) throw new Error('runner not started; call start() before subscribe()')
-    return this.core.subscribe(listener)
+    this.listeners.add(listener)
+    // Attach live if the core already exists; otherwise ensureCore() wires it.
+    const live = this.core?.subscribe(listener)
+    return () => {
+      this.listeners.delete(listener)
+      live?.()
+    }
   }
 
   async readMessages (sessionId: string): Promise<unknown[]> {

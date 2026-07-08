@@ -38,14 +38,14 @@ Updated: 2026-07-09 (milestone 5 complete)
 
 ## Next step
 
-- m5a-06: SSE event stream — `GET /api/chat/sessions/:id/events` streams
-  persisted + live events (mapped from the SDK `subscribe` envelopes:
-  status/agent_event/chunk/session_snapshot/ended) with monotonic event ids, a
-  heartbeat, and `Last-Event-ID` reconnect/replay from `readEventsSince`. The
-  live bridge: the `AgentSessionService` must fan SDK `subscribe` events into
-  `appendEvent` + push to connected SSE clients — plan a small event-hub/
-  emitter in the service (this needs a seam the fake runner can drive in tests).
-  Assistant text is cumulative on inner `text` (findings m00-10 #9).
+- m5a-07: approvals — promise-parking keyed by toolCallId; resolver routes
+  (approve/deny) resolve the parked promise; the tool-policy guard (m5a-02)
+  runs first and auto-denies non-catalog `library/` writes without parking.
+  The SDK's approval entry point is `capabilities.requestToolApproval` (per
+  spike m00-06: install resolvers before `start()`; toolCallId correlates).
+  Wire it through the `AgentRunner` seam (add a requestToolApproval capability
+  the fake can drive) so it unit-tests without a model. Emit approval-request /
+  approval-resolved chat events so they flow over SSE (m5a-06).
 - Live-model dependency: **m5a-10 (deliverable check) needs LM Studio reachable
   at `http://127.0.0.1:1234/v1` or a configured cloud provider key.** LM Studio
   was NOT reachable when 5A started; m5a-01..09 build/verify offline with a fake
