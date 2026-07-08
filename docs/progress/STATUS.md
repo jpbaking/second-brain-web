@@ -28,12 +28,13 @@ Updated: 2026-07-08 (milestone 4A complete)
 
 ## Next step
 
-- m05-06: provider settings page (`web/`) — guarded `/providers` screen to list
-  profiles (masked), add/edit (provider type, model, key, base URL), set
-  default, test, and delete; wired into the shell nav. Verify via prod build +
-  authenticated headless load + 390×844 screenshot. (m05-01..05 done: secrets
-  crypto, provider store, CRUD endpoints, test action, default snapshot;
-  core schema v7.)
+- m05-07: milestone deliverable check — end-to-end with a running server
+  (SECOND_BRAIN_WEB_SECRETS_KEY set): create an Anthropic/OpenAI/openai-compatible
+  profile with a key, confirm the list masks it, set it default, confirm the
+  snapshot resolves; full lint/test/build; grep the DB/responses to prove no
+  plaintext key; no secrets tracked by git. (m05-01..06 done: secrets crypto,
+  store, CRUD, test action, default snapshot, /providers web page wired into the
+  shell nav; core schema v7.)
 
 ## Read before working
 

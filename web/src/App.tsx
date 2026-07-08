@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { Login } from './Login.js'
 import { VaultSettings } from './VaultSettings.js'
+import { ProviderSettings } from './ProviderSettings.js'
 import { CommandCenter } from './CommandCenter.js'
 import { Stub } from './Stub.js'
 import { AppShell } from './AppShell.js'
@@ -48,6 +49,7 @@ export function App () {
 function routedScreen (path: string) {
   switch (path) {
     case '/vault': return <VaultSettings />
+    case '/providers': return <ProviderSettings />
     case '/chat':
       return <Stub title='Chat' blurb='Talk to your executive secretary and run vault workflows.' />
     case '/follow-ups':

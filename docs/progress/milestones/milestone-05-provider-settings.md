@@ -53,7 +53,7 @@ Binding constraints (hard rules):
       Verify: `npm test --workspace server -- provider-snapshot.test.ts` —
       the default resolves; the snapshot carries the decrypted key + base URL +
       model; no snapshot when no default/enabled profile exists.
-- [ ] **m05-06** — Provider settings page (`web/`): guarded `/providers` screen
+- [x] **m05-06** — Provider settings page (`web/`): guarded `/providers` screen
       to list profiles (masked), add/edit (provider type, model, key, base URL),
       set default, test, and delete; wired into the shell nav.
       Verify: prod build; authenticated headless load of `/providers` shows the

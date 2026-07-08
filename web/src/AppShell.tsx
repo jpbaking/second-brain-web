@@ -15,6 +15,7 @@ const NAV_ITEMS: NavItem[] = [
   { href: '/follow-ups', label: 'Follow-ups', short: 'Queue' },
   { href: '/reports', label: 'Reports', short: 'Reports' },
   { href: '/vault', label: 'Vault', short: 'Vault' },
+  { href: '/providers', label: 'Providers', short: 'Models' },
 ]
 
 function isActive (path: string, href: string): boolean {
