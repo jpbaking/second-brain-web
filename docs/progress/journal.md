@@ -42,3 +42,5 @@ Tree clean at 08447f2. Active: milestone 0A.
 
 - 13:28 STARTED m0a-01: root npm workspaces + server/ TypeScript Fastify skeleton with lint/test/build (neostandard, vitest, tsc)
 - 13:29 DONE m0a-01: npm workspaces root + server/ Fastify TS skeleton; verified `npm run lint && npm test && npm run build` all pass (neostandard, vitest, tsc). Port default 8722, localhost bind.
+- 13:30 STARTED m0a-02: web/ Vite+React+TS skeleton, dev proxy to server, Fastify serves production build
+- 13:32 DONE m0a-02: web/ Vite+React skeleton; verified dev proxy (5173 -> /api/health ok), prod build served by Fastify static with SPA fallback (200 on deep route), lint+test pass.

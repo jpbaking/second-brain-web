@@ -11,7 +11,7 @@ design kit.
       `build` scripts wired (eslint/prettier/vitest or equivalents).
       Verify: `npm run lint && npm test && npm run build` all pass on the
       skeleton.
-- [ ] **m0a-02** — Front end skeleton: `web/` Vite + React + TypeScript,
+- [x] **m0a-02** — Front end skeleton: `web/` Vite + React + TypeScript,
       dev-proxied to the server; production build served by Fastify static.
       Verify: `npm run dev` serves a page that reaches a `/api/health`
       endpoint on the server.
