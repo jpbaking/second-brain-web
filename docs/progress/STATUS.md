@@ -1,6 +1,6 @@
 # STATUS — single source of truth
 
-Updated: 2026-07-08 (milestone 4 complete)
+Updated: 2026-07-08 (milestone 4A complete)
 
 ## Where we are
 
@@ -13,23 +13,33 @@ Updated: 2026-07-08 (milestone 4 complete)
 - **Milestone 4 — Vault Status And Health: COMPLETE (7/7).** git status module,
   single-writer lock, health runner (`python3 scripts/health.py`, text-parsed) +
   endpoint, command-center aggregate + endpoint, and the `/` command centre
-  landing page. Owner runs the health check from the UI and lands on a useful
-  command centre (verified e2e). Web routes: `/`=command centre, `/login`,
-  `/vault`, `/setup`.
-- Active milestone: **Milestone 4A — Responsive App Shell**.
-- Checklist: `docs/progress/milestones/milestone-4a-app-shell.md`
+  landing page (verified e2e).
+- **Milestone 4A — Responsive App Shell: COMPLETE (5/5).** AppShell with a
+  sticky desktop top nav + fixed mobile bottom nav across the core screens
+  (command centre, chat, follow-ups, reports, vault) with active-route
+  highlight + sign-out; stub screens for chat/follow-ups/reports; verified
+  navigable with no horizontal overflow at 390 and 1280. Web routes:
+  `/`=command centre, `/chat`, `/follow-ups`, `/reports`, `/vault`, `/login`,
+  `/setup`.
+- Active milestone: **Milestone 5 — Provider Settings** (checklist not yet
+  created).
 - App runnable: yes, with `SECOND_BRAIN_WEB_DATA_DIR` pointing at a private
   `0700` data root. Core DB schema at v6.
 
 ## Next step
 
-- m4a-01: client route table + stub screens (chat/follow-ups/reports) so the
-  shell can link to every core screen; replace ad-hoc pathname checks.
+- Create `docs/progress/milestones/milestone-05-provider-settings.md` from
+  Milestone 5 in the roadmap (provider profile storage, API key entry + secret
+  storage encrypted with `SECOND_BRAIN_WEB_SECRETS_KEY`, OpenAI-compatible base
+  URL, provider test action, default profile, session snapshot). One checkbox
+  per step with a verification command. Then begin m05-01. NOTE: secret storage
+  must use `SECOND_BRAIN_WEB_SECRETS_KEY` — never the session secret, never
+  plaintext (hard rule).
 
 ## Read before working
 
 - `docs/spike/findings.md` — m00-10 decisions (binding on implementation).
-- `docs/project-plan/phase-006-implementation-roadmap.md` — Milestone 4A / 5.
+- `docs/project-plan/phase-006-implementation-roadmap.md` — Milestone 5.
 - `docs/project-plan/master-plan.md` — hard rules, runtime layout, auth
   crypto, and secrets handling.
 - `docs/project-plan/phase-002-security-auth-and-secrets.md` — password,

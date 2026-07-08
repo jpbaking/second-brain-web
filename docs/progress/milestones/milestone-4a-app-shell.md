@@ -40,7 +40,7 @@ Binding constraints:
       controls).
       Verify: headless at 390 and 1280 for `/`, `/vault`, `/reports` —
       `document.documentElement.scrollWidth <= innerWidth` at 390 on each.
-- [ ] **m4a-05** — Milestone deliverable check: the core screens are navigable
+- [x] **m4a-05** — Milestone deliverable check: the core screens are navigable
       and usable on phone and desktop.
       Verify: authenticated headless run — from `/`, navigate to each core
       screen at both 390×844 and 1280×800, capturing screenshots; `npm run lint
