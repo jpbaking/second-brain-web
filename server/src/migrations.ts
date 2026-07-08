@@ -72,6 +72,19 @@ const coreMigrations: Migration[] = [
       )
     `,
   },
+  {
+    version: 6,
+    sql: `
+      CREATE TABLE vault_lock (
+        name TEXT PRIMARY KEY,
+        lock_id TEXT NOT NULL,
+        session_id TEXT,
+        operation TEXT,
+        started_at TEXT NOT NULL,
+        last_heartbeat TEXT NOT NULL
+      )
+    `,
+  },
 ]
 
 const sidecarMigrations: Migration[] = [

@@ -25,7 +25,7 @@ Binding constraints:
       Verify: `npm test --workspace server -- git-status.test.ts` — a clean temp
       repo reports not dirty with a commit + subject; after an edit it reports
       dirty with the changed file listed.
-- [ ] **m04-02** — Single-writer lock store: core migration adds a `vault_lock`
+- [x] **m04-02** — Single-writer lock store: core migration adds a `vault_lock`
       table and a store (acquire when free, heartbeat, release, read current
       with staleness). One active writer at a time.
       Verify: `npm test --workspace server -- vault-lock.test.ts` — acquire
