@@ -46,7 +46,7 @@ Follow the kit rules:
 
 ## Implementation Shape
 
-Recommended for a Next/React app:
+Recommended for the React front end:
 
 1. Copy the kit's `design/` folder into `public/design/`.
 2. Copy or generate favicon files into `public/`.

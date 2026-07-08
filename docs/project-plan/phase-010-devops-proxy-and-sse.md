@@ -80,7 +80,7 @@ Suggested NPM host considerations:
 - Set upload/body size high enough for expected inbox uploads.
 - Keep HTTPS enabled for local access if practical.
 - Avoid caching app/API routes.
-- Route only to the internal Next.js app port.
+- Route only to the internal app service port.
 - Do not expose the vault workspace or reports as static directories.
 
 ## Cloudflare Tunnel And Access Notes

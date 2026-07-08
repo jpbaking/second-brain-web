@@ -28,7 +28,8 @@ Suggested:
 - `SECOND_BRAIN_WEB_COOKIE_SECURE`
 - `SECOND_BRAIN_WEB_SESSION_SECRET`
 - `SECOND_BRAIN_WEB_LOG_LEVEL`
-- `SECOND_BRAIN_WEB_SECRETS_KEY`
+- `SECOND_BRAIN_WEB_SECRETS_KEY` — required before provider keys can be
+  stored; the only key-encryption secret (never reuse the session secret).
 - Provider/model variables required by Cline SDK configuration.
 
 Do not require secrets to be committed to source files.
