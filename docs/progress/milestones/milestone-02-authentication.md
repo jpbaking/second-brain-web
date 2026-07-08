@@ -41,7 +41,7 @@ Binding constraints:
       Verify: `npm test --workspace server -- auth-flow.test.ts` — password then
       TOTP returns a `Set-Cookie` session; wrong password or TOTP returns 401
       with no session; TOTP without a valid challenge is refused.
-- [ ] **m02-05** — Session cookie issuance (flags per binding constraints) and
+- [x] **m02-05** — Session cookie issuance (flags per binding constraints) and
       an auth pre-handler guarding every private route; `/login`, the setup
       status endpoint, and static design assets stay public.
       Verify: `npm test --workspace server -- guard.test.ts` — a private route

@@ -17,10 +17,9 @@ Updated: 2026-07-08 (milestone 1 complete)
 
 ## Next step
 
-- m02-05: session-cookie route guard — an auth pre-handler that reads the
-  session cookie and guards every private route; `/login`, the status endpoint,
-  and static assets stay public. (m02-01..04 done: sessions, owner creds, TOTP,
-  login-flow endpoints + @fastify/cookie; core schema v3.)
+- m02-06: logout — `POST /api/auth/logout` revokes the current session and
+  clears the cookie. (m02-01..05 done: sessions, owner creds, TOTP, login
+  endpoints, secure-by-default guard + `GET /api/session`.)
 
 ## Read before working
 

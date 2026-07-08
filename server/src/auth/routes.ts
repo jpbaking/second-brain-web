@@ -24,6 +24,11 @@ import type { FastifyInstance } from 'fastify'
  * verifies the code against that challenge, then creates a session.
  */
 export function registerAuthRoutes (app: FastifyInstance, config: AppConfig): void {
+  // Guarded probe the front end calls to check whether it is authenticated.
+  app.get('/api/session', async (req) => {
+    return { authenticated: true, sessionId: req.sessionId }
+  })
+
   app.post('/api/auth/password', async (req, reply) => {
     const body = req.body as { password?: unknown } | undefined
     const password = typeof body?.password === 'string' ? body.password : ''
