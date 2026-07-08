@@ -1,6 +1,7 @@
 import { statSync } from 'node:fs'
 import path from 'node:path'
 import { generateOwnerAuth, writeOwnerAuth } from '../auth/bootstrap.js'
+import { invalidateSessionsAndChallenges } from '../auth/reset.js'
 
 /**
  * CLI entry invoked by `scripts/reset-auth.sh` after it has validated and
@@ -22,14 +23,16 @@ async function main (): Promise<void> {
 
   const { password, otpauthUri, state } = await generateOwnerAuth()
   const file = writeOwnerAuth(dataDir, state)
+  // Any previously issued sessions and pending challenges are now invalid.
+  invalidateSessionsAndChallenges(dataDir)
 
   process.stdout.write(
     'reset-auth: owner authentication has been reset.\n\n' +
     `  One-time password:  ${password}\n\n` +
     '  TOTP setup — add this otpauth URI to your authenticator app:\n' +
     `    ${otpauthUri}\n\n` +
-    'The password is shown once — record it now. Any previous password and ' +
-    'TOTP secret are now invalid.\n' +
+    'The password is shown once — record it now. Any previous password, TOTP ' +
+    'secret, and signed-in sessions are now invalid.\n' +
     `Auth state written to ${file} (mode 600).\n`
   )
 }

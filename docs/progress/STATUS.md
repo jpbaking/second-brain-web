@@ -17,11 +17,10 @@ Updated: 2026-07-08 (milestone 1 complete)
 
 ## Next step
 
-- m02-08: resetting owner auth invalidates existing sessions — reset routine
-  revokes all sessions + pending challenges. (m02-01..07 done through rate
-  limiting; core schema v4.) Note: the reset CLI (server/src/cli/reset-auth.ts)
-  writes owner.json but does NOT yet touch the DB — wire session/challenge
-  revocation there.
+- m02-09: login page (`web/`) — lazyway-kit two-step login (password then
+  TOTP) driving the endpoints, error states, mobile responsive. Needs headless
+  verification + 390×844 screenshot. (m02-01..08 done: full server-side auth
+  incl. reset invalidation.)
 
 ## Read before working
 

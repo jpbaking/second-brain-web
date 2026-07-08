@@ -56,7 +56,7 @@ Binding constraints:
       TOTP failures; a success resets counters; locks are time-bounded.
       Verify: `npm test --workspace server -- rate-limit.test.ts` — repeated
       failures trigger a delay/lock, success resets, and the lock expires.
-- [ ] **m02-08** — Resetting owner auth invalidates existing sessions: the
+- [x] **m02-08** — Resetting owner auth invalidates existing sessions: the
       reset routine revokes all sessions and pending challenges.
       Verify: `npm test --workspace server -- reset-invalidation.test.ts` — a
       session valid before reset no longer authenticates afterwards.
