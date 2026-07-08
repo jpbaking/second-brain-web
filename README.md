@@ -6,7 +6,11 @@ The app is designed to run separately from the actual second-brain vault. At dep
 
 ## Project Status
 
-This repository is currently in assessment and planning. Implementation should begin by reading:
+This repository is currently in assessment and planning.
+
+**Implementation agents: start at [AGENTS-PLAYBOOK.md](AGENTS-PLAYBOOK.md).**
+It routes you to the current state in `docs/progress/` and the parts of the
+plan that matter right now. The full design pack:
 
 - [Project master plan](docs/project-plan/master-plan.md)
 - [Implementation roadmap](docs/project-plan/phase-006-implementation-roadmap.md)

@@ -43,6 +43,9 @@ ssh/
 auth/
 /auth/
 
+# Spike throwaway material (Milestone 0)
+spike/test-vault/
+
 # Databases and derived indexes
 *.sqlite
 *.sqlite3
