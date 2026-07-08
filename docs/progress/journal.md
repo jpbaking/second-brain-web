@@ -59,3 +59,6 @@ Tree clean at 08447f2. Active: milestone 0A.
 - 13:51 NOTE m0a-07: commit is aea2320.
 - 13:51 STARTED m0a-08: scaffold deliverable check, README start command, STATUS handoff to milestone 01, and milestone 01 checklist.
 - 13:53 DONE m0a-08: README now documents the scaffold start command; milestone 0A is fully ticked; STATUS points to milestone 01; milestone 01 checklist is seeded. Verified by current `npm run lint && npm test && npm run build`, then temp clone `/tmp/sbw-m0a08-clone` with `npm install`, `npm run build`, documented `SECOND_BRAIN_WEB_DATA_DIR=/tmp/sbw-m0a08-data SECOND_BRAIN_WEB_PORT=8878 npm start`, and `curl -sS http://127.0.0.1:8878/api/status` showing private data root, ready DBs, schema 1, and missing auth setup (lint warnings only in pre-existing config files). Committing.
+- 13:54 NOTE m0a-08: commit is db8c63d.
+
+## 13:54 — session end. Milestone 0A complete (8/8). Next: m01-01, `scripts/reset-auth.sh` data-root validation/bootstrap.
