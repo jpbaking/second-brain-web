@@ -50,3 +50,4 @@ Tree clean at 08447f2. Active: milestone 0A.
 - 13:37 DONE m0a-04: config loader + data root — no env var exits 1 with actionable message; with it, 8-dir layout created at mode 700; world-readable dir refused (tested); localhost default. 5 tests pass.
 - 13:37 STARTED m0a-05: SQLite helper (node:sqlite built-in) with WAL+FK per connection, core/sidecar split
 - 13:42 DONE m0a-05: recovered previous WIP; SQLite helper opens core `db/app.sqlite` and sidecar `indexes/vault.sqlite`, applying WAL, foreign keys, and busy timeout per connection. Verified by `npm test --workspace server -- db.test.ts` and full `npm run lint && npm test && npm run build` (lint warnings only in pre-existing config files). Committing.
+- 13:43 NOTE m0a-05: recovery commit is 904f127.
