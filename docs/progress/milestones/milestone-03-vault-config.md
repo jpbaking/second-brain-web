@@ -46,7 +46,7 @@ Binding constraints:
       Verify: `npm test --workspace server -- vault-clone.test.ts` — cloning
       from a local `file://` remote succeeds and records the commit; a re-run
       pulls; a workspace with a different remote is refused.
-- [ ] **m03-05** — Vault detection checks: after clone/pull, report presence of
+- [x] **m03-05** — Vault detection checks: after clone/pull, report presence of
       `README.md`, `.clinerules/00-role.md`, `.clinerules/10-structure.md`,
       `memory/index.md`, `library/catalog.md`, `scripts/health.py`.
       Verify: `npm test --workspace server -- vault-detect.test.ts` — a seeded
