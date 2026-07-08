@@ -1,6 +1,6 @@
 # STATUS — single source of truth
 
-Updated: 2026-07-08 (milestone 00 complete)
+Updated: 2026-07-08 (m0a-05 complete)
 
 ## Where we are
 
@@ -9,11 +9,12 @@ Updated: 2026-07-08 (milestone 00 complete)
   section has the decision list).
 - Active milestone: **Milestone 0A — Scaffold**.
 - Checklist: `docs/progress/milestones/milestone-0a-scaffold.md`
-- App runnable: n/a (no app code yet; `spike/` is throwaway).
+- App runnable: yes, with `SECOND_BRAIN_WEB_DATA_DIR` pointing at a private
+  `0700` data root.
 
 ## Next step
 
-- First unchecked item in the milestone 0A checklist (m0a-01).
+- First unchecked item in the milestone 0A checklist (m0a-06).
 
 ## Read before working
 

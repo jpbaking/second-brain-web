@@ -26,7 +26,7 @@ design kit.
       by default.
       Verify: starting without the env var (or with unsafe perms) exits
       with an actionable error; with it, the layout appears.
-- [ ] **m0a-05** — SQLite: connection helper (better-sqlite3 or equivalent)
+- [x] **m0a-05** — SQLite: connection helper (better-sqlite3 or equivalent)
       that sets `journal_mode=WAL` and `foreign_keys=ON` on every
       connection; core DB at `db/app.sqlite`, sidecar at
       `indexes/vault.sqlite`.
