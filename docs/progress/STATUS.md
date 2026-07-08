@@ -14,10 +14,11 @@ Updated: 2026-07-08 (milestone 0A complete)
 
 ## Next step
 
-- m01-04: `generate-deploy-key.sh` prints operator instructions — the public
-  key to add as a deploy key and where it was stored — without printing the
-  private key. (m01-01/02/03 done: data-root bootstrap, owner auth material,
-  ed25519 deploy key; shared validation in `scripts/lib/data-root.sh`.)
+- m01-05: make idempotency/rotation explicit — reset-auth invalidates old
+  auth bootstrap state; deploy-key generation refuses overwrite unless a
+  documented rotate flag is supplied; tests cover default refusal + rotate.
+  (m01-01..04 done: data-root bootstrap, owner auth material, ed25519 deploy
+  key with operator instructions; shared `scripts/lib/data-root.sh`.)
 
 ## Read before working
 

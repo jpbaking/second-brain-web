@@ -22,7 +22,7 @@ session secret.
       data root.
       Verify: running it against a fresh `0700` temp dir creates private and
       public key files with private key mode `0600`.
-- [ ] **m01-04** — Deploy-key script prints operator instructions, including
+- [x] **m01-04** — Deploy-key script prints operator instructions, including
       the SSH public key to add as a deploy key and where it was stored.
       Verify: script output includes the public key line and does not print
       the private key.

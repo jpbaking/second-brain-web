@@ -36,4 +36,20 @@ ssh-keygen -t ed25519 -N '' -C 'second-brain-web deploy key' -f "$key_file" >/de
 chmod 600 "$key_file"
 chmod 644 "$pub_file"
 
-printf 'generate-deploy-key: created SSH deploy key at %s (private key mode 600).\n' "$key_file"
+# Operator instructions. Only the public key is printed — the private key stays
+# on the host and is never displayed.
+pub_key="$(cat "$pub_file")"
+cat <<INSTRUCTIONS
+generate-deploy-key: created a new SSH deploy key.
+
+  Private key: $key_file (mode 600 — stays on this host, never copy it off)
+  Public key:  $pub_file
+
+Add the public key below as a deploy key on your vault's Git host, granting
+write access so the app can push vault changes back:
+
+$pub_key
+
+  GitHub:  repository → Settings → Deploy keys → Add deploy key → tick "Allow write access"
+  GitLab:  repository → Settings → Repository → Deploy keys → enable "Grant write permissions"
+INSTRUCTIONS
