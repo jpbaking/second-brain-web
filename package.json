@@ -1,0 +1,22 @@
+{
+  "name": "second-brain-web",
+  "version": "0.0.1",
+  "private": true,
+  "description": "Self-hosted single-user web console for a second-brain vault",
+  "license": "0BSD",
+  "engines": {
+    "node": ">=22"
+  },
+  "workspaces": [
+    "server",
+    "web"
+  ],
+  "scripts": {
+    "dev": "npm run dev --workspace server",
+    "lint": "npm run lint --workspaces --if-present",
+    "format": "npm run format --workspaces --if-present",
+    "test": "npm run test --workspaces --if-present",
+    "build": "npm run build --workspaces --if-present",
+    "start": "npm run start --workspace server"
+  }
+}

@@ -6,7 +6,7 @@ master plan's hard rules. Stack per master plan: long-lived Node service
 (Fastify) + Vite/React front end, TypeScript, SQLite (WAL, FK), lazyway
 design kit.
 
-- [ ] **m0a-01** — Server skeleton: `server/` TypeScript Fastify app on
+- [x] **m0a-01** — Server skeleton: `server/` TypeScript Fastify app on
       Node 22+ (`engines` set), with `lint`, `format`, `test`, `dev`, and
       `build` scripts wired (eslint/prettier/vitest or equivalents).
       Verify: `npm run lint && npm test && npm run build` all pass on the
