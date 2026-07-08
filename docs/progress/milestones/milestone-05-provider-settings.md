@@ -59,7 +59,7 @@ Binding constraints (hard rules):
       Verify: prod build; authenticated headless load of `/providers` shows the
       list/form; 390×844 screenshot; `npm run lint && npm test && npm run build`
       pass.
-- [ ] **m05-07** — Milestone deliverable check: the owner can configure an
+- [x] **m05-07** — Milestone deliverable check: the owner can configure an
       Anthropic / OpenAI / OpenAI-compatible profile, mark it default, and it is
       selectable for a chat; keys are encrypted and never returned.
       Verify: end-to-end with a running server (and `SECOND_BRAIN_WEB_SECRETS_KEY`

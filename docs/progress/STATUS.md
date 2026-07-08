@@ -1,6 +1,6 @@
 # STATUS — single source of truth
 
-Updated: 2026-07-08 (milestone 4A complete)
+Updated: 2026-07-09 (milestone 5 complete)
 
 ## Where we are
 
@@ -21,20 +21,29 @@ Updated: 2026-07-08 (milestone 4A complete)
   navigable with no horizontal overflow at 390 and 1280. Web routes:
   `/`=command centre, `/chat`, `/follow-ups`, `/reports`, `/vault`, `/login`,
   `/setup`.
-- Active milestone: **Milestone 5 — Provider Settings**.
+- **Milestone 5 — Provider Settings: COMPLETE (7/7).** Secrets crypto
+  (AES-256-GCM via `SECOND_BRAIN_WEB_SECRETS_KEY`), `provider_profiles` store
+  (masked views; key only as ciphertext+last4), guarded CRUD endpoints, a
+  connectivity test action (`POST /api/providers/:id/test`), an in-memory
+  provider snapshot for chat sessions, and the `/providers` web page (add/edit,
+  set default, test, delete) wired into the shell nav. Verified e2e: keyed
+  profile create→mask→default→snapshot with the plaintext key never returned
+  and never at rest (only `v1:` ciphertext on disk).
+- Active milestone: **Milestone 5A — Cline SDK Chat** (next).
 - Checklist: `docs/progress/milestones/milestone-05-provider-settings.md`
+  (complete); 5A checklist to be created.
 - App runnable: yes, with `SECOND_BRAIN_WEB_DATA_DIR` pointing at a private
-  `0700` data root. Core DB schema at v6.
+  `0700` data root. Core DB schema at v7.
 
 ## Next step
 
-- m05-07: milestone deliverable check — end-to-end with a running server
-  (SECOND_BRAIN_WEB_SECRETS_KEY set): create an Anthropic/OpenAI/openai-compatible
-  profile with a key, confirm the list masks it, set it default, confirm the
-  snapshot resolves; full lint/test/build; grep the DB/responses to prove no
-  plaintext key; no secrets tracked by git. (m05-01..06 done: secrets crypto,
-  store, CRUD, test action, default snapshot, /providers web page wired into the
-  shell nav; core schema v7.)
+- Create the Milestone 5A (Cline SDK Chat) checklist from
+  `docs/project-plan/phase-006-implementation-roadmap.md` (Milestone 5A) +
+  `docs/spike/findings.md` (continuity = app-side rehydration; rules/workflow
+  loading), then begin m5a-01. The mandatory `library/` tool-policy guard
+  (refusing non-catalog writes) ships with this first agent integration, per
+  spike m00-09. Provider selection for a new session uses m05's
+  `resolveDefaultSnapshot`/`resolveSnapshot`.
 
 ## Read before working
 

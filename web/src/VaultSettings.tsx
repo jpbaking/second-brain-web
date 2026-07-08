@@ -18,9 +18,11 @@ async function getJson (url: string): Promise<Response> {
   return await fetch(url, { credentials: 'same-origin' })
 }
 async function sendJson (method: string, url: string, body?: unknown): Promise<Response> {
+  // Only declare a JSON content-type when there is a body — Fastify rejects an
+  // empty body sent with content-type application/json (FST_ERR_CTP_EMPTY_JSON_BODY).
   return await fetch(url, {
     method,
-    headers: { 'content-type': 'application/json' },
+    headers: body === undefined ? {} : { 'content-type': 'application/json' },
     credentials: 'same-origin',
     body: body === undefined ? undefined : JSON.stringify(body),
   })
