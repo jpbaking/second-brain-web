@@ -7,7 +7,8 @@ workflow model and vault invariants.
 
 ## SDK Direction
 
-Use Cline SDK. Prefer `ClineCore` for MVP because the app needs:
+Use Cline SDK (actual package names and entry points are confirmed by the
+Milestone 0 spike) because the app needs:
 
 - Persistent agent sessions.
 - Checkpoints/session resume where supported by the SDK.
@@ -19,6 +20,25 @@ Use Cline SDK. Prefer `ClineCore` for MVP because the app needs:
 
 Implementation agents must verify exact SDK APIs against current Cline SDK docs
 before coding.
+
+The SDK is a framework for building agents, not a headless build of the Cline
+VS Code extension. Do not assume extension behaviours exist in it:
+
+- `.clinerules/` auto-loading may not happen; the app must inject rules into
+  the system prompt itself.
+- `/workflow.md` slash behaviour may not exist; the app must expand workflow
+  files into task prompts.
+- `.cline/skills/` may not load; treat skills as unavailable until verified.
+- Hooks will not fire — including the vault's PreToolUse guard that blocks
+  edits to `library/` originals. The app MUST enforce an equivalent guard as
+  tool policy on the SDK's file tools (see phase-003); this is mandatory, not
+  optional hardening.
+
+Milestone 0 in the roadmap is a feasibility spike that validates these
+assumptions plus multi-turn session resume after process restart and the
+headless approval flow, before any web scaffolding. The spike's findings
+decide whether SDK resume or app-side rehydration is the primary continuity
+path.
 
 The SDK provider layer should be used rather than hard-coding one vendor. The
 current SDK docs describe `@cline/llms` as the provider registry/gateway layer,
@@ -107,6 +127,12 @@ App session concepts:
 - Agent session: Cline SDK runtime bound to a chat session.
 - Vault writer lock: exclusive mutation guard.
 
+Because the vault rules require substantive chat facts to be filed ("nothing
+evaporates"), nearly every non-read-only session is a potential writer.
+Expect all writing sessions to serialise behind the single-writer lock in
+practice; this is acceptable for one principal. The chat UI should show when
+a session is waiting on the lock and which session currently holds it.
+
 A chat session should store:
 
 - ID
@@ -145,6 +171,9 @@ Requirements:
 - If SDK session state cannot be resumed exactly, the app must create a clear
   recovery path that rehydrates the agent with the last compacted summary,
   relevant transcript tail, vault state, and task status.
+- The Milestone 0 spike determines which of these is the primary path. If SDK
+  resume across process restarts proves weak, design rehydration as the main
+  mechanism from the start rather than a fallback.
 
 The distinction matters:
 
@@ -161,11 +190,17 @@ Long-running sessions need explicit context management.
 MVP should support:
 
 - Manual compaction: the principal can trigger "compact context" for a session.
-- Automatic compaction: the app can compact when token budget, transcript size,
-  or SDK context warning thresholds are reached.
 - Compaction preview or summary record: the app should store what was kept and
   what was summarised.
 - Timeline event: compaction should appear in the session timeline.
+
+Deferred to just past MVP:
+
+- Automatic compaction when token budget, transcript size, or SDK context
+  warning thresholds are reached. The secretary model is naturally
+  task-scoped — run a workflow, commit, done — so short sessions plus manual
+  compaction cover MVP. The stored-summary format and timeline events should
+  be designed so the automatic trigger can be added without rework.
 
 The compacted summary should preserve:
 
@@ -208,6 +243,12 @@ Shortcut buttons should enqueue normal user messages, for example:
 - `/report.md <request>`
 - `/checkup.md`
 - `/weekly.md`
+
+If the SDK does not implement Cline's slash-command behaviour (verify in the
+Milestone 0 spike), the app should read the referenced workflow file from
+`.clinerules/workflows/` and send its content as the task prompt. Loading a
+workflow file into a prompt is acceptable app code; reimplementing the
+workflow's logic is not.
 
 Do not reimplement the vault workflows in app code.
 
@@ -254,11 +295,10 @@ header. Changing presets mid-session should create a timeline event.
 
 ## System Prompt / Rules Loading
 
-The agent should work inside the vault checkout so existing `.clinerules/` are
-loaded naturally by Cline where supported.
-
-If SDK usage requires explicit instructions, prepend or configure the runtime to
-read:
+The agent works inside the vault checkout. Expect to inject the vault rules
+explicitly: SDK agents are unlikely to auto-load `.clinerules/` the way the
+Cline extension does (verify in the Milestone 0 spike). Prepend or configure
+the runtime to read:
 
 - `.clinerules/00-role.md`
 - `.clinerules/10-structure.md`
