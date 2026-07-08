@@ -16,13 +16,12 @@ in MVP:
 - Quick capture.
 - Approval presets.
 - Multi-session chat.
-- Cline-like session persistence and context compaction.
+- Cline-like session persistence and manual context compaction.
 - SSE-first event streaming with reconnect support.
 - Inbox intake wizard and file/folder upload to `inbox/`.
 - Workflow shortcuts.
 - Provider/model profile selection.
 - Authenticated report shelf.
-- Source coverage view for reports and substantial cited answers.
 - Review-before-commit/push.
 - Desktop and mobile responsive layouts.
 - Single-writer vault lock.
@@ -31,6 +30,28 @@ in MVP:
 ## Near-Term Features
 
 These should be considered soon after MVP, but the MVP can work without them.
+
+### Automatic Context Compaction
+
+Trigger compaction automatically on token/context pressure when SDK data is
+available, otherwise on transcript size thresholds. Manual compaction ships
+in MVP; the automatic trigger is the deferred part.
+
+Design hook:
+
+- The MVP compaction summary format and session timeline events must be
+  reusable by the automatic trigger without rework.
+
+### Source Coverage View
+
+Show which memory pages and library originals a report or substantial cited
+answer drew on, with the vault commit at generation time. Reports carry their
+own inline citations in MVP, which covers the trust need at first ship.
+
+Design hook:
+
+- Report metadata should retain provenance from MVP onward: report path,
+  generating session, and vault commit.
 
 ### Meeting Prep Mode
 
