@@ -234,7 +234,30 @@ favour.**
 
 ## m00-08 — Workflows and skills
 
-Not yet answered (docs are silent; expectation is prompt expansion).
+Answered: 2026-07-08. **Workflows: app-side expansion required (as planned).
+Skills: auto-loaded. Full inbox processing works end to end.**
+
+- **Slash commands are NOT expanded by `@cline/core`.** Sending
+  `/spike-test.md` as the prompt reaches the model as literal text (verified
+  in the persisted message) and the model just guesses at its meaning. The
+  extension/CLI layer owns that feature.
+- **App-side expansion works cleanly** (`spike/06-workflow.mjs`): read
+  `.clinerules/workflows/<name>.md`, send `"Run the following workflow
+  now.\n\n" + content` — a marker workflow returned its exact expected
+  output. This is what the web app's shortcut bar should do, and it is
+  loading (not reimplementing) the vault workflow, per plan.
+- **Skills auto-load** (`spike/07-skills.mjs`): the agent listed all five
+  vault skills from `.cline/skills/` unprompted. Note: the host user's
+  **global** `~/.cline/skills` merge in too — the app server should run
+  under a dedicated user, or accept that merge (flag for phase-007).
+- **End-to-end inbox processing PASSES with a local 9B model**
+  (`spike/08-inbox.mjs`, 65s): a dummy note dropped in `inbox/` was moved to
+  `library/2026/2026-07-08_maya-drill-note.txt` (correct date-prefix
+  convention), catalogued, a new person dossier `maya-chen.md` was created
+  with the accomplishment, `memory/log.md` got a proper ingest entry, all
+  four index/catalog files were updated, and `scripts/health.py` still
+  reports healthy. The vault rules do the heavy lifting; even a small model
+  follows them.
 
 ## m00-09 — Tool-policy guard for library/
 

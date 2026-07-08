@@ -43,7 +43,7 @@ variable (ask the principal via STATUS.md if unset). Never commit it; add
       prompt?
       Verify: ask the agent something only `.clinerules/00-role.md` would
       make it do, with and without injection.
-- [ ] **m00-08** — Workflows and skills: does sending `/inbox.md` as a
+- [x] **m00-08** — Workflows and skills: does sending `/inbox.md` as a
       message trigger the workflow? Are `.cline/skills/` loaded at all? If
       not, prove the fallback: read the workflow file and send its content as
       the task prompt.

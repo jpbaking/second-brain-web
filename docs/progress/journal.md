@@ -27,3 +27,5 @@ Tree clean at d523094. Active: milestone 00, next item: m00-01. Note: SECOND_BRA
 - 13:01 DONE m00-06: approval PASS — editor tool paused on requestToolApproval, resolved externally 3s later, file written. request.input carries the path (feeds m00-09 guard). Tool names: editor/bash/fetch/search.
 - 13:01 STARTED m00-07: rules A/B — same prompt, cwd in vault vs empty dir; look for secretary persona
 - 13:03 DONE m00-07: rules AUTO-LOADED, A/B confirmed via `node spike/05-rules.mjs` — vault run answers as executive secretary quoting 00-role.md, empty-dir run generic. No injection layer needed.
+- 13:04 STARTED m00-08: workflows/skills — marker workflow via /spike-test.md slash message; then inbox attempt
+- 13:15 DONE m00-08: slash NOT expanded by core (app expands workflow files — proven); skills auto-load incl. global ~/.cline/skills (flag for deployment); full /inbox.md run with 9B model filed everything correctly, health passes.
