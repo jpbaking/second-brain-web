@@ -30,7 +30,7 @@ Binding constraints:
       Verify: `npm test --workspace server -- owner.test.ts` — the password
       from a generated owner state verifies; a wrong password is rejected;
       absent `owner.json` reports not-configured (no throw).
-- [ ] **m02-03** — TOTP verification (base32 decode + HMAC-SHA1, RFC 6238) with
+- [x] **m02-03** — TOTP verification (base32 decode + HMAC-SHA1, RFC 6238) with
       a small clock-skew window, checked against the stored secret.
       Verify: `npm test --workspace server -- totp.test.ts` — RFC 6238 test
       vectors accepted; wrong/out-of-window codes rejected; ±1 step accepted.

@@ -17,9 +17,10 @@ Updated: 2026-07-08 (milestone 1 complete)
 
 ## Next step
 
-- m02-03: TOTP verification (base32 decode + HMAC-SHA1, RFC 6238) with a small
-  clock-skew window, checked against the stored secret. (m02-01/02 done:
-  sessions store; owner credential module.)
+- m02-04: login-flow endpoints — `POST /api/auth/password` (verify password →
+  short-lived pending challenge) and `POST /api/auth/totp` (verify code →
+  create session, destroy challenge). (m02-01/02/03 done: sessions store, owner
+  credentials, TOTP verify.) Needs a challenge store + cookie config decision.
 
 ## Read before working
 
