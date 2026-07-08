@@ -88,7 +88,7 @@ in `/v1`.
       Verify: `npm test --workspace server -- chat-approvals.test.ts` (fake
       runner) — a parked approval is resolved by the route and the turn
       continues; a guard-denied tool never parks; deny path reported as an event.
-- [ ] **m5a-08** — Workflow shortcut messages: expand
+- [x] **m5a-08** — Workflow shortcut messages: expand
       `.clinerules/workflows/<name>.md` app-side into the standard "Run the
       following workflow now." message; list available workflows from the vault
       checkout.

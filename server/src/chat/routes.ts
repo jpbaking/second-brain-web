@@ -2,6 +2,7 @@ import { openCoreDb } from '../db.js'
 import { resolveDefaultSnapshot, resolveSnapshot } from '../providers/snapshot.js'
 import { vaultWorkspacePath } from '../vault/config.js'
 import { AgentSessionService } from '../agent/session.js'
+import { WorkflowNotFoundError, expandWorkflow, listWorkflows } from '../agent/workflows.js'
 import { appendEvent, closeSession, getSession, listSessions, readEventsSince, renameSession } from '../agent/chat-store.js'
 import type { AgentRunner } from '../agent/runner.js'
 import type { AppConfig } from '../config.js'
@@ -125,14 +126,30 @@ export function registerChatRoutes (app: FastifyInstance, config: AppConfig, run
     }
   })
 
+  app.get('/api/chat/workflows', async () => {
+    return { workflows: listWorkflows(vaultWorkspacePath(config.dataDir)) }
+  })
+
   app.post('/api/chat/sessions/:id/commands', async (req, reply) => {
     const id = (req.params as { id: string }).id
     const command = str((req.body as { command?: unknown })?.command)
     if (command === undefined) return await reply.code(400).send({ error: 'command is required' })
     if (getSession(db, id) === undefined) return await reply.code(404).send({ error: 'session not found' })
-    // Workflow-shortcut expansion + dispatch lands in m5a-08; record intent for now.
-    appendEvent(db, id, 'command', { command })
-    return await reply.code(202).send({ accepted: true })
+    // A command is a workflow shortcut: expand the vault's workflow file and
+    // send it as a normal message (the SDK does not expand slash commands).
+    let message: string
+    try {
+      message = expandWorkflow(vaultWorkspacePath(config.dataDir), command)
+    } catch (err) {
+      if (err instanceof WorkflowNotFoundError) return await reply.code(404).send({ error: err.message })
+      return await reply.code(400).send({ error: err instanceof Error ? err.message : 'invalid workflow' })
+    }
+    try {
+      const result = await service.sendMessage(id, message)
+      return await reply.code(202).send(result)
+    } catch (err) {
+      return await reply.code(502).send({ error: err instanceof Error ? err.message : 'agent send failed' })
+    }
   })
 
   app.post('/api/chat/sessions/:id/approvals/:toolCallId', async (req, reply) => {
