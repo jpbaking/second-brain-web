@@ -172,12 +172,15 @@ Rules:
 - Rotating a provider key should invalidate active agent sessions using that
   provider.
 
-Preferred storage:
+Required storage:
 
-- Encrypt provider keys at rest with `SECOND_BRAIN_WEB_SESSION_SECRET` or a
-  dedicated `SECOND_BRAIN_WEB_SECRETS_KEY`.
-- If encryption is deferred in MVP, rely on strict host file permissions and
-  document the hardening gap.
+- Encrypt provider keys at rest with the dedicated
+  `SECOND_BRAIN_WEB_SECRETS_KEY`. This is the only key-encryption option: do
+  not reuse `SECOND_BRAIN_WEB_SESSION_SECRET`, which has a different purpose
+  and rotation schedule.
+- If `SECOND_BRAIN_WEB_SECRETS_KEY` is not configured, the app refuses to
+  store provider keys and directs the operator to set it, rather than falling
+  back to weaker storage.
 
 ## Provider Web Authentication
 
