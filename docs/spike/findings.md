@@ -186,7 +186,29 @@ spike's key architectural decision.**
 
 ## m00-06 — Approval flow, answered asynchronously
 
-Not yet answered (docs-level answer looks good; see m00-01 notes).
+Answered: 2026-07-08. **PASS — the exact shape a web app needs.**
+
+- `spike/04-approval.mjs`: with `toolPolicies: { editor: { autoApprove:
+  false } }` and a `capabilities.requestToolApproval` callback, the agent's
+  `editor` tool call **paused** (requested at t=1.9s), the promise was parked
+  in a pending map, and a separate timer loop — standing in for a web
+  route — resolved it 3 seconds later (t=5.0s). The tool then executed and
+  the file appeared with the right content.
+- Callback contract: `(request: { sessionId, agentId, conversationId,
+  iteration, toolCallId, toolName, input, policy }) =>
+  Promise<{ approved, reason? }>`. `toolCallId` is the correlation key the
+  app's approval routes will use.
+- **`request.input` includes the target path** (e.g. `{ path:
+  "inbox/approval-test.txt", new_text: "..." }`), so path-level rules like
+  the `library/` guard can be decided here (m00-09).
+- Built-in tool names in the agents runtime: `editor`, `bash`, `fetch`,
+  `search` (the docs' `read_files`/`apply_patch`/`run_commands` naming
+  belongs to the hub layer). Unlisted tools default to auto-approved, so the
+  app must set explicit policies for every mutating tool.
+- Gotcha that cost a timeout: install the external approval resolver
+  *before* `cline.start()` — approvals fire mid-turn, and code that only
+  runs after `await start()` may never run if the turn is blocked on the
+  approval (deadlock).
 
 ## m00-07 — .clinerules/ honoured or injected?
 

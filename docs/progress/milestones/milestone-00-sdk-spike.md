@@ -32,7 +32,7 @@ variable (ask the principal via STATUS.md if unset). Never commit it; add
       persistence/checkpoint APIs found in m00-01.
       Verify: script A starts a task and exits; script B resumes and the
       agent still knows the task. Record the answer even if it is "no".
-- [ ] **m00-06** — Approvals: with `autoApprove: false` (or current
+- [x] **m00-06** — Approvals: with `autoApprove: false` (or current
       equivalent), how does the consent request surface programmatically, and
       can it be answered asynchronously from another code path, the way a web
       route would answer it?

@@ -23,3 +23,5 @@ Tree clean at d523094. Active: milestone 00, next item: m00-01. Note: SECOND_BRA
 - 12:48 DONE m00-04: multi-turn PASS via `node spike/02-multiturn.mjs` (codeword recalled across 3 turns). Bonus: .clinerules auto-loaded from cwd — secretary persona appeared without us injecting it.
 - 12:48 STARTED m00-05: resume across process restart (script A plants codeword and exits; script B resumes)
 - 12:49 DONE m00-05: resume PASS via rehydration (readMessages + initialMessages); plain send across restart = session_not_found. DECISION: app-side rehydration is the primary continuity path.
+- 12:51 STARTED m00-06: approval flow — editor tool with autoApprove:false, approval resolved asynchronously from a separate code path
+- 13:01 DONE m00-06: approval PASS — editor tool paused on requestToolApproval, resolved externally 3s later, file written. request.input carries the path (feeds m00-09 guard). Tool names: editor/bash/fetch/search.
