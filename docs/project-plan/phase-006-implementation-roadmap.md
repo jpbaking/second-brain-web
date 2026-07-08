@@ -3,12 +3,48 @@
 This is the suggested order for an implementation agent. Each step should leave
 the app runnable or at least structurally coherent.
 
-## Milestone 0 - Scaffold
+## Milestone 0 - Cline SDK Feasibility Spike
+
+This comes before any web scaffolding. The SDK is a framework for building
+agents, not a headless Cline extension, and several plan assumptions rest on
+capabilities that must be proven, not assumed. Build a throwaway Node script
+(no web app, no database) that runs an SDK agent against a copy of the real
+vault and answers:
+
+- Multi-turn conversation: can one agent session carry a conversation across
+  several user turns?
+- Session resume: can a session be resumed after the Node process restarts,
+  with working context intact? If not, app-side rehydration becomes the
+  primary continuity path, not a fallback.
+- Approval flow: with `autoApprove: false` (or the current equivalent), how
+  does the consent request surface programmatically, and can it be answered
+  asynchronously from another code path (as a web route would)?
+- Rules loading: does the agent honour `.clinerules/` in the workspace, or
+  must the app inject rule files into the system prompt?
+- Workflows: does sending `/inbox.md` as a message trigger the workflow, or
+  must the app expand the workflow file into the task prompt?
+- Skills: are `.cline/skills/` loaded at all?
+- Tool policy: can a middleware/policy guard reliably refuse non-catalog
+  writes under `library/` across every file-mutating tool?
+- Package reality: confirm actual package names and entry points
+  (`@cline/core`, `@cline/agents`, `@cline/llms`, `@cline/shared` vs the
+  `ClineCore`/`@cline/sdk` names used earlier in these docs).
+
+Deliverable:
+
+- A short findings document recording each answer, committed to
+  `docs/spike/`, plus the throwaway script.
+- A go/adjust decision: which continuity path is primary, how rules and
+  workflows are loaded, and how the `library/` guard is implemented.
+
+## Milestone 0A - Scaffold
 
 Create the app skeleton:
 
 - Package manager and Node version.
-- Web framework.
+- Long-lived Node web service (for example Fastify) plus a Vite/React front
+  end. Agent runs, SSE streams, the writer lock, and git operations live in
+  the long-lived process, outside HTTP request lifecycles.
 - TypeScript.
 - Lint/format/test commands.
 - Basic app shell.
@@ -131,15 +167,18 @@ Deliverable:
 
 ## Milestone 5A - Cline SDK Chat
 
-Before chat implementation, verify the current Cline SDK provider APIs and
-event APIs against official docs. Also verify SDK persistence, checkpoint, and
-session-resume capabilities.
+Build on the Milestone 0 spike findings: they decide whether SDK resume or
+app-side rehydration is the primary continuity path, and how rules and
+workflow files are loaded.
 
 Implement:
 
 - Chat session list.
 - Chat message view.
 - Backend agent session creation.
+- Rules injection and workflow-file expansion per the spike findings.
+- Mandatory tool-policy guard refusing non-catalog writes under `library/`,
+  with tests. This ships with the first agent integration, not later.
 - SDK-backed session persistence/checkpoint reference.
 - Provider profile selection for new sessions.
 - Streaming assistant responses.
@@ -155,21 +194,23 @@ Deliverable:
 - Owner can chat with the agent in the vault workspace and return to the
   session without losing working context.
 
-## Milestone 5B - Context Compaction
+## Milestone 5B - Manual Context Compaction
 
 Implement:
 
 - Manual compact action per chat session.
-- Automatic compaction trigger based on token/context pressure when SDK data is
-  available, otherwise transcript size thresholds.
 - Stored compaction summaries.
 - Session timeline events for compaction.
 - Rehydration path from last checkpoint or compacted summary.
 
+Deferred post-MVP: automatic compaction triggers based on token/context
+pressure or transcript size. Design the summary format and timeline events so
+the automatic trigger bolts on without rework.
+
 Deliverable:
 
-- Long-running sessions can be compacted without losing task state, pending
-  approvals, vault status, or unfiled facts.
+- Long-running sessions can be manually compacted without losing task state,
+  pending approvals, vault status, or unfiled facts.
 
 ## Milestone 6 - Tool Approvals And Write Lock
 
@@ -236,13 +277,16 @@ Implement:
 - Download PDFs/Markdown.
 - Recent report shelf.
 - Optional pin/favourite metadata if cheap to implement.
-- Basic source coverage extraction from report links and Sources sections.
-- Source coverage panel for report detail pages.
+
+Deferred post-MVP: source coverage extraction from report links and Sources
+sections, and the source coverage panel on report detail pages. Reports carry
+their own citations inline, which covers the trust need at first ship. Keep
+provenance hooks (report path, generating session, vault commit) in the
+report metadata so coverage can be added cleanly.
 
 Deliverable:
 
 - Owner can browse generated reports without leaving the app.
-- Owner can inspect the memory/library sources behind a report when available.
 
 ## Milestone 9A - Follow-Up Queue
 
