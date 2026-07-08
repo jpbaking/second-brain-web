@@ -18,6 +18,22 @@ const coreMigrations: Migration[] = [
       )
     `,
   },
+  {
+    version: 2,
+    sql: `
+      CREATE TABLE sessions (
+        id TEXT PRIMARY KEY,
+        token_hash TEXT NOT NULL UNIQUE,
+        created_at TEXT NOT NULL,
+        last_used_at TEXT NOT NULL,
+        expires_at TEXT NOT NULL,
+        user_agent TEXT,
+        ip TEXT,
+        revoked_at TEXT
+      );
+      CREATE INDEX sessions_expires_at ON sessions (expires_at);
+    `,
+  },
 ]
 
 const sidecarMigrations: Migration[] = [

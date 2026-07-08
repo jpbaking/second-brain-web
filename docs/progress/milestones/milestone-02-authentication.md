@@ -17,7 +17,7 @@ Binding constraints:
   the web out (the host reset script is the recovery path). Log metadata only.
 - Never send the SSH private key or TOTP secret to the browser.
 
-- [ ] **m02-01** — Core-DB migration adds a `sessions` table (id, token hash,
+- [x] **m02-01** — Core-DB migration adds a `sessions` table (id, token hash,
       created/last-used/expiry timestamps, user-agent + IP for audit, revoked
       timestamp) and a session-store module (create, lookup-by-token, touch,
       revoke, revoke-all, purge-expired).
