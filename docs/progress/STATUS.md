@@ -17,10 +17,11 @@ Updated: 2026-07-08 (milestone 1 complete)
 
 ## Next step
 
-- m02-07: rate limiting — SQLite-backed failure counters per IP and account
-  with exponential backoff / temporary lock on repeated password or TOTP
-  failures; success resets; locks time-bounded. (m02-01..06 done through
-  logout.)
+- m02-08: resetting owner auth invalidates existing sessions — reset routine
+  revokes all sessions + pending challenges. (m02-01..07 done through rate
+  limiting; core schema v4.) Note: the reset CLI (server/src/cli/reset-auth.ts)
+  writes owner.json but does NOT yet touch the DB — wire session/challenge
+  revocation there.
 
 ## Read before working
 

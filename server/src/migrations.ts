@@ -46,6 +46,17 @@ const coreMigrations: Migration[] = [
       CREATE INDEX pending_challenges_expires_at ON pending_challenges (expires_at);
     `,
   },
+  {
+    version: 4,
+    sql: `
+      CREATE TABLE login_throttle (
+        key TEXT PRIMARY KEY,
+        fail_count INTEGER NOT NULL DEFAULT 0,
+        locked_until TEXT,
+        updated_at TEXT NOT NULL
+      )
+    `,
+  },
 ]
 
 const sidecarMigrations: Migration[] = [

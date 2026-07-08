@@ -51,7 +51,7 @@ Binding constraints:
       and clears the cookie.
       Verify: `npm test --workspace server -- logout.test.ts` — after logout the
       session no longer authenticates and the response clears the cookie.
-- [ ] **m02-07** — Rate limiting: SQLite-backed failure counters per IP and per
+- [x] **m02-07** — Rate limiting: SQLite-backed failure counters per IP and per
       account with exponential backoff / temporary lock on repeated password or
       TOTP failures; a success resets counters; locks are time-bounded.
       Verify: `npm test --workspace server -- rate-limit.test.ts` — repeated

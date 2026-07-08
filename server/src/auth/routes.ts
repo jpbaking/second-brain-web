@@ -8,6 +8,7 @@ import {
   findValidChallenge,
 } from './challenges.js'
 import { DEFAULT_SESSION_TTL_MS, createSession, findActiveSession, revokeSession } from './sessions.js'
+import { checkThrottle, clearFailures, recordFailure, throttleKeys } from './throttle.js'
 import {
   CHALLENGE_COOKIE,
   SESSION_COOKIE,
@@ -51,18 +52,26 @@ export function registerAuthRoutes (app: FastifyInstance, config: AppConfig): vo
     if (!isOwnerConfigured(config.dataDir)) {
       return await reply.code(503).send({ error: 'auth not configured' })
     }
-    if (!await verifyOwnerPassword(config.dataDir, password)) {
-      return await reply.code(401).send({ error: 'invalid credentials' })
-    }
 
+    const keys = throttleKeys(req.ip)
     const db = openCoreDb(config.dataDir)
     try {
+      const throttled = checkThrottle(db, keys)
+      if (throttled.locked) {
+        reply.header('retry-after', Math.ceil(throttled.retryAfterMs / 1000))
+        return await reply.code(429).send({ error: 'too many attempts' })
+      }
+      if (!await verifyOwnerPassword(config.dataDir, password)) {
+        recordFailure(db, keys)
+        return await reply.code(401).send({ error: 'invalid credentials' })
+      }
+      clearFailures(db, keys)
       const challenge = createChallenge(db)
       reply.setCookie(CHALLENGE_COOKIE, challenge.token, challengeCookieOptions(DEFAULT_CHALLENGE_TTL_MS / 1000))
+      return await reply.send({ challenge: true })
     } finally {
       db.close()
     }
-    return await reply.send({ challenge: true })
   })
 
   app.post('/api/auth/totp', async (req, reply) => {
@@ -78,8 +87,15 @@ export function registerAuthRoutes (app: FastifyInstance, config: AppConfig): vo
       return await reply.code(401).send({ error: 'no pending challenge' })
     }
 
+    const keys = throttleKeys(req.ip)
     const db = openCoreDb(config.dataDir)
     try {
+      const throttled = checkThrottle(db, keys)
+      if (throttled.locked) {
+        reply.header('retry-after', Math.ceil(throttled.retryAfterMs / 1000))
+        return await reply.code(429).send({ error: 'too many attempts' })
+      }
+
       const challengeId = findValidChallenge(db, challengeToken)
       if (challengeId === undefined) {
         reply.clearCookie(CHALLENGE_COOKIE, clearCookieOptions())
@@ -93,10 +109,12 @@ export function registerAuthRoutes (app: FastifyInstance, config: AppConfig): vo
         skewSteps: 1,
       })
       if (!valid) {
+        recordFailure(db, keys)
         return await reply.code(401).send({ error: 'invalid code' })
       }
 
       // Success: consume the challenge and start a session.
+      clearFailures(db, keys)
       deleteChallenge(db, challengeId)
       const session = createSession(db, {
         userAgent: req.headers['user-agent'] ?? null,
