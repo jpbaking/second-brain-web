@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import { Login } from './Login.js'
+import { VaultSettings } from './VaultSettings.js'
 
 interface SystemStatus {
   dataDir: {
@@ -30,6 +31,7 @@ interface DatabaseStatus {
 export function App () {
   const path = typeof window === 'undefined' ? '/' : window.location.pathname
   if (path === '/login') return <Login />
+  if (path === '/vault') return <VaultSettings />
   return <StatusPage />
 }
 

@@ -57,7 +57,7 @@ Binding constraints:
       Verify: `npm test --workspace server -- vault-status-api.test.ts` — unauth
       401; after configuring a local remote, POST sync returns ready + commit;
       GET status shows branch/commit/detection.
-- [ ] **m03-07** — Vault settings page (`web/`): guarded screen to set remote
+- [x] **m03-07** — Vault settings page (`web/`): guarded screen to set remote
       URL + branch + display name, trigger a sync, and show clone state, branch,
       and commit; error states; responsive.
       Verify: prod build served by Fastify; authenticated headless load of the

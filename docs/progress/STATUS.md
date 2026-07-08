@@ -19,10 +19,11 @@ Updated: 2026-07-08 (milestone 2 complete)
 
 ## Next step
 
-- m03-07: vault settings page (`web/`) — guarded screen to set remote URL +
-  branch + display name, trigger sync, show clone state/branch/commit; needs
-  authenticated headless verification + 390×844 screenshot. (m03-01..06 done:
-  config store+API, git runner, clone/pull sync, detection, sync/status API.)
+- m03-08: milestone deliverable check — owner configures a repo and clones it
+  into the data root; UI shows branch + commit. End-to-end with a running
+  server against a local remote; full lint/test/build; no secrets/checkouts
+  tracked. (m03-01..07 done: config store+API, git runner, clone/pull, detect,
+  sync/status API, vault settings page.)
 
 ## Read before working
 
