@@ -34,3 +34,4 @@ Tree clean at d523094. Active: milestone 00, next item: m00-01. Note: SECOND_BRA
 - 13:22 DONE m00-10: findings complete, verdict GO, 9 binding decisions recorded. STATUS points to milestone 0A.
 
 ## 13:22 — session end. Milestone 00 complete (10/10). Next: create milestone-0a-scaffold checklist and begin scaffold. Note: spike ran fully on local LM Studio, no cloud key needed.
+- 13:23 repair: removed stray spike/library/ (editor tool once resolved a relative path against process cwd, not session cwd — recorded in findings m00-09 as a guard requirement).

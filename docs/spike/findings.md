@@ -275,6 +275,12 @@ where planned.**
 - Production notes for the real implementation (milestone 5A):
   - `input.path` arrives **sometimes relative, sometimes absolute** —
     normalise against the workspace root before matching.
+  - Observed once across reruns: a relative `editor` path was resolved
+    against the **node process working directory**, not the session `cwd`
+    (a stray `spike/library/2026/catalog.md` appeared outside the test
+    vault). The app server's process cwd will differ from the vault
+    checkout, so the guard and the app must resolve tool paths against the
+    session's `cwd` explicitly and treat escapes as denials.
   - The `bash` command check here is a crude regex; the real guard needs a
     proper command classifier or a conservative deny-with-reason default,
     plus unit tests.
