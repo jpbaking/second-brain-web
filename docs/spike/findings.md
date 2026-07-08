@@ -82,7 +82,47 @@ guard in our own approval callback. Live verification is m00-07/m00-08/m00-09.
 
 ## m00-02 — Scaffold spike project
 
-Not yet answered.
+Answered: 2026-07-08. **PASS — ClineCore runs a real session against local
+LM Studio.**
+
+- `spike/` is a private ESM Node project with `@cline/core`, `@cline/llms`,
+  `@cline/shared` at 0.0.58 installed.
+- No cloud API key was available, but LM Studio is running on
+  `localhost:1234`; per the principal, the spike model is
+  **`ornith-1.0-9b@q4_k_m`** (a reasoning model — give it token headroom,
+  its answer text follows a thinking block).
+- `spike/01-hello.mjs` verification: session completed with agent events
+  `iteration_start, content_start, usage, content_end, iteration_end, done`;
+  assistant text captured from events; persisted messages file contains the
+  assistant reply (thinking + text content blocks).
+
+Gotchas learned (these will matter for the app):
+
+- **`baseUrl` must include `/v1`** for the `lmstudio` provider
+  (`http://localhost:1234/v1`). With a bare host:port the session fails fast
+  with "Model returned empty response".
+- Required config fields beyond provider/model: `systemPrompt`, `cwd`,
+  `enableTools`, `enableSpawnAgent`, `enableAgentTeams`.
+- Sessions persist under `~/.cline/data/sessions/<sessionId>/` as
+  `<id>.json` (manifest) + `<id>.messages.json`; the messages file flushes
+  shortly after completion, not instantly.
+- Event stream shape: `cline.subscribe(cb)` delivers envelopes
+  `{ type: "status" | "agent_event" | "chunk" | "session_snapshot" | "ended",
+  payload: { sessionId, ... } }`; assistant deltas are `agent_event`s whose
+  inner event carries `text` (cumulative across content events — dedupe when
+  rendering).
+- `providerId: "lmstudio"` is first-class; `getAllProviders()` lists ~50
+  providers including `anthropic`, `openai-native`, `openai-compatible`,
+  `ollama`, `openrouter`, `bedrock`, `vertex`.
+
+Bonus discovery from the package's type surface (to verify live in later
+items): `@cline/core` exports rules/workflows/skills config machinery whose
+**search paths match the vault exactly** — rules from `<ws>/.clinerules` (and
+`AGENTS.md`, `.cline/rules`), workflows from `<ws>/.clinerules/workflows`,
+hooks from `<ws>/.clinerules/hooks` — plus `SqliteSessionStore`, checkpoint
+`restore()`, and compaction strategy settings. The plan's pessimism about
+extension features may be substantially wrong in our favour; m00-07/08 will
+prove whether they load automatically.
 
 ## m00-03 — Test vault
 

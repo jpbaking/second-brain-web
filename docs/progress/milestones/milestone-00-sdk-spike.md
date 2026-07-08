@@ -16,7 +16,7 @@ variable (ask the principal via STATUS.md if unset). Never commit it; add
       `@cline/llms`, `@cline/shared` vs older `ClineCore`/`@cline/sdk`
       naming), Node version requirement, and how an `Agent` is constructed.
       Verify: findings file exists and names the packages you will install.
-- [ ] **m00-02** — Scaffold `spike/` as a Node 22+ project and install the
+- [x] **m00-02** — Scaffold `spike/` as a Node 22+ project and install the
       SDK packages identified in m00-01.
       Verify: a hello-world script constructs an Agent and gets one model
       response.

@@ -1,0 +1,19 @@
+{
+  "name": "second-brain-web-spike",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "module",
+  "private": "true",
+  "dependencies": {
+    "@cline/core": "^0.0.58",
+    "@cline/llms": "^0.0.58",
+    "@cline/shared": "^0.0.58"
+  }
+}
