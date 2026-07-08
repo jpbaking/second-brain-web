@@ -19,7 +19,7 @@ Binding constraints:
   concrete signals now (git status, health, lock, inbox backlog, recent
   reports).
 
-- [ ] **m04-01** — Git status module: read branch, HEAD commit (hash + subject),
+- [x] **m04-01** — Git status module: read branch, HEAD commit (hash + subject),
       clean/dirty state, and changed files from the workspace via the git
       runner.
       Verify: `npm test --workspace server -- git-status.test.ts` — a clean temp
