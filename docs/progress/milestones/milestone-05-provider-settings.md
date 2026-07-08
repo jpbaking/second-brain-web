@@ -24,7 +24,7 @@ Binding constraints (hard rules):
       Verify: `npm test --workspace server -- secrets.test.ts` — encrypt→decrypt
       round-trips; ciphertext differs per call (random nonce); a wrong key fails
       to decrypt; a missing key yields a clear "not configured" signal.
-- [ ] **m05-02** — Provider profile store: core migration adds a
+- [x] **m05-02** — Provider profile store: core migration adds a
       `provider_profiles` table (id, display name, provider id, model id, base
       url, headers json, config json, enabled, is_default, key ciphertext, key
       last4, timestamps) and a store (list, get, create, update, delete, set

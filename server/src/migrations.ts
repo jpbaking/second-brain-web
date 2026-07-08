@@ -85,6 +85,26 @@ const coreMigrations: Migration[] = [
       )
     `,
   },
+  {
+    version: 7,
+    sql: `
+      CREATE TABLE provider_profiles (
+        id TEXT PRIMARY KEY,
+        display_name TEXT NOT NULL,
+        provider_id TEXT NOT NULL,
+        model_id TEXT NOT NULL,
+        base_url TEXT,
+        headers_json TEXT,
+        config_json TEXT,
+        enabled INTEGER NOT NULL DEFAULT 1,
+        is_default INTEGER NOT NULL DEFAULT 0,
+        key_ciphertext TEXT,
+        key_last4 TEXT,
+        created_at TEXT NOT NULL,
+        updated_at TEXT NOT NULL
+      )
+    `,
+  },
 ]
 
 const sidecarMigrations: Migration[] = [

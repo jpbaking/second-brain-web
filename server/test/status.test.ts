@@ -39,7 +39,7 @@ describe('status endpoint', () => {
       exists: true,
       state: 'ready',
       integrity: 'ok',
-      schemaVersion: 6
+      schemaVersion: 7
     })
     expect(body.databases.sidecar).toMatchObject({
       exists: true,
