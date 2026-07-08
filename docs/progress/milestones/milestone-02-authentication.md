@@ -24,7 +24,7 @@ Binding constraints:
       Verify: `npm test --workspace server -- sessions.test.ts` — create then
       lookup returns an active session; expired and revoked lookups return
       none; revoke-all clears; token is stored hashed, not in the clear.
-- [ ] **m02-02** — Owner credential module loads `auth/owner.json`, verifies a
+- [x] **m02-02** — Owner credential module loads `auth/owner.json`, verifies a
       password with Argon2id `verify`, and reports whether owner auth is
       configured.
       Verify: `npm test --workspace server -- owner.test.ts` — the password

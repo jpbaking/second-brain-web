@@ -17,9 +17,9 @@ Updated: 2026-07-08 (milestone 1 complete)
 
 ## Next step
 
-- m02-02: owner credential module — load `auth/owner.json`, verify password
-  with Argon2id `verify`, report whether owner auth is configured. (m02-01
-  done: sessions table + store; core schema now v2.)
+- m02-03: TOTP verification (base32 decode + HMAC-SHA1, RFC 6238) with a small
+  clock-skew window, checked against the stored secret. (m02-01/02 done:
+  sessions store; owner credential module.)
 
 ## Read before working
 
