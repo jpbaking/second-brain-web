@@ -21,20 +21,16 @@ Updated: 2026-07-08 (milestone 4A complete)
   navigable with no horizontal overflow at 390 and 1280. Web routes:
   `/`=command centre, `/chat`, `/follow-ups`, `/reports`, `/vault`, `/login`,
   `/setup`.
-- Active milestone: **Milestone 5 — Provider Settings** (checklist not yet
-  created).
+- Active milestone: **Milestone 5 — Provider Settings**.
+- Checklist: `docs/progress/milestones/milestone-05-provider-settings.md`
 - App runnable: yes, with `SECOND_BRAIN_WEB_DATA_DIR` pointing at a private
   `0700` data root. Core DB schema at v6.
 
 ## Next step
 
-- Create `docs/progress/milestones/milestone-05-provider-settings.md` from
-  Milestone 5 in the roadmap (provider profile storage, API key entry + secret
-  storage encrypted with `SECOND_BRAIN_WEB_SECRETS_KEY`, OpenAI-compatible base
-  URL, provider test action, default profile, session snapshot). One checkbox
-  per step with a verification command. Then begin m05-01. NOTE: secret storage
-  must use `SECOND_BRAIN_WEB_SECRETS_KEY` — never the session secret, never
-  plaintext (hard rule).
+- m05-01: secrets crypto module — AES-256-GCM keyed by a scrypt-derived key from
+  `SECOND_BRAIN_WEB_SECRETS_KEY`; fail closed when unset. This is the encryption
+  layer every provider key uses.
 
 ## Read before working
 

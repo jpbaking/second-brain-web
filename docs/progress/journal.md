@@ -150,3 +150,7 @@ Milestone 4 complete (7/7) at 3b9be1f; user pushed to origin. Proceeding to Mile
 - 23:07 DONE m4a-04: responsive content layouts verified. Headless scrollWidth<=innerWidth at 390px for / /vault /reports /chat (all 390=390 OK) even with a long ssh:// remote URL configured; desktop 1280 for / and /vault also OK (1265<=1280). Layouts already responsive via kit classes (grid-2->1fr @768, inputs max-width) + mobile nav CSS; no code change needed. Full lint(0 err)/test(97)/build pass. Committing.
 - 23:08 STARTED m4a-05: milestone deliverable check — navigate every core screen at 390 and 1280, confirm shell nav + heading + no overflow
 - 23:08 DONE m4a-05: milestone deliverable check — all 5 core screens (/, /chat, /follow-ups, /reports, /vault) navigable at 390px AND 1280px, each with its heading, the shell nav present, and no horizontal scroll. Full lint(0 err)/test(97)/build pass. Milestone 4A complete (5/5). Committing.
+
+## 2026-07-08 23:39 — session continues
+Milestone 4A complete (5/5) at 93f3270; user pushed to origin (per earlier note). Proceeding to Milestone 5 (Provider Settings): create checklist, then m05-01.
+- 23:40 DONE progress: milestone-05-provider-settings checklist created (7 items; secret storage keyed by SECOND_BRAIN_WEB_SECRETS_KEY per hard rule). STATUS points at m05-01. Committing.
