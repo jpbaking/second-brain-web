@@ -7,14 +7,13 @@ Updated: 2026-07-08 (milestone 00 complete)
 - Phase: pre-implementation, **SDK feasibility spike DONE — verdict GO**.
   All findings and binding decisions: `docs/spike/findings.md` (m00-10
   section has the decision list).
-- Active milestone: none — next is **Milestone 0A — Scaffold**.
+- Active milestone: **Milestone 0A — Scaffold**.
+- Checklist: `docs/progress/milestones/milestone-0a-scaffold.md`
 - App runnable: n/a (no app code yet; `spike/` is throwaway).
 
 ## Next step
 
-- Create `docs/progress/milestones/milestone-0a-scaffold.md` from the
-  Milestone 0A section of the roadmap (one checkbox per step, each with a
-  verification command), then start its first item.
+- First unchecked item in the milestone 0A checklist (m0a-01).
 
 ## Read before working
 
