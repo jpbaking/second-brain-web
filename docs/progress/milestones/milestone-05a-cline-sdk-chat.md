@@ -95,7 +95,7 @@ in `/v1`.
       Verify: `npm test --workspace server -- workflow.test.ts` — listing finds
       seeded workflow files; expansion produces the exact prefixed message;
       unknown workflow yields a clear error (no send).
-- [ ] **m5a-09** — Chat web UI: `/chat` becomes a real screen — session list,
+- [x] **m5a-09** — Chat web UI: `/chat` becomes a real screen — session list,
       message view (streaming via SSE), a composer, provider selection for a new
       session, an approval prompt affordance, and resume after browser refresh.
       Wired into the shell nav (replaces the stub).

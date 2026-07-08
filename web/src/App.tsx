@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { Login } from './Login.js'
 import { VaultSettings } from './VaultSettings.js'
 import { ProviderSettings } from './ProviderSettings.js'
+import { ChatScreen } from './ChatScreen.js'
 import { CommandCenter } from './CommandCenter.js'
 import { Stub } from './Stub.js'
 import { AppShell } from './AppShell.js'
@@ -50,8 +51,7 @@ function routedScreen (path: string) {
   switch (path) {
     case '/vault': return <VaultSettings />
     case '/providers': return <ProviderSettings />
-    case '/chat':
-      return <Stub title='Chat' blurb='Talk to your executive secretary and run vault workflows.' />
+    case '/chat': return <ChatScreen />
     case '/follow-ups':
       return <Stub title='Follow-up queue' blurb='Reminders and commitments the secretary is keeping watch on.' />
     case '/reports':

@@ -38,19 +38,17 @@ Updated: 2026-07-09 (milestone 5 complete)
 
 ## Next step
 
-- m5a-09: chat web UI — turn the `/chat` stub into a real screen: session list,
-  message view (streaming via the SSE `GET /events` endpoint with
-  `EventSource`/fetch-stream + Last-Event-ID resume), a composer, provider
-  selection for a new session (GET /api/providers), an approval prompt
-  affordance (approval_request event → approve/deny buttons → POST
-  /approvals/:toolCallId), and a workflow shortcut bar (GET /api/chat/workflows
-  → POST /commands). Backend endpoints all exist (m5a-05..08). Verify: prod
-  build + authenticated headless load + SSE reconnect after reload + 390×844
-  screenshot. Note: CSP/EventSource — same-origin fetch stream is fine.
-- Live-model dependency: **m5a-10 (deliverable check) needs LM Studio reachable
-  at `http://127.0.0.1:1234/v1` or a configured cloud provider key.** LM Studio
-  was NOT reachable when 5A started; m5a-01..09 build/verify offline with a fake
-  runner (`AgentRunner` interface), so this only blocks the final live check.
+- **m5a-10 (LIVE deliverable check) — BLOCKED pending the principal.** All of
+  5A's offline work (m5a-01..09) is done, built, and tested. The final check
+  needs a reachable model: **start LM Studio at `http://127.0.0.1:1234/v1`
+  (the seeded default profile already points there) OR configure a cloud
+  provider key in Provider settings.** Then verify end-to-end: send a message →
+  streamed reply; an approval round-trips; a `library/` non-catalog write is
+  refused; the session survives a browser refresh AND a server restart
+  (rehydration); no provider key leaks to the browser or logs.
+- When unblocked, run m5a-10 with the running server, capture evidence in the
+  journal, full lint/test/build, and grep to prove no key leaked. Then Milestone
+  5A is complete → proceed to Milestone 5B (Manual Context Compaction).
 - SDK notes (m5a-01): provider ids map anthropic→anthropic, openai→openai-native,
   openai-compatible→openai-compatible; model config is `CoreModelConfig`
   (providerId/modelId/apiKey/baseUrl/headers); storage root is set via
