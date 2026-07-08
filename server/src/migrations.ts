@@ -105,6 +105,31 @@ const coreMigrations: Migration[] = [
       )
     `,
   },
+  {
+    version: 8,
+    sql: `
+      CREATE TABLE chat_sessions (
+        id TEXT PRIMARY KEY,
+        title TEXT NOT NULL,
+        provider_profile_id TEXT,
+        sdk_session_id TEXT,
+        status TEXT NOT NULL DEFAULT 'active',
+        created_at TEXT NOT NULL,
+        updated_at TEXT NOT NULL
+      );
+      CREATE INDEX chat_sessions_sdk_session_id ON chat_sessions (sdk_session_id);
+      CREATE TABLE chat_events (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        session_id TEXT NOT NULL REFERENCES chat_sessions (id) ON DELETE CASCADE,
+        seq INTEGER NOT NULL,
+        type TEXT NOT NULL,
+        payload_json TEXT,
+        created_at TEXT NOT NULL,
+        UNIQUE (session_id, seq)
+      );
+      CREATE INDEX chat_events_session_seq ON chat_events (session_id, seq);
+    `,
+  },
 ]
 
 const sidecarMigrations: Migration[] = [

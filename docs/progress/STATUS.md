@@ -34,17 +34,16 @@ Updated: 2026-07-09 (milestone 5 complete)
 - Checklist: `docs/progress/milestones/milestone-05a-cline-sdk-chat.md`
   (milestone 5 checklist complete).
 - App runnable: yes, with `SECOND_BRAIN_WEB_DATA_DIR` pointing at a private
-  `0700` data root. Core DB schema at v7.
+  `0700` data root. Core DB schema at v8 (adds `chat_sessions`, `chat_events`).
 
 ## Next step
 
-- m5a-03: chat session + event store — core migration adds `chat_sessions`
-  (id, title, provider profile id, sdk_session_id, status, timestamps) and
-  append-only `chat_events` (id, session id, seq, type, payload json,
-  created_at); store with create/list/get/rename/close, append-event,
-  read-events-since (replay), and the chatSession↔sdkSessionId mapping. Offline
-  unit tests (monotonic seq, replay, mapping round-trip). This will take the
-  core schema to v8.
+- m5a-04: agent session backend — create a session (capture the m05 provider
+  snapshot at start, cwd = vault checkout) and resume via rehydration
+  (`readMessages` + `initialMessages`) using the injected `AgentRunner`; persist
+  the sdkSessionId mapping (m5a-03 store) and turn events. Offline tests with a
+  fake runner (new-session persistence; resume-after-restart rehydration;
+  snapshot captured at start not mutated by a later profile edit).
 - Live-model dependency: **m5a-10 (deliverable check) needs LM Studio reachable
   at `http://127.0.0.1:1234/v1` or a configured cloud provider key.** LM Studio
   was NOT reachable when 5A started; m5a-01..09 build/verify offline with a fake

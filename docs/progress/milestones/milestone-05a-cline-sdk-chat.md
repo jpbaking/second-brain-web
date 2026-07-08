@@ -52,7 +52,7 @@ in `/v1`.
       write to a `library/` original is denied (relative AND absolute paths);
       catalog edit + shell `mv` allowed; an unknown tool is not silently
       auto-approved.
-- [ ] **m5a-03** — Chat session + event store: core migration adds
+- [x] **m5a-03** — Chat session + event store: core migration adds
       `chat_sessions` (id, title, provider profile id, sdk_session_id, status,
       timestamps) and `chat_events` (append-only: id, session id, seq, type,
       payload json, created_at); a store with create/list/get/rename/close,
