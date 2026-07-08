@@ -47,7 +47,7 @@ Binding constraints (hard rules):
       Verify: `npm test --workspace server -- provider-test.test.ts` — against a
       local stub OpenAI-compatible server the test reports success; an
       unreachable/401 endpoint reports a clear failure.
-- [ ] **m05-05** — Default profile + session snapshot: resolve the default
+- [x] **m05-05** — Default profile + session snapshot: resolve the default
       profile and produce an in-memory provider snapshot (decrypted key, model,
       base URL, headers) that a chat session captures at start.
       Verify: `npm test --workspace server -- provider-snapshot.test.ts` —

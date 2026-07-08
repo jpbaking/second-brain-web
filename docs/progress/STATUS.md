@@ -28,11 +28,12 @@ Updated: 2026-07-08 (milestone 4A complete)
 
 ## Next step
 
-- m05-05: default profile + session snapshot — resolve the enabled default
-  profile and build an in-memory provider snapshot (decrypted key, model, base
-  URL, headers) a chat session captures at start; no snapshot when no
-  default/enabled profile exists. (m05-01..04 done: secrets crypto, provider
-  store, CRUD endpoints, test action; core schema v7.)
+- m05-06: provider settings page (`web/`) — guarded `/providers` screen to list
+  profiles (masked), add/edit (provider type, model, key, base URL), set
+  default, test, and delete; wired into the shell nav. Verify via prod build +
+  authenticated headless load + 390×844 screenshot. (m05-01..05 done: secrets
+  crypto, provider store, CRUD endpoints, test action, default snapshot;
+  core schema v7.)
 
 ## Read before working
 
