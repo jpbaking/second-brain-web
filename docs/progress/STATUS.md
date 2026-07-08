@@ -10,17 +10,15 @@ Updated: 2026-07-08 (milestone 1 complete)
 - **Milestone 1 — Host Bootstrap Scripts: COMPLETE (6/6).** reset-auth.sh +
   generate-deploy-key.sh produce owner creds + ed25519 deploy key into the
   private data root; shared validation in `scripts/lib/data-root.sh`.
-- Active milestone: **Milestone 2 — Authentication** (checklist not yet
-  created).
+- Active milestone: **Milestone 2 — Authentication**.
+- Checklist: `docs/progress/milestones/milestone-02-authentication.md`
 - App runnable: yes, with `SECOND_BRAIN_WEB_DATA_DIR` pointing at a private
   `0700` data root.
 
 ## Next step
 
-- Create `docs/progress/milestones/milestone-02-authentication.md` by copying
-  Milestone 2's steps from the roadmap (login page, password verify, TOTP
-  challenge, server-side sessions, logout, route guards, rate limiting), one
-  checkbox each with a verification command. Then begin m02-01.
+- m02-01: core-DB `sessions` table migration + session-store module (create,
+  lookup-by-token, touch, revoke, revoke-all, purge-expired; hashed token).
 
 ## Read before working
 
