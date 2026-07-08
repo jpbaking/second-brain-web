@@ -32,7 +32,7 @@ Binding constraints (hard rules):
       Verify: `npm test --workspace server -- provider-store.test.ts` — CRUD
       round-trips; the API key is persisted only as ciphertext + last4 (no
       plaintext in the row); setting a default clears the previous default.
-- [ ] **m05-03** — Provider CRUD endpoints: guarded `GET /api/providers` (list,
+- [x] **m05-03** — Provider CRUD endpoints: guarded `GET /api/providers` (list,
       masked, never the key), `POST` (create; encrypts the key),
       `PUT /api/providers/:id`, `DELETE /api/providers/:id`, and
       `POST /api/providers/:id/default`.

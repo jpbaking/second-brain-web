@@ -17,6 +17,8 @@ export interface AppConfig {
   host: string
   port: number
   dataDir: string
+  /** Provider-key encryption key (SECOND_BRAIN_WEB_SECRETS_KEY); may be unset. */
+  secretsKey: string | undefined
 }
 
 export class ConfigError extends Error {}
@@ -53,6 +55,7 @@ export function loadConfig (env: NodeJS.ProcessEnv = process.env): AppConfig {
     host: env.SECOND_BRAIN_WEB_HOST ?? '127.0.0.1',
     port,
     dataDir: resolved,
+    secretsKey: env.SECOND_BRAIN_WEB_SECRETS_KEY,
   }
 }
 
