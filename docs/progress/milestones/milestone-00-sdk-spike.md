@@ -10,7 +10,7 @@ Provider API key: expect it in the `SECOND_BRAIN_SPIKE_API_KEY` environment
 variable (ask the principal via STATUS.md if unset). Never commit it; add
 `spike/.env*` to `.gitignore` in m00-01.
 
-- [ ] **m00-01** — Read current Cline SDK docs (<https://docs.cline.bot/sdk/overview>,
+- [x] **m00-01** — Read current Cline SDK docs (<https://docs.cline.bot/sdk/overview>,
       tools, building-an-agent guides). Record in `docs/spike/findings.md`:
       actual package names and entry points (`@cline/core`, `@cline/agents`,
       `@cline/llms`, `@cline/shared` vs older `ClineCore`/`@cline/sdk`
