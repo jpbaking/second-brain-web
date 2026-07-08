@@ -43,7 +43,7 @@ Binding constraints:
       Verify: `npm test --workspace server -- vault-health-api.test.ts` — unauth
       401; authed run against a seeded workspace returns the parsed health and
       updates status `lastHealth`.
-- [ ] **m04-05** — Command-center data model + guarded `GET /api/command-center`
+- [x] **m04-05** — Command-center data model + guarded `GET /api/command-center`
       aggregating git status, last health, active lock, inbox backlog count, and
       recent reports (reminders/commitments deferred as empty).
       Verify: `npm test --workspace server -- command-center.test.ts` — unauth

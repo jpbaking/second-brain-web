@@ -5,6 +5,7 @@ import { readVaultConfig, vaultWorkspacePath, writeVaultConfig } from './config.
 import { detectVault } from './detect.js'
 import { syncVault } from './sync.js'
 import { runHealthCheck } from './health.js'
+import { readCommandCenter } from './command-center.js'
 import type { AppConfig } from '../config.js'
 import type { VaultConfigPatch } from './config.js'
 import type { FastifyInstance } from 'fastify'
@@ -78,6 +79,15 @@ export function registerVaultRoutes (app: FastifyInstance, config: AppConfig): v
       const result = await syncVault(db, config.dataDir)
       const detection = detectVault(vaultWorkspacePath(config.dataDir))
       return { ...result, detection }
+    } finally {
+      db.close()
+    }
+  })
+
+  app.get('/api/command-center', async () => {
+    const db = openCoreDb(config.dataDir)
+    try {
+      return await readCommandCenter(db, config.dataDir)
     } finally {
       db.close()
     }
