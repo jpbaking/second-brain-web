@@ -17,10 +17,10 @@ Updated: 2026-07-08 (milestone 1 complete)
 
 ## Next step
 
-- m02-09: login page (`web/`) — lazyway-kit two-step login (password then
-  TOTP) driving the endpoints, error states, mobile responsive. Needs headless
-  verification + 390×844 screenshot. (m02-01..08 done: full server-side auth
-  incl. reset invalidation.)
+- m02-10: milestone deliverable check — app inaccessible without password +
+  TOTP, existing sessions invalidated on reset. End-to-end with a running
+  server; full lint/test/build; no secrets tracked. (m02-01..09 done: full
+  server-side auth + web login page.)
 
 ## Read before working
 

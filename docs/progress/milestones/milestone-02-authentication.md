@@ -60,7 +60,7 @@ Binding constraints:
       reset routine revokes all sessions and pending challenges.
       Verify: `npm test --workspace server -- reset-invalidation.test.ts` — a
       session valid before reset no longer authenticates afterwards.
-- [ ] **m02-09** — Login page (`web/`): lazyway-kit-styled two-step login
+- [x] **m02-09** — Login page (`web/`): lazyway-kit-styled two-step login
       (password then TOTP) driving the endpoints, with error states, responsive
       on mobile.
       Verify: prod build served by Fastify; headless load of `/login` shows the

@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import { Login } from './Login.js'
 
 interface SystemStatus {
   dataDir: {
@@ -27,6 +28,12 @@ interface DatabaseStatus {
 }
 
 export function App () {
+  const path = typeof window === 'undefined' ? '/' : window.location.pathname
+  if (path === '/login') return <Login />
+  return <StatusPage />
+}
+
+function StatusPage () {
   const [status, setStatus] = useState<SystemStatus | null>(null)
   const [error, setError] = useState<string | null>(null)
 
