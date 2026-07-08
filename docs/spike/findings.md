@@ -145,7 +145,21 @@ Answered: 2026-07-08. **PASS.**
 
 ## m00-04 — Multi-turn conversation
 
-Not yet answered.
+Answered: 2026-07-08. **PASS.**
+
+- `spike/02-multiturn.mjs`: `start({ interactive: true, ... })` then two
+  `cline.send({ sessionId, prompt })` turns. A codeword planted in turn 1
+  was recalled verbatim in turn 2 and transformed (lowercased) in turn 3.
+- Turn boundaries are detectable from the event stream: the inner
+  `agent_event` of type `done` marks a completed turn. Assistant text
+  arrives cumulatively on inner events' `text` field (keep the last value
+  per turn).
+- **Accidental early answer to m00-07:** with `cwd` pointing at the test
+  vault, turn 1's reply was in-character as the vault's executive secretary
+  ("Filing codeword under `memory/topics/` — marked sensitive…") even though
+  our `systemPrompt` said plain "test assistant". The SDK evidently
+  discovered and applied `.clinerules/` from the workspace on its own.
+  m00-07 will isolate and confirm this.
 
 ## m00-05 — Resume across process restart
 

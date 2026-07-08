@@ -19,3 +19,5 @@ Tree clean at d523094. Active: milestone 00, next item: m00-01. Note: SECOND_BRA
 - 12:44 DONE m00-02: spike scaffolded, ClineCore session ran against LM Studio ornith-1.0-9b@q4_k_m (principal chose model mid-session). Key gotcha: lmstudio baseUrl needs /v1. Verified by `node spike/01-hello.mjs` -> assistant reply persisted. Bonus: SDK search paths natively include .clinerules layouts.
 - 12:45 STARTED m00-03: clone public second-brain template into spike/test-vault, seed dummy data, run health.py
 - 12:46 DONE m00-03: public template cloned to spike/test-vault (git-ignored), dummy dossier/project/original seeded per vault conventions; health.py reports healthy. Private vault untouched.
+- 12:47 STARTED m00-04: multi-turn test — codeword in turn 1, recall in turns 2 and 3 via cline.send
+- 12:48 DONE m00-04: multi-turn PASS via `node spike/02-multiturn.mjs` (codeword recalled across 3 turns). Bonus: .clinerules auto-loaded from cwd — secretary persona appeared without us injecting it.
