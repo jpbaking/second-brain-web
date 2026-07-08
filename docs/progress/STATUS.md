@@ -38,15 +38,19 @@ Updated: 2026-07-09 (milestone 5 complete)
 
 ## Next step
 
-- m5a-01: agent runner scaffold — add `@cline/core` to the server workspace; a
-  runner module maps a m05 `ProviderSnapshot` → SDK provider config (lmstudio
-  baseUrl forced to `…/v1`, key passed through, never logged) and sets an
-  explicit session data root under the app data dir, with the live SDK behind a
-  small injectable interface so the rest of 5A unit-tests without a model.
+- m5a-02: the mandatory `library/` tool-policy guard — a path normaliser +
+  command classifier + explicit `toolPolicies` that DENY editor/write and shell
+  mutations targeting non-catalog paths under `library/`, ALLOW catalog edits +
+  shell `mv`, and never blanket auto-approve unlisted tools (mirrors spike
+  m00-09). The SDK accepts `toolPolicies` on `ClineCore.create` options.
 - Live-model dependency: **m5a-10 (deliverable check) needs LM Studio reachable
   at `http://127.0.0.1:1234/v1` or a configured cloud provider key.** LM Studio
-  was NOT reachable when 5A started; m5a-01..09 are built/verified offline with
-  a fake runner, so this only blocks the final live check.
+  was NOT reachable when 5A started; m5a-01..09 build/verify offline with a fake
+  runner (`AgentRunner` interface), so this only blocks the final live check.
+- SDK notes (m5a-01): provider ids map anthropic→anthropic, openai→openai-native,
+  openai-compatible→openai-compatible; model config is `CoreModelConfig`
+  (providerId/modelId/apiKey/baseUrl/headers); storage root is set via
+  `CLINE_DATA_DIR` → `<dataDir>/sessions`. `@cline/core` 0.0.58 installed.
 
 ## Read before working
 

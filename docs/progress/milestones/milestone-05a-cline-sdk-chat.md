@@ -33,7 +33,7 @@ Node ≥ 22. Surface used: `ClineCore.create` → `start`/`send`/`subscribe`/
 (`resolveDefaultSnapshot` / `resolveSnapshot`); LM Studio baseUrl **must** end
 in `/v1`.
 
-- [ ] **m5a-01** — Agent runner scaffold: add `@cline/core` to the server
+- [x] **m5a-01** — Agent runner scaffold: add `@cline/core` to the server
       workspace; a runner module maps a m05 `ProviderSnapshot` to the SDK
       provider config (anthropic / openai / openai-compatible → the right
       provider id + baseUrl, lmstudio baseUrl forced to end in `/v1`) and sets
