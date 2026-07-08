@@ -15,7 +15,7 @@ design kit.
       dev-proxied to the server; production build served by Fastify static.
       Verify: `npm run dev` serves a page that reaches a `/api/health`
       endpoint on the server.
-- [ ] **m0a-03** — Design kit: vendor `jpbaking/lazyway-io-design` under
+- [x] **m0a-03** — Design kit: vendor `jpbaking/lazyway-io-design` under
       `web/public/design/`, load `styles.css` then `components.css`
       globally, copy favicons, first screen styled with kit classes only.
       Verify: served HTML links both stylesheets in order and the page uses

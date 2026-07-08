@@ -1,0 +1,17 @@
+:root {
+  --font-sans: "IBM Plex Sans", system-ui, -apple-system, Segoe UI, sans-serif;
+  --font-mono: "IBM Plex Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+  --ui-h1: 32px;
+  --ui-h2: 24px;
+  --ui-body: 16px;
+  --ui-small: 14px;
+  --ui-kicker: 13px;
+  --fw-regular: 400;
+  --fw-medium: 500;
+  --fw-semibold: 600;
+  --fw-bold: 700;
+  --track-tight: -0.02em;
+  --track-snug: -0.015em;
+  --track-kicker: 0.18em;
+  --track-label: 0.08em;
+}

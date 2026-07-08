@@ -1,0 +1,20 @@
+:root {
+  --space-1: 8px;
+  --space-2: 12px;
+  --space-3: 18px;
+  --space-4: 26px;
+  --space-5: 40px;
+  --space-6: 48px;
+  --space-7: 64px;
+  --space-8: 88px;
+  --radius-sm: 6px;
+  --radius-md: 8px;
+  --radius-lg: 10px;
+  --radius-xl: 13px;
+  --border-hair: 1px;
+  --border-accent: 3px;
+  --shadow-card: 0 1px 3px rgba(22,24,46,0.08);
+  --shadow-pop: 0 8px 30px rgba(11,22,96,0.12);
+  --mesh-opacity-light: 0.11;
+  --mesh-opacity-dark: 0.16;
+}

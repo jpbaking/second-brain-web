@@ -1,0 +1,36 @@
+/* Chart color tokens — validated palette, do not eyeball-edit.
+   Categorical slots passed all six dataviz checks on white (#FFFFFF):
+   lightness band, chroma floor, CVD separation (worst adjacent ΔE 37.0,
+   target ≥12), contrast ≥3:1. Re-validate if you change any slot.
+   RULE: assign --chart-1..5 in order, never skip, never cycle.
+   A 6th series folds into "Other" (--chart-other). */
+:root {
+  --chart-1: #3B5BDB; /* blue   (brand-adjacent) */
+  --chart-2: #0E9F6E; /* green  */
+  --chart-3: #C97714; /* amber  (deepened brand amber — clears 3:1) */
+  --chart-4: #7048B6; /* violet */
+  --chart-5: #C13D6E; /* rose   */
+  --chart-other: #8B90A8; /* catch-all "Other" bucket only — not a slot */
+
+  /* Sequential ramp — one hue (brand blue family), light→dark.
+     For magnitude only (heatmaps, intensity). seq-1 ≈ near zero. */
+  --chart-seq-1: #E4E9FB;
+  --chart-seq-2: #C3CDF5;
+  --chart-seq-3: #9AAAEC;
+  --chart-seq-4: #6D82E3;
+  --chart-seq-5: #3B5BDB;
+  --chart-seq-6: #2740AE;
+  --chart-seq-7: #16277D;
+
+  /* Diverging — blue ↔ rose with a neutral gray midpoint. */
+  --chart-div-neg: #3B5BDB;
+  --chart-div-mid: #EFF0F5;
+  --chart-div-pos: #C13D6E;
+
+  /* Chart chrome — recessive, never louder than the data. */
+  --chart-grid: #EDEEF6;   /* hairline gridlines, solid, 1px */
+  --chart-axis: #C9CCDC;   /* baseline / axis line */
+  --chart-label: var(--muted);
+  --chart-value: var(--ink);
+  --chart-area-opacity: 0.1; /* area fill wash */
+}

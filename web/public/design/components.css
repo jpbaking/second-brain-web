@@ -1,0 +1,1510 @@
+/* ==========================================================================
+   lazyway-io-design — components.css
+   Ready-made component classes for the lazyway.io look.
+   Requires the tokens: link /design/styles.css BEFORE this file.
+
+   Copy-paste HTML for every class lives in README.md §Components.
+   Rules (non-negotiable):
+     1. One amber element per page (kicker OR active nav link OR one highlight).
+     2. Backgrounds are white or solid brand blue only. No gradients.
+     3. Mono uppercase is for labels/kickers/tags/nav/dates only — never body text.
+     4. Never hardcode a color/size/shadow — these classes already use the tokens.
+
+   CONTENTS
+     1. Base (reset, body, container, headings)
+     2. Kicker, headline, lead
+     3. Buttons
+     4. Nav bar
+     5. Footer
+     6. Hero
+     7. Section + section head
+     8. Grids
+     9. Cards + tiles
+    10. Stat (KPI) tiles
+    11. Tags + badges
+    12. Tables (full table + key/value data list)
+    13. Forms (inputs, select, checkbox, switch, field rows)
+    14. Alerts
+    15. Modal (works with design/components.js)
+    16. Tabs (works with design/components.js)
+    17. Date picker + time picker (works with design/components.js)
+    18. Progress + meter
+    19. Prose (long-form article text)
+    20. Post card (blog list item)
+    21. Chart chrome (works with design/charts.js)
+    22. Utilities
+    23. App shell — single-function app page (the url-shortener pattern)
+    24. Spinner
+   ========================================================================== */
+
+/* --------------------------------------------------------------------------
+   1. Base
+   -------------------------------------------------------------------------- */
+*, *::before, *::after { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  font-family: var(--font-sans);
+  font-size: var(--ui-body);
+  line-height: 1.6;
+  color: var(--ink);
+  background: var(--base);
+  -webkit-font-smoothing: antialiased;
+}
+
+img, svg { vertical-align: middle; }
+
+/* The hidden attribute always wins, even over display:flex/grid classes. */
+[hidden] { display: none !important; }
+
+.container {
+  max-width: 1100px;
+  margin-inline: auto;
+  padding-inline: clamp(18px, 4vw, 40px);
+}
+
+.container-narrow {
+  max-width: 720px;
+  margin-inline: auto;
+  padding-inline: clamp(18px, 4vw, 40px);
+}
+
+h1, h2, h3, h4 {
+  font-weight: var(--fw-bold);
+  letter-spacing: var(--track-snug);
+  color: var(--ink);
+  margin: 0 0 var(--space-2);
+}
+
+/* Visible focus for keyboard users, on every interactive element. */
+:focus-visible {
+  outline: 2px solid var(--brand-blue);
+  outline-offset: 2px;
+}
+
+/* --------------------------------------------------------------------------
+   2. Kicker, headline, lead
+   The kicker (amber mono eyebrow with a short rule) is usually THE one
+   amber element on the page.
+   -------------------------------------------------------------------------- */
+.kicker {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  font-family: var(--font-mono);
+  font-size: var(--ui-kicker);
+  font-weight: var(--fw-medium);
+  letter-spacing: var(--track-kicker);
+  text-transform: uppercase;
+  color: var(--accent-amber);
+  margin-bottom: var(--space-3);
+}
+
+.kicker::before {
+  content: "";
+  display: block;
+  width: 28px;
+  height: 3px;
+  background: var(--accent-amber);
+  flex-shrink: 0;
+}
+
+/* Kicker without the rule bar (e.g. inside section heads). */
+.kicker-plain { margin-bottom: var(--space-1); }
+.kicker-plain::before { display: none; }
+
+.headline {
+  font-size: clamp(2rem, 6vw, 3.25rem);
+  font-weight: var(--fw-bold);
+  letter-spacing: var(--track-tight);
+  line-height: 1.08;
+  color: var(--ink);
+  margin: 0 0 var(--space-3);
+}
+
+.lead {
+  font-size: clamp(1rem, 2vw, 1.2rem);
+  color: var(--muted);
+  line-height: 1.6;
+  max-width: 54ch;
+  margin: 0 0 var(--space-4);
+}
+
+/* --------------------------------------------------------------------------
+   3. Buttons
+   Mono uppercase, modest radius. Primary = solid blue. Secondary = outlined.
+   Quiet = borderless. Danger = solid red, for destructive actions only.
+   -------------------------------------------------------------------------- */
+.btn {
+  display: inline-block;
+  font-family: var(--font-mono);
+  font-size: var(--ui-kicker);
+  font-weight: var(--fw-medium);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  text-decoration: none;
+  text-align: center;
+  padding: 13px 24px;
+  border-radius: var(--radius-md);
+  border: 1px solid transparent;
+  background: none;
+  cursor: pointer;
+  line-height: 1;
+  transition: background 0.15s, border-color 0.15s, color 0.15s;
+}
+
+.btn-primary { background: var(--brand-blue); color: #fff; }
+.btn-primary:hover { background: var(--brand-blue-deep); }
+
+.btn-secondary { color: var(--brand-blue); border-color: var(--brand-blue); }
+.btn-secondary:hover { background: var(--surface); }
+
+.btn-quiet { color: var(--muted); }
+.btn-quiet:hover { color: var(--brand-blue); }
+
+.btn-danger { background: var(--danger); color: #fff; }
+.btn-danger:hover { filter: brightness(0.88); }
+
+.btn-sm { padding: 8px 14px; }
+
+.btn:disabled, .btn[aria-disabled="true"] {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+/* On a blue background use these instead. */
+.btn-on-blue { background: #fff; color: var(--brand-blue); }
+.btn-on-blue:hover { background: var(--surface); }
+.btn-outline-on-blue { color: #fff; border-color: var(--border-on-blue); }
+.btn-outline-on-blue:hover { border-color: #fff; }
+
+/* --------------------------------------------------------------------------
+   4. Nav bar
+   Sticky white header, brand mark left, mono uppercase links right.
+   Give exactly ONE link class="nav-link active" (that is the page's amber).
+   -------------------------------------------------------------------------- */
+.nav-wrap {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background: var(--base);
+  border-bottom: 1px solid var(--line);
+}
+
+.nav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 64px;
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  text-decoration: none;
+  color: var(--ink);
+}
+
+.brand img, .brand svg { width: 34px; height: 34px; }
+
+.brand-name {
+  font-weight: var(--fw-semibold);
+  font-size: var(--ui-body);
+  letter-spacing: -0.01em;
+}
+
+.nav-links {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  gap: var(--space-1);
+}
+
+.nav-link {
+  font-family: var(--font-mono);
+  font-size: var(--ui-kicker);
+  letter-spacing: var(--track-label);
+  text-transform: uppercase;
+  text-decoration: none;
+  color: var(--muted);
+  padding: 6px 10px;
+  border-bottom: 3px solid transparent;
+  transition: color 0.15s, border-color 0.15s;
+}
+
+.nav-link:hover { color: var(--ink); }
+
+.nav-link.active {
+  color: var(--brand-blue);
+  border-bottom-color: var(--accent-amber);
+}
+
+/* --------------------------------------------------------------------------
+   5. Footer
+   Solid brand blue, inverted mark, dim white text.
+   -------------------------------------------------------------------------- */
+.footer {
+  background: var(--surface-invert);
+  color: var(--text-on-blue-dim);
+  margin-top: var(--space-8);
+  padding-block: var(--space-6);
+}
+
+.footer-inner {
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+  flex-wrap: wrap;
+}
+
+.foot-brand {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.foot-brand img, .foot-brand svg { width: 28px; height: 28px; }
+
+.foot-name {
+  color: var(--text-on-blue);
+  font-weight: var(--fw-semibold);
+  font-size: var(--ui-small);
+}
+
+.foot-links {
+  display: flex;
+  gap: var(--space-3);
+  margin-left: auto;
+}
+
+.foot-link {
+  font-family: var(--font-mono);
+  font-size: var(--ui-kicker);
+  letter-spacing: var(--track-label);
+  text-transform: uppercase;
+  color: var(--text-on-blue-dim);
+  text-decoration: none;
+}
+
+.foot-link:hover { color: var(--text-on-blue); }
+
+.foot-copy {
+  width: 100%;
+  font-family: var(--font-mono);
+  font-size: var(--ui-kicker);
+  letter-spacing: var(--track-label);
+  color: var(--text-on-blue-dim);
+}
+
+/* --------------------------------------------------------------------------
+   6. Hero
+   White hero with the mesh motif at low opacity behind the right side.
+   The .kicker inside it is the page's one amber element.
+   -------------------------------------------------------------------------- */
+.hero {
+  position: relative;
+  overflow: hidden;
+  background: var(--base);
+  padding-block: clamp(56px, 10vw, 112px);
+  border-bottom: 1px solid var(--line);
+}
+
+.hero-mesh {
+  position: absolute;
+  top: 50%;
+  right: -8%;
+  transform: translateY(-50%);
+  width: 55%;
+  max-width: 680px;
+  opacity: 0.09;
+  pointer-events: none;
+  user-select: none;
+}
+
+.hero-inner { position: relative; z-index: 1; }
+
+.hero .headline { max-width: 16ch; }
+
+.hero-actions {
+  display: flex;
+  gap: var(--space-3);
+  flex-wrap: wrap;
+}
+
+/* Blue variant: solid brand blue with the white mesh. */
+.hero-invert { background: var(--surface-invert); border-bottom: none; }
+.hero-invert .headline { color: var(--text-on-blue); }
+.hero-invert .lead { color: var(--text-on-blue-dim); }
+.hero-invert .hero-mesh { opacity: var(--mesh-opacity-dark); }
+
+@media (max-width: 640px) {
+  .hero-mesh { width: 120%; right: -20%; opacity: 0.06; }
+}
+
+/* --------------------------------------------------------------------------
+   7. Section + section head
+   The standard rhythm of a page: sections with a bordered head row —
+   mono kicker, title, optional "All →" link pushed right.
+   -------------------------------------------------------------------------- */
+.section { padding-block: var(--space-6); }
+
+.section-head {
+  display: flex;
+  align-items: baseline;
+  gap: var(--space-3);
+  margin-bottom: var(--space-5);
+  border-bottom: 1px solid var(--line);
+  padding-bottom: var(--space-3);
+  flex-wrap: wrap;
+}
+
+.section-kicker {
+  font-family: var(--font-mono);
+  font-size: var(--ui-kicker);
+  letter-spacing: var(--track-kicker);
+  text-transform: uppercase;
+  color: var(--muted); /* amber only if it's the page's one amber */
+}
+
+.section-title {
+  font-size: var(--ui-h2);
+  font-weight: var(--fw-bold);
+  letter-spacing: var(--track-snug);
+  margin: 0;
+  color: var(--ink);
+}
+
+.section-all {
+  margin-left: auto;
+  font-family: var(--font-mono);
+  font-size: var(--ui-kicker);
+  letter-spacing: var(--track-label);
+  text-transform: uppercase;
+  color: var(--muted);
+  text-decoration: none;
+  transition: color 0.15s;
+}
+
+.section-all:hover { color: var(--brand-blue); }
+
+/* Alternate (tinted) section band. */
+.section-alt {
+  background: var(--surface);
+  border-block: 1px solid var(--line);
+}
+
+/* --------------------------------------------------------------------------
+   8. Grids
+   -------------------------------------------------------------------------- */
+.grid-2, .grid-3, .grid-4 { display: grid; gap: var(--space-4); }
+.grid-2 { grid-template-columns: repeat(2, 1fr); }
+.grid-3 { grid-template-columns: repeat(3, 1fr); }
+.grid-4 { grid-template-columns: repeat(4, 1fr); }
+
+/* Auto-fitting grids for cards/stats. */
+.grid-cards { display: grid; gap: var(--space-4); grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); }
+.grid-stats { display: grid; gap: var(--space-3); grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); }
+
+@media (max-width: 768px) {
+  .grid-2, .grid-3, .grid-4 { grid-template-columns: 1fr; }
+}
+
+/* --------------------------------------------------------------------------
+   9. Cards + tiles
+   White card, hairline border, barely-there shadow. A tile is a card
+   that links somewhere (whole surface clickable).
+   -------------------------------------------------------------------------- */
+.card {
+  background: var(--base);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-card);
+  padding: var(--space-4);
+}
+
+.card-title {
+  font-size: 1.1rem;
+  font-weight: var(--fw-semibold);
+  letter-spacing: -0.01em;
+  margin: 0 0 var(--space-1);
+}
+
+.card-desc {
+  font-size: var(--ui-small);
+  color: var(--muted);
+  line-height: 1.5;
+  margin: 0;
+}
+
+.card-meta {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  flex-wrap: wrap;
+  margin-bottom: var(--space-2);
+}
+
+a.tile {
+  display: block;
+  text-decoration: none;
+  color: inherit;
+  transition: border-color 0.15s;
+}
+
+a.tile:hover { border-color: var(--brand-blue); }
+a.tile:hover .card-title { color: var(--brand-blue); }
+
+/* --------------------------------------------------------------------------
+   10. Stat (KPI) tiles
+   Top-bordered stat card. Default top border is blue; add .stat-highlight
+   to AT MOST ONE stat — that amber is then the page's one amber element.
+   -------------------------------------------------------------------------- */
+.stat {
+  background: var(--base);
+  border: 1px solid var(--line);
+  border-top: 3px solid var(--brand-blue);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-card);
+  padding: var(--space-4);
+}
+
+.stat-value {
+  font-size: 2rem;
+  font-weight: var(--fw-bold);
+  letter-spacing: var(--track-tight);
+  color: var(--brand-blue);
+  line-height: 1;
+  margin-bottom: 6px;
+}
+
+.stat-label {
+  font-family: var(--font-mono);
+  font-size: var(--ui-kicker);
+  letter-spacing: var(--track-label);
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.stat-highlight { border-top-color: var(--accent-amber); }
+.stat-highlight .stat-value { color: var(--accent-amber); }
+
+/* Optional signed delta under the value. */
+.stat-delta {
+  font-family: var(--font-mono);
+  font-size: var(--ui-kicker);
+  letter-spacing: var(--track-label);
+  margin-top: 4px;
+  color: var(--muted);
+}
+.stat-delta.up { color: var(--success); }
+.stat-delta.down { color: var(--danger); }
+
+/* --------------------------------------------------------------------------
+   11. Tags + badges
+   Tag = mono uppercase chip on tinted surface. Badge = status dot + label.
+   -------------------------------------------------------------------------- */
+.tag {
+  display: inline-block;
+  font-family: var(--font-mono);
+  font-size: var(--ui-kicker);
+  letter-spacing: var(--track-label);
+  text-transform: uppercase;
+  color: var(--muted);
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  padding: 3px 10px;
+}
+
+button.tag { cursor: pointer; transition: background 0.12s, color 0.12s, border-color 0.12s; }
+button.tag:hover { border-color: var(--brand-blue); color: var(--brand-blue); }
+button.tag.active { background: var(--brand-blue); border-color: var(--brand-blue); color: #fff; }
+
+.tag-row { display: flex; gap: 6px; flex-wrap: wrap; }
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  font-family: var(--font-mono);
+  font-size: var(--ui-kicker);
+  letter-spacing: var(--track-label);
+  text-transform: uppercase;
+  color: var(--ink);
+}
+
+.badge::before {
+  content: "";
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--status-planned);
+}
+
+.badge-live::before { background: var(--status-live); }
+.badge-pilot::before { background: var(--status-pilot); }
+.badge-shipped::before { background: var(--status-shipped); }
+.badge-planned::before { background: var(--status-planned); }
+.badge-danger::before { background: var(--danger); }
+
+/* --------------------------------------------------------------------------
+   12. Tables
+   .table — a real data table: mono uppercase headers, hairline rows,
+   zebra on even rows. Wrap in .table-wrap for horizontal scroll on mobile.
+   .data-list — the key/value list (the checkip pattern).
+   -------------------------------------------------------------------------- */
+.table-wrap { overflow-x: auto; }
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: var(--ui-small);
+}
+
+.table th {
+  font-family: var(--font-mono);
+  font-size: var(--ui-kicker);
+  font-weight: var(--fw-medium);
+  letter-spacing: var(--track-label);
+  text-transform: uppercase;
+  text-align: left;
+  color: var(--muted);
+  border-bottom: 1px solid var(--line);
+  padding: var(--space-1) var(--space-2);
+  white-space: nowrap;
+}
+
+.table td {
+  padding: var(--space-1) var(--space-2);
+  border-bottom: 1px solid var(--line);
+  vertical-align: top;
+}
+
+.table tr:nth-child(even) td { background: var(--surface); }
+
+.table .num { text-align: right; font-variant-numeric: tabular-nums; }
+.table th.num { text-align: right; }
+
+.table tbody tr:hover td { background: var(--amber-surface); }
+
+/* Key/value data list. */
+.data-list { border-top: 1px solid var(--line); }
+
+.data-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: var(--space-3);
+  padding: 10px 0;
+  border-bottom: 1px solid var(--line);
+}
+
+.data-key {
+  font-family: var(--font-mono);
+  font-size: var(--ui-kicker);
+  font-weight: var(--fw-medium);
+  letter-spacing: var(--track-label);
+  text-transform: uppercase;
+  color: var(--muted);
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.data-value {
+  font-size: var(--ui-small);
+  color: var(--ink);
+  text-align: right;
+  word-break: break-all;
+}
+
+/* --------------------------------------------------------------------------
+   13. Forms
+   Labels are mono uppercase; inputs are white with hairline borders that
+   turn blue on focus. Wrap each label+input pair in .field.
+   -------------------------------------------------------------------------- */
+.field { display: flex; flex-direction: column; gap: 6px; margin-bottom: var(--space-3); }
+
+.label {
+  font-family: var(--font-mono);
+  font-size: var(--ui-kicker);
+  font-weight: var(--fw-medium);
+  letter-spacing: var(--track-label);
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.input, .select, .textarea {
+  font-family: var(--font-sans);
+  font-size: var(--ui-small);
+  color: var(--ink);
+  background: var(--base);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  padding: 9px 12px;
+  outline: none;
+  transition: border-color 0.15s;
+  width: 100%;
+}
+
+.input:focus, .select:focus, .textarea:focus { border-color: var(--brand-blue); }
+.input::placeholder, .textarea::placeholder { color: var(--muted); }
+.input[disabled], .select[disabled], .textarea[disabled] { background: var(--surface); cursor: not-allowed; }
+
+.input-error { border-color: var(--danger); }
+.field-error {
+  font-size: var(--ui-kicker);
+  color: var(--danger);
+}
+.field-hint {
+  font-size: var(--ui-kicker);
+  color: var(--muted);
+}
+
+.textarea { min-height: 96px; resize: vertical; }
+
+.select {
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%2361657F' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 12px center;
+  padding-right: 32px;
+}
+
+/* Search input (mono text, tinted surface) — the blog-search pattern. */
+.search-input {
+  width: 100%;
+  font-family: var(--font-mono);
+  font-size: var(--ui-small);
+  color: var(--ink);
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  padding: 8px 14px;
+  outline: none;
+  transition: border-color 0.15s;
+}
+.search-input:focus { border-color: var(--brand-blue); }
+.search-input::placeholder { color: var(--muted); }
+
+.checkbox, .radio {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  font-size: var(--ui-small);
+  color: var(--ink);
+  cursor: pointer;
+}
+
+.checkbox input, .radio input {
+  width: 16px;
+  height: 16px;
+  accent-color: var(--brand-blue);
+  margin: 0;
+}
+
+/* Switch — a checkbox styled as a toggle. */
+.switch { display: inline-flex; align-items: center; gap: 10px; cursor: pointer; font-size: var(--ui-small); }
+.switch input { position: absolute; opacity: 0; width: 0; height: 0; }
+.switch-track {
+  width: 36px; height: 20px;
+  background: var(--line);
+  border-radius: 10px; /* the one permitted full round: it's a control, not a card */
+  position: relative;
+  transition: background 0.15s;
+  flex-shrink: 0;
+}
+.switch-track::after {
+  content: "";
+  position: absolute;
+  top: 2px; left: 2px;
+  width: 16px; height: 16px;
+  background: #fff;
+  border-radius: 50%;
+  box-shadow: var(--shadow-card);
+  transition: transform 0.15s;
+}
+.switch input:checked + .switch-track { background: var(--brand-blue); }
+.switch input:checked + .switch-track::after { transform: translateX(16px); }
+.switch input:focus-visible + .switch-track { outline: 2px solid var(--brand-blue); outline-offset: 2px; }
+
+.form-actions { display: flex; gap: var(--space-2); margin-top: var(--space-4); }
+
+/* --------------------------------------------------------------------------
+   14. Alerts
+   Tinted band with a 3px colored left rule. Never use amber .alert-warn
+   on a page that already has its amber element — prefer info/success/danger.
+   -------------------------------------------------------------------------- */
+.alert {
+  display: flex;
+  gap: var(--space-2);
+  align-items: baseline;
+  font-size: var(--ui-small);
+  line-height: 1.5;
+  color: var(--ink);
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-left: 3px solid var(--brand-blue);
+  border-radius: var(--radius-sm);
+  padding: var(--space-2) var(--space-3);
+  margin-block: var(--space-3);
+}
+
+.alert-title {
+  font-family: var(--font-mono);
+  font-size: var(--ui-kicker);
+  font-weight: var(--fw-medium);
+  letter-spacing: var(--track-label);
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.alert-info { border-left-color: var(--brand-blue); }
+.alert-info .alert-title { color: var(--brand-blue); }
+.alert-success { background: var(--success-surface); border-left-color: var(--success); }
+.alert-success .alert-title { color: var(--success); }
+.alert-warn { background: var(--amber-surface); border-left-color: var(--accent-amber); }
+.alert-warn .alert-title { color: var(--accent-amber-deep); }
+.alert-danger { background: var(--danger-surface); border-left-color: var(--danger); }
+.alert-danger .alert-title { color: var(--danger); }
+
+/* --------------------------------------------------------------------------
+   15. Modal
+   Native <dialog class="modal">. Open with data-modal-open="#id" on any
+   button (design/components.js wires it), or dialog.showModal() yourself.
+   -------------------------------------------------------------------------- */
+.modal {
+  border: 1px solid var(--line);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-pop);
+  padding: 0;
+  width: min(520px, calc(100vw - 40px));
+  color: var(--ink);
+}
+
+.modal::backdrop { background: rgba(22, 24, 46, 0.45); }
+
+.modal-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+  padding: var(--space-3) var(--space-4);
+  border-bottom: 1px solid var(--line);
+}
+
+.modal-title {
+  font-size: 1.1rem;
+  font-weight: var(--fw-semibold);
+  margin: 0;
+}
+
+.modal-close {
+  font-family: var(--font-mono);
+  font-size: var(--ui-kicker);
+  letter-spacing: var(--track-label);
+  text-transform: uppercase;
+  color: var(--muted);
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 4px 6px;
+}
+.modal-close:hover { color: var(--ink); }
+
+.modal-body { padding: var(--space-4); font-size: var(--ui-small); line-height: 1.6; }
+.modal-body > :first-child { margin-top: 0; }
+.modal-body > :last-child { margin-bottom: 0; }
+
+.modal-foot {
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--space-2);
+  padding: var(--space-3) var(--space-4);
+  border-top: 1px solid var(--line);
+  background: var(--surface);
+  border-radius: 0 0 var(--radius-xl) var(--radius-xl);
+}
+
+/* --------------------------------------------------------------------------
+   16. Tabs
+   <div class="tabs" data-tabs> with .tab buttons + .tab-panel sections.
+   components.js toggles .active / [hidden].
+   -------------------------------------------------------------------------- */
+.tab-list {
+  display: flex;
+  gap: var(--space-1);
+  border-bottom: 1px solid var(--line);
+}
+
+.tab {
+  font-family: var(--font-mono);
+  font-size: var(--ui-kicker);
+  letter-spacing: var(--track-label);
+  text-transform: uppercase;
+  color: var(--muted);
+  background: none;
+  border: none;
+  border-bottom: 3px solid transparent;
+  padding: 8px 12px;
+  margin-bottom: -1px;
+  cursor: pointer;
+  transition: color 0.15s, border-color 0.15s;
+}
+
+.tab:hover { color: var(--ink); }
+.tab.active { color: var(--brand-blue); border-bottom-color: var(--brand-blue); }
+
+.tab-panel { padding-block: var(--space-3); }
+
+/* --------------------------------------------------------------------------
+   17. Date picker + time picker
+   Popover panels rendered by components.js next to
+   <input class="input" data-datepicker> / <input class="input" data-timepicker>.
+   -------------------------------------------------------------------------- */
+.picker-pop {
+  position: absolute;
+  z-index: 200;
+  background: var(--base);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-pop);
+  padding: var(--space-2);
+  width: 268px;
+}
+
+.picker-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 4px 4px 10px;
+}
+
+.picker-month {
+  font-family: var(--font-mono);
+  font-size: var(--ui-kicker);
+  font-weight: var(--fw-medium);
+  letter-spacing: var(--track-label);
+  text-transform: uppercase;
+  color: var(--ink);
+}
+
+.picker-nav {
+  font-family: var(--font-mono);
+  color: var(--muted);
+  background: none;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  width: 26px;
+  height: 26px;
+  cursor: pointer;
+  line-height: 1;
+}
+.picker-nav:hover { color: var(--brand-blue); border-color: var(--brand-blue); }
+
+.picker-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 2px;
+}
+
+.picker-dow {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: var(--track-label);
+  text-transform: uppercase;
+  color: var(--muted);
+  text-align: center;
+  padding: 4px 0;
+}
+
+.picker-day {
+  font-family: var(--font-mono);
+  font-size: var(--ui-kicker);
+  color: var(--ink);
+  background: none;
+  border: none;
+  border-radius: var(--radius-sm);
+  padding: 6px 0;
+  text-align: center;
+  cursor: pointer;
+  font-variant-numeric: tabular-nums;
+}
+
+.picker-day:hover { background: var(--surface); }
+.picker-day.other { color: var(--status-planned); }
+.picker-day.today { box-shadow: inset 0 0 0 1px var(--line); }
+.picker-day.selected { background: var(--brand-blue); color: #fff; }
+
+/* Time picker: two scroll columns (hours, minutes). */
+.picker-time { display: flex; gap: var(--space-1); width: 168px; }
+
+.picker-col {
+  flex: 1;
+  max-height: 208px;
+  overflow-y: auto;
+  scrollbar-width: thin;
+}
+
+.picker-opt {
+  display: block;
+  width: 100%;
+  font-family: var(--font-mono);
+  font-size: var(--ui-kicker);
+  font-variant-numeric: tabular-nums;
+  color: var(--ink);
+  background: none;
+  border: none;
+  border-radius: var(--radius-sm);
+  padding: 5px 0;
+  text-align: center;
+  cursor: pointer;
+}
+
+.picker-opt:hover { background: var(--surface); }
+.picker-opt.selected { background: var(--brand-blue); color: #fff; }
+
+/* --------------------------------------------------------------------------
+   18. Progress + meter
+   Flat track, flat fill. Track is a lighter step of the fill's own family.
+   -------------------------------------------------------------------------- */
+.progress {
+  height: 8px;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  overflow: hidden;
+}
+
+.progress-fill {
+  height: 100%;
+  background: var(--brand-blue);
+  transition: width 0.3s ease;
+}
+
+.progress-fill.warn { background: var(--accent-amber); }
+.progress-fill.danger { background: var(--danger); }
+
+.progress-label {
+  display: flex;
+  justify-content: space-between;
+  font-family: var(--font-mono);
+  font-size: var(--ui-kicker);
+  letter-spacing: var(--track-label);
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-bottom: 6px;
+}
+
+/* --------------------------------------------------------------------------
+   19. Prose — long-form article text (markdown output)
+   -------------------------------------------------------------------------- */
+.prose { max-width: 72ch; font-size: var(--ui-body); line-height: 1.7; color: var(--ink); }
+.prose h1, .prose h2, .prose h3, .prose h4 { font-family: var(--font-sans); font-weight: var(--fw-bold); letter-spacing: var(--track-snug); color: var(--ink); margin-top: 2.4em; margin-bottom: 0.6em; }
+.prose h1 { font-size: 2rem; }
+.prose h2 { font-size: 1.35rem; border-bottom: 1px solid var(--line); padding-bottom: var(--space-1); }
+.prose h3 { font-size: 1.1rem; }
+.prose > :first-child { margin-top: 0; }
+.prose p { margin-block: 1em; }
+.prose a { color: var(--brand-blue); text-decoration-color: var(--accent-amber); text-underline-offset: 3px; }
+.prose strong { font-weight: var(--fw-semibold); }
+.prose ul, .prose ol { padding-left: 1.6em; margin-block: 1em; }
+.prose li { margin-block: 0.3em; }
+.prose blockquote { border-left: 3px solid var(--accent-amber); margin-inline: 0; padding-left: var(--space-3); color: var(--muted); font-style: italic; }
+.prose code { font-family: var(--font-mono); font-size: 0.875em; background: var(--surface); padding: 2px 6px; border-radius: var(--radius-sm); color: var(--ink); }
+.prose pre { background: var(--ink); color: #E8EAF6; border-radius: var(--radius-md); padding: var(--space-4); overflow-x: auto; margin-block: 1.6em; }
+.prose pre code { background: none; padding: 0; color: inherit; font-size: 0.875rem; line-height: 1.6; }
+.prose hr { border: none; border-top: 1px solid var(--line); margin-block: var(--space-6); }
+.prose table { width: 100%; border-collapse: collapse; font-size: var(--ui-small); margin-block: 1.6em; }
+.prose th { font-family: var(--font-mono); font-size: var(--ui-kicker); letter-spacing: var(--track-label); text-transform: uppercase; text-align: left; color: var(--muted); border-bottom: 1px solid var(--line); padding: var(--space-1) var(--space-2); }
+.prose td { padding: var(--space-1) var(--space-2); border-bottom: 1px solid var(--line); vertical-align: top; }
+.prose tr:nth-child(even) td { background: var(--surface); }
+.prose img { max-width: 100%; border-radius: var(--radius-md); border: 1px solid var(--line); }
+
+/* --------------------------------------------------------------------------
+   20. Post card — blog list item
+   -------------------------------------------------------------------------- */
+.post-card {
+  padding-block: var(--space-4);
+  border-bottom: 1px solid var(--line);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+}
+
+.post-card[hidden] { display: none; }
+
+.post-meta { display: flex; align-items: center; gap: var(--space-2); flex-wrap: wrap; }
+
+.post-date {
+  font-family: var(--font-mono);
+  font-size: var(--ui-kicker);
+  letter-spacing: var(--track-label);
+  color: var(--muted);
+}
+
+.post-tag {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: var(--track-label);
+  text-transform: uppercase;
+  color: var(--muted);
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  padding: 2px 8px;
+}
+
+.post-title { margin: 0; font-size: 1.1rem; font-weight: var(--fw-semibold); letter-spacing: -0.01em; }
+.post-title a { color: var(--ink); text-decoration: none; }
+.post-title a:hover { color: var(--brand-blue); }
+
+.post-desc { margin: 0; font-size: var(--ui-small); color: var(--muted); line-height: 1.5; max-width: 64ch; }
+
+/* --------------------------------------------------------------------------
+   21. Chart chrome — used by design/charts.js
+   -------------------------------------------------------------------------- */
+.chart {
+  background: var(--base);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-card);
+  padding: var(--space-4);
+}
+
+.chart-title {
+  font-size: var(--ui-small);
+  font-weight: var(--fw-semibold);
+  color: var(--ink);
+  margin: 0 0 2px;
+}
+
+.chart-sub {
+  font-family: var(--font-mono);
+  font-size: var(--ui-kicker);
+  letter-spacing: var(--track-label);
+  text-transform: uppercase;
+  color: var(--muted);
+  margin: 0 0 var(--space-3);
+}
+
+.chart-legend {
+  display: flex;
+  gap: var(--space-3);
+  flex-wrap: wrap;
+  margin-top: var(--space-2);
+}
+
+.chart-key {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  font-size: var(--ui-kicker);
+  color: var(--muted);
+}
+
+.chart-key::before {
+  content: "";
+  width: 10px;
+  height: 10px;
+  border-radius: 3px;
+  background: var(--key-color, var(--chart-1));
+}
+
+.chart-tooltip {
+  position: fixed;
+  z-index: 300;
+  pointer-events: none;
+  background: var(--base);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  box-shadow: var(--shadow-pop);
+  padding: 8px 10px;
+  font-size: var(--ui-kicker);
+  color: var(--ink);
+  line-height: 1.5;
+  max-width: 240px;
+}
+
+.chart-tooltip .tt-label {
+  font-family: var(--font-mono);
+  letter-spacing: var(--track-label);
+  text-transform: uppercase;
+  color: var(--muted);
+  display: block;
+}
+
+.chart svg {
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+.chart svg text {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  fill: var(--chart-label);
+}
+
+.chart svg .tick-value { font-variant-numeric: tabular-nums; }
+
+/* Screen-reader-only data table charts.js appends after each SVG. */
+.sr-only {
+  position: absolute;
+  width: 1px; height: 1px;
+  padding: 0; margin: -1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* --------------------------------------------------------------------------
+   22. Utilities
+   -------------------------------------------------------------------------- */
+.mono-label {
+  font-family: var(--font-mono);
+  font-size: var(--ui-kicker);
+  letter-spacing: var(--track-label);
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.muted { color: var(--muted); }
+.center { text-align: center; }
+.mt-0 { margin-top: 0; }
+.mb-0 { margin-bottom: 0; }
+.stack-1 > * + * { margin-top: var(--space-1); }
+.stack-2 > * + * { margin-top: var(--space-2); }
+.stack-3 > * + * { margin-top: var(--space-3); }
+.stack-4 > * + * { margin-top: var(--space-4); }
+
+/* --------------------------------------------------------------------------
+   23. App shell — single-function app page (the url-shortener pattern)
+   One centred column: brand line + hero on a solid blue top band, then a
+   white "action card" holding the app's one job, then optional item list.
+   The .app-kicker's amber bar is the page's one amber element.
+
+   <body class="app-page">
+     <section class="app-hero">
+       <a class="app-brand" href="/"><img src="/design/assets/logo-mark.svg" alt="">
+         <span class="app-wordmark">tool.example.com</span></a>
+       <p class="app-kicker">Self-hosted URL shortener</p>
+       <h1 class="app-title">Short links, under your control.</h1>
+       <p class="app-tagline">Paste a long URL. Get a short one.</p>
+     </section>
+     <section class="action-card"> …the app… </section>
+     <footer class="app-foot">One quiet footer line.</footer>
+   </body>
+   -------------------------------------------------------------------------- */
+.app-page {
+  position: relative;
+  min-height: 100vh;
+  display: grid;
+  align-content: start;
+  justify-items: center;
+  gap: var(--space-5);
+  padding: clamp(var(--space-6), 9vh, var(--space-8)) var(--space-3) var(--space-4);
+  overflow: hidden;
+}
+
+/* Solid blue top band. */
+.app-page::before {
+  content: "";
+  position: absolute;
+  inset: 0 0 auto;
+  height: clamp(380px, 42vh, 500px);
+  background: var(--surface-invert);
+  z-index: -2;
+}
+
+/* Blue mesh, bottom-right of the white zone. (url() is relative to this
+   CSS file, so the asset resolves wherever /design/ is mounted.) */
+.app-page::after {
+  content: "";
+  position: absolute;
+  right: max(-18vw, -180px);
+  bottom: max(-18vw, -170px);
+  width: min(760px, 95vw);
+  aspect-ratio: 1;
+  background: url("assets/mesh-blue.svg") center / contain no-repeat;
+  opacity: var(--mesh-opacity-light);
+  z-index: -1;
+}
+
+.app-hero {
+  position: relative;
+  width: min(100%, 860px);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  color: var(--text-on-blue);
+}
+
+/* White mesh behind the hero, on the blue band. */
+.app-hero::before {
+  content: "";
+  position: absolute;
+  inset: -72px -32vw -96px;
+  background: url("assets/mesh-white.svg") center top / min(1060px, 150vw) auto no-repeat;
+  opacity: var(--mesh-opacity-dark);
+  pointer-events: none;
+  z-index: -1;
+}
+
+.app-brand {
+  width: fit-content;
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  color: inherit;
+  text-decoration: none;
+}
+
+.app-brand img, .app-brand svg {
+  width: var(--space-6);
+  height: var(--space-6);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-card);
+}
+
+.app-brand:hover .app-wordmark { text-decoration: underline; text-underline-offset: var(--space-1); }
+
+.app-wordmark {
+  color: var(--text-on-blue);
+  font-family: var(--font-mono);
+  font-size: var(--ui-kicker);
+  font-weight: var(--fw-semibold);
+  letter-spacing: var(--track-label);
+  text-transform: uppercase;
+  overflow-wrap: anywhere;
+}
+
+/* Kicker on blue: vertical amber bar on the left. */
+.app-kicker {
+  position: relative;
+  margin: var(--space-3) 0 0;
+  padding-left: var(--space-2);
+  color: var(--text-on-blue-dim);
+  font-family: var(--font-mono);
+  font-size: var(--ui-kicker);
+  font-weight: var(--fw-medium);
+  letter-spacing: var(--track-kicker);
+  text-transform: uppercase;
+}
+
+.app-kicker::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0.2em;
+  bottom: 0.2em;
+  width: 3px;
+  background: var(--accent-amber);
+}
+
+.app-title {
+  max-width: 620px;
+  margin: 0;
+  color: var(--text-on-blue);
+  font-size: clamp(var(--ui-h1), 5vw, 56px);
+  font-weight: var(--fw-bold);
+  letter-spacing: var(--track-tight);
+  line-height: 1.02;
+}
+
+.app-tagline {
+  max-width: 520px;
+  margin: 0;
+  color: var(--text-on-blue-dim);
+  font-size: var(--ui-body);
+}
+
+/* The action card — the app's one job lives here. */
+.action-card {
+  width: min(100%, 860px);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  padding: var(--space-5);
+  background: var(--base);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-pop);
+}
+
+/* Input + primary action side by side. */
+.input-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: var(--space-2);
+}
+
+/* Secondary options under the input: mono labels + small controls. */
+.option-row {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: var(--space-1);
+}
+
+/* Result block: divided from the form by a hairline. */
+.result-block {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  padding-top: var(--space-4);
+  border-top: 1px solid var(--line);
+}
+
+.result-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.result-link {
+  min-width: 0;
+  color: var(--brand-blue);
+  font-family: var(--font-mono);
+  font-size: var(--ui-body);
+  font-weight: var(--fw-semibold);
+  overflow-wrap: anywhere;
+  text-decoration: none;
+}
+
+.result-link:hover { text-decoration: underline; text-underline-offset: var(--space-1); }
+
+.copy-btn {
+  padding: var(--space-1) var(--space-2);
+  color: var(--brand-blue);
+  background: var(--base);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  font-size: var(--ui-small);
+  font-weight: var(--fw-medium);
+  white-space: nowrap;
+  transition: border-color 0.15s, color 0.15s, background 0.15s;
+}
+
+.copy-btn:hover {
+  color: var(--brand-blue-deep);
+  background: var(--surface);
+  border-color: var(--brand-blue);
+}
+
+/* List of previously created items, under the card. */
+.item-list {
+  width: min(100%, 860px);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  padding-top: var(--space-4);
+  border-top: 1px solid var(--line);
+}
+
+.item-list-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-2);
+}
+
+.item-count {
+  min-width: 28px;
+  padding: 2px var(--space-1);
+  color: var(--muted);
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  font-family: var(--font-mono);
+  font-size: var(--ui-kicker);
+  text-align: center;
+}
+
+.item-card {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: var(--space-2);
+  align-items: start;
+  padding: var(--space-3);
+  background: var(--base);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-card);
+}
+
+.item-title {
+  color: var(--brand-blue);
+  font-family: var(--font-mono);
+  font-size: var(--ui-small);
+  font-weight: var(--fw-semibold);
+  overflow-wrap: anywhere;
+  text-decoration: none;
+}
+
+.item-title:hover { text-decoration: underline; text-underline-offset: var(--space-1); }
+
+.item-sub {
+  color: var(--muted);
+  font-size: var(--ui-small);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  text-decoration: none;
+}
+
+.item-meta {
+  grid-column: 1 / -1;
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-1) var(--space-2);
+  color: var(--muted);
+  font-size: var(--ui-small);
+}
+
+.app-foot {
+  width: min(100%, 860px);
+  color: var(--muted);
+  font-family: var(--font-mono);
+  font-size: var(--ui-kicker);
+  letter-spacing: var(--track-label);
+  text-align: center;
+  text-transform: uppercase;
+}
+
+@media (max-width: 768px) {
+  .app-page { gap: var(--space-4); padding-top: var(--space-4); }
+  .app-page::before { height: 410px; }
+  .action-card { padding: var(--space-4); }
+}
+
+@media (max-width: 480px) {
+  .app-title { font-size: var(--ui-h1); }
+  .action-card { padding: var(--space-3); }
+  .input-row, .result-row, .item-card { grid-template-columns: 1fr; }
+}
+
+/* --------------------------------------------------------------------------
+   24. Spinner
+   <span class="spinner"></span> — inherits size from font; put inside a
+   primary button while loading (tracks stay legible on blue).
+   -------------------------------------------------------------------------- */
+.spinner {
+  display: inline-block;
+  width: var(--space-3);
+  height: var(--space-3);
+  border: 2px solid var(--spinner-track);
+  border-top-color: var(--text-on-blue);
+  border-radius: 50%;
+  animation: lw-spin 0.6s linear infinite;
+}
+
+.spinner-dark {
+  border-color: var(--line);
+  border-top-color: var(--brand-blue);
+}
+
+@keyframes lw-spin { to { transform: rotate(360deg); } }

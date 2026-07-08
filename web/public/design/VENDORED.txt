@@ -1,0 +1,3 @@
+Vendored from https://github.com/jpbaking/lazyway-io-design
+commit f0717ab4dee6812a9499bf16c6c19e84f2ef3d6c (2026-07-08)
+Do not hand-edit; re-vendor to update.

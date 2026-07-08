@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 64 64" role="img" aria-label="Brand mark">
+  <rect x="3" y="3" width="58" height="58" rx="13" fill="#12279E"></rect>
+  <g stroke="#FFFFFF" stroke-width="2.6" fill="none" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M24 54 L30 23 M40 54 L34 23 M30 23 L34 23"></path>
+    <path d="M25.7 46 L38.3 46 M27 38 L37 38 M28.5 30.5 L35.5 30.5"></path>
+    <path d="M37 13 A 7 7 0 0 1 37 21 M41 10 A 11 11 0 0 1 41 24 M27 13 A 7 7 0 0 0 27 21 M23 10 A 11 11 0 0 0 23 24" opacity="0.9"></path>
+  </g>
+  <circle cx="32" cy="17" r="3.4" fill="#D9821F"></circle>
+</svg>

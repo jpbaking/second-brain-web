@@ -1,0 +1,32 @@
+:root {
+  --brand-blue: #12279E;
+  --brand-blue-deep: #0B1660;
+  --accent-amber: #D9821F;
+  --accent-amber-deep: #9A5A12;
+  --ink: #16182E;
+  --muted: #61657F;
+  --line: #E5E7F1;
+  --surface: #F4F5FB;
+  --base: #FFFFFF;
+  --amber-surface: #FDF6EC;
+  --text-primary: var(--ink);
+  --text-secondary: var(--muted);
+  --text-on-blue: #FFFFFF;
+  --text-on-blue-dim: rgba(255,255,255,0.78);
+  --surface-page: var(--base);
+  --surface-alt: var(--surface);
+  --surface-invert: var(--brand-blue);
+  --border-default: var(--line);
+  --border-on-blue: rgba(255,255,255,0.2);
+  --focus-ring: var(--accent-amber);
+  --focus-wash: rgba(18,39,158,0.08);
+  --spinner-track: rgba(255,255,255,0.3);
+  --status-live: var(--brand-blue);
+  --status-pilot: var(--accent-amber);
+  --status-shipped: #2E7D5B;
+  --status-planned: #B7BBD0;
+  --success: #2E7D5B;
+  --success-surface: #EDF6F1;
+  --danger: #B3383D;
+  --danger-surface: #FBEFEF;
+}
