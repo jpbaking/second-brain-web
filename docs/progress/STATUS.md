@@ -12,17 +12,16 @@ Updated: 2026-07-08 (milestone 2 complete)
   credentials, RFC 6238 TOTP, two-step login endpoints, secure-by-default
   route guard, logout, login rate limiting, reset invalidation, and a web
   login page. App is inaccessible without password + TOTP (verified e2e).
-- Active milestone: **Milestone 3 — Vault Configuration And Clone** (checklist
-  not yet created).
+- Active milestone: **Milestone 3 — Vault Configuration And Clone**.
+- Checklist: `docs/progress/milestones/milestone-03-vault-config.md`
 - App runnable: yes, with `SECOND_BRAIN_WEB_DATA_DIR` pointing at a private
   `0700` data root.
 
 ## Next step
 
-- Create `docs/progress/milestones/milestone-03-vault-config.md` from
-  Milestone 3 in the roadmap (vault settings page, git remote URL + branch
-  config, SSH command handling using the deploy key, clone/pull into a runtime
-  workspace), one checkbox each with a verification command. Then begin m03-01.
+- m03-01: core-DB `vault_config` table (single `default` row) + config module
+  (read-with-defaults, upsert). Branch defaults `main`; workspace path
+  `<dataDir>/workspaces/second-brain`; ssh key path `<dataDir>/ssh/deploy_key`.
 
 ## Read before working
 
