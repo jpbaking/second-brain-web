@@ -36,7 +36,7 @@ design kit.
       rebuildable tables kept in their separate databases.
       Verify: fresh data dir migrates from zero; rerun is a no-op; a
       corrupted sidecar can be deleted and rebuilt without touching core.
-- [ ] **m0a-07** — Status page: unauthenticated setup/status screen (the
+- [x] **m0a-07** — Status page: unauthenticated setup/status screen (the
       only public surface besides login later) showing data-dir state, DB
       state, and "auth not configured — run reset script" messaging, in kit
       styling, readable on phone width.
