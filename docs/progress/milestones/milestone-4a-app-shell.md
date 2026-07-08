@@ -23,7 +23,7 @@ Binding constraints:
       "coming in a later milestone" stub.
       Verify: `npm run build`; headless loads of `/chat`, `/follow-ups`,
       `/reports` each render their stub heading (dump-dom check).
-- [ ] **m4a-02** — App shell with desktop navigation: an `AppShell` wraps the
+- [x] **m4a-02** — App shell with desktop navigation: an `AppShell` wraps the
       authenticated screens with a persistent nav (command centre, chat,
       follow-ups, reports, vault settings) using kit classes, with an
       active-route highlight; login/setup are not wrapped.

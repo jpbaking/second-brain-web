@@ -3,6 +3,7 @@ import { Login } from './Login.js'
 import { VaultSettings } from './VaultSettings.js'
 import { CommandCenter } from './CommandCenter.js'
 import { Stub } from './Stub.js'
+import { AppShell } from './AppShell.js'
 
 interface SystemStatus {
   dataDir: {
@@ -32,9 +33,20 @@ interface DatabaseStatus {
 
 export function App () {
   const path = typeof window === 'undefined' ? '/' : window.location.pathname
+
+  // Login and setup render outside the authenticated shell.
+  if (path === '/login') return <Login />
+  if (path === '/setup') return <StatusPage />
+
+  return (
+    <AppShell path={path}>
+      {routedScreen(path)}
+    </AppShell>
+  )
+}
+
+function routedScreen (path: string) {
   switch (path) {
-    case '/login': return <Login />
-    case '/setup': return <StatusPage />
     case '/vault': return <VaultSettings />
     case '/chat':
       return <Stub title='Chat' blurb='Talk to your executive secretary and run vault workflows.' />
