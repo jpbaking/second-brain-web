@@ -29,21 +29,24 @@ Updated: 2026-07-09 (milestone 5 complete)
   set default, test, delete) wired into the shell nav. Verified e2e: keyed
   profile create→mask→default→snapshot with the plaintext key never returned
   and never at rest (only `v1:` ciphertext on disk).
-- Active milestone: **Milestone 5A — Cline SDK Chat** (next).
-- Checklist: `docs/progress/milestones/milestone-05-provider-settings.md`
-  (complete); 5A checklist to be created.
+- Active milestone: **Milestone 5A — Cline SDK Chat** (10 items; offline-
+  verifiable items first, one live-model deliverable check last).
+- Checklist: `docs/progress/milestones/milestone-05a-cline-sdk-chat.md`
+  (milestone 5 checklist complete).
 - App runnable: yes, with `SECOND_BRAIN_WEB_DATA_DIR` pointing at a private
   `0700` data root. Core DB schema at v7.
 
 ## Next step
 
-- Create the Milestone 5A (Cline SDK Chat) checklist from
-  `docs/project-plan/phase-006-implementation-roadmap.md` (Milestone 5A) +
-  `docs/spike/findings.md` (continuity = app-side rehydration; rules/workflow
-  loading), then begin m5a-01. The mandatory `library/` tool-policy guard
-  (refusing non-catalog writes) ships with this first agent integration, per
-  spike m00-09. Provider selection for a new session uses m05's
-  `resolveDefaultSnapshot`/`resolveSnapshot`.
+- m5a-01: agent runner scaffold — add `@cline/core` to the server workspace; a
+  runner module maps a m05 `ProviderSnapshot` → SDK provider config (lmstudio
+  baseUrl forced to `…/v1`, key passed through, never logged) and sets an
+  explicit session data root under the app data dir, with the live SDK behind a
+  small injectable interface so the rest of 5A unit-tests without a model.
+- Live-model dependency: **m5a-10 (deliverable check) needs LM Studio reachable
+  at `http://127.0.0.1:1234/v1` or a configured cloud provider key.** LM Studio
+  was NOT reachable when 5A started; m5a-01..09 are built/verified offline with
+  a fake runner, so this only blocks the final live check.
 
 ## Read before working
 

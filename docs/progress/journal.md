@@ -174,3 +174,4 @@ Resumed at m05-04 (commit 1b91b35). m05-04 committed 26aa93a, m05-05 committed 0
 
 ## 2026-07-09 06:35 — Milestone 5 (Provider Settings) COMPLETE (7/7)
 Next: create the Milestone 5A (Cline SDK Chat) checklist, then m5a-01. The mandatory library/ tool-policy guard ships with this first agent integration.
+- 06:38 DONE progress: milestone-05a-cline-sdk-chat checklist created (10 items, grounded in findings m00-10 + roadmap 5A). Ordered so offline-verifiable items (runner mapping, tool-policy guard, chat store, agent-session backend, HTTP routes, SSE, approvals, workflows, web UI) come first and the single live-model deliverable check (m5a-10) is last. Recorded the live-model dependency: LM Studio was NOT reachable at start (curl http://127.0.0.1:1234/v1/models failed) and no cloud key is set, so m5a-10 may block on the principal; m5a-01..09 proceed offline with a fake runner. STATUS points at m5a-01. Committing.
