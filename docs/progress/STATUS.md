@@ -16,17 +16,15 @@ Updated: 2026-07-08 (milestone 4 complete)
   landing page. Owner runs the health check from the UI and lands on a useful
   command centre (verified e2e). Web routes: `/`=command centre, `/login`,
   `/vault`, `/setup`.
-- Active milestone: **next is Milestone 4A / Milestone 5** (checklist not yet
-  created) — confirm ordering against the roadmap before starting.
+- Active milestone: **Milestone 4A — Responsive App Shell**.
+- Checklist: `docs/progress/milestones/milestone-4a-app-shell.md`
 - App runnable: yes, with `SECOND_BRAIN_WEB_DATA_DIR` pointing at a private
   `0700` data root. Core DB schema at v6.
 
 ## Next step
 
-- Read the roadmap around Milestone 4A (Responsive App Shell) / Milestone 5
-  (Agent Runtime And Chat) to choose the next milestone, create its checklist
-  (one checkbox per step with a verification command), then begin its first
-  item.
+- m4a-01: client route table + stub screens (chat/follow-ups/reports) so the
+  shell can link to every core screen; replace ad-hoc pathname checks.
 
 ## Read before working
 
