@@ -27,7 +27,7 @@ variable (ask the principal via STATUS.md if unset). Never commit it; add
 - [x] **m00-04** — Multi-turn: can one agent session carry a conversation
       across several user turns with context intact?
       Verify: scripted 3-turn exchange where turn 3 depends on turn 1.
-- [ ] **m00-05** — Resume: can a session be resumed after the Node process
+- [x] **m00-05** — Resume: can a session be resumed after the Node process
       exits and restarts, with working context intact? Test SDK
       persistence/checkpoint APIs found in m00-01.
       Verify: script A starts a task and exits; script B resumes and the

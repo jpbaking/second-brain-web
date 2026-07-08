@@ -163,7 +163,26 @@ Answered: 2026-07-08. **PASS.**
 
 ## m00-05 — Resume across process restart
 
-Not yet answered.
+Answered: 2026-07-08. **PASS — via rehydration, not live resume. This is the
+spike's key architectural decision.**
+
+- `spike/03a-resume-plant.mjs` plants a codeword and exits without
+  `stop()` (simulated crash). `spike/03b-resume-continue.mjs` runs in a
+  fresh process:
+  - Plain `cline.send({ sessionId, ... })` fails with
+    `session_not_found` — **live sessions exist only in process memory**.
+  - Fallback works cleanly: `cline.readMessages(sessionId)` returns the
+    persisted transcript, and `cline.start({ initialMessages, prompt })`
+    continues the conversation with context intact (codeword recalled).
+- **Decision for the app: app-side rehydration is the PRIMARY continuity
+  path** (per phase-004's contingency). The web app must persist its own
+  chatSession → SDK sessionId mapping; on reconnect-after-restart it
+  rehydrates via `readMessages` + `initialMessages` under a new SDK session
+  id. Within one server process lifetime, `send()` continues live sessions
+  cheaply.
+- `restore()` exists but is checkpoint-based session *forking*
+  (`checkpointRunCount`, optional workspace git-snapshot restore) — useful
+  later for review/undo features, not the plain reconnect path.
 
 ## m00-06 — Approval flow, answered asynchronously
 
