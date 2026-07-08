@@ -19,9 +19,10 @@ Updated: 2026-07-08 (milestone 2 complete)
 
 ## Next step
 
-- m03-04: clone/pull into `workspaces/second-brain` — clone if empty, else
-  verify repo + expected remote and pull the branch; record last commit + pull.
-  (m03-01/02/03 done: vault_config store, GET/PUT config API, git runner.)
+- m03-05: vault detection checks — after sync, report presence of README.md,
+  .clinerules/00-role.md, .clinerules/10-structure.md, memory/index.md,
+  library/catalog.md, scripts/health.py. (m03-01..04 done: config store+API,
+  git runner, clone/pull sync.)
 
 ## Read before working
 

@@ -39,7 +39,7 @@ Binding constraints:
       Verify: `npm test --workspace server -- git-runner.test.ts` — `git init`/
       `add`/`commit` in a temp repo succeed; the built `GIT_SSH_COMMAND`
       references the configured key path and `IdentitiesOnly=yes`.
-- [ ] **m03-04** — Clone/pull into the workspace: if the workspace is empty,
+- [x] **m03-04** — Clone/pull into the workspace: if the workspace is empty,
       `git clone` the configured remote/branch into
       `workspaces/second-brain/`; if it exists, verify it is a git repo with the
       expected remote and pull the branch; record last commit + last pull.
