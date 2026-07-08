@@ -63,7 +63,7 @@ Binding constraints:
       Verify: prod build served by Fastify; authenticated headless load of the
       settings route shows the form and status; 390×844 screenshot;
       `npm run lint && npm test && npm run build` pass.
-- [ ] **m03-08** — Milestone deliverable check: the owner can configure a repo
+- [x] **m03-08** — Milestone deliverable check: the owner can configure a repo
       and clone it into the data root, and the UI shows branch and commit.
       Verify: end-to-end against a local test remote with a running server —
       configure, sync, and confirm status shows branch + commit; full

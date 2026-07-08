@@ -1,6 +1,6 @@
 # STATUS — single source of truth
 
-Updated: 2026-07-08 (milestone 2 complete)
+Updated: 2026-07-08 (milestone 3 complete)
 
 ## Where we are
 
@@ -8,27 +8,29 @@ Updated: 2026-07-08 (milestone 2 complete)
   All findings and binding decisions: `docs/spike/findings.md` (m00-10
   section has the decision list).
 - **Milestone 1 — Host Bootstrap Scripts: COMPLETE (6/6).**
-- **Milestone 2 — Authentication: COMPLETE (10/10).** Sessions store, owner
-  credentials, RFC 6238 TOTP, two-step login endpoints, secure-by-default
-  route guard, logout, login rate limiting, reset invalidation, and a web
-  login page. App is inaccessible without password + TOTP (verified e2e).
-- Active milestone: **Milestone 3 — Vault Configuration And Clone**.
-- Checklist: `docs/progress/milestones/milestone-03-vault-config.md`
+- **Milestone 2 — Authentication: COMPLETE (10/10).**
+- **Milestone 3 — Vault Configuration And Clone: COMPLETE (8/8).** vault_config
+  store + GET/PUT config API, git runner (deploy-key SSH), clone/ff-only-pull
+  sync, vault detection, sync/status API, and a `/vault` settings page. Owner
+  can configure a repo and clone it into the data root; UI shows branch +
+  commit (verified e2e).
+- Active milestone: **Milestone 4 — Vault Status And Health** (checklist not
+  yet created).
 - App runnable: yes, with `SECOND_BRAIN_WEB_DATA_DIR` pointing at a private
-  `0700` data root.
+  `0700` data root. Core DB schema at v5.
 
 ## Next step
 
-- m03-08: milestone deliverable check — owner configures a repo and clones it
-  into the data root; UI shows branch + commit. End-to-end with a running
-  server against a local remote; full lint/test/build; no secrets/checkouts
-  tracked. (m03-01..07 done: config store+API, git runner, clone/pull, detect,
-  sync/status API, vault settings page.)
+- Create `docs/progress/milestones/milestone-04-vault-health.md` from Milestone
+  4 in the roadmap (git status readout: dirty/clean + last commit; run
+  `scripts/health.py` and parse output — note it always exits 0 so inspect the
+  text; command-center data model). One checkbox each with a verification
+  command. Then begin m04-01.
 
 ## Read before working
 
 - `docs/spike/findings.md` — m00-10 decisions (binding on implementation).
-- `docs/project-plan/phase-006-implementation-roadmap.md` — Milestone 3.
+- `docs/project-plan/phase-006-implementation-roadmap.md` — Milestone 4.
 - `docs/project-plan/master-plan.md` — hard rules, runtime layout, auth
   crypto, and secrets handling.
 - `docs/project-plan/phase-002-security-auth-and-secrets.md` — password,
