@@ -47,7 +47,7 @@ Binding constraints:
       Verify: `npm test --workspace server -- guard.test.ts` — a private route
       is 401 without a cookie and 200 with a valid session cookie; cookie flags
       (`HttpOnly`, `SameSite`, expiry) are asserted.
-- [ ] **m02-06** — Logout: `POST /api/auth/logout` revokes the current session
+- [x] **m02-06** — Logout: `POST /api/auth/logout` revokes the current session
       and clears the cookie.
       Verify: `npm test --workspace server -- logout.test.ts` — after logout the
       session no longer authenticates and the response clears the cookie.

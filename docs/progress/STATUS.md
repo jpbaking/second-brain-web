@@ -17,9 +17,10 @@ Updated: 2026-07-08 (milestone 1 complete)
 
 ## Next step
 
-- m02-06: logout — `POST /api/auth/logout` revokes the current session and
-  clears the cookie. (m02-01..05 done: sessions, owner creds, TOTP, login
-  endpoints, secure-by-default guard + `GET /api/session`.)
+- m02-07: rate limiting — SQLite-backed failure counters per IP and account
+  with exponential backoff / temporary lock on repeated password or TOTP
+  failures; success resets; locks time-bounded. (m02-01..06 done through
+  logout.)
 
 ## Read before working
 

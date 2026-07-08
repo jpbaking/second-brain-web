@@ -7,7 +7,7 @@ import {
   deleteChallenge,
   findValidChallenge,
 } from './challenges.js'
-import { DEFAULT_SESSION_TTL_MS, createSession } from './sessions.js'
+import { DEFAULT_SESSION_TTL_MS, createSession, findActiveSession, revokeSession } from './sessions.js'
 import {
   CHALLENGE_COOKIE,
   SESSION_COOKIE,
@@ -27,6 +27,21 @@ export function registerAuthRoutes (app: FastifyInstance, config: AppConfig): vo
   // Guarded probe the front end calls to check whether it is authenticated.
   app.get('/api/session', async (req) => {
     return { authenticated: true, sessionId: req.sessionId }
+  })
+
+  app.post('/api/auth/logout', async (req, reply) => {
+    const token = req.cookies[SESSION_COOKIE]
+    if (token !== undefined) {
+      const db = openCoreDb(config.dataDir)
+      try {
+        const session = findActiveSession(db, token)
+        if (session !== undefined) revokeSession(db, session.id)
+      } finally {
+        db.close()
+      }
+    }
+    reply.clearCookie(SESSION_COOKIE, clearCookieOptions())
+    return await reply.send({ ok: true })
   })
 
   app.post('/api/auth/password', async (req, reply) => {
