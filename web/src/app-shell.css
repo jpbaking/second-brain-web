@@ -1,0 +1,60 @@
+/*
+ * App-shell layout only (responsive navigation). Uses lazyway design tokens;
+ * no colours or type are redefined. The vendored kit has no mobile nav, so the
+ * shell hides the desktop links below the breakpoint and shows a fixed bottom
+ * bar instead.
+ */
+
+.nav-right {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.mobile-nav {
+  display: none;
+}
+
+@media (max-width: 768px) {
+  .app-nav-links {
+    display: none;
+  }
+
+  .mobile-nav {
+    display: flex;
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 100;
+    background: var(--base);
+    border-top: 1px solid var(--line);
+    justify-content: space-around;
+  }
+
+  .mobile-nav a {
+    flex: 1 1 0;
+    min-height: 52px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 8px 4px;
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: var(--track-label);
+    text-transform: uppercase;
+    text-decoration: none;
+    color: var(--muted);
+    border-top: 2px solid transparent;
+  }
+
+  .mobile-nav a.active {
+    color: var(--brand-blue);
+    border-top-color: var(--accent-amber);
+  }
+
+  /* Keep page content clear of the fixed bottom bar. */
+  body {
+    padding-bottom: 60px;
+  }
+}

@@ -29,7 +29,7 @@ Binding constraints:
       active-route highlight; login/setup are not wrapped.
       Verify: headless load at 1280×800 shows the nav with all items and the
       active item highlighted; desktop screenshot captured.
-- [ ] **m4a-03** — Mobile navigation: below a breakpoint the shell shows a
+- [x] **m4a-03** — Mobile navigation: below a breakpoint the shell shows a
       touch-friendly mobile nav (bottom bar or drawer) for the same screens; the
       desktop nav is hidden on mobile and vice versa.
       Verify: headless load at 390×844 shows the mobile nav and no desktop
