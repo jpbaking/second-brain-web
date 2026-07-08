@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { Login } from './Login.js'
 import { VaultSettings } from './VaultSettings.js'
 import { CommandCenter } from './CommandCenter.js'
+import { Stub } from './Stub.js'
 
 interface SystemStatus {
   dataDir: {
@@ -31,10 +32,18 @@ interface DatabaseStatus {
 
 export function App () {
   const path = typeof window === 'undefined' ? '/' : window.location.pathname
-  if (path === '/login') return <Login />
-  if (path === '/vault') return <VaultSettings />
-  if (path === '/setup') return <StatusPage />
-  return <CommandCenter />
+  switch (path) {
+    case '/login': return <Login />
+    case '/setup': return <StatusPage />
+    case '/vault': return <VaultSettings />
+    case '/chat':
+      return <Stub title='Chat' blurb='Talk to your executive secretary and run vault workflows.' />
+    case '/follow-ups':
+      return <Stub title='Follow-up queue' blurb='Reminders and commitments the secretary is keeping watch on.' />
+    case '/reports':
+      return <Stub title='Reports' blurb='Generated reviews and briefings from your vault.' />
+    default: return <CommandCenter />
+  }
 }
 
 function StatusPage () {

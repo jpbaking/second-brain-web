@@ -16,7 +16,7 @@ Binding constraints:
 - The web workspace has no unit-test runner — verify with `npm run build` and
   headless Chrome loads/screenshots (desktop + 390×844 mobile).
 
-- [ ] **m4a-01** — Client route table + stub screens: a small router replaces
+- [x] **m4a-01** — Client route table + stub screens: a small router replaces
       the ad-hoc pathname checks, with routes for command centre (`/`), chat
       (`/chat`), follow-up queue (`/follow-ups`), reports (`/reports`), and
       vault settings (`/vault`); unbuilt screens render a clear lazyway-styled

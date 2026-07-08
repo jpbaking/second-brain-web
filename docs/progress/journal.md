@@ -140,3 +140,5 @@ Milestone 3 complete (8/8) at 2925ef3; user pushed to origin. Proceeding to Mile
 ## 2026-07-08 22:50 — session continues
 Milestone 4 complete (7/7) at 3b9be1f; user pushed to origin. Proceeding to Milestone 4A (Responsive App Shell): create checklist, then m4a-01.
 - 22:50 DONE progress: milestone-4a-app-shell checklist created (5 items; build+headless verification since web has no test runner). STATUS points at m4a-01. Committing.
+- 22:51 STARTED m4a-01: web route table + Stub.tsx placeholder screens (chat/follow-ups/reports); App switches on pathname
+- 22:52 DONE m4a-01: route table + Stub.tsx placeholder screens. App switches on pathname: /login,/setup,/vault,/chat,/follow-ups,/reports, default command centre. Chat/follow-ups/reports render lazyway-styled "coming soon" stubs. Verified: web lint clean + full build; headless dump-dom of /chat,/follow-ups,/reports each shows its stub-title (Chat / Follow-up queue / Reports). Full lint(0 err)/test(97) pass. Committing.
