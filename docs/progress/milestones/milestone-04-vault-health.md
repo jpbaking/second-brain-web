@@ -49,7 +49,7 @@ Binding constraints:
       Verify: `npm test --workspace server -- command-center.test.ts` — unauth
       401; authed returns branch/commit/dirty, lock state, inbox count, and
       recent reports for a seeded workspace.
-- [ ] **m04-06** — Command center page (`web/`): the post-login landing (`/`)
+- [x] **m04-06** — Command center page (`web/`): the post-login landing (`/`)
       shows git status, a health-check button + result, inbox backlog, recent
       reports, and lock state; redirects to `/login` when unauthenticated. The
       setup status page moves to `/setup`.

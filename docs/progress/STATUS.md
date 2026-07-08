@@ -21,8 +21,10 @@ Updated: 2026-07-08 (milestone 3 complete)
 
 ## Next step
 
-- m04-01: git status module — read branch, HEAD commit (hash + subject),
-  clean/dirty, and changed files from the workspace via the git runner.
+- m04-07: milestone deliverable check — log in, land on the command centre, run
+  the health check, see git + health results; full lint/test/build; no secrets
+  or checkouts tracked. (m04-01..06 done: git status, lock, health runner +
+  endpoint, command-center model + endpoint, command centre page.)
 
 ## Read before working
 

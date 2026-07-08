@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { Login } from './Login.js'
 import { VaultSettings } from './VaultSettings.js'
+import { CommandCenter } from './CommandCenter.js'
 
 interface SystemStatus {
   dataDir: {
@@ -32,7 +33,8 @@ export function App () {
   const path = typeof window === 'undefined' ? '/' : window.location.pathname
   if (path === '/login') return <Login />
   if (path === '/vault') return <VaultSettings />
-  return <StatusPage />
+  if (path === '/setup') return <StatusPage />
+  return <CommandCenter />
 }
 
 function StatusPage () {
