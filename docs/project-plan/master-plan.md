@@ -15,9 +15,15 @@ and eventually visualises the vault.
 - Git auth model: dedicated SSH deploy key per vault repository.
 - Vault model: clone/check out the Second Brain repository into app-managed
   runtime storage, then maintain it there.
-- Agent runtime: use Cline SDK, preferably `ClineCore`, because the web app
-  needs long-running sessions, tool use, approvals, persistence, and filesystem
-  work inside a real workspace.
+- Agent runtime: use Cline SDK, because the web app needs long-running
+  sessions, tool use, approvals, persistence, and filesystem work inside a
+  real workspace. The SDK is a framework for building agents, not a headless
+  build of the Cline VS Code extension: `.clinerules/` auto-loading,
+  `/workflow.md` slash behaviour, skills, and hooks may not exist in it. The
+  app must provide those itself (rules injection, workflow-file expansion,
+  mandatory tool-policy guards). Implementation starts with a feasibility
+  spike (Milestone 0 in the roadmap) that validates these assumptions before
+  any web scaffolding.
 - Chat sessions: preserve Cline-like task context across browser reconnects and
   session switches. Use SDK persistence/checkpoints where available, and add
   manual plus automatic context compaction.
@@ -86,7 +92,12 @@ as a substitute for filing facts into `memory/`.
 ## Suggested Stack
 
 - Runtime: Node.js 22+.
-- Web framework: Next.js App Router or another React-first full-stack framework.
+- Web framework: a plain long-lived Node service (for example Fastify or
+  Express) serving a Vite/React front end. Framework route handlers in the
+  Next.js style are not a good home for the agent runtime: agent runs, SSE
+  streams, the writer lock, and git operations must live in a long-lived
+  process outside HTTP request lifecycles, with SQLite as the event log that
+  SSE routes replay from.
 - UI/design: `jpbaking/lazyway-io-design`, mounted at `/design/`, with its
   token and component styles loaded globally.
 - Agent runtime: `@cline/sdk`.
@@ -163,7 +174,10 @@ uses filesystem-backed state.
 
 ## First Implementation Target
 
-The first shippable version should let the principal:
+Implementation begins with the Milestone 0 Cline SDK feasibility spike (see
+the roadmap); nothing web-facing should be scaffolded until the spike has
+answered its questions. After the spike, the first shippable version should
+let the principal:
 
 1. Start the app.
 2. Run host setup/reset to generate password, TOTP, and SSH key material.
@@ -181,9 +195,12 @@ The first shippable version should let the principal:
 13. Choose an approval preset appropriate to the current task.
 14. Review vault diffs before commit/push.
 15. View generated reports through the authenticated web UI.
-16. Inspect source coverage for reports and cited answers where available.
-17. Compact long-running chat context manually or automatically without losing
-    durable vault memory.
+16. Compact long-running chat context manually without losing durable vault
+    memory.
+
+Deferred to just past MVP: automatic context compaction and the source
+coverage view. Both remain design constraints (leave seams for them) but are
+not first-ship features.
 
 ## Hard Rules For Implementers
 
@@ -196,8 +213,13 @@ The first shippable version should let the principal:
   without app auth. Public unauthenticated surface is limited to login/setup
   screens and static non-sensitive design assets.
 - Do not bypass the vault's `.clinerules/` contract.
-- Do not edit files under `library/` except catalogs, and preferably leave this
-  to the agent plus vault rules.
+- Do not edit files under `library/` except catalogs. The app MUST enforce
+  this itself with a tool-policy guard on the agent's file tools: the vault's
+  own PreToolUse hook is a Cline extension feature and will not fire under
+  the SDK, so the app-side guard is the only enforcement.
+- Do not encrypt provider keys with the session secret. The dedicated
+  `SECOND_BRAIN_WEB_SECRETS_KEY` is the only key-encryption option; if it is
+  not configured, refuse to store provider keys.
 - Do not let two write sessions mutate the vault concurrently in the MVP.
 - Do not make a vector DB or SQL DB the canonical memory.
 - Do not push automatically if health checks fail, unless the user explicitly
@@ -212,10 +234,11 @@ The first shippable version should let the principal:
 
 ## Open Decisions
 
-- Exact web framework: Next.js is recommended, but the implementation agent may
-  choose a lighter framework if it keeps the same product contract.
-- Cline SDK production API details should be verified against current official
-  docs at implementation time.
+- Cline SDK production API details are resolved by the Milestone 0 feasibility
+  spike, not deferred to mid-implementation discovery.
+- Whether `library/` originals should move to git-lfs if the vault repository
+  grows uncomfortably large (originals are PDFs, images, and office documents
+  that accumulate per year). Not adopted now; monitor clone size and revisit.
 - Exact provider catalog should be discovered from Cline SDK at runtime where
   possible instead of hard-coded into the UI.
 - Whether generated reports are served directly from the vault checkout or
