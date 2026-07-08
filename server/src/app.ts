@@ -9,6 +9,7 @@ import type { AppConfig } from './config.js'
 import { readSystemStatus } from './status.js'
 import { registerAuthRoutes } from './auth/routes.js'
 import { registerAuthGuard } from './auth/guard.js'
+import { registerVaultRoutes } from './vault/routes.js'
 
 const here = path.dirname(fileURLToPath(import.meta.url))
 // server/src (tsx) and server/dist (built) are both one level below server/.
@@ -29,6 +30,7 @@ export function buildApp (config?: AppConfig): FastifyInstance {
   if (config !== undefined) {
     registerAuthGuard(app, config)
     registerAuthRoutes(app, config)
+    registerVaultRoutes(app, config)
   }
 
   app.get('/api/status', async (_req, reply) => {

@@ -26,7 +26,7 @@ Binding constraints:
       Verify: `npm test --workspace server -- vault-config.test.ts` — a fresh DB
       yields defaults (branch `main`; workspace + ssh paths derived from the
       data root); upsert persists remote URL and branch.
-- [ ] **m03-02** — Vault settings endpoints: guarded `GET /api/vault/config`
+- [x] **m03-02** — Vault settings endpoints: guarded `GET /api/vault/config`
       returns the current config (never the SSH key material) and
       `PUT /api/vault/config` validates and stores remote URL, branch, and
       display name.

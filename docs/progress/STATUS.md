@@ -19,9 +19,10 @@ Updated: 2026-07-08 (milestone 2 complete)
 
 ## Next step
 
-- m03-01: core-DB `vault_config` table (single `default` row) + config module
-  (read-with-defaults, upsert). Branch defaults `main`; workspace path
-  `<dataDir>/workspaces/second-brain`; ssh key path `<dataDir>/ssh/deploy_key`.
+- m03-03: git runner — run git via argv (no shell) with
+  `GIT_SSH_COMMAND="ssh -i <key> -o IdentitiesOnly=yes -o StrictHostKeyChecking=accept-new"`,
+  returning stdout/stderr/exit. (m03-01/02 done: vault_config store + GET/PUT
+  /api/vault/config; core schema v5.)
 
 ## Read before working
 
