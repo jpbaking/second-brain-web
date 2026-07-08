@@ -26,7 +26,7 @@ session secret.
       the SSH public key to add as a deploy key and where it was stored.
       Verify: script output includes the public key line and does not print
       the private key.
-- [ ] **m01-05** — Script idempotency and rotation behaviour are explicit:
+- [x] **m01-05** — Script idempotency and rotation behaviour are explicit:
       reset auth invalidates old auth bootstrap state; deploy-key generation
       refuses overwrite unless a documented rotate flag is supplied.
       Verify: repeated runs behave as documented and tests cover both

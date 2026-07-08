@@ -103,4 +103,19 @@ describe('writeOwnerAuth', () => {
     writeOwnerAuth(dir, state)
     expect(statSync(target).mode & 0o777).toBe(0o600)
   })
+
+  it('invalidates old auth state by replacing it on a repeat run', async () => {
+    const dir = tempDir()
+    const first = await generateOwnerAuth()
+    writeOwnerAuth(dir, first.state)
+    const second = await generateOwnerAuth()
+    const file = writeOwnerAuth(dir, second.state)
+
+    // Fresh material each run, and the file holds only the latest.
+    expect(second.state.password.hash).not.toBe(first.state.password.hash)
+    expect(second.state.totp.secretBase32).not.toBe(first.state.totp.secretBase32)
+    const persisted = JSON.parse(readFileSync(file, 'utf8'))
+    expect(persisted.password.hash).toBe(second.state.password.hash)
+    expect(persisted.totp.secretBase32).toBe(second.state.totp.secretBase32)
+  })
 })

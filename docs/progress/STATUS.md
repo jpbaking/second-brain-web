@@ -14,11 +14,11 @@ Updated: 2026-07-08 (milestone 0A complete)
 
 ## Next step
 
-- m01-05: make idempotency/rotation explicit — reset-auth invalidates old
-  auth bootstrap state; deploy-key generation refuses overwrite unless a
-  documented rotate flag is supplied; tests cover default refusal + rotate.
-  (m01-01..04 done: data-root bootstrap, owner auth material, ed25519 deploy
-  key with operator instructions; shared `scripts/lib/data-root.sh`.)
+- m01-06: milestone deliverable check — run both scripts in a fresh temp data
+  root and confirm no secrets/auth state/SSH private keys/SQLite DBs/temp data
+  are tracked by git; README/operator instructions match reality.
+  (m01-01..05 done: data-root bootstrap, owner auth material, ed25519 deploy
+  key + operator instructions + --rotate; shared `scripts/lib/data-root.sh`.)
 
 ## Read before working
 
