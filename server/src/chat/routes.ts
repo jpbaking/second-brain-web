@@ -135,6 +135,18 @@ export function registerChatRoutes (app: FastifyInstance, config: AppConfig, run
     return await reply.code(202).send({ accepted: true })
   })
 
+  app.post('/api/chat/sessions/:id/approvals/:toolCallId', async (req, reply) => {
+    const { id, toolCallId } = req.params as { id: string, toolCallId: string }
+    if (getSession(db, id) === undefined) return await reply.code(404).send({ error: 'session not found' })
+    const body = (req.body ?? {}) as { approved?: unknown, reason?: unknown }
+    if (typeof body.approved !== 'boolean') return await reply.code(400).send({ error: 'approved (boolean) is required' })
+    const reason = typeof body.reason === 'string' ? body.reason : undefined
+    if (!service.resolveApproval(toolCallId, body.approved, reason)) {
+      return await reply.code(404).send({ error: 'no pending approval for that toolCallId' })
+    }
+    return { ok: true }
+  })
+
   app.post('/api/chat/sessions/:id/compact', async (req, reply) => {
     const id = (req.params as { id: string }).id
     if (getSession(db, id) === undefined) return await reply.code(404).send({ error: 'session not found' })

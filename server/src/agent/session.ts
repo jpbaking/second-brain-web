@@ -1,6 +1,7 @@
 import { appendEvent, createSession, getSession, getSessionBySdkId, readEventsSince, setSdkSessionId } from './chat-store.js'
 import { toModelConfig } from './runner.js'
-import type { AgentRunner, AgentModelConfig } from './runner.js'
+import { TOOL_POLICIES, evaluateTool } from './tool-policy.js'
+import type { AgentRunner, AgentModelConfig, SdkApprovalRequest, ToolApprovalDecision } from './runner.js'
 import type { ChatEvent, ChatSession } from './chat-store.js'
 import type { ProviderSnapshot } from '../providers/snapshot.js'
 import type { DatabaseSync } from 'node:sqlite'
@@ -85,6 +86,8 @@ export class AgentSessionService {
   private readonly live = new Map<string, string>()
   /** chatSessionId → SSE listeners for live events. */
   private readonly subscribers = new Map<string, Set<(event: ChatEvent) => void>>()
+  /** toolCallId → parked approval resolver awaiting a human decision. */
+  private readonly pendingApprovals = new Map<string, { resolve: (d: ToolApprovalDecision) => void, chatSessionId: string }>()
   private readonly unsubscribeRunner: () => void
 
   constructor (
@@ -134,6 +137,55 @@ export class AgentSessionService {
   dispose (): void {
     this.unsubscribeRunner()
     this.subscribers.clear()
+    // Fail any parked approvals closed rather than leaving turns hung.
+    for (const { resolve } of this.pendingApprovals.values()) resolve({ approved: false, reason: 'server shutting down' })
+    this.pendingApprovals.clear()
+  }
+
+  /**
+   * The SDK approval entry point (spike m00-06). The mandatory library/ guard
+   * (m5a-02) runs first: a hard deny is auto-refused without ever parking; an
+   * auto-allow returns immediately; otherwise the promise is parked keyed by
+   * toolCallId and an `approval_request` event is streamed for the human.
+   */
+  async requestToolApproval (req: SdkApprovalRequest): Promise<ToolApprovalDecision> {
+    const decision = evaluateTool({ toolName: req.toolName, input: req.input ?? null })
+    const sdkSessionId = req.sessionId
+    const session = sdkSessionId === undefined ? undefined : getSessionBySdkId(this.db, sdkSessionId)
+
+    if (decision.decision === 'deny') {
+      if (session !== undefined) {
+        this.emitEvent(session.id, 'approval_auto_denied', { toolName: req.toolName, reason: decision.reason })
+      }
+      return { approved: false, ...(decision.reason !== undefined ? { reason: decision.reason } : {}) }
+    }
+    if (decision.decision === 'allow') return { approved: true }
+
+    // 'ask' → park for a human decision.
+    const toolCallId = req.toolCallId ?? req.id
+    if (toolCallId === undefined || session === undefined) {
+      // Cannot correlate a resolution — fail closed rather than hang the turn.
+      return { approved: false, reason: 'approval could not be routed' }
+    }
+    this.emitEvent(session.id, 'approval_request', { toolCallId, toolName: req.toolName })
+    return await new Promise<ToolApprovalDecision>((resolve) => {
+      this.pendingApprovals.set(toolCallId, { resolve, chatSessionId: session.id })
+    })
+  }
+
+  /** Resolve a parked approval from an approve/deny route. Returns false if unknown. */
+  resolveApproval (toolCallId: string, approved: boolean, reason?: string): boolean {
+    const parked = this.pendingApprovals.get(toolCallId)
+    if (parked === undefined) return false
+    this.pendingApprovals.delete(toolCallId)
+    parked.resolve({ approved, ...(reason !== undefined ? { reason } : {}) })
+    this.emitEvent(parked.chatSessionId, 'approval_resolved', { toolCallId, approved })
+    return true
+  }
+
+  /** Persist a chat event and fan it out to SSE clients. */
+  private emitEvent (chatSessionId: string, type: string, payload: unknown): void {
+    this.fanOut(chatSessionId, appendEvent(this.db, chatSessionId, type, payload))
   }
 
   /** Create a chat session and capture its provider config. Does not start the SDK yet. */
@@ -186,14 +238,18 @@ export class AgentSessionService {
     if (session === undefined) throw new Error(`unknown chat session: ${chatSessionId}`)
     const config = this.startConfig(this.capturedConfig(chatSessionId))
 
+    const approvalWiring = {
+      capabilities: { requestToolApproval: (req: SdkApprovalRequest) => this.requestToolApproval(req) },
+      toolPolicies: TOOL_POLICIES,
+    }
     let sdkSessionId: string
     if (session.sdkSessionId !== null) {
       // Restart: rehydrate from the persisted SDK session's messages.
       const initialMessages = await this.runner.readMessages(session.sdkSessionId)
-      const result = await this.runner.start({ config, initialMessages, ...(prompt !== undefined ? { prompt } : {}) })
+      const result = await this.runner.start({ config, initialMessages, ...approvalWiring, ...(prompt !== undefined ? { prompt } : {}) })
       sdkSessionId = result.sessionId
     } else {
-      const result = await this.runner.start({ config, ...(prompt !== undefined ? { prompt } : {}) })
+      const result = await this.runner.start({ config, ...approvalWiring, ...(prompt !== undefined ? { prompt } : {}) })
       sdkSessionId = result.sessionId
     }
     setSdkSessionId(this.db, chatSessionId, sdkSessionId)
@@ -223,7 +279,12 @@ export class AgentSessionService {
     }
     const initialMessages = await this.runner.readMessages(session.sdkSessionId)
     const config = this.startConfig(this.capturedConfig(chatSessionId))
-    const result = await this.runner.start({ config, initialMessages })
+    const result = await this.runner.start({
+      config,
+      initialMessages,
+      capabilities: { requestToolApproval: (req: SdkApprovalRequest) => this.requestToolApproval(req) },
+      toolPolicies: TOOL_POLICIES,
+    })
     setSdkSessionId(this.db, chatSessionId, result.sessionId)
     this.live.set(chatSessionId, result.sessionId)
     return { sdkSessionId: result.sessionId, rehydratedMessages: initialMessages.length }

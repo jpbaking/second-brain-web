@@ -35,6 +35,8 @@ export class ClineAgentRunner implements AgentRunner {
     const result = await core.start({
       prompt: input.prompt,
       ...(input.initialMessages !== undefined ? { initialMessages: input.initialMessages } : {}),
+      ...(input.capabilities !== undefined ? { capabilities: input.capabilities } : {}),
+      ...(input.toolPolicies !== undefined ? { toolPolicies: input.toolPolicies } : {}),
       config: input.config,
     } as Parameters<ClineCore['start']>[0])
     return { sessionId: result.sessionId, messagesPath: result.messagesPath }

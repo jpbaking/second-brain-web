@@ -82,10 +82,31 @@ export function agentStorageEnv (dataDir: string): { CLINE_DATA_DIR: string } {
  * (`ClineCore.start`/`send`/`subscribe`/`readMessages`/`stop`) loosely so the
  * adapter stays thin; exact SDK types are bound in the adapter, not here.
  */
+/** A tool-approval request from the SDK (spike m00-06). `toolCallId` correlates. */
+export interface SdkApprovalRequest {
+  sessionId?: string
+  toolCallId?: string
+  id?: string
+  toolName: string
+  input?: Record<string, unknown> | null
+}
+
+export interface ToolApprovalDecision {
+  approved: boolean
+  reason?: string
+}
+
+export interface AgentCapabilities {
+  requestToolApproval: (req: SdkApprovalRequest) => Promise<ToolApprovalDecision>
+}
+
 export interface AgentStartInput {
   config: AgentModelConfig & { systemPrompt?: string, cwd?: string, enableTools?: boolean }
   prompt?: string
   initialMessages?: unknown[]
+  /** Approval + policy wiring; resolvers must be installed before start (m00-06). */
+  capabilities?: AgentCapabilities
+  toolPolicies?: unknown
 }
 
 export interface AgentStartResult {

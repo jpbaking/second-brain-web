@@ -81,7 +81,7 @@ in `/v1`.
       Verify: `npm test --workspace server -- chat-sse.test.ts` — a client
       receives ordered events; reconnect with `Last-Event-ID` replays only newer
       events; heartbeat emitted; assistant text is cumulative on inner `text`.
-- [ ] **m5a-07** — Approvals: promise-parking keyed by `toolCallId`; resolver
+- [x] **m5a-07** — Approvals: promise-parking keyed by `toolCallId`; resolver
       routes (`approve` / `deny`) resolve the parked promise; resolvers are
       installed before `start()`. The tool-policy guard (m5a-02) runs first and
       auto-denies non-catalog `library/` writes without parking.
