@@ -34,7 +34,7 @@ Binding constraints:
       desktop nav is hidden on mobile and vice versa.
       Verify: headless load at 390×844 shows the mobile nav and no desktop
       sidebar; mobile screenshot captured; no horizontal body scroll.
-- [ ] **m4a-04** — Responsive content layouts: command centre, vault settings,
+- [x] **m4a-04** — Responsive content layouts: command centre, vault settings,
       and the stubs lay out cleanly at mobile and desktop widths (readable
       spacing, wide content scrolls within its container, touch-friendly
       controls).
