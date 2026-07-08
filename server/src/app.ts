@@ -4,12 +4,13 @@ import { fileURLToPath } from 'node:url'
 import Fastify from 'fastify'
 import fastifyStatic from '@fastify/static'
 import type { FastifyInstance } from 'fastify'
+import type { AppConfig } from './config.js'
 
 const here = path.dirname(fileURLToPath(import.meta.url))
 // server/src (tsx) and server/dist (built) are both one level below server/.
 const webDist = path.resolve(here, '../../web/dist')
 
-export function buildApp (): FastifyInstance {
+export function buildApp (_config?: AppConfig): FastifyInstance {
   const app = Fastify({
     logger: process.env.NODE_ENV !== 'test',
   })

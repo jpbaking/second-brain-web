@@ -46,3 +46,5 @@ Tree clean at 08447f2. Active: milestone 0A.
 - 13:32 DONE m0a-02: web/ Vite+React skeleton; verified dev proxy (5173 -> /api/health ok), prod build served by Fastify static with SPA fallback (200 on deep route), lint+test pass.
 - 13:32 STARTED m0a-03: vendor lazyway-io-design kit into web/public/design, wire stylesheets + favicons, style first screen
 - 13:35 DONE m0a-03: lazyway kit vendored (commit f0717ab noted in VENDORED.txt), styles+components linked in order, favicons 200, first screen uses kit classes only; vendored files excluded from lint. Verified against prod build.
+- 13:35 STARTED m0a-04: config loader + data root (SECOND_BRAIN_WEB_DATA_DIR, 0700 layout, loud failures)
+- 13:37 DONE m0a-04: config loader + data root — no env var exits 1 with actionable message; with it, 8-dir layout created at mode 700; world-readable dir refused (tested); localhost default. 5 tests pass.

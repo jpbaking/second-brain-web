@@ -1,13 +1,21 @@
 import { buildApp } from './app.js'
+import { ConfigError, loadConfig } from './config.js'
 
-// Bind to localhost by default (master plan: production defaults).
-const host = process.env.SECOND_BRAIN_WEB_HOST ?? '127.0.0.1'
-const port = Number(process.env.SECOND_BRAIN_WEB_PORT ?? 8722)
+let config
+try {
+  config = loadConfig()
+} catch (err) {
+  if (err instanceof ConfigError) {
+    console.error(`setup error: ${err.message}`)
+    process.exit(1)
+  }
+  throw err
+}
 
-const app = buildApp()
+const app = buildApp(config)
 
 try {
-  await app.listen({ host, port })
+  await app.listen({ host: config.host, port: config.port })
 } catch (err) {
   app.log.error(err)
   process.exit(1)

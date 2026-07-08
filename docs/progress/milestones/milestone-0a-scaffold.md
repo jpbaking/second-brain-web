@@ -20,7 +20,7 @@ design kit.
       globally, copy favicons, first screen styled with kit classes only.
       Verify: served HTML links both stylesheets in order and the page uses
       kit component classes (no custom CSS files yet).
-- [ ] **m0a-04** — Config loader + data root: `SECOND_BRAIN_WEB_DATA_DIR`
+- [x] **m0a-04** — Config loader + data root: `SECOND_BRAIN_WEB_DATA_DIR`
       resolved, layout created (`db/`, `logs/`, `sessions/`, …), startup
       fails loudly if the dir is missing/world-readable; bind to localhost
       by default.
