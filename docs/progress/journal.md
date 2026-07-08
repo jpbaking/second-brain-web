@@ -53,3 +53,4 @@ Tree clean at 08447f2. Active: milestone 0A.
 - 13:43 NOTE m0a-05: recovery commit is 904f127.
 - 13:43 STARTED m0a-06: migration runner with schema version tables, startup integrity check, and separate core/sidecar migrations.
 - 13:45 DONE m0a-06: migration runner added with per-DB `schema_version`, startup integrity checks before listen, core `app_metadata` and sidecar `vault_index_metadata` kept separate, and sidecar rebuild helper preserving core data. Verified by `npm test --workspace server -- migrations.test.ts` and full `npm run lint && npm test && npm run build` (lint warnings only in pre-existing config files). Committing.
+- 13:46 NOTE m0a-06: commit is f89675e.
