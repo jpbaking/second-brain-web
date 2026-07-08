@@ -4,6 +4,7 @@ import { openCoreDb } from '../db.js'
 import { readVaultConfig, vaultWorkspacePath, writeVaultConfig } from './config.js'
 import { detectVault } from './detect.js'
 import { syncVault } from './sync.js'
+import { runHealthCheck } from './health.js'
 import type { AppConfig } from '../config.js'
 import type { VaultConfigPatch } from './config.js'
 import type { FastifyInstance } from 'fastify'
@@ -77,6 +78,23 @@ export function registerVaultRoutes (app: FastifyInstance, config: AppConfig): v
       const result = await syncVault(db, config.dataDir)
       const detection = detectVault(vaultWorkspacePath(config.dataDir))
       return { ...result, detection }
+    } finally {
+      db.close()
+    }
+  })
+
+  app.post('/api/vault/health', async () => {
+    const db = openCoreDb(config.dataDir)
+    try {
+      const result = await runHealthCheck(vaultWorkspacePath(config.dataDir))
+      writeVaultConfig(db, {
+        lastHealth: JSON.stringify({
+          available: result.available,
+          issueCount: result.issueCount,
+          ranAt: result.ranAt,
+        }),
+      })
+      return result
     } finally {
       db.close()
     }

@@ -37,7 +37,7 @@ Binding constraints:
       Verify: `npm test --workspace server -- vault-health.test.ts` — a temp
       workspace with a stub `scripts/health.py` yields the parsed issue count
       and sections; a missing script reports a clear not-available result.
-- [ ] **m04-04** — Health endpoint: guarded `POST /api/vault/health` runs the
+- [x] **m04-04** — Health endpoint: guarded `POST /api/vault/health` runs the
       check, stores a last-health summary on the vault config, and returns the
       parsed result.
       Verify: `npm test --workspace server -- vault-health-api.test.ts` — unauth
