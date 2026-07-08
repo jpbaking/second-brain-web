@@ -38,7 +38,7 @@ variable (ask the principal via STATUS.md if unset). Never commit it; add
       route would answer it?
       Verify: a tool call pauses, is approved from outside the agent
       callback, and then executes.
-- [ ] **m00-07** — Rules: does the agent honour `.clinerules/` in the
+- [x] **m00-07** — Rules: does the agent honour `.clinerules/` in the
       workspace by itself, or must rule files be injected into the system
       prompt?
       Verify: ask the agent something only `.clinerules/00-role.md` would

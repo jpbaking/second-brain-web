@@ -212,7 +212,25 @@ Answered: 2026-07-08. **PASS — the exact shape a web app needs.**
 
 ## m00-07 — .clinerules/ honoured or injected?
 
-Not yet answered (docs are silent; expectation is injection).
+Answered: 2026-07-08. **AUTO-LOADED — the plan's assumption was wrong in our
+favour.**
+
+- `spike/05-rules.mjs` A/B: identical prompt and `systemPrompt` ("You are a
+  test assistant"), one run with `cwd` in the test vault, one in an empty
+  directory.
+  - In vault: "As the Principal's executive secretary and second brain, I
+    treat original files as sacred — never editing… only moving and renaming
+    them into `library/`" — near-verbatim `.clinerules/00-role.md`.
+  - In empty dir: generic assistant reply, no vault markers.
+- So the SDK discovers and applies `.clinerules/` from the workspace on its
+  own (matching the search paths found in m00-01/02: `<ws>/.clinerules`,
+  `<ws>/AGENTS.md`, `<ws>/.cline/rules`, plus user-global locations).
+  **No rules injection layer is needed in the app.** Keep phase-004's
+  injection design only as a documented fallback.
+- Note: the workspace rules dominate our short `systemPrompt` — the app
+  should treat `systemPrompt` as supplementary context, not the persona.
+- Detector-design lesson: don't put marker words in the question (first run
+  scored a false positive on "principal" being echoed back).
 
 ## m00-08 — Workflows and skills
 
