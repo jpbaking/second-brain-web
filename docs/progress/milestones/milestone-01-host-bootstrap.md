@@ -17,7 +17,7 @@ session secret.
       under `auth/`.
       Verify: script output contains a password and otpauth URI; data files
       are mode `0600`; no plaintext password appears in files.
-- [ ] **m01-03** — Add `scripts/generate-deploy-key.sh` entry point that
+- [x] **m01-03** — Add `scripts/generate-deploy-key.sh` entry point that
       creates or rotates the dedicated SSH deploy key under `ssh/` in the
       data root.
       Verify: running it against a fresh `0700` temp dir creates private and

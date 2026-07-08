@@ -14,9 +14,10 @@ Updated: 2026-07-08 (milestone 0A complete)
 
 ## Next step
 
-- m01-03: `scripts/generate-deploy-key.sh` creates/rotates the dedicated SSH
-  deploy key under `ssh/` (private key mode `0600`). (m01-01/02 done: data-root
-  bootstrap + owner auth material via `@node-rs/argon2` into `auth/owner.json`.)
+- m01-04: `generate-deploy-key.sh` prints operator instructions — the public
+  key to add as a deploy key and where it was stored — without printing the
+  private key. (m01-01/02/03 done: data-root bootstrap, owner auth material,
+  ed25519 deploy key; shared validation in `scripts/lib/data-root.sh`.)
 
 ## Read before working
 
