@@ -57,6 +57,21 @@ const coreMigrations: Migration[] = [
       )
     `,
   },
+  {
+    version: 5,
+    sql: `
+      CREATE TABLE vault_config (
+        vault_id TEXT PRIMARY KEY,
+        display_name TEXT,
+        remote_url TEXT,
+        branch TEXT NOT NULL DEFAULT 'main',
+        last_commit TEXT,
+        last_pull_at TEXT,
+        last_health TEXT,
+        updated_at TEXT NOT NULL
+      )
+    `,
+  },
 ]
 
 const sidecarMigrations: Migration[] = [

@@ -19,7 +19,7 @@ Binding constraints:
   whose remote does not match the configured one.
 - All vault routes are private (behind the m02 auth guard).
 
-- [ ] **m03-01** — Core-DB migration adds a `vault_config` table (single
+- [x] **m03-01** — Core-DB migration adds a `vault_config` table (single
       `default` row: display name, remote URL, branch, workspace path, ssh key
       path, last commit, last pull timestamp, last health result) and a config
       module (read with sensible defaults, upsert).

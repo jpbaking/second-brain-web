@@ -103,3 +103,5 @@ Tree clean at 8cd068f. Active: milestone 01, next item: m01-01 (scripts/reset-au
 ## 2026-07-08 18:52 — session continues
 Milestone 2 complete (10/10) at 0e7625a. Proceeding to Milestone 3: create checklist, then m03-01.
 - 18:53 DONE progress: milestone-03-vault-config checklist created (8 items, each with a verification command; grounded in phase-003). Noted plan-vs-reality: deploy key is ssh/deploy_key not the doc example. STATUS points at m03-01. Committing.
+- 18:53 STARTED m03-01: core migration v5 vault_config table (single default row) + vault/config module (readVaultConfig with derived workspace/ssh paths, writeVaultConfig merge-upsert)
+- 18:55 DONE m03-01: core migration v5 vault_config table (single default row) + vault/config module (readVaultConfig with defaults + derived workspace/ssh paths, writeVaultConfig merge-upsert). Verified by `npm test --workspace server -- vault-config.test.ts` (fresh defaults branch main + derived paths; persists remote/branch/name; patches merge without clobber). Schema assertions -> core v5; full lint(0 err)/test(64)/build pass. Committing.
