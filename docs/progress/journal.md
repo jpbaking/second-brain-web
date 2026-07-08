@@ -29,3 +29,5 @@ Tree clean at d523094. Active: milestone 00, next item: m00-01. Note: SECOND_BRA
 - 13:03 DONE m00-07: rules AUTO-LOADED, A/B confirmed via `node spike/05-rules.mjs` — vault run answers as executive secretary quoting 00-role.md, empty-dir run generic. No injection layer needed.
 - 13:04 STARTED m00-08: workflows/skills — marker workflow via /spike-test.md slash message; then inbox attempt
 - 13:15 DONE m00-08: slash NOT expanded by core (app expands workflow files — proven); skills auto-load incl. global ~/.cline/skills (flag for deployment); full /inbox.md run with 9B model filed everything correctly, health passes.
+- 13:16 STARTED m00-09: library/ tool-policy guard — deny editor on originals, allow catalog edits and shell mv
+- 13:21 DONE m00-09: library guard PASS — editor write to original denied (file unchanged), catalog edit + shell mv allowed. Paths arrive relative OR absolute; normalise in production. Rules alone already deter edits (defence layer 1).

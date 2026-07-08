@@ -79,3 +79,6 @@ Thumbs.db
 .idea/
 .vscode/*
 !.vscode/extensions.json
+spike/guard-ws/
+spike/empty-ws/
+spike/resume-session-id.txt

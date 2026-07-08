@@ -48,7 +48,7 @@ variable (ask the principal via STATUS.md if unset). Never commit it; add
       not, prove the fallback: read the workflow file and send its content as
       the task prompt.
       Verify: a dummy inbox file gets processed via whichever path works.
-- [ ] **m00-09** — Tool-policy guard: implement a middleware/policy that
+- [x] **m00-09** — Tool-policy guard: implement a middleware/policy that
       refuses non-catalog writes under `library/` across every file-mutating
       tool, while still allowing move/rename via shell.
       Verify: agent is instructed to edit a library original and the write is

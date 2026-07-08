@@ -261,8 +261,34 @@ Skills: auto-loaded. Full inbox processing works end to end.**
 
 ## m00-09 — Tool-policy guard for library/
 
-Not yet answered (mechanism identified: `requestToolApproval` +
-`toolPolicies`; see m00-01 notes).
+Answered: 2026-07-08. **PASS — the mandatory guard is implementable exactly
+where planned.**
+
+- `spike/09-guard.mjs` implements the guard as `requestToolApproval`
+  middleware and verifies all three behaviours:
+  1. `editor` write to a `library/` original → **denied**, file unchanged,
+     and the model receives the denial reason and reports it instead of
+     completing ("the workspace guard is preventing me…").
+  2. `editor` append to `library/2026/catalog.md` → allowed.
+  3. `bash` `mv` of an original within `library/` → allowed (move/rename
+     stays legal, as in the vault's own hook).
+- Production notes for the real implementation (milestone 5A):
+  - `input.path` arrives **sometimes relative, sometimes absolute** —
+    normalise against the workspace root before matching.
+  - The `bash` command check here is a crude regex; the real guard needs a
+    proper command classifier or a conservative deny-with-reason default,
+    plus unit tests.
+  - Editor read/view operations did not trigger approval — only mutations
+    hit the callback, which keeps read flows fast under
+    `autoApprove: false`.
+- **Defence in depth observed:** inside the real vault the rules alone
+  already made the model refuse to edit an original (it never attempted the
+  tool call — we had to test the guard in a bare workspace to make the model
+  try). Layers: vault rules (persuasion) → app guard (enforcement) → git
+  history (recovery).
+- Amusing pitfall: if the target file's content says "do not edit", the
+  model obeys the file and never calls the tool. Guard tests must use
+  neutral content.
 
 ## m00-10 — Go/adjust decisions
 
