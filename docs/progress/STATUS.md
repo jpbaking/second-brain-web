@@ -38,11 +38,13 @@ Updated: 2026-07-09 (milestone 5 complete)
 
 ## Next step
 
-- m5a-02: the mandatory `library/` tool-policy guard — a path normaliser +
-  command classifier + explicit `toolPolicies` that DENY editor/write and shell
-  mutations targeting non-catalog paths under `library/`, ALLOW catalog edits +
-  shell `mv`, and never blanket auto-approve unlisted tools (mirrors spike
-  m00-09). The SDK accepts `toolPolicies` on `ClineCore.create` options.
+- m5a-03: chat session + event store — core migration adds `chat_sessions`
+  (id, title, provider profile id, sdk_session_id, status, timestamps) and
+  append-only `chat_events` (id, session id, seq, type, payload json,
+  created_at); store with create/list/get/rename/close, append-event,
+  read-events-since (replay), and the chatSession↔sdkSessionId mapping. Offline
+  unit tests (monotonic seq, replay, mapping round-trip). This will take the
+  core schema to v8.
 - Live-model dependency: **m5a-10 (deliverable check) needs LM Studio reachable
   at `http://127.0.0.1:1234/v1` or a configured cloud provider key.** LM Studio
   was NOT reachable when 5A started; m5a-01..09 build/verify offline with a fake

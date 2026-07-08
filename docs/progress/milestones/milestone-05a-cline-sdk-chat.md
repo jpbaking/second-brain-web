@@ -43,7 +43,7 @@ in `/v1`.
       Verify: `npm test --workspace server -- agent-runner.test.ts` — snapshot→
       SDK-config mapping is correct per provider (incl. `/v1` normalisation and
       key passed through, never logged); data root resolves under the data dir.
-- [ ] **m5a-02** — `library/` tool-policy guard: a path normaliser + command
+- [x] **m5a-02** — `library/` tool-policy guard: a path normaliser + command
       classifier + explicit `toolPolicies` that DENY editor/write and shell
       mutations targeting non-catalog paths under `library/`, ALLOW catalog
       edits and shell `mv`, and never blanket auto-approve unlisted tools.
