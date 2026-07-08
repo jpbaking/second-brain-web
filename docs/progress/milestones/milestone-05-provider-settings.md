@@ -17,7 +17,7 @@ Binding constraints (hard rules):
   them to git/vault/transcripts.
 - All provider routes are private (behind the m02 auth guard).
 
-- [ ] **m05-01** — Secrets crypto module: authenticated encryption
+- [x] **m05-01** — Secrets crypto module: authenticated encryption
       (AES-256-GCM) keyed by a scrypt-derived key from
       `SECOND_BRAIN_WEB_SECRETS_KEY`; a helper reports whether secret storage is
       configured. Fail closed when the key is missing/invalid.

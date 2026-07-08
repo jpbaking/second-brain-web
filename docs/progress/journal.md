@@ -154,3 +154,5 @@ Milestone 4 complete (7/7) at 3b9be1f; user pushed to origin. Proceeding to Mile
 ## 2026-07-08 23:39 — session continues
 Milestone 4A complete (5/5) at 93f3270; user pushed to origin (per earlier note). Proceeding to Milestone 5 (Provider Settings): create checklist, then m05-01.
 - 23:40 DONE progress: milestone-05-provider-settings checklist created (7 items; secret storage keyed by SECOND_BRAIN_WEB_SECRETS_KEY per hard rule). STATUS points at m05-01. Committing.
+- 23:41 STARTED m05-01: secrets/crypto.ts — AES-256-GCM with scrypt-derived key from SECOND_BRAIN_WEB_SECRETS_KEY; secretsKeyConfigured/encryptSecret/decryptSecret, fail-closed
+- 23:42 DONE m05-01: secrets/crypto.ts — AES-256-GCM with scrypt-derived key from SECOND_BRAIN_WEB_SECRETS_KEY; secretsKeyConfigured/encryptSecret/decryptSecret/secretLast4, fail-closed (SecretsError). Verified by `npm test --workspace server -- secrets.test.ts` (round-trip; random-nonce ciphertext differs; wrong key fails; tampered ciphertext rejected via GCM tag; not-configured refuses to encrypt; last4). Full lint(0 err)/test(103)/build pass. Committing.
