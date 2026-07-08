@@ -38,14 +38,14 @@ Updated: 2026-07-09 (milestone 5 complete)
 
 ## Next step
 
-- m5a-05: chat HTTP routes (guarded) — create session (with provider
-  selection), list/get sessions, post a message, post a command, compaction
-  stub; all behind the auth guard, driving `AgentSessionService`. Wire a shared
-  service instance in app.ts with the real `ClineAgentRunner`, `snapshotFor`
-  from m05 (`resolveSnapshot`/`resolveDefaultSnapshot`), and `vaultCwd` =
-  `vaultWorkspacePath(dataDir)`. Offline tests inject a fake runner. Watch the
-  bodyless-POST/content-type 400 (fixed in m05-07) — chat POSTs must accept an
-  empty body.
+- m5a-06: SSE event stream — `GET /api/chat/sessions/:id/events` streams
+  persisted + live events (mapped from the SDK `subscribe` envelopes:
+  status/agent_event/chunk/session_snapshot/ended) with monotonic event ids, a
+  heartbeat, and `Last-Event-ID` reconnect/replay from `readEventsSince`. The
+  live bridge: the `AgentSessionService` must fan SDK `subscribe` events into
+  `appendEvent` + push to connected SSE clients — plan a small event-hub/
+  emitter in the service (this needs a seam the fake runner can drive in tests).
+  Assistant text is cumulative on inner `text` (findings m00-10 #9).
 - Live-model dependency: **m5a-10 (deliverable check) needs LM Studio reachable
   at `http://127.0.0.1:1234/v1` or a configured cloud provider key.** LM Studio
   was NOT reachable when 5A started; m5a-01..09 build/verify offline with a fake

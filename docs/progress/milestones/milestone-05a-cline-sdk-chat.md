@@ -67,7 +67,7 @@ in `/v1`.
       runner) — new session persists mapping + events; resume after a simulated
       restart rehydrates from stored messages; snapshot captured at start is not
       mutated by a later profile edit.
-- [ ] **m5a-05** — Chat HTTP routes (guarded): create session (with provider
+- [x] **m5a-05** — Chat HTTP routes (guarded): create session (with provider
       selection), list/get sessions, post a message, post a command, and the
       compaction action stub — all behind the auth guard, driving the backend.
       Verify: `npm test --workspace server -- chat-api.test.ts` — 401 unauth;

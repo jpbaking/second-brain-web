@@ -11,12 +11,20 @@ import { registerAuthRoutes } from './auth/routes.js'
 import { registerAuthGuard } from './auth/guard.js'
 import { registerVaultRoutes } from './vault/routes.js'
 import { registerProviderRoutes } from './providers/routes.js'
+import { registerChatRoutes } from './chat/routes.js'
+import { ClineAgentRunner } from './agent/cline-runner.js'
+import type { AgentRunner } from './agent/runner.js'
 
 const here = path.dirname(fileURLToPath(import.meta.url))
 // server/src (tsx) and server/dist (built) are both one level below server/.
 const webDist = path.resolve(here, '../../web/dist')
 
-export function buildApp (config?: AppConfig): FastifyInstance {
+/** Test/embedding seam: override the agent runner (defaults to the live Cline SDK). */
+export interface AppDeps {
+  agentRunner?: AgentRunner
+}
+
+export function buildApp (config?: AppConfig, deps?: AppDeps): FastifyInstance {
   const app = Fastify({
     logger: process.env.NODE_ENV !== 'test',
   })
@@ -33,6 +41,7 @@ export function buildApp (config?: AppConfig): FastifyInstance {
     registerAuthRoutes(app, config)
     registerVaultRoutes(app, config)
     registerProviderRoutes(app, config)
+    registerChatRoutes(app, config, deps?.agentRunner ?? new ClineAgentRunner(config.dataDir))
   }
 
   app.get('/api/status', async (_req, reply) => {
