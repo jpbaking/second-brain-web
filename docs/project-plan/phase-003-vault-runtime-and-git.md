@@ -107,6 +107,12 @@ Write operations include:
 
 When uncertain whether an operation writes, take the write lock.
 
+Expectation: because the vault rules file substantive chat facts ("nothing
+evaporates"), nearly every non-read-only session is a writer. All writing
+sessions serialise behind this lock in practice, which is acceptable for a
+single principal. The UI should make waiting state visible rather than hide
+it.
+
 ## Git Commit Strategy
 
 Recommended MVP strategy: commit after each completed mutating workflow.
@@ -151,6 +157,14 @@ If the app starts and finds a dirty vault checkout:
 5. Allow host-level recovery for advanced cases.
 
 Never run destructive git reset automatically.
+
+## Repository Growth
+
+`library/YYYY/` accumulates binary originals (PDFs, images, office documents)
+in plain git, so the vault repository and its clones grow monotonically over
+the years. Not a problem to solve now: monitor clone size, and note git-lfs
+as the likely later mitigation if it becomes uncomfortable. Migrating history
+to git-lfs is disruptive, so revisit deliberately rather than reactively.
 
 ## Health Check
 
@@ -200,6 +214,10 @@ The app UI should not provide direct edit controls for `library/` originals.
 Uploads go to `inbox/`; the agent moves originals to `library/` through vault
 workflow rules.
 
-The backend can add an extra guard that refuses non-catalog writes under
-`library/`, but agent/tool integration details may decide where best to enforce
-this.
+The backend MUST enforce a tool-policy guard that refuses non-catalog writes
+under `library/` on every agent file tool. This is not optional hardening:
+the vault's own PreToolUse hook is a Cline extension feature and will not
+fire under the Cline SDK, so the app-side guard is the only enforcement of
+the vault's strongest invariant. Move/rename via shell remains allowed, as in
+the vault's own hook. The guard should be implemented as middleware/policy on
+the SDK's file tools and covered by tests.
