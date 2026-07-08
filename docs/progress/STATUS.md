@@ -38,12 +38,14 @@ Updated: 2026-07-09 (milestone 5 complete)
 
 ## Next step
 
-- m5a-04: agent session backend — create a session (capture the m05 provider
-  snapshot at start, cwd = vault checkout) and resume via rehydration
-  (`readMessages` + `initialMessages`) using the injected `AgentRunner`; persist
-  the sdkSessionId mapping (m5a-03 store) and turn events. Offline tests with a
-  fake runner (new-session persistence; resume-after-restart rehydration;
-  snapshot captured at start not mutated by a later profile edit).
+- m5a-05: chat HTTP routes (guarded) — create session (with provider
+  selection), list/get sessions, post a message, post a command, compaction
+  stub; all behind the auth guard, driving `AgentSessionService`. Wire a shared
+  service instance in app.ts with the real `ClineAgentRunner`, `snapshotFor`
+  from m05 (`resolveSnapshot`/`resolveDefaultSnapshot`), and `vaultCwd` =
+  `vaultWorkspacePath(dataDir)`. Offline tests inject a fake runner. Watch the
+  bodyless-POST/content-type 400 (fixed in m05-07) — chat POSTs must accept an
+  empty body.
 - Live-model dependency: **m5a-10 (deliverable check) needs LM Studio reachable
   at `http://127.0.0.1:1234/v1` or a configured cloud provider key.** LM Studio
   was NOT reachable when 5A started; m5a-01..09 build/verify offline with a fake

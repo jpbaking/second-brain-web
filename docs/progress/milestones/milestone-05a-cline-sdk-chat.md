@@ -59,7 +59,7 @@ in `/v1`.
       append-event, read-events-since, and the chatSession↔sdkSessionId mapping.
       Verify: `npm test --workspace server -- chat-store.test.ts` — CRUD +
       monotonic event seq per session + read-since replay + mapping round-trip.
-- [ ] **m5a-04** — Agent session backend: create a session (capture the m05
+- [x] **m5a-04** — Agent session backend: create a session (capture the m05
       provider snapshot at start, cwd = vault checkout) and resume it via
       rehydration (`readMessages` + `initialMessages`) using the injected
       runner; persist the sdkSessionId mapping and turn events.

@@ -1,0 +1,147 @@
+import { mkdtempSync, rmSync } from 'node:fs'
+import { tmpdir } from 'node:os'
+import path from 'node:path'
+import { afterEach, describe, expect, it } from 'vitest'
+import { loadConfig } from '../src/config.js'
+import { openCoreDb } from '../src/db.js'
+import { prepareDatabases } from '../src/migrations.js'
+import { AgentSessionService } from '../src/agent/session.js'
+import { getSession, readEventsSince } from '../src/agent/chat-store.js'
+import type { AgentRunner, AgentStartInput, AgentStartResult } from '../src/agent/runner.js'
+import type { ProviderSnapshot } from '../src/providers/snapshot.js'
+import type { DatabaseSync } from 'node:sqlite'
+
+const scratch: string[] = []
+const dbs: DatabaseSync[] = []
+
+function freshDb (): DatabaseSync {
+  const root = mkdtempSync(path.join(tmpdir(), 'sbw-agentsess-'))
+  scratch.push(root)
+  const dataDir = loadConfig({ SECOND_BRAIN_WEB_DATA_DIR: path.join(root, 'data') }).dataDir
+  prepareDatabases(dataDir)
+  const db = openCoreDb(dataDir)
+  dbs.push(db)
+  return db
+}
+
+afterEach(() => {
+  for (const db of dbs.splice(0)) db.close()
+  for (const dir of scratch.splice(0)) rmSync(dir, { recursive: true, force: true })
+})
+
+/** Records every SDK interaction and hands out incrementing session ids. */
+class FakeRunner implements AgentRunner {
+  starts: AgentStartInput[] = []
+  sends: Array<{ sessionId: string, text?: string }> = []
+  messagesById = new Map<string, unknown[]>()
+  private n = 0
+
+  async start (input: AgentStartInput): Promise<AgentStartResult> {
+    this.starts.push(input)
+    const sessionId = `sdk-${++this.n}`
+    // Seed a couple of persisted messages so a later readMessages returns them.
+    this.messagesById.set(sessionId, [{ role: 'user', content: input.prompt ?? '(resumed)' }])
+    return { sessionId }
+  }
+
+  async send (sessionId: string, input: { type: string, text?: string }): Promise<void> {
+    this.sends.push({ sessionId, text: input.text })
+  }
+
+  subscribe (): () => void { return () => {} }
+  async readMessages (sessionId: string): Promise<unknown[]> { return this.messagesById.get(sessionId) ?? [] }
+  async stop (): Promise<void> {}
+}
+
+function snap (over: Partial<ProviderSnapshot>): ProviderSnapshot {
+  return {
+    profileId: 'prof-1',
+    displayName: 'Default',
+    providerId: 'openai-compatible',
+    modelId: 'model-a',
+    baseUrl: 'http://127.0.0.1:1234/v1',
+    headers: null,
+    apiKey: 'sk-secret',
+    ...over,
+  }
+}
+
+describe('AgentSessionService', () => {
+  it('creates a session, captures non-secret config, and starts on first message', async () => {
+    const db = freshDb()
+    const runner = new FakeRunner()
+    const svc = new AgentSessionService(db, runner, { snapshotFor: () => snap({}), vaultCwd: '/vault' })
+
+    const session = svc.create({ title: 'Chat 1' })
+    // Captured config event has provider/model but never the key.
+    const captured = readEventsSince(db, session.id, 0).find(e => e.type === 'session_config')
+    expect(captured?.payload).toMatchObject({ providerId: 'openai-compatible', modelId: 'model-a' })
+    expect(JSON.stringify(captured?.payload)).not.toContain('sk-secret')
+
+    const res = await svc.sendMessage(session.id, 'hello')
+    expect(res.sdkSessionId).toBe('sdk-1')
+    // First message starts the SDK session with the prompt (not send()).
+    expect(runner.starts).toHaveLength(1)
+    expect(runner.starts[0]?.prompt).toBe('hello')
+    expect(runner.starts[0]?.config).toMatchObject({ providerId: 'openai-compatible', modelId: 'model-a', apiKey: 'sk-secret', cwd: '/vault' })
+    expect(runner.sends).toHaveLength(0)
+    // Mapping + user_message event persisted.
+    expect(getSession(db, session.id)?.sdkSessionId).toBe('sdk-1')
+    expect(readEventsSince(db, session.id, 0).some(e => e.type === 'user_message')).toBe(true)
+  })
+
+  it('sends subsequent messages to the live session without restarting', async () => {
+    const db = freshDb()
+    const runner = new FakeRunner()
+    const svc = new AgentSessionService(db, runner, { snapshotFor: () => snap({}), vaultCwd: '/vault' })
+    const session = svc.create({ title: 'C' })
+    await svc.sendMessage(session.id, 'first')
+    await svc.sendMessage(session.id, 'second')
+    expect(runner.starts).toHaveLength(1)
+    expect(runner.sends).toEqual([{ sessionId: 'sdk-1', text: 'second' }])
+  })
+
+  it('rehydrates after a simulated restart via readMessages + initialMessages', async () => {
+    const db = freshDb()
+    const runner = new FakeRunner()
+    const opts = { snapshotFor: () => snap({}), vaultCwd: '/vault' }
+
+    // Process A: create + one message → sdk-1 persisted.
+    const svcA = new AgentSessionService(db, runner, opts)
+    const session = svcA.create({ title: 'C' })
+    await svcA.sendMessage(session.id, 'hello')
+    expect(getSession(db, session.id)?.sdkSessionId).toBe('sdk-1')
+
+    // Process B: new service (empty live map) resumes from the store.
+    const svcB = new AgentSessionService(db, runner, opts)
+    const resumed = await svcB.resume(session.id)
+    expect(resumed.sdkSessionId).toBe('sdk-2')
+    expect(resumed.rehydratedMessages).toBeGreaterThan(0)
+    // Started with initialMessages read from the old SDK session.
+    const resumeStart = runner.starts.at(-1)
+    expect(resumeStart?.initialMessages).toBeDefined()
+    // Mapping now points at the fresh SDK session.
+    expect(getSession(db, session.id)?.sdkSessionId).toBe('sdk-2')
+  })
+
+  it('uses the config captured at start even after the profile is edited', async () => {
+    const db = freshDb()
+    const runner = new FakeRunner()
+    // Mutable snapshot source: model changes after creation.
+    let current = snap({ modelId: 'model-a' })
+    const svc = new AgentSessionService(db, runner, { snapshotFor: () => current, vaultCwd: '/vault' })
+
+    const session = svc.create({ title: 'C' })
+    current = snap({ modelId: 'model-EDITED' }) // profile edited later
+
+    await svc.sendMessage(session.id, 'hi')
+    // The started model must be the captured one, not the edited one.
+    expect(runner.starts[0]?.config.modelId).toBe('model-a')
+  })
+
+  it('refuses to create a session when no provider profile resolves', () => {
+    const db = freshDb()
+    const svc = new AgentSessionService(db, new FakeRunner(), { snapshotFor: () => undefined, vaultCwd: '/vault' })
+    expect(() => svc.create({ title: 'C' })).toThrow(/provider profile/)
+  })
+})
