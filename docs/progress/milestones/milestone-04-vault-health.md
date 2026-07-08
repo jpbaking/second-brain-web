@@ -31,7 +31,7 @@ Binding constraints:
       Verify: `npm test --workspace server -- vault-lock.test.ts` — acquire
       succeeds when free; a second acquire is refused while held; release frees
       it; a lock past the stale timeout is reported stale/acquirable.
-- [ ] **m04-03** — Health runner: run `python3 scripts/health.py` in the
+- [x] **m04-03** — Health runner: run `python3 scripts/health.py` in the
       workspace and parse stdout into raw text, an issue count (if detectable),
       sections, and a run timestamp — treating exit 0 as non-authoritative.
       Verify: `npm test --workspace server -- vault-health.test.ts` — a temp
