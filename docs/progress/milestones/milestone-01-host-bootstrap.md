@@ -5,7 +5,7 @@ Binding constraints: no secrets in git; data root private (`0700`);
 provider/model secrets later use `SECOND_BRAIN_WEB_SECRETS_KEY`, never the
 session secret.
 
-- [ ] **m01-01** — Add `scripts/reset-auth.sh` entry point that validates
+- [x] **m01-01** — Add `scripts/reset-auth.sh` entry point that validates
       `SECOND_BRAIN_WEB_DATA_DIR`, creates/uses the app data root, refuses
       unsafe permissions, and prints actionable errors.
       Verify: running it with no env var fails; running it against a fresh

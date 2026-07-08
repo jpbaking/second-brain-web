@@ -14,7 +14,10 @@ Updated: 2026-07-08 (milestone 0A complete)
 
 ## Next step
 
-- First unchecked item in the milestone 1 checklist (m01-01).
+- m01-02: `reset-auth.sh` generates owner auth bootstrap material (random
+  one-time password, Argon2id hash, TOTP secret + otpauth URI) into `auth/`
+  at mode `0600`, no plaintext password on disk. (m01-01 done: data-root
+  validation + private layout bootstrap.)
 
 ## Read before working
 

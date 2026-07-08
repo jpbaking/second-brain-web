@@ -62,3 +62,8 @@ Tree clean at 08447f2. Active: milestone 0A.
 - 13:54 NOTE m0a-08: commit is db8c63d.
 
 ## 13:54 — session end. Milestone 0A complete (8/8). Next: m01-01, `scripts/reset-auth.sh` data-root validation/bootstrap.
+
+## 2026-07-08 17:08 — session start
+Tree clean at 8cd068f. Active: milestone 01, next item: m01-01 (scripts/reset-auth.sh data-root validation/bootstrap).
+- 17:10 STARTED m01-01: scripts/reset-auth.sh data-root validation + private layout bootstrap with actionable errors
+- 17:10 DONE m01-01: scripts/reset-auth.sh validates SECOND_BRAIN_WEB_DATA_DIR, creates the 8-dir private layout at mode 700, and refuses a world-readable root. Verified: no-env exit 1, fresh 0700 root exit 0 with full layout, world-readable (755) exit 1, idempotent re-run exit 0. Committing.
