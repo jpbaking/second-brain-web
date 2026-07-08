@@ -20,7 +20,7 @@ variable (ask the principal via STATUS.md if unset). Never commit it; add
       SDK packages identified in m00-01.
       Verify: a hello-world script constructs an Agent and gets one model
       response.
-- [ ] **m00-03** — Prepare a test vault: clone the public `second-brain`
+- [x] **m00-03** — Prepare a test vault: clone the public `second-brain`
       template into `spike/test-vault/` (git-ignored) and add a few dummy
       memory pages, one dummy library original, and its catalog entry.
       Verify: `python3 spike/test-vault/scripts/health.py` runs.

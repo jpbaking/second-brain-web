@@ -126,7 +126,22 @@ prove whether they load automatically.
 
 ## m00-03 — Test vault
 
-Not yet answered.
+Answered: 2026-07-08. **PASS.**
+
+- Cloned the public data-free template `jpbaking/second-brain` into
+  `spike/test-vault/` (git-ignored). Deliberately did **not** copy the
+  principal's private vault (`second-brain-mine`) — the spike must never
+  touch real people data.
+- Seeded dummy data following the vault's own conventions: a people dossier
+  (`alex-reyes.md`), a project page (`project-nimbus.md`), one library
+  original + `library/2026/catalog.md`, leaf index entries, root
+  index/catalog counts, and a `memory/log.md` entry.
+- `python3 spike/test-vault/scripts/health.py` reports "Vault healthy: no
+  mechanical issues found", so the seeded tree satisfies the mechanical
+  invariants (index counts, catalog tree, navigation size rule).
+- The template ships `.clinerules/` (5 rule files, workflows, hooks) and
+  `.cline/skills/` — exactly the layout the SDK's config search paths
+  resolve to, which m00-07/08 will exercise.
 
 ## m00-04 — Multi-turn conversation
 
