@@ -19,10 +19,9 @@ Updated: 2026-07-08 (milestone 2 complete)
 
 ## Next step
 
-- m03-03: git runner — run git via argv (no shell) with
-  `GIT_SSH_COMMAND="ssh -i <key> -o IdentitiesOnly=yes -o StrictHostKeyChecking=accept-new"`,
-  returning stdout/stderr/exit. (m03-01/02 done: vault_config store + GET/PUT
-  /api/vault/config; core schema v5.)
+- m03-04: clone/pull into `workspaces/second-brain` — clone if empty, else
+  verify repo + expected remote and pull the branch; record last commit + pull.
+  (m03-01/02/03 done: vault_config store, GET/PUT config API, git runner.)
 
 ## Read before working
 

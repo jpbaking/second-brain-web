@@ -33,7 +33,7 @@ Binding constraints:
       Verify: `npm test --workspace server -- vault-config-api.test.ts` — unauth
       is 401; authed GET returns config without key contents; PUT persists and
       rejects an invalid remote URL.
-- [ ] **m03-03** — Git runner: run git with argv (no shell) and
+- [x] **m03-03** — Git runner: run git with argv (no shell) and
       `GIT_SSH_COMMAND="ssh -i <key> -o IdentitiesOnly=yes -o StrictHostKeyChecking=accept-new"`,
       returning stdout/stderr/exit and surfacing failures.
       Verify: `npm test --workspace server -- git-runner.test.ts` — `git init`/
