@@ -1,29 +1,31 @@
 # STATUS — single source of truth
 
-Updated: 2026-07-08 (milestone 0A complete)
+Updated: 2026-07-08 (milestone 1 complete)
 
 ## Where we are
 
 - Phase: pre-implementation, **SDK feasibility spike DONE — verdict GO**.
   All findings and binding decisions: `docs/spike/findings.md` (m00-10
   section has the decision list).
-- Active milestone: **Milestone 1 — Host Bootstrap Scripts**.
-- Checklist: `docs/progress/milestones/milestone-01-host-bootstrap.md`
+- **Milestone 1 — Host Bootstrap Scripts: COMPLETE (6/6).** reset-auth.sh +
+  generate-deploy-key.sh produce owner creds + ed25519 deploy key into the
+  private data root; shared validation in `scripts/lib/data-root.sh`.
+- Active milestone: **Milestone 2 — Authentication** (checklist not yet
+  created).
 - App runnable: yes, with `SECOND_BRAIN_WEB_DATA_DIR` pointing at a private
   `0700` data root.
 
 ## Next step
 
-- m01-06: milestone deliverable check — run both scripts in a fresh temp data
-  root and confirm no secrets/auth state/SSH private keys/SQLite DBs/temp data
-  are tracked by git; README/operator instructions match reality.
-  (m01-01..05 done: data-root bootstrap, owner auth material, ed25519 deploy
-  key + operator instructions + --rotate; shared `scripts/lib/data-root.sh`.)
+- Create `docs/progress/milestones/milestone-02-authentication.md` by copying
+  Milestone 2's steps from the roadmap (login page, password verify, TOTP
+  challenge, server-side sessions, logout, route guards, rate limiting), one
+  checkbox each with a verification command. Then begin m02-01.
 
 ## Read before working
 
 - `docs/spike/findings.md` — m00-10 decisions (binding on implementation).
-- `docs/project-plan/phase-006-implementation-roadmap.md` — Milestone 1.
+- `docs/project-plan/phase-006-implementation-roadmap.md` — Milestone 2.
 - `docs/project-plan/master-plan.md` — hard rules, runtime layout, auth
   crypto, and secrets handling.
 - `docs/project-plan/phase-002-security-auth-and-secrets.md` — password,

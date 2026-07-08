@@ -31,7 +31,7 @@ session secret.
       refuses overwrite unless a documented rotate flag is supplied.
       Verify: repeated runs behave as documented and tests cover both
       default refusal and rotate success.
-- [ ] **m01-06** — Milestone deliverable check: reset script produces a
+- [x] **m01-06** — Milestone deliverable check: reset script produces a
       password and TOTP setup URI; key script produces an SSH public key to
       add as a deploy key; README/operator instructions match reality.
       Verify: run both scripts in a fresh temp data root and confirm no

@@ -42,6 +42,35 @@ curl http://127.0.0.1:8722/api/status
 For development, use the same data-dir environment variable with
 `npm run dev`; Vite serves the browser app and proxies `/api` to the server.
 
+## Host Bootstrap
+
+Before the first start, generate the owner credentials and the vault deploy key
+from the host shell. Both scripts read `SECOND_BRAIN_WEB_DATA_DIR`, refuse a data
+root that other users can reach, and need the server to be built first
+(`npm run build`).
+
+Owner authentication (password plus TOTP):
+
+```sh
+SECOND_BRAIN_WEB_DATA_DIR=/data/second-brain-web ./scripts/reset-auth.sh
+```
+
+It prints a one-time password and an `otpauth://` setup URI once — record the
+password and add the URI to your authenticator app. Only the Argon2id password
+hash and the TOTP secret are written, to `auth/owner.json` (mode 600). Re-running
+it replaces the credentials and invalidates the old ones.
+
+Vault SSH deploy key:
+
+```sh
+SECOND_BRAIN_WEB_DATA_DIR=/data/second-brain-web ./scripts/generate-deploy-key.sh
+```
+
+It creates an ed25519 key under `ssh/` (private key mode 600, never printed) and
+prints the public key to add as a deploy key — with write access — on your
+vault's Git host. It refuses to overwrite an existing key; pass `--rotate` to
+replace one (which invalidates the old key).
+
 ## Core Direction
 
 - Self-hosted and single-user only.
