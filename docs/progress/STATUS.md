@@ -14,18 +14,15 @@ Updated: 2026-07-08 (milestone 3 complete)
   sync, vault detection, sync/status API, and a `/vault` settings page. Owner
   can configure a repo and clone it into the data root; UI shows branch +
   commit (verified e2e).
-- Active milestone: **Milestone 4 — Vault Status And Health** (checklist not
-  yet created).
+- Active milestone: **Milestone 4 — Vault Status And Health**.
+- Checklist: `docs/progress/milestones/milestone-04-vault-health.md`
 - App runnable: yes, with `SECOND_BRAIN_WEB_DATA_DIR` pointing at a private
   `0700` data root. Core DB schema at v5.
 
 ## Next step
 
-- Create `docs/progress/milestones/milestone-04-vault-health.md` from Milestone
-  4 in the roadmap (git status readout: dirty/clean + last commit; run
-  `scripts/health.py` and parse output — note it always exits 0 so inspect the
-  text; command-center data model). One checkbox each with a verification
-  command. Then begin m04-01.
+- m04-01: git status module — read branch, HEAD commit (hash + subject),
+  clean/dirty, and changed files from the workspace via the git runner.
 
 ## Read before working
 
