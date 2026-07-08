@@ -34,6 +34,18 @@ const coreMigrations: Migration[] = [
       CREATE INDEX sessions_expires_at ON sessions (expires_at);
     `,
   },
+  {
+    version: 3,
+    sql: `
+      CREATE TABLE pending_challenges (
+        id TEXT PRIMARY KEY,
+        token_hash TEXT NOT NULL UNIQUE,
+        created_at TEXT NOT NULL,
+        expires_at TEXT NOT NULL
+      );
+      CREATE INDEX pending_challenges_expires_at ON pending_challenges (expires_at);
+    `,
+  },
 ]
 
 const sidecarMigrations: Migration[] = [

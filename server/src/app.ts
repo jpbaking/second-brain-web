@@ -3,9 +3,11 @@ import path from 'node:path'
 import { fileURLToPath } from 'node:url'
 import Fastify from 'fastify'
 import fastifyStatic from '@fastify/static'
+import fastifyCookie from '@fastify/cookie'
 import type { FastifyInstance } from 'fastify'
 import type { AppConfig } from './config.js'
 import { readSystemStatus } from './status.js'
+import { registerAuthRoutes } from './auth/routes.js'
 
 const here = path.dirname(fileURLToPath(import.meta.url))
 // server/src (tsx) and server/dist (built) are both one level below server/.
@@ -16,9 +18,16 @@ export function buildApp (config?: AppConfig): FastifyInstance {
     logger: process.env.NODE_ENV !== 'test',
   })
 
+  app.register(fastifyCookie)
+
   app.get('/api/health', async () => {
     return { status: 'ok' }
   })
+
+  // Auth routes need the data root; without config the app is status-only.
+  if (config !== undefined) {
+    registerAuthRoutes(app, config)
+  }
 
   app.get('/api/status', async (_req, reply) => {
     if (config === undefined) {

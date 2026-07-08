@@ -17,10 +17,10 @@ Updated: 2026-07-08 (milestone 1 complete)
 
 ## Next step
 
-- m02-04: login-flow endpoints — `POST /api/auth/password` (verify password →
-  short-lived pending challenge) and `POST /api/auth/totp` (verify code →
-  create session, destroy challenge). (m02-01/02/03 done: sessions store, owner
-  credentials, TOTP verify.) Needs a challenge store + cookie config decision.
+- m02-05: session-cookie route guard — an auth pre-handler that reads the
+  session cookie and guards every private route; `/login`, the status endpoint,
+  and static assets stay public. (m02-01..04 done: sessions, owner creds, TOTP,
+  login-flow endpoints + @fastify/cookie; core schema v3.)
 
 ## Read before working
 

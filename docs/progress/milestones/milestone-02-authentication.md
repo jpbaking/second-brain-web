@@ -34,7 +34,7 @@ Binding constraints:
       a small clock-skew window, checked against the stored secret.
       Verify: `npm test --workspace server -- totp.test.ts` — RFC 6238 test
       vectors accepted; wrong/out-of-window codes rejected; ±1 step accepted.
-- [ ] **m02-04** — Login-flow endpoints: `POST /api/auth/password` verifies the
+- [x] **m02-04** — Login-flow endpoints: `POST /api/auth/password` verifies the
       password and issues a short-lived server-side pending challenge;
       `POST /api/auth/totp` verifies the code, creates a session, and destroys
       the challenge.
