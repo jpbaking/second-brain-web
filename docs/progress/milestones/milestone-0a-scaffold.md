@@ -42,7 +42,7 @@ design kit.
       styling, readable on phone width.
       Verify: `curl` the status endpoint + view the page at mobile
       viewport; JSON and HTML agree with reality.
-- [ ] **m0a-08** — Milestone deliverable check: app starts locally with one
+- [x] **m0a-08** — Milestone deliverable check: app starts locally with one
       command, status page reflects missing setup, SQLite WAL/FK/migrations
       in place, first screen uses the kit. Update STATUS, create the
       Milestone 1 (host bootstrap scripts) checklist.

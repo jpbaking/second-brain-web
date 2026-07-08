@@ -1,26 +1,29 @@
 # STATUS — single source of truth
 
-Updated: 2026-07-08 (m0a-07 complete)
+Updated: 2026-07-08 (milestone 0A complete)
 
 ## Where we are
 
 - Phase: pre-implementation, **SDK feasibility spike DONE — verdict GO**.
   All findings and binding decisions: `docs/spike/findings.md` (m00-10
   section has the decision list).
-- Active milestone: **Milestone 0A — Scaffold**.
-- Checklist: `docs/progress/milestones/milestone-0a-scaffold.md`
+- Active milestone: **Milestone 1 — Host Bootstrap Scripts**.
+- Checklist: `docs/progress/milestones/milestone-01-host-bootstrap.md`
 - App runnable: yes, with `SECOND_BRAIN_WEB_DATA_DIR` pointing at a private
   `0700` data root.
 
 ## Next step
 
-- First unchecked item in the milestone 0A checklist (m0a-08).
+- First unchecked item in the milestone 1 checklist (m01-01).
 
 ## Read before working
 
 - `docs/spike/findings.md` — m00-10 decisions (binding on implementation).
-- `docs/project-plan/phase-006-implementation-roadmap.md` — Milestone 0A.
-- `docs/project-plan/master-plan.md` — Suggested Stack + hard rules.
+- `docs/project-plan/phase-006-implementation-roadmap.md` — Milestone 1.
+- `docs/project-plan/master-plan.md` — hard rules, runtime layout, auth
+  crypto, and secrets handling.
+- `docs/project-plan/phase-002-security-auth-and-secrets.md` — password,
+  TOTP, session, and secret-storage baseline.
 
 ## Questions for the principal
 

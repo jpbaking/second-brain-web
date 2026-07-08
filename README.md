@@ -6,7 +6,7 @@ The app is designed to run separately from the actual second-brain vault. At dep
 
 ## Project Status
 
-This repository is currently in assessment and planning.
+This repository is currently in early scaffold implementation.
 
 **Implementation agents: start at [AGENTS-PLAYBOOK.md](AGENTS-PLAYBOOK.md).**
 It routes you to the current state in `docs/progress/` and the parts of the
@@ -15,6 +15,32 @@ plan that matter right now. The full design pack:
 - [Project master plan](docs/project-plan/master-plan.md)
 - [Implementation roadmap](docs/project-plan/phase-006-implementation-roadmap.md)
 - [Security, auth, and secrets](docs/project-plan/phase-002-security-auth-and-secrets.md)
+
+## Local Scaffold
+
+Requirements:
+
+- Node.js 22 or newer.
+- A private local data directory. It must not be readable by group or other
+  users.
+
+Install and run the current scaffold:
+
+```sh
+npm install
+npm run build
+install -d -m 700 /tmp/second-brain-web-data
+SECOND_BRAIN_WEB_DATA_DIR=/tmp/second-brain-web-data npm start
+```
+
+Then open `http://127.0.0.1:8722/` or check the setup JSON directly:
+
+```sh
+curl http://127.0.0.1:8722/api/status
+```
+
+For development, use the same data-dir environment variable with
+`npm run dev`; Vite serves the browser app and proxies `/api` to the server.
 
 ## Core Direction
 
