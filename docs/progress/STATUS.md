@@ -1,31 +1,33 @@
 # STATUS — single source of truth
 
-Updated: 2026-07-08 (milestone 1 complete)
+Updated: 2026-07-08 (milestone 2 complete)
 
 ## Where we are
 
 - Phase: pre-implementation, **SDK feasibility spike DONE — verdict GO**.
   All findings and binding decisions: `docs/spike/findings.md` (m00-10
   section has the decision list).
-- **Milestone 1 — Host Bootstrap Scripts: COMPLETE (6/6).** reset-auth.sh +
-  generate-deploy-key.sh produce owner creds + ed25519 deploy key into the
-  private data root; shared validation in `scripts/lib/data-root.sh`.
-- Active milestone: **Milestone 2 — Authentication**.
-- Checklist: `docs/progress/milestones/milestone-02-authentication.md`
+- **Milestone 1 — Host Bootstrap Scripts: COMPLETE (6/6).**
+- **Milestone 2 — Authentication: COMPLETE (10/10).** Sessions store, owner
+  credentials, RFC 6238 TOTP, two-step login endpoints, secure-by-default
+  route guard, logout, login rate limiting, reset invalidation, and a web
+  login page. App is inaccessible without password + TOTP (verified e2e).
+- Active milestone: **Milestone 3 — Vault Configuration And Clone** (checklist
+  not yet created).
 - App runnable: yes, with `SECOND_BRAIN_WEB_DATA_DIR` pointing at a private
   `0700` data root.
 
 ## Next step
 
-- m02-10: milestone deliverable check — app inaccessible without password +
-  TOTP, existing sessions invalidated on reset. End-to-end with a running
-  server; full lint/test/build; no secrets tracked. (m02-01..09 done: full
-  server-side auth + web login page.)
+- Create `docs/progress/milestones/milestone-03-vault-config.md` from
+  Milestone 3 in the roadmap (vault settings page, git remote URL + branch
+  config, SSH command handling using the deploy key, clone/pull into a runtime
+  workspace), one checkbox each with a verification command. Then begin m03-01.
 
 ## Read before working
 
 - `docs/spike/findings.md` — m00-10 decisions (binding on implementation).
-- `docs/project-plan/phase-006-implementation-roadmap.md` — Milestone 2.
+- `docs/project-plan/phase-006-implementation-roadmap.md` — Milestone 3.
 - `docs/project-plan/master-plan.md` — hard rules, runtime layout, auth
   crypto, and secrets handling.
 - `docs/project-plan/phase-002-security-auth-and-secrets.md` — password,

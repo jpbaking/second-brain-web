@@ -66,7 +66,7 @@ Binding constraints:
       Verify: prod build served by Fastify; headless load of `/login` shows the
       password step and a mobile screenshot at 390×844; `npm run lint && npm
       test && npm run build` pass.
-- [ ] **m02-10** — Milestone deliverable check: the app is inaccessible without
+- [x] **m02-10** — Milestone deliverable check: the app is inaccessible without
       password + TOTP, and existing sessions are invalidated on reset.
       Verify: with the server running, an authed route is refused
       unauthenticated, works after completing password + TOTP, and stops working
