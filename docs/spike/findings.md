@@ -292,4 +292,49 @@ where planned.**
 
 ## m00-10 — Go/adjust decisions
 
-Not yet answered.
+Answered: 2026-07-08. **GO.** Every plan-critical assumption is now proven,
+and the SDK turned out friendlier than the plan feared. Decisions binding on
+implementation:
+
+1. **Continuity: app-side rehydration is the primary path.** Live SDK
+   sessions die with the process (`session_not_found`); the app persists its
+   chatSession → SDK sessionId mapping and rehydrates with
+   `readMessages(oldId)` + `start({ initialMessages })` after a restart.
+   Within one process lifetime, `send({ sessionId, prompt })` continues live
+   sessions. `restore()` (checkpoint forking) is reserved for future
+   review/undo features.
+2. **Rules: no injection layer.** `.clinerules/` auto-load from `cwd`.
+   Phase-004's injection design is demoted to documented fallback. The
+   app-supplied `systemPrompt` is supplementary, not the persona.
+3. **Workflows: app-side expansion.** The shortcut bar reads
+   `.clinerules/workflows/<name>.md` and sends `"Run the following workflow
+   now.\n\n" + content`. Slash text is not expanded by the SDK.
+4. **Skills: nothing to build.** `.cline/skills/` auto-load. Deployment
+   note: the host user's global `~/.cline/skills` (and global rules paths)
+   merge in — run the app under a dedicated system user.
+5. **Guard: implemented in `requestToolApproval` middleware** with
+   per-tool `toolPolicies` set explicitly (unlisted tools default
+   auto-approve — too permissive). Normalise `input.path` (relative and
+   absolute both occur). Real command classifier + unit tests in 5A.
+6. **Approvals: promise-parking works.** `toolCallId` is the correlation
+   key; the app's approval routes resolve parked promises. Install resolvers
+   before `start()` — approvals fire mid-turn.
+7. **Packages: `@cline/core` (+ transitive `@cline/llms`, `@cline/shared`)
+   at 0.0.58, Node ≥ 22.** `@cline/sdk` is just an alias. `ClineCore.create`
+   → `start`/`send`/`subscribe`/`readMessages`/`stop` is the whole surface
+   the app needs; sessions persist under `~/.cline/data/sessions/` (the app
+   should set an explicit data root if the SDK exposes one, or document the
+   default).
+8. **LM Studio works as a provider** (`providerId: "lmstudio"`, baseUrl
+   **must include `/v1`**) — the local-model MVP target is real. A 9B local
+   model completed the full inbox workflow correctly in 65 s; cloud models
+   will only be better.
+9. **Event stream: `subscribe` envelopes** (`status`/`agent_event`/`chunk`/
+   `session_snapshot`/`ended`) map cleanly onto the planned SSE event
+   types; inner `agent_event.done` marks turn completion; assistant text is
+   cumulative on inner `text`.
+
+Net effect on the roadmap: milestone 5A gets *simpler* than planned (no
+rules injection), and the compaction/continuity design in phase-004 stands
+with rehydration as primary. No plan changes required beyond what this
+document records.

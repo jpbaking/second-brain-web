@@ -53,7 +53,7 @@ variable (ask the principal via STATUS.md if unset). Never commit it; add
       tool, while still allowing move/rename via shell.
       Verify: agent is instructed to edit a library original and the write is
       refused; a catalog edit succeeds.
-- [ ] **m00-10** — Write up `docs/spike/findings.md`: one section per
+- [x] **m00-10** — Write up `docs/spike/findings.md`: one section per
       question above with the answer and evidence, plus the go/adjust
       decisions — primary continuity path (SDK resume vs app-side
       rehydration), rules/workflow loading approach, and guard implementation

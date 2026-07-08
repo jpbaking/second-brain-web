@@ -31,3 +31,6 @@ Tree clean at d523094. Active: milestone 00, next item: m00-01. Note: SECOND_BRA
 - 13:15 DONE m00-08: slash NOT expanded by core (app expands workflow files — proven); skills auto-load incl. global ~/.cline/skills (flag for deployment); full /inbox.md run with 9B model filed everything correctly, health passes.
 - 13:16 STARTED m00-09: library/ tool-policy guard — deny editor on originals, allow catalog edits and shell mv
 - 13:21 DONE m00-09: library guard PASS — editor write to original denied (file unchanged), catalog edit + shell mv allowed. Paths arrive relative OR absolute; normalise in production. Rules alone already deter edits (defence layer 1).
+- 13:22 DONE m00-10: findings complete, verdict GO, 9 binding decisions recorded. STATUS points to milestone 0A.
+
+## 13:22 — session end. Milestone 00 complete (10/10). Next: create milestone-0a-scaffold checklist and begin scaffold. Note: spike ran fully on local LM Studio, no cloud key needed.
