@@ -43,6 +43,12 @@ ssh/
 auth/
 /auth/
 
+# Application source always tracked — the runtime-data ignores above (auth/,
+# ssh/, secrets/, sessions/, logs/, indexes/, workspaces/) match by bare name
+# and would otherwise swallow source directories that share those names.
+!server/src/**
+!web/src/**
+
 # Spike throwaway material (Milestone 0)
 spike/test-vault/
 

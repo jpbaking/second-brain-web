@@ -51,4 +51,18 @@ done
 
 printf 'reset-auth: data root ready at %s (mode 700, %d subdirectories).\n' \
   "$data_dir" "${#subdirs[@]}"
-printf 'reset-auth: owner auth generation runs in the next bootstrap step.\n'
+
+# Generate owner auth material via the server CLI. Prefer the built server;
+# fall back to tsx for a dev checkout that has not been built yet.
+repo_root="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+cli_dist="$repo_root/server/dist/cli/reset-auth.js"
+cli_src="$repo_root/server/src/cli/reset-auth.ts"
+tsx_bin="$repo_root/node_modules/.bin/tsx"
+
+if [ -f "$cli_dist" ]; then
+  node "$cli_dist" "$data_dir"
+elif [ -x "$tsx_bin" ]; then
+  "$tsx_bin" "$cli_src" "$data_dir"
+else
+  die "the server build is missing. Run: npm run build   (then run this script again)."
+fi

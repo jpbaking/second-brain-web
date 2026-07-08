@@ -14,10 +14,9 @@ Updated: 2026-07-08 (milestone 0A complete)
 
 ## Next step
 
-- m01-02: `reset-auth.sh` generates owner auth bootstrap material (random
-  one-time password, Argon2id hash, TOTP secret + otpauth URI) into `auth/`
-  at mode `0600`, no plaintext password on disk. (m01-01 done: data-root
-  validation + private layout bootstrap.)
+- m01-03: `scripts/generate-deploy-key.sh` creates/rotates the dedicated SSH
+  deploy key under `ssh/` (private key mode `0600`). (m01-01/02 done: data-root
+  bootstrap + owner auth material via `@node-rs/argon2` into `auth/owner.json`.)
 
 ## Read before working
 
@@ -44,3 +43,10 @@ Updated: 2026-07-08 (milestone 0A complete)
   `/data/second-brain-web/sessions/`.
 - `spike/test-vault/` is a git-ignored local clone; delete freely, reseed
   via findings m00-03 notes if a later item needs it.
+- TOTP secret is stored plaintext base32 in `auth/owner.json` (0600) — MVP per
+  phase-002. Hardened option: encrypt it with `SECOND_BRAIN_WEB_SECRETS_KEY`
+  (do when the secrets-key crypto lands, likely phase-002 secrets work).
+- `reset-auth.sh` invalidates old *credentials* by overwriting `owner.json`;
+  clearing active DB sessions on reset is Milestone 2 (sessions table).
+- `reset-auth.sh` needs the built server (`npm run build`) or a dev checkout
+  with `tsx`; it errors actionably if neither is present.

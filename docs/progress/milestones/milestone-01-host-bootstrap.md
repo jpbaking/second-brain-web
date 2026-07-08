@@ -11,7 +11,7 @@ session secret.
       Verify: running it with no env var fails; running it against a fresh
       `0700` temp dir succeeds far enough to create/use the expected layout;
       running it against a world-readable dir fails.
-- [ ] **m01-02** — `reset-auth.sh` generates owner auth bootstrap material:
+- [x] **m01-02** — `reset-auth.sh` generates owner auth bootstrap material:
       a random one-time password, an Argon2id password hash, a TOTP secret,
       and a TOTP setup URI, storing only non-plaintext runtime auth state
       under `auth/`.
