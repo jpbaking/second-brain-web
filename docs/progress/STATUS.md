@@ -19,10 +19,10 @@ Updated: 2026-07-08 (milestone 2 complete)
 
 ## Next step
 
-- m03-05: vault detection checks — after sync, report presence of README.md,
-  .clinerules/00-role.md, .clinerules/10-structure.md, memory/index.md,
-  library/catalog.md, scripts/health.py. (m03-01..04 done: config store+API,
-  git runner, clone/pull sync.)
+- m03-07: vault settings page (`web/`) — guarded screen to set remote URL +
+  branch + display name, trigger sync, show clone state/branch/commit; needs
+  authenticated headless verification + 390×844 screenshot. (m03-01..06 done:
+  config store+API, git runner, clone/pull sync, detection, sync/status API.)
 
 ## Read before working
 

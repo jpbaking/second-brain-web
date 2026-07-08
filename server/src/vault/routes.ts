@@ -1,5 +1,9 @@
+import { existsSync } from 'node:fs'
+import path from 'node:path'
 import { openCoreDb } from '../db.js'
-import { readVaultConfig, writeVaultConfig } from './config.js'
+import { readVaultConfig, vaultWorkspacePath, writeVaultConfig } from './config.js'
+import { detectVault } from './detect.js'
+import { syncVault } from './sync.js'
 import type { AppConfig } from '../config.js'
 import type { VaultConfigPatch } from './config.js'
 import type { FastifyInstance } from 'fastify'
@@ -62,6 +66,37 @@ export function registerVaultRoutes (app: FastifyInstance, config: AppConfig): v
     try {
       writeVaultConfig(db, patch)
       return readVaultConfig(db, config.dataDir)
+    } finally {
+      db.close()
+    }
+  })
+
+  app.post('/api/vault/sync', async () => {
+    const db = openCoreDb(config.dataDir)
+    try {
+      const result = await syncVault(db, config.dataDir)
+      const detection = detectVault(vaultWorkspacePath(config.dataDir))
+      return { ...result, detection }
+    } finally {
+      db.close()
+    }
+  })
+
+  app.get('/api/vault/status', async () => {
+    const db = openCoreDb(config.dataDir)
+    try {
+      const cfg = readVaultConfig(db, config.dataDir)
+      const workspace = vaultWorkspacePath(config.dataDir)
+      return {
+        configured: cfg.remoteUrl !== null,
+        cloned: existsSync(path.join(workspace, '.git')),
+        displayName: cfg.displayName,
+        remoteUrl: cfg.remoteUrl,
+        branch: cfg.branch,
+        commit: cfg.lastCommit,
+        lastPullAt: cfg.lastPullAt,
+        detection: detectVault(workspace),
+      }
     } finally {
       db.close()
     }

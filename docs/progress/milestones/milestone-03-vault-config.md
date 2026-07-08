@@ -51,7 +51,7 @@ Binding constraints:
       `memory/index.md`, `library/catalog.md`, `scripts/health.py`.
       Verify: `npm test --workspace server -- vault-detect.test.ts` — a seeded
       workspace reports all present; a missing marker is flagged.
-- [ ] **m03-06** — Vault clone/status endpoints: guarded `POST /api/vault/sync`
+- [x] **m03-06** — Vault clone/status endpoints: guarded `POST /api/vault/sync`
       runs the clone/pull flow; `GET /api/vault/status` returns clone state,
       branch, commit, last pull, and detection results.
       Verify: `npm test --workspace server -- vault-status-api.test.ts` — unauth
