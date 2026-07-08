@@ -158,7 +158,7 @@ directory listing. It should show recent reports, pinned/favourite reports if
 simple to implement, and retain provenance hooks so regenerate-from-same-request
 can be added cleanly later.
 
-### Source Coverage View
+### Source Coverage View (post-MVP)
 
 For reports and cited answers, the app should show source coverage where data is
 available:
@@ -190,17 +190,21 @@ MVP must include:
 - Approval presets.
 - Multi-session chat UI.
 - Cline-like session persistence and context continuity.
-- Manual and automatic context compaction.
+- Manual context compaction.
 - SSE-first event streaming with reconnect support.
 - Backend Cline SDK session per chat.
 - Quick capture.
 - Inbox intake wizard and upload to `inbox/`.
 - Workflow shortcuts.
 - Authenticated report browser.
-- Source coverage view for reports/cited answers where available.
 - Review-before-commit/push diff summary.
 - Single-writer lock for vault mutations.
 - Run `scripts/health.py` after write-oriented workflows.
+
+Deferred to just past MVP (design seams for them, do not ship them first):
+
+- Automatic context compaction.
+- Source coverage view for reports/cited answers.
 
 ## Explicit Non-Goals
 
@@ -241,8 +245,8 @@ MVP must include:
 - The owner can create two chat sessions and switch between them.
 - A chat session survives refresh/reconnect with working context intact, or
   recovers from the last checkpoint/compacted summary.
-- A long-running chat session can be compacted without losing task state,
-  pending approvals, vault status, or unfiled facts.
+- A long-running chat session can be manually compacted without losing task
+  state, pending approvals, vault status, or unfiled facts.
 - The owner can choose an approval preset and see it reflected in tool
   approval behaviour.
 - A quick capture can be filed into the vault through the agent.
@@ -250,8 +254,8 @@ MVP must include:
   associated context available to the agent.
 - A workflow command can process the inbox through the agent.
 - Generated reports can be opened from the authenticated report browser.
-- A report or cited answer can show the memory/library sources it used where
-  the agent or report metadata exposes them.
 - A mutating workflow presents a diff/health summary before commit/push.
+- The agent cannot write to `library/` (except catalogs) even when asked to:
+  the app-side tool-policy guard refuses the write.
 - A write workflow creates auditable git changes.
 - The app blocks concurrent vault writes in MVP.
