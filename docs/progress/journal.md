@@ -56,3 +56,4 @@ Tree clean at 08447f2. Active: milestone 0A.
 - 13:46 NOTE m0a-06: commit is f89675e.
 - 13:46 STARTED m0a-07: unauthenticated setup/status JSON endpoint and kit-styled status page for data dir, DB, and missing auth setup.
 - 13:49 DONE m0a-07: `/api/status` reports data dir, core/sidecar DB state, and auth reset message; React setup page renders the same JSON with lazyway kit classes and mobile layout verified at 390x844. Verified by `npm test --workspace server -- status.test.ts`, full `npm run lint && npm test && npm run build`, `curl -sS http://127.0.0.1:8877/api/status`, and headless Chrome screenshot `/tmp/sbw-m0a07-mobile.png` (lint warnings only in pre-existing config files). Committing.
+- 13:51 NOTE m0a-07: commit is aea2320.
