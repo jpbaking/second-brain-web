@@ -28,9 +28,11 @@ Updated: 2026-07-08 (milestone 4A complete)
 
 ## Next step
 
-- m05-01: secrets crypto module — AES-256-GCM keyed by a scrypt-derived key from
-  `SECOND_BRAIN_WEB_SECRETS_KEY`; fail closed when unset. This is the encryption
-  layer every provider key uses.
+- m05-05: default profile + session snapshot — resolve the enabled default
+  profile and build an in-memory provider snapshot (decrypted key, model, base
+  URL, headers) a chat session captures at start; no snapshot when no
+  default/enabled profile exists. (m05-01..04 done: secrets crypto, provider
+  store, CRUD endpoints, test action; core schema v7.)
 
 ## Read before working
 

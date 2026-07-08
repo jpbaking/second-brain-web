@@ -1,13 +1,15 @@
 import { openCoreDb } from '../db.js'
-import { encryptSecret, secretLast4, secretsKeyConfigured } from '../secrets/crypto.js'
+import { decryptSecret, encryptSecret, secretLast4, secretsKeyConfigured } from '../secrets/crypto.js'
 import {
   createProfile,
   deleteProfile,
   getProfile,
+  getProfileSecret,
   listProfiles,
   setDefaultProfile,
   updateProfile,
 } from './store.js'
+import { testProvider } from './test.js'
 import type { AppConfig } from '../config.js'
 import type { CreateProfileInput, UpdateProfileInput } from './store.js'
 import type { FastifyInstance } from 'fastify'
@@ -147,6 +149,36 @@ export function registerProviderRoutes (app: FastifyInstance, config: AppConfig)
     try {
       if (!deleteProfile(db, id)) return await reply.code(404).send({ error: 'profile not found' })
       return { ok: true }
+    } finally {
+      db.close()
+    }
+  })
+
+  app.post('/api/providers/:id/test', async (req, reply) => {
+    const id = (req.params as { id: string }).id
+    const db = openCoreDb(config.dataDir)
+    try {
+      const profile = getProfile(db, id)
+      if (profile === undefined) return await reply.code(404).send({ error: 'profile not found' })
+
+      let apiKey: string | undefined
+      const secret = getProfileSecret(db, id)
+      if (secret !== undefined) {
+        if (!secretsKeyConfigured(secretsEnv)) {
+          return await reply.code(400).send({
+            error: 'SECOND_BRAIN_WEB_SECRETS_KEY is not set on the host, so the stored API key cannot be decrypted.',
+          })
+        }
+        apiKey = decryptSecret(secret.ciphertext, secretsEnv)
+      }
+
+      const result = await testProvider({
+        providerId: profile.providerId,
+        baseUrl: profile.baseUrl,
+        modelId: profile.modelId,
+        ...(apiKey !== undefined ? { apiKey } : {}),
+      })
+      return result
     } finally {
       db.close()
     }

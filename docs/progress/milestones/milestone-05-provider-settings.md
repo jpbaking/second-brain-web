@@ -40,7 +40,7 @@ Binding constraints (hard rules):
       401; a created profile returns masked key info and no key material; the
       list never contains the key; storing a key with `SECRETS_KEY` unset is
       refused with an actionable error.
-- [ ] **m05-04** — Provider test action: `POST /api/providers/:id/test` sends a
+- [x] **m05-04** — Provider test action: `POST /api/providers/:id/test` sends a
       minimal request to the configured endpoint (OpenAI-compatible / Anthropic)
       using the decrypted key + base URL and reports ok/error without leaking
       the key.
