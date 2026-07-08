@@ -1,6 +1,6 @@
 # STATUS — single source of truth
 
-Updated: 2026-07-08 (m0a-05 complete)
+Updated: 2026-07-08 (m0a-06 complete)
 
 ## Where we are
 
@@ -14,7 +14,7 @@ Updated: 2026-07-08 (m0a-05 complete)
 
 ## Next step
 
-- First unchecked item in the milestone 0A checklist (m0a-06).
+- First unchecked item in the milestone 0A checklist (m0a-07).
 
 ## Read before working
 

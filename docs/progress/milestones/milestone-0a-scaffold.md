@@ -31,7 +31,7 @@ design kit.
       connection; core DB at `db/app.sqlite`, sidecar at
       `indexes/vault.sqlite`.
       Verify: a test asserts both PRAGMAs on a fresh connection.
-- [ ] **m0a-06** — Migrations: runner with a schema-version table, startup
+- [x] **m0a-06** — Migrations: runner with a schema-version table, startup
       migration + `PRAGMA integrity_check` before serving; core and
       rebuildable tables kept in their separate databases.
       Verify: fresh data dir migrates from zero; rerun is a no-op; a

@@ -1,0 +1,114 @@
+import { existsSync, rmSync } from 'node:fs'
+import { coreDbPath, openCoreDb, openSidecarDb, sidecarDbPath } from './db.js'
+import type { DatabaseSync } from 'node:sqlite'
+
+interface Migration {
+  version: number
+  sql: string
+}
+
+const coreMigrations: Migration[] = [
+  {
+    version: 1,
+    sql: `
+      CREATE TABLE app_metadata (
+        key TEXT PRIMARY KEY,
+        value TEXT NOT NULL,
+        updated_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
+      )
+    `,
+  },
+]
+
+const sidecarMigrations: Migration[] = [
+  {
+    version: 1,
+    sql: `
+      CREATE TABLE vault_index_metadata (
+        key TEXT PRIMARY KEY,
+        value TEXT NOT NULL,
+        updated_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
+      )
+    `,
+  },
+]
+
+export class MigrationError extends Error {}
+
+export function prepareDatabases (dataDir: string): void {
+  withDatabase(openCoreDb(dataDir), db => {
+    assertIntegrity(db, coreDbPath(dataDir))
+    migrate(db, coreMigrations)
+    assertIntegrity(db, coreDbPath(dataDir))
+  })
+
+  withDatabase(openSidecarDb(dataDir), db => {
+    assertIntegrity(db, sidecarDbPath(dataDir))
+    migrate(db, sidecarMigrations)
+    assertIntegrity(db, sidecarDbPath(dataDir))
+  })
+}
+
+export function rebuildSidecarDatabase (dataDir: string): void {
+  const file = sidecarDbPath(dataDir)
+  for (const suffix of ['', '-wal', '-shm']) {
+    const target = `${file}${suffix}`
+    if (existsSync(target)) rmSync(target)
+  }
+
+  withDatabase(openSidecarDb(dataDir), db => {
+    migrate(db, sidecarMigrations)
+    assertIntegrity(db, file)
+  })
+}
+
+function migrate (db: DatabaseSync, migrations: Migration[]): void {
+  db.exec(`
+    CREATE TABLE IF NOT EXISTS schema_version (
+      id INTEGER PRIMARY KEY CHECK (id = 1),
+      version INTEGER NOT NULL
+    )
+  `)
+  db.prepare('INSERT OR IGNORE INTO schema_version (id, version) VALUES (1, 0)').run()
+
+  const current = currentVersion(db)
+  const pending = migrations.filter(migration => migration.version > current)
+  if (pending.length === 0) return
+
+  db.exec('BEGIN IMMEDIATE')
+  try {
+    let version = current
+    for (const migration of pending) {
+      if (migration.version !== version + 1) {
+        throw new MigrationError(`Migration gap: expected ${version + 1}, got ${migration.version}`)
+      }
+      db.exec(migration.sql)
+      db.prepare('UPDATE schema_version SET version = ? WHERE id = 1').run(migration.version)
+      version = migration.version
+    }
+    db.exec('COMMIT')
+  } catch (err) {
+    db.exec('ROLLBACK')
+    throw err
+  }
+}
+
+function currentVersion (db: DatabaseSync): number {
+  const row = db.prepare('SELECT version FROM schema_version WHERE id = 1').get() as { version: number }
+  return row.version
+}
+
+function assertIntegrity (db: DatabaseSync, file: string): void {
+  const row = db.prepare('PRAGMA integrity_check').get() as { integrity_check: string }
+  if (row.integrity_check !== 'ok') {
+    throw new MigrationError(`SQLite integrity check failed for ${file}: ${row.integrity_check}`)
+  }
+}
+
+function withDatabase (db: DatabaseSync, fn: (db: DatabaseSync) => void): void {
+  try {
+    fn(db)
+  } finally {
+    db.close()
+  }
+}
