@@ -1,6 +1,6 @@
 # STATUS — single source of truth
 
-Updated: 2026-07-08 (milestone 3 complete)
+Updated: 2026-07-08 (milestone 4 complete)
 
 ## Where we are
 
@@ -9,27 +9,29 @@ Updated: 2026-07-08 (milestone 3 complete)
   section has the decision list).
 - **Milestone 1 — Host Bootstrap Scripts: COMPLETE (6/6).**
 - **Milestone 2 — Authentication: COMPLETE (10/10).**
-- **Milestone 3 — Vault Configuration And Clone: COMPLETE (8/8).** vault_config
-  store + GET/PUT config API, git runner (deploy-key SSH), clone/ff-only-pull
-  sync, vault detection, sync/status API, and a `/vault` settings page. Owner
-  can configure a repo and clone it into the data root; UI shows branch +
-  commit (verified e2e).
-- Active milestone: **Milestone 4 — Vault Status And Health**.
-- Checklist: `docs/progress/milestones/milestone-04-vault-health.md`
+- **Milestone 3 — Vault Configuration And Clone: COMPLETE (8/8).**
+- **Milestone 4 — Vault Status And Health: COMPLETE (7/7).** git status module,
+  single-writer lock, health runner (`python3 scripts/health.py`, text-parsed) +
+  endpoint, command-center aggregate + endpoint, and the `/` command centre
+  landing page. Owner runs the health check from the UI and lands on a useful
+  command centre (verified e2e). Web routes: `/`=command centre, `/login`,
+  `/vault`, `/setup`.
+- Active milestone: **next is Milestone 4A / Milestone 5** (checklist not yet
+  created) — confirm ordering against the roadmap before starting.
 - App runnable: yes, with `SECOND_BRAIN_WEB_DATA_DIR` pointing at a private
-  `0700` data root. Core DB schema at v5.
+  `0700` data root. Core DB schema at v6.
 
 ## Next step
 
-- m04-07: milestone deliverable check — log in, land on the command centre, run
-  the health check, see git + health results; full lint/test/build; no secrets
-  or checkouts tracked. (m04-01..06 done: git status, lock, health runner +
-  endpoint, command-center model + endpoint, command centre page.)
+- Read the roadmap around Milestone 4A (Responsive App Shell) / Milestone 5
+  (Agent Runtime And Chat) to choose the next milestone, create its checklist
+  (one checkbox per step with a verification command), then begin its first
+  item.
 
 ## Read before working
 
 - `docs/spike/findings.md` — m00-10 decisions (binding on implementation).
-- `docs/project-plan/phase-006-implementation-roadmap.md` — Milestone 4.
+- `docs/project-plan/phase-006-implementation-roadmap.md` — Milestone 4A / 5.
 - `docs/project-plan/master-plan.md` — hard rules, runtime layout, auth
   crypto, and secrets handling.
 - `docs/project-plan/phase-002-security-auth-and-secrets.md` — password,

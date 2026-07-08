@@ -56,7 +56,7 @@ Binding constraints:
       Verify: prod build served by Fastify; authenticated headless load of `/`
       shows the command center; 390×844 screenshot; `npm run lint && npm test &&
       npm run build` pass.
-- [ ] **m04-07** — Milestone deliverable check: the owner can run the health
+- [x] **m04-07** — Milestone deliverable check: the owner can run the health
       check from the UI and lands on a useful command center after login.
       Verify: end-to-end with a running server against a seeded vault — log in,
       land on the command center, run the health check, and see git + health
