@@ -8,7 +8,7 @@ Deliverable:
 - Tool requests are visible and approvable.
 - Owner can review changed files and health output before commit/push.
 
-- [ ] **m06-01** — Approval presets data model: Define the three presets (`read-only`, `normal`, `high-trust`). Update `chat_sessions` schema (core migration) to store the selected `approval_preset` (defaulting to `normal`).
+- [x] **m06-01** — Approval presets data model: Define the three presets (`read-only`, `normal`, `high-trust`). Update `chat_sessions` schema (core migration) to store the selected `approval_preset` (defaulting to `normal`).
       Verify: `npm test --workspace server` verifies the preset is stored and retrieved on session creation.
 - [ ] **m06-02** — Tool policy preset enforcement: Update `tool-policy.ts` to enforce presets. `read-only` denies all mutating tools; `normal` asks for mutating tools (except catalog edits which are allowed per current rules? Or requires asking per preset rules); `high-trust` allows mutating tools without asking.
       Verify: `npm test --workspace server` verifies tool policy correctly allows/denies/asks based on the session's preset.

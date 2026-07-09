@@ -213,3 +213,5 @@ Tree DIRTY at 52af498. Active: milestone 5A, item m5a-10 in progress (STARTED wi
 Tree clean at HEAD. Active: milestone 06, next item: m06-01.
 - 03:35 DONE progress: milestone-06-tool-approvals checklist created (9 items). STATUS points at m06-01. Committing.
 - 03:36 STARTED m06-01: Approval presets data model (read-only, normal, high-trust). Update `chat_sessions` schema to store `approval_preset`.
+- 03:37 DONE m06-01: Approval presets data model. Updated `chat_sessions` to version 10 in core migrations. Added `approvalPreset` to `ChatSession` and persisted it in `createSession` with default `normal`. Verified by `npm test --workspace server` showing full test pass. Committing.
+- 03:38 STARTED m06-02: Tool policy preset enforcement (`read-only` denies mutating, `normal` asks, `high-trust` allows).

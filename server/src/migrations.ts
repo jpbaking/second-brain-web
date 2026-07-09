@@ -137,6 +137,12 @@ const coreMigrations: Migration[] = [
       ALTER TABLE chat_sessions ADD COLUMN compacted_at TEXT;
     `,
   },
+  {
+    version: 10,
+    sql: `
+      ALTER TABLE chat_sessions ADD COLUMN approval_preset TEXT NOT NULL DEFAULT 'normal';
+    `,
+  },
 ]
 
 const sidecarMigrations: Migration[] = [

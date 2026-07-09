@@ -12,6 +12,7 @@ import type { DatabaseSync } from 'node:sqlite'
  */
 
 export type ChatSessionStatus = 'active' | 'closed'
+export type ApprovalPreset = 'read-only' | 'normal' | 'high-trust'
 
 export interface ChatSession {
   id: string
@@ -19,6 +20,7 @@ export interface ChatSession {
   providerProfileId: string | null
   sdkSessionId: string | null
   status: ChatSessionStatus
+  approvalPreset: ApprovalPreset
   compactionSummary: string | null
   compactedAt: string | null
   createdAt: string
@@ -37,6 +39,7 @@ export interface ChatEvent {
 export interface CreateSessionInput {
   title: string
   providerProfileId?: string | null
+  approvalPreset?: ApprovalPreset
 }
 
 interface SessionRow {
@@ -45,6 +48,7 @@ interface SessionRow {
   provider_profile_id: string | null
   sdk_session_id: string | null
   status: string
+  approval_preset: string
   compaction_summary: string | null
   compacted_at: string | null
   created_at: string
@@ -67,6 +71,7 @@ function toSession (row: SessionRow): ChatSession {
     providerProfileId: row.provider_profile_id,
     sdkSessionId: row.sdk_session_id,
     status: row.status === 'closed' ? 'closed' : 'active',
+    approvalPreset: (row.approval_preset as ApprovalPreset) || 'normal',
     compactionSummary: row.compaction_summary,
     compactedAt: row.compacted_at,
     createdAt: row.created_at,
@@ -92,10 +97,11 @@ function sessionRow (db: DatabaseSync, id: string): SessionRow | undefined {
 export function createSession (db: DatabaseSync, input: CreateSessionInput, now: Date = new Date()): ChatSession {
   const id = randomUUID()
   const iso = now.toISOString()
+  const preset = input.approvalPreset ?? 'normal'
   db.prepare(`
-    INSERT INTO chat_sessions (id, title, provider_profile_id, sdk_session_id, status, compaction_summary, compacted_at, created_at, updated_at)
-    VALUES (?, ?, ?, NULL, 'active', NULL, NULL, ?, ?)
-  `).run(id, input.title, input.providerProfileId ?? null, iso, iso)
+    INSERT INTO chat_sessions (id, title, provider_profile_id, sdk_session_id, status, approval_preset, compaction_summary, compacted_at, created_at, updated_at)
+    VALUES (?, ?, ?, NULL, 'active', ?, NULL, NULL, ?, ?)
+  `).run(id, input.title, input.providerProfileId ?? null, preset, iso, iso)
   return toSession(sessionRow(db, id) as SessionRow)
 }
 

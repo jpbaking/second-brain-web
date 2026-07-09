@@ -41,10 +41,13 @@ describe('chat session store', () => {
   it('creates, lists, gets, renames, and closes a session', () => {
     const db = freshDb()
     const s = createSession(db, { title: 'First', providerProfileId: 'prof-1' })
-    expect(s).toMatchObject({ title: 'First', providerProfileId: 'prof-1', sdkSessionId: null, status: 'active' })
+    expect(s).toMatchObject({ title: 'First', providerProfileId: 'prof-1', sdkSessionId: null, status: 'active', approvalPreset: 'normal' })
+
+    const s2 = createSession(db, { title: 'Second', approvalPreset: 'high-trust' })
+    expect(s2.approvalPreset).toBe('high-trust')
 
     expect(getSession(db, s.id)?.title).toBe('First')
-    expect(listSessions(db)).toHaveLength(1)
+    expect(listSessions(db)).toHaveLength(2)
 
     expect(renameSession(db, s.id, 'Renamed')).toBe(true)
     expect(getSession(db, s.id)?.title).toBe('Renamed')
