@@ -208,3 +208,8 @@ Tree DIRTY at 52af498. Active: milestone 5A, item m5a-10 in progress (STARTED wi
 - 21:24 DONE m5b-06: Deliverable check. Fixed m5b06-part2.mjs to use stream reader instead of fetch abort which was crashing Node with a SocketError after `fuser -k` was hit, preventing the validation from completing. Re-ran successfully: agent remembered "Bob" and "apples" from the compacted summary, proving rehydration worked beautifully. Full lint/test/build passes. Committing.
 
 ## 2026-07-09 21:24 — session end. Milestone 5B complete (6/6). Next: Milestone 6 (Tool Approvals And Write Lock) checklist creation.
+
+## 2026-07-10 03:35 — session start
+Tree clean at HEAD. Active: milestone 06, next item: m06-01.
+- 03:35 DONE progress: milestone-06-tool-approvals checklist created (9 items). STATUS points at m06-01. Committing.
+- 03:36 STARTED m06-01: Approval presets data model (read-only, normal, high-trust). Update `chat_sessions` schema to store `approval_preset`.
