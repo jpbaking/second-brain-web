@@ -1,3 +1,5 @@
+import type { ApprovalPreset } from './chat-store.js'
+
 /**
  * Mandatory `library/` tool-policy guard (phase-003 Library Original Protection;
  * phase-004; spike m00-09). The vault's own PreToolUse hook does NOT fire under
@@ -91,7 +93,7 @@ function commandOnlyTouchesCatalogs (command: string): boolean {
  * routes to human approval (m5a-07). Unknown tools are never silently
  * auto-approved — they fall through to `ask`.
  */
-export function evaluateTool (req: ToolApprovalRequest): ToolPolicyResult {
+export function evaluateTool (req: ToolApprovalRequest, preset: ApprovalPreset = 'normal'): ToolPolicyResult {
   const name = req.toolName
   const input = req.input ?? {}
 
@@ -100,6 +102,8 @@ export function evaluateTool (req: ToolApprovalRequest): ToolPolicyResult {
     if (isProtectedLibraryWrite(rawPath)) {
       return { decision: 'deny', reason: 'library/ originals are immutable; only catalogs may be edited' }
     }
+    if (preset === 'read-only') return { decision: 'deny', reason: 'session preset is read-only' }
+    if (preset === 'high-trust') return { decision: 'allow' }
     return { decision: 'ask' }
   }
 
@@ -108,6 +112,8 @@ export function evaluateTool (req: ToolApprovalRequest): ToolPolicyResult {
     if (commandTouchesLibrary(command) && !isMoveOnlyCommand(command) && !commandOnlyTouchesCatalogs(command)) {
       return { decision: 'deny', reason: 'under library/ only move/rename (mv, git mv) and catalog writes are allowed' }
     }
+    if (preset === 'read-only') return { decision: 'deny', reason: 'session preset is read-only' }
+    if (preset === 'high-trust') return { decision: 'allow' }
     return { decision: 'ask' }
   }
 

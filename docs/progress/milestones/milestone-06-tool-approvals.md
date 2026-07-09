@@ -10,7 +10,7 @@ Deliverable:
 
 - [x] **m06-01** — Approval presets data model: Define the three presets (`read-only`, `normal`, `high-trust`). Update `chat_sessions` schema (core migration) to store the selected `approval_preset` (defaulting to `normal`).
       Verify: `npm test --workspace server` verifies the preset is stored and retrieved on session creation.
-- [ ] **m06-02** — Tool policy preset enforcement: Update `tool-policy.ts` to enforce presets. `read-only` denies all mutating tools; `normal` asks for mutating tools (except catalog edits which are allowed per current rules? Or requires asking per preset rules); `high-trust` allows mutating tools without asking.
+- [x] **m06-02** — Tool policy preset enforcement: Update `tool-policy.ts` to enforce presets. `read-only` denies all mutating tools; `normal` asks for mutating tools (except catalog edits which are allowed per current rules? Or requires asking per preset rules); `high-trust` allows mutating tools without asking.
       Verify: `npm test --workspace server` verifies tool policy correctly allows/denies/asks based on the session's preset.
 - [ ] **m06-03** — Preset selection UI: Update the web `/chat` New Chat form to include a preset selector.
       Verify: `npm run lint` and `npm run build` pass. Headless render check confirms the preset selector is present.

@@ -78,4 +78,25 @@ describe('evaluateTool — the guard decision', () => {
   it('auto-approves read-only tools', () => {
     expect(evaluateTool({ toolName: 'search', input: { query: 'x' } }).decision).toBe('allow')
   })
+
+  it('enforces read-only preset by denying mutating tools', () => {
+    expect(evaluateTool({ toolName: 'editor', input: { path: 'reports/summary.md' } }, 'read-only').decision).toBe('deny')
+    expect(evaluateTool({ toolName: 'bash', input: { command: 'ls' } }, 'read-only').decision).toBe('deny')
+    // Read tools still allowed
+    expect(evaluateTool({ toolName: 'search', input: {} }, 'read-only').decision).toBe('allow')
+    // Unknown tools still ask
+    expect(evaluateTool({ toolName: 'some_tool', input: {} }, 'read-only').decision).toBe('ask')
+  })
+
+  it('enforces normal preset by asking for mutating tools', () => {
+    expect(evaluateTool({ toolName: 'editor', input: { path: 'reports/summary.md' } }, 'normal').decision).toBe('ask')
+    expect(evaluateTool({ toolName: 'bash', input: { command: 'ls' } }, 'normal').decision).toBe('ask')
+  })
+
+  it('enforces high-trust preset by allowing mutating tools', () => {
+    expect(evaluateTool({ toolName: 'editor', input: { path: 'reports/summary.md' } }, 'high-trust').decision).toBe('allow')
+    expect(evaluateTool({ toolName: 'bash', input: { command: 'ls' } }, 'high-trust').decision).toBe('allow')
+    // Library writes are STILL denied
+    expect(evaluateTool({ toolName: 'editor', input: { path: 'library/original.md' } }, 'high-trust').decision).toBe('deny')
+  })
 })

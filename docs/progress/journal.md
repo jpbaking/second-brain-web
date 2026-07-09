@@ -215,3 +215,5 @@ Tree clean at HEAD. Active: milestone 06, next item: m06-01.
 - 03:36 STARTED m06-01: Approval presets data model (read-only, normal, high-trust). Update `chat_sessions` schema to store `approval_preset`.
 - 03:37 DONE m06-01: Approval presets data model. Updated `chat_sessions` to version 10 in core migrations. Added `approvalPreset` to `ChatSession` and persisted it in `createSession` with default `normal`. Verified by `npm test --workspace server` showing full test pass. Committing.
 - 03:38 STARTED m06-02: Tool policy preset enforcement (`read-only` denies mutating, `normal` asks, `high-trust` allows).
+- 03:39 DONE m06-02: Tool policy preset enforcement. Updated `evaluateTool` to accept `ApprovalPreset` and apply rules to file/shell mutations while retaining the strict `library/` protection invariant regardless of preset. Updated `AgentSessionService` to pass the session's preset when requesting tool approval. Added unit tests for presets. All tests pass. Committing.
+- 03:39 STARTED m06-03: Preset selection UI. Update the web `/chat` New Chat form to include a preset selector.

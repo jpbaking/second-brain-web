@@ -197,9 +197,10 @@ export class AgentSessionService {
    * toolCallId and an `approval_request` event is streamed for the human.
    */
   async requestToolApproval (req: SdkApprovalRequest): Promise<ToolApprovalDecision> {
-    const decision = evaluateTool({ toolName: req.toolName, input: req.input ?? null })
     const sdkSessionId = req.sessionId
     const session = sdkSessionId === undefined ? undefined : getSessionBySdkId(this.db, sdkSessionId)
+    const preset = session?.approvalPreset ?? 'normal'
+    const decision = evaluateTool({ toolName: req.toolName, input: req.input ?? null }, preset)
 
     if (decision.decision === 'deny') {
       if (session !== undefined) {
