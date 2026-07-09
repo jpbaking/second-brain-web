@@ -111,21 +111,21 @@ describe('AgentSessionService locks', () => {
     const svc = new AgentSessionService(db, new CapturingRunner(), { snapshotFor: () => snap(), vaultCwd: '/vault' })
     const session = svc.create({ title: 'H', approvalPreset: 'high-trust' })
     await svc.sendMessage(session.id, 'hi')
-    
+
     // high-trust allows mutating tools, which triggers lock acquisition
     const decision = await svc.requestToolApproval({
       sessionId: 'sdk-1', toolCallId: 't1', toolName: 'editor', input: { path: 'notes/scratch.md' }
     })
     expect(decision.approved).toBe(true)
-    
+
     const lock1 = readLock(db)
     expect(lock1.held).toBe(true)
     expect(lock1.lock?.sessionId).toBe(session.id)
-    
+
     // send end event (which releases lock)
     // using internal handleSdkEvent for tests
     ;(svc as any).handleSdkEvent({ type: 'ended', sessionId: 'sdk-1' })
-    
+
     const lock2 = readLock(db)
     expect(lock2.held).toBe(false)
   })
@@ -133,23 +133,23 @@ describe('AgentSessionService locks', () => {
   it('prevents concurrent mutating sessions', async () => {
     const db = freshDb()
     const svc = new AgentSessionService(db, new CapturingRunner(), { snapshotFor: () => snap(), vaultCwd: '/vault' })
-    
+
     // session 1
     const s1 = svc.create({ title: '1', approvalPreset: 'high-trust' })
     await svc.sendMessage(s1.id, 'hi')
-    
+
     // session 2
     const s2 = svc.create({ title: '2', approvalPreset: 'high-trust' })
     // We need to inject a runner that maps to sdk-2 for s2.
     // The CapturingRunner returns sdk-X where X increments.
     await svc.sendMessage(s2.id, 'hi') // this gets sdk-2
-    
+
     // s1 acquires lock
     const d1 = await svc.requestToolApproval({
       sessionId: 'sdk-1', toolCallId: 't1', toolName: 'editor', input: { path: 'notes/scratch.md' }
     })
     expect(d1.approved).toBe(true)
-    
+
     // s2 tries to acquire lock and is denied
     const d2 = await svc.requestToolApproval({
       sessionId: 'sdk-2', toolCallId: 't2', toolName: 'editor', input: { path: 'notes/scratch.md' }

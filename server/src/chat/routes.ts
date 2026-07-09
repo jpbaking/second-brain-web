@@ -3,7 +3,7 @@ import { resolveDefaultSnapshot, resolveSnapshot } from '../providers/snapshot.j
 import { vaultWorkspacePath } from '../vault/config.js'
 import { AgentSessionService } from '../agent/session.js'
 import { WorkflowNotFoundError, expandWorkflow, listWorkflows } from '../agent/workflows.js'
-import { appendEvent, closeSession, getSession, listSessions, readEventsSince, renameSession } from '../agent/chat-store.js'
+import { closeSession, getSession, listSessions, readEventsSince, renameSession } from '../agent/chat-store.js'
 import type { AgentRunner } from '../agent/runner.js'
 import type { AppConfig } from '../config.js'
 import type { FastifyInstance } from 'fastify'

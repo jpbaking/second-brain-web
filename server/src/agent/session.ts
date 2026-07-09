@@ -3,7 +3,7 @@ import { toModelConfig } from './runner.js'
 import { TOOL_POLICIES, evaluateTool, isMutatingTool } from './tool-policy.js'
 import { acquireLock, heartbeatLock, releaseLock } from '../vault/lock.js'
 import type { AgentRunner, AgentModelConfig, SdkApprovalRequest, ToolApprovalDecision } from './runner.js'
-import type { ChatEvent, ChatSession } from './chat-store.js'
+import type { ChatEvent, ChatSession, ApprovalPreset } from './chat-store.js'
 import type { ProviderSnapshot } from '../providers/snapshot.js'
 import type { DatabaseSync } from 'node:sqlite'
 
@@ -259,7 +259,7 @@ export class AgentSessionService {
     const parked = this.pendingApprovals.get(toolCallId)
     if (parked === undefined) return false
     this.pendingApprovals.delete(toolCallId)
-    
+
     let finalApproved = approved
     let finalReason = reason
     if (approved && isMutatingTool(parked.toolName)) {
@@ -285,7 +285,7 @@ export class AgentSessionService {
     if (snap === undefined) {
       throw new Error('no enabled provider profile available; configure one in Provider settings first')
     }
-    const session = createSession(this.db, { title: input.title, providerProfileId: snap.profileId, approvalPreset: input.approvalPreset })
+    const session = createSession(this.db, { title: input.title, providerProfileId: snap.profileId, ...(input.approvalPreset ? { approvalPreset: input.approvalPreset } : {}) })
     appendEvent(this.db, session.id, 'session_config', capturedFromSnapshot(snap))
     return session
   }

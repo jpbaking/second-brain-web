@@ -54,7 +54,7 @@ class FakeRunner implements AgentRunner {
     this.listeners.add(listener)
     return () => this.listeners.delete(listener)
   }
-  
+
   emit (event: unknown): void {
     for (const listener of this.listeners) listener(event)
   }
@@ -142,7 +142,7 @@ describe('AgentSessionService', () => {
 
     // Simulate compaction
     saveCompaction(db, session.id, 'summary data')
-    
+
     // Resume session
     const svcB = new AgentSessionService(db, runner, opts)
     const res = await svcB.resume(session.id)
@@ -189,7 +189,7 @@ describe('AgentSessionService', () => {
     </compaction_summary>`
     runner.emit({ type: 'chunk', sessionId: sdkId, payload: { text: 'Here is the summary:\n' } })
     runner.emit({ type: 'chunk', sessionId: sdkId, payload: { text: summaryXML } })
-    
+
     // Simulate turn ending
     let emittedCompaction: unknown = null
     svc.onEvent(s.id, (e) => { if (e.type === 'compaction') emittedCompaction = e.payload })

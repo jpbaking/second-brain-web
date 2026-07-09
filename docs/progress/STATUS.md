@@ -36,9 +36,11 @@ Updated: 2026-07-09 (milestone 5 complete)
 - App runnable: yes, with `SECOND_BRAIN_WEB_DATA_DIR` pointing at a private
   `0700` data root. Core DB schema at v8 (adds `chat_sessions`, `chat_events`).
 
-## Next step
+## Current Phase
+All phases complete for Milestone 6!
 
-- Start **m06-09**: Deliverable check.
+## Next step
+- Present completion of Milestone 6.
 - SDK notes (m5a-01): provider ids map anthropic→anthropic, openai→openai-native,
   openai-compatible→openai-compatible; model config is `CoreModelConfig`
   (providerId/modelId/apiKey/baseUrl/headers); storage root is set via

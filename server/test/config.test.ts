@@ -45,7 +45,7 @@ describe('loadConfig', () => {
     expect(config.host).toBe('127.0.0.1')
     expect(config.port).toBe(8722)
     expect(() =>
-      loadConfig({ SECOND_BRAIN_WEB_DATA_DIR: dir, SECOND_BRAIN_WEB_PORT: 'nope' }),
+      loadConfig({ SECOND_BRAIN_WEB_DATA_DIR: dir, SECOND_BRAIN_WEB_PORT: 'nope' })
     ).toThrow(/valid port/)
   })
 })

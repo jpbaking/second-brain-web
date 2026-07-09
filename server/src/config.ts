@@ -34,7 +34,7 @@ export function loadConfig (env: NodeJS.ProcessEnv = process.env): AppConfig {
     throw new ConfigError(
       'SECOND_BRAIN_WEB_DATA_DIR is not set. Point it at a private directory ' +
       '(e.g. /data/second-brain-web) that will hold auth state, databases, ' +
-      'keys, and the vault checkout, then start again.',
+      'keys, and the vault checkout, then start again.'
     )
   }
   const resolved = path.resolve(dataDir)
@@ -64,7 +64,7 @@ function assertPrivate (dir: string): void {
   if ((mode & 0o077) !== 0) {
     throw new ConfigError(
       `Data directory ${dir} is accessible by other users (mode ${mode.toString(8)}). ` +
-      `It holds secrets; run: chmod 700 '${dir}' and start again.`,
+      `It holds secrets; run: chmod 700 '${dir}' and start again.`
     )
   }
 }

@@ -28,7 +28,7 @@ const WRITE_TOOLS = new Set(['editor', 'write_file', 'write_to_file', 'new_file'
 /** Read-only tools that are safe to auto-approve. */
 const READ_TOOLS = new Set(['search', 'read', 'read_file', 'list_files', 'list_code_definition_names'])
 
-export function isMutatingTool(name: string): boolean {
+export function isMutatingTool (name: string): boolean {
   return WRITE_TOOLS.has(name) || name === 'bash' || name === 'execute_command'
 }
 
