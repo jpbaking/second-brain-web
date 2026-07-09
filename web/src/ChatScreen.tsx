@@ -49,6 +49,9 @@ function toTranscript (events: ChatEvent[]): { lines: Line[], approvals: Pending
     } else if (e.type === 'approval_resolved' || e.type === 'approval_auto_denied') {
       const p = e.payload as { toolCallId?: string }
       if (typeof p?.toolCallId === 'string') approvals.delete(p.toolCallId)
+    } else if (e.type === 'compaction') {
+      assistant = null
+      lines.push({ key: `c-${e.seq}`, role: 'system', text: '— Context Compacted —' })
     } else if (e.type === 'ended') {
       assistant = null
     }
@@ -154,6 +157,12 @@ export function ChatScreen () {
     await sendJson('POST', `/api/chat/sessions/${activeId}/approvals/${toolCallId}`, { approved })
   }
 
+  async function compactContext () {
+    if (activeId === null) return
+    const res = await sendJson('POST', `/api/chat/sessions/${activeId}/compact`)
+    if (!res.ok) setError('Could not request context compaction.')
+  }
+
   const { lines, approvals } = toTranscript(events)
 
   return (
@@ -218,13 +227,12 @@ export function ChatScreen () {
         {activeId !== null && (
           <section className='stack-2' aria-label='Transcript'>
             <h2 className='card-title'>Transcript</h2>
-            {workflows.length > 0 && (
-              <div className='form-actions' style={{ margin: 0, flexWrap: 'wrap' }} data-testid='workflow-bar'>
-                {workflows.map(w => (
-                  <button key={w} className='btn btn-secondary' type='button' onClick={() => { runWorkflow(w).catch(() => {}) }}>/{w}</button>
-                ))}
-              </div>
-            )}
+            <div className='form-actions' style={{ margin: 0, flexWrap: 'wrap' }} data-testid='workflow-bar'>
+              {workflows.map(w => (
+                <button key={w} className='btn btn-secondary' type='button' onClick={() => { runWorkflow(w).catch(() => {}) }}>/{w}</button>
+              ))}
+              <button className='btn btn-secondary' type='button' data-testid='compact-btn' onClick={() => { compactContext().catch(() => {}) }}>Compact Context</button>
+            </div>
 
             <div className='data-list' data-testid='transcript'>
               {lines.length === 0

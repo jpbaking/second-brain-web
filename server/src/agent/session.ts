@@ -299,7 +299,10 @@ export class AgentSessionService {
     let sdkSessionId: string
     if (session.sdkSessionId !== null) {
       // Restart: rehydrate from the persisted SDK session's messages.
-      const initialMessages = await this.runner.readMessages(session.sdkSessionId)
+      let initialMessages = await this.runner.readMessages(session.sdkSessionId)
+      if (session.compactionSummary !== null) {
+        initialMessages = [{ role: 'user', content: `SYSTEM: Resuming session from compacted context:\n\n<compaction_summary>\n${session.compactionSummary}\n</compaction_summary>` }]
+      }
       const result = await this.runner.start({ config, initialMessages, ...approvalWiring, ...(prompt !== undefined ? { prompt } : {}) })
       sdkSessionId = result.sessionId
     } else {
@@ -350,7 +353,10 @@ export class AgentSessionService {
     if (session.sdkSessionId === null) {
       throw new Error('session has never started; send a message to begin it')
     }
-    const initialMessages = await this.runner.readMessages(session.sdkSessionId)
+    let initialMessages = await this.runner.readMessages(session.sdkSessionId)
+    if (session.compactionSummary !== null) {
+      initialMessages = [{ role: 'user', content: `SYSTEM: Resuming session from compacted context:\n\n<compaction_summary>\n${session.compactionSummary}\n</compaction_summary>` }]
+    }
     const config = this.startConfig(this.capturedConfig(chatSessionId))
     const result = await this.runner.start({
       config,

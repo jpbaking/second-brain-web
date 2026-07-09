@@ -6,7 +6,7 @@ import { loadConfig } from '../src/config.js'
 import { openCoreDb } from '../src/db.js'
 import { prepareDatabases } from '../src/migrations.js'
 import { AgentSessionService } from '../src/agent/session.js'
-import { getSession, readEventsSince } from '../src/agent/chat-store.js'
+import { getSession, readEventsSince, saveCompaction } from '../src/agent/chat-store.js'
 import type { AgentRunner, AgentStartInput, AgentStartResult } from '../src/agent/runner.js'
 import type { ProviderSnapshot } from '../src/providers/snapshot.js'
 import type { DatabaseSync } from 'node:sqlite'
@@ -119,19 +119,38 @@ describe('AgentSessionService', () => {
     // Process A: create + one message → sdk-1 persisted.
     const svcA = new AgentSessionService(db, runner, opts)
     const session = svcA.create({ title: 'C' })
-    await svcA.sendMessage(session.id, 'hello')
-    expect(getSession(db, session.id)?.sdkSessionId).toBe('sdk-1')
+    await svcA.sendMessage(session.id, 'm1')
 
-    // Process B: new service (empty live map) resumes from the store.
+    // Process B: resume session
     const svcB = new AgentSessionService(db, runner, opts)
-    const resumed = await svcB.resume(session.id)
-    expect(resumed.sdkSessionId).toBe('sdk-2')
-    expect(resumed.rehydratedMessages).toBeGreaterThan(0)
-    // Started with initialMessages read from the old SDK session.
-    const resumeStart = runner.starts.at(-1)
-    expect(resumeStart?.initialMessages).toBeDefined()
-    // Mapping now points at the fresh SDK session.
-    expect(getSession(db, session.id)?.sdkSessionId).toBe('sdk-2')
+    const res = await svcB.resume(session.id)
+    expect(res.sdkSessionId).toBe('sdk-2')
+    expect(res.rehydratedMessages).toBe(1)
+    expect(runner.starts).toHaveLength(2)
+    // The restart start() should receive the initialMessages from readMessages().
+    expect(runner.starts[1]?.initialMessages).toEqual([{ role: 'user', content: 'm1' }])
+  })
+
+  it('rehydrates using compaction summary when available, omitting prior messages', async () => {
+    const db = freshDb()
+    const runner = new FakeRunner()
+    const opts = { snapshotFor: () => snap({}), vaultCwd: '/vault' }
+
+    const svcA = new AgentSessionService(db, runner, opts)
+    const session = svcA.create({ title: 'C' })
+    await svcA.sendMessage(session.id, 'm1')
+
+    // Simulate compaction
+    saveCompaction(db, session.id, 'summary data')
+    
+    // Resume session
+    const svcB = new AgentSessionService(db, runner, opts)
+    const res = await svcB.resume(session.id)
+    expect(res.sdkSessionId).toBe('sdk-2')
+    expect(res.rehydratedMessages).toBe(1)
+    expect(runner.starts[1]?.initialMessages).toEqual([
+      { role: 'user', content: 'SYSTEM: Resuming session from compacted context:\n\n<compaction_summary>\nsummary data\n</compaction_summary>' }
+    ])
   })
 
   it('uses the config captured at start even after the profile is edited', async () => {

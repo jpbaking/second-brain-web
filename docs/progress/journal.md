@@ -201,4 +201,5 @@ Tree DIRTY at 52af498. Active: milestone 5A, item m5a-10 in progress (STARTED wi
 - 20:58 DONE m5a-10: LIVE deliverable check. All bugs fixed (sessionCookie concatenation parsed `sbw_session`/`sbw_challenge` properly, buffered `earlyEvents` to fix the race condition before `sdkSessionId` resolves). Verified end-to-end via `m5a10-deliverable.mjs` against local LM Studio: session connects, creates row, streams completion ("PINEAPPLE"); library guard enforced; vault cloned/synced; reconnect via SSE works; process restart rehydrates session gracefully and resumes conversation; and the provider list + keys are perfectly masked with no leaks. Full monorepo lint (0 err), test (178), build all pass. Milestone 5A complete (10/10). Committing.
 - 21:00 DONE m5b-01: Compaction data model. Update `chat_sessions` schema to support `compaction_summary` text and `compacted_at` timestamp. Add `compaction` to `chat_events`.
 - 21:01 DONE m5b-02: Compaction request handler. Added `POST /api/chat/sessions/:id/compact` logic.
-- 21:03 STARTED m5b-03: Compaction event persistence. Intercept `<compaction_summary>` in chunks, save summary, emit event.
+- 21:03 DONE m5b-03: Compaction event persistence. Intercept `<compaction_summary>` in chunks, save summary, emit event.
+- 21:06 STARTED m5b-04: Rehydration path. Update AgentSessionService to prepend summary on resume.
