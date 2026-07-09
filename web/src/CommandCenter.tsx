@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import { ReviewCommitModal } from './ReviewCommitModal.js'
 
 interface GitStatus {
   isRepo: boolean
@@ -31,6 +32,7 @@ export function CommandCenter () {
   const [error, setError] = useState<string | null>(null)
   const [healthMsg, setHealthMsg] = useState<string | null>(null)
   const [running, setRunning] = useState(false)
+  const [showReview, setShowReview] = useState(false)
 
   async function load () {
     const res = await getJson('/api/command-center')
@@ -91,8 +93,20 @@ export function CommandCenter () {
               <button className='btn btn-primary' type='button' onClick={() => { runHealth().catch(() => {}) }} disabled={running || !data.vault.cloned}>
                 {running ? 'Running…' : 'Run health check'}
               </button>
+              {git?.dirty && (
+                <button className='btn btn-primary' type='button' onClick={() => setShowReview(true)}>
+                  Review & Commit
+                </button>
+              )}
               <a className='btn btn-secondary' href='/vault'>Vault settings</a>
             </div>
+
+            {showReview && (
+              <ReviewCommitModal
+                onClose={() => setShowReview(false)}
+                onSuccess={() => { setShowReview(false); load().catch(() => {}) }}
+              />
+            )}
 
             <section className='stack-2' aria-label='Vault' data-testid='cc-vault'>
               <h2 className='card-title'>Vault</h2>

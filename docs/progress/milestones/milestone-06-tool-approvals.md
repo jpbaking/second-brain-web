@@ -22,7 +22,7 @@ Deliverable:
       Verify: `npm test --workspace server` proves the review payload is correctly aggregated.
 - [x] **m06-07** — Explicit commit/push action: Implement a mutating endpoint `POST /api/vault/commit` that commits the current dirty state with a generated message and pushes to the configured remote.
       Verify: `npm test --workspace server` proves the commit and push operations succeed and clear the dirty state.
-- [ ] **m06-08** — Review & Commit UI: Add a "Review & Commit" interface accessible from the Chat or Command Center when the vault is dirty, displaying the review summary and a Confirm button to trigger the commit/push.
+- [x] **m06-08** — Review & Commit UI: Add a "Review & Commit" interface accessible from the Chat or Command Center when the vault is dirty, displaying the review summary and a Confirm button to trigger the commit/push.
       Verify: `npm run lint` and `npm run build` pass.
 - [ ] **m06-09** — Deliverable check: End-to-end verification. Create sessions with different presets, verify lock behaviour, and perform a mutating workflow culminating in a review and commit.
       Verify: Live run with evidence in the journal; full lint/test/build pass.

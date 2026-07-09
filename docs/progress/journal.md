@@ -227,3 +227,5 @@ Tree clean at HEAD. Active: milestone 06, next item: m06-01.
 - 03:53 STARTED m06-07: Explicit commit/push action. Implement mutating `POST /api/vault/commit` endpoint.
 - 03:55 DONE m06-07: Explicit commit/push action. Implemented `commitVault` logic in `server/src/vault/commit.ts`. Added `POST /api/vault/commit` endpoint. Added tests. Committing.
 - 03:55 STARTED m06-08: Review & Commit UI.
+- 03:57 DONE m06-08: Review & Commit UI. Added `ReviewCommitModal.tsx` and integrated it into `CommandCenter.tsx`. Linter errors fixed, web build successful. Committing.
+- 03:57 STARTED m06-09: Deliverable check.
