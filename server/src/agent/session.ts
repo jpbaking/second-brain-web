@@ -295,6 +295,16 @@ export class AgentSessionService {
     return { sdkSessionId }
   }
 
+  /** Instruct the agent to summarize context for manual compaction. */
+  async compactSession (chatSessionId: string): Promise<{ sdkSessionId: string }> {
+    const text = 'SYSTEM: Please generate a concise summary of the current working context, preserving task state, unfiled facts, pending approvals, and any other critical details. Start your response with `<compaction_summary>` and end it with `</compaction_summary>`.'
+    appendEvent(this.db, chatSessionId, 'compaction_requested', null)
+    const wasLive = this.live.has(chatSessionId)
+    const sdkSessionId = await this.ensureLive(chatSessionId, wasLive ? undefined : text)
+    if (wasLive) await this.runner.send(sdkSessionId, { type: 'user_message', text })
+    return { sdkSessionId }
+  }
+
   /**
    * Explicitly rehydrate a persisted session into a fresh live SDK session
    * (e.g. on server restart) without sending a message. Returns the new SDK

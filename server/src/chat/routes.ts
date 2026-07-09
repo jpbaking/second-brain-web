@@ -167,8 +167,11 @@ export function registerChatRoutes (app: FastifyInstance, config: AppConfig, run
   app.post('/api/chat/sessions/:id/compact', async (req, reply) => {
     const id = (req.params as { id: string }).id
     if (getSession(db, id) === undefined) return await reply.code(404).send({ error: 'session not found' })
-    // Manual compaction is milestone 5B; record the request now.
-    appendEvent(db, id, 'compaction_requested', null)
-    return await reply.code(202).send({ accepted: true })
+    try {
+      const result = await service.compactSession(id)
+      return await reply.code(202).send(result)
+    } catch (err) {
+      return await reply.code(502).send({ error: err instanceof Error ? err.message : 'agent send failed' })
+    }
   })
 }

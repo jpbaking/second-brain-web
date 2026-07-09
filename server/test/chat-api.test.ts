@@ -126,12 +126,15 @@ describe('chat API', () => {
   })
 
   it('accepts a bodyless compaction POST (no empty-body 400)', async () => {
-    const { app, cookie } = await authedApp()
+    const { app, cookie, runner } = await authedApp()
     await seedDefaultProfile(app, cookie)
     const id = (await app.inject({ method: 'POST', url: '/api/chat/sessions', headers: { cookie }, payload: { title: 'C' } })).json().id
     // No content-type, no body — must not 400 (the m05-07 lesson).
     const res = await app.inject({ method: 'POST', url: `/api/chat/sessions/${id}/compact`, headers: { cookie } })
     expect(res.statusCode).toBe(202)
+    // Verify compaction intent was routed.
+    expect(runner.starts).toHaveLength(1)
+    expect(runner.starts[0]?.prompt).toContain('compaction_summary')
   })
 
   it('404s messages/commands for an unknown session', async () => {
