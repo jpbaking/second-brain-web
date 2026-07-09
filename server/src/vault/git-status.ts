@@ -26,7 +26,16 @@ const NOT_A_REPO: GitStatus = {
   diffSummary: null,
 }
 
-export async function readGitStatus (workspacePath: string): Promise<GitStatus> {
+export interface GitStatusOptions {
+  /**
+   * Also compute a `git diff HEAD --stat` summary. Off by default: only the
+   * review-before-commit flow needs it, and the frequently-polled command
+   * centre / status endpoints should not spawn an extra git process each poll.
+   */
+  includeDiff?: boolean
+}
+
+export async function readGitStatus (workspacePath: string, options: GitStatusOptions = {}): Promise<GitStatus> {
   const inside = await runGit(['-C', workspacePath, 'rev-parse', '--is-inside-work-tree'])
   if (inside.code !== 0 || inside.stdout.trim() !== 'true') {
     return { ...NOT_A_REPO }
@@ -44,7 +53,7 @@ export async function readGitStatus (workspacePath: string): Promise<GitStatus> 
     .map((line) => line.slice(3))
 
   let diffSummary: string | null = null
-  if (changedFiles.length > 0) {
+  if (options.includeDiff === true && changedFiles.length > 0) {
     const diff = await runGit(['-C', workspacePath, 'diff', 'HEAD', '--stat'])
     if (diff.code === 0) diffSummary = diff.stdout.trim()
   }

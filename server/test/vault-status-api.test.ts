@@ -10,6 +10,8 @@ import { totpCode } from '../src/auth/totp.js'
 import { runGit } from '../src/vault/git.js'
 import { vaultWorkspacePath } from '../src/vault/config.js'
 import { VAULT_MARKERS } from '../src/vault/detect.js'
+import { openCoreDb } from '../src/db.js'
+import { acquireLock } from '../src/vault/lock.js'
 import { CHALLENGE_COOKIE, SESSION_COOKIE } from '../src/auth/cookies.js'
 import type { FastifyInstance } from 'fastify'
 
@@ -43,7 +45,7 @@ async function seedFullVault (): Promise<string> {
   return bare
 }
 
-async function authedApp (): Promise<{ app: FastifyInstance, cookie: string, workspace: string }> {
+async function authedApp (): Promise<{ app: FastifyInstance, cookie: string, workspace: string, dataDir: string }> {
   const root = mkdtempSync(path.join(tmpdir(), 'sbw-vaultstatus-'))
   scratch.push(root)
   const dataDir = path.join(root, 'data')
@@ -65,7 +67,7 @@ async function authedApp (): Promise<{ app: FastifyInstance, cookie: string, wor
   })
   // @ts-expect-error test util
   const workspace = vaultWorkspacePath(config.dataDir)
-  return { app, cookie: `${SESSION_COOKIE}=${cookieValue(totp.headers['set-cookie'], SESSION_COOKIE)}`, workspace }
+  return { app, cookie: `${SESSION_COOKIE}=${cookieValue(totp.headers['set-cookie'], SESSION_COOKIE)}`, workspace, dataDir: config.dataDir }
 }
 
 afterEach(async () => {
@@ -153,5 +155,30 @@ describe('vault status API', () => {
 
     const rev2 = await app.inject({ method: 'GET', url: '/api/vault/review', headers: { cookie } })
     expect(rev2.json().git.dirty).toBe(false)
+  })
+
+  it('refuses to commit while another session holds the vault write lock', async () => {
+    const bare = await seedFullVault()
+    const { app, cookie, workspace, dataDir } = await authedApp()
+
+    await app.inject({
+      method: 'PUT',
+      url: '/api/vault/config',
+      headers: { cookie },
+      payload: { remoteUrl: bare, branch: 'main' },
+    })
+    await app.inject({ method: 'POST', url: '/api/vault/sync', headers: { cookie } })
+    writeFileSync(path.join(workspace, 'dirty-file.txt'), 'dirty')
+
+    // Simulate an agent session mid-write holding the single-writer lock.
+    const db = openCoreDb(dataDir)
+    const held = acquireLock(db, { sessionId: 'agent-1', operation: 'editor' })
+    expect(held.acquired).toBe(true)
+    db.close()
+
+    const res = await app.inject({ method: 'POST', url: '/api/vault/commit', headers: { cookie } })
+    expect(res.statusCode).toBe(400)
+    expect(res.json().success).toBe(false)
+    expect(res.json().message).toMatch(/lock/i)
   })
 })

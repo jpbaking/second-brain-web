@@ -52,6 +52,9 @@ auth/
 # Spike throwaway material (Milestone 0)
 spike/test-vault/
 
+# Throwaway verification / deliverable-check scripts
+scratch/
+
 # Databases and derived indexes
 *.sqlite
 *.sqlite3

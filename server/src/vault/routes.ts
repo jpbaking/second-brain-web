@@ -145,7 +145,7 @@ export function registerVaultRoutes (app: FastifyInstance, config: AppConfig): v
   app.get('/api/vault/review', async () => {
     const workspace = vaultWorkspacePath(config.dataDir)
     const [git, health] = await Promise.all([
-      readGitStatus(workspace),
+      readGitStatus(workspace, { includeDiff: true }),
       runHealthCheck(workspace),
     ])
     return { git, health }

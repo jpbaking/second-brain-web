@@ -383,15 +383,10 @@ export class AgentSessionService {
   async compactSession (chatSessionId: string): Promise<{ sdkSessionId: string }> {
     const text = 'SYSTEM: Please generate a concise summary of the current working context, preserving task state, unfiled facts, pending approvals, and any other critical details. Start your response with `<compaction_summary>` and end it with `</compaction_summary>`.'
     appendEvent(this.db, chatSessionId, 'compaction_requested', null)
-    try {
-      const wasLive = this.live.has(chatSessionId)
-      const sdkSessionId = await this.ensureLive(chatSessionId, wasLive ? undefined : text)
-      if (wasLive) await this.runner.send(sdkSessionId, { type: 'user_message', text })
-      return { sdkSessionId }
-    } catch (err) {
-      console.error('compactSession error:', err)
-      throw err
-    }
+    const wasLive = this.live.has(chatSessionId)
+    const sdkSessionId = await this.ensureLive(chatSessionId, wasLive ? undefined : text)
+    if (wasLive) await this.runner.send(sdkSessionId, { type: 'user_message', text })
+    return { sdkSessionId }
   }
 
   /**

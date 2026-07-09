@@ -1,6 +1,7 @@
 import { readVaultConfig, vaultWorkspacePath, writeVaultConfig } from './config.js'
 import { runGit } from './git.js'
 import { readGitStatus } from './git-status.js'
+import { acquireLock, releaseLock } from './lock.js'
 import type { DatabaseSync } from 'node:sqlite'
 
 export interface VaultCommitResult {
@@ -26,6 +27,14 @@ export async function commitVault (db: DatabaseSync, dataDir: string, now: Date 
   if (!status.dirty) {
     return { success: true, commit: status.commit, message: 'Vault is already up to date (clean working tree).' }
   }
+
+  // Take the single-writer lock so a manual commit cannot race an agent session
+  // that is mid-write. Fails fast if another writer holds it.
+  const lock = acquireLock(db, { sessionId: null, operation: 'commit', now })
+  if (!lock.acquired) {
+    return { success: false, commit: status.commit, message: 'Another session holds the vault write lock; try again shortly.' }
+  }
+  const lockId = lock.lock?.lockId ?? null
 
   try {
     // Stage all changes
@@ -62,5 +71,7 @@ export async function commitVault (db: DatabaseSync, dataDir: string, now: Date 
   } catch (err) {
     const message = err instanceof Error ? err.message : String(err)
     return { success: false, commit: status.commit, message }
+  } finally {
+    if (lockId !== null) releaseLock(db, lockId)
   }
 }
