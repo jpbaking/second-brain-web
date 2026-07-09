@@ -105,4 +105,24 @@ describe('vault status API', () => {
     expect(body.commit).toMatch(/^[0-9a-f]{40}$/)
     expect(body.detection.present).toBe(true)
   })
+
+  it('aggregates git status and health check in /api/vault/review', async () => {
+    const bare = await seedFullVault()
+    const { app, cookie } = await authedApp()
+
+    await app.inject({
+      method: 'PUT',
+      url: '/api/vault/config',
+      headers: { cookie },
+      payload: { remoteUrl: bare, branch: 'main' },
+    })
+    await app.inject({ method: 'POST', url: '/api/vault/sync', headers: { cookie } })
+
+    const res = await app.inject({ method: 'GET', url: '/api/vault/review', headers: { cookie } })
+    expect(res.statusCode).toBe(200)
+    const body = res.json()
+    expect(body.git.isRepo).toBe(true)
+    expect(body.git.branch).toBe('main')
+    expect(body.health.available).toBe(false) // scripts/health.py isn't present in the bare vault
+  })
 })

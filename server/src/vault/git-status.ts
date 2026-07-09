@@ -13,6 +13,7 @@ export interface GitStatus {
   subject: string | null
   dirty: boolean
   changedFiles: string[]
+  diffSummary: string | null
 }
 
 const NOT_A_REPO: GitStatus = {
@@ -22,6 +23,7 @@ const NOT_A_REPO: GitStatus = {
   subject: null,
   dirty: false,
   changedFiles: [],
+  diffSummary: null,
 }
 
 export async function readGitStatus (workspacePath: string): Promise<GitStatus> {
@@ -41,6 +43,12 @@ export async function readGitStatus (workspacePath: string): Promise<GitStatus> 
     .filter((line) => line.length > 3)
     .map((line) => line.slice(3))
 
+  let diffSummary: string | null = null
+  if (changedFiles.length > 0) {
+    const diff = await runGit(['-C', workspacePath, 'diff', 'HEAD', '--stat'])
+    if (diff.code === 0) diffSummary = diff.stdout.trim()
+  }
+
   return {
     isRepo: true,
     branch: branch.code === 0 ? branch.stdout.trim() : null,
@@ -48,5 +56,6 @@ export async function readGitStatus (workspacePath: string): Promise<GitStatus> 
     subject: subject.code === 0 ? subject.stdout.trim() : null,
     dirty: changedFiles.length > 0,
     changedFiles,
+    diffSummary,
   }
 }

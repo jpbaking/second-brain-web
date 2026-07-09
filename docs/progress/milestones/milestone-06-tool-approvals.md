@@ -18,7 +18,7 @@ Deliverable:
       Verify: `npm test --workspace server` proves concurrent mutating sessions are prevented and locks are managed correctly.
 - [x] **m06-05** — Lock status UI: Update the AppShell or ChatScreen to visually indicate if the current session holds the write lock, or if it is blocked by another session.
       Verify: `npm run lint` and `npm run build` pass.
-- [ ] **m06-06** — Review-before-commit backend: Implement an endpoint `GET /api/vault/review` that aggregates `readGitStatus` (changed files, diff summary) and `runHealthCheck` output into a single review object.
+- [x] **m06-06** — Review-before-commit backend: Implement an endpoint `GET /api/vault/review` that aggregates `readGitStatus` (changed files, diff summary) and `runHealthCheck` output into a single review object.
       Verify: `npm test --workspace server` proves the review payload is correctly aggregated.
 - [ ] **m06-07** — Explicit commit/push action: Implement a mutating endpoint `POST /api/vault/commit` that commits the current dirty state with a generated message and pushes to the configured remote.
       Verify: `npm test --workspace server` proves the commit and push operations succeed and clear the dirty state.

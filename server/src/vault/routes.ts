@@ -5,7 +5,9 @@ import { readVaultConfig, vaultWorkspacePath, writeVaultConfig } from './config.
 import { detectVault } from './detect.js'
 import { syncVault } from './sync.js'
 import { runHealthCheck } from './health.js'
+import { readGitStatus } from './git-status.js'
 import { readCommandCenter } from './command-center.js'
+import { readLock } from './lock.js'
 import type { AppConfig } from '../config.js'
 import type { VaultConfigPatch } from './config.js'
 import type { FastifyInstance } from 'fastify'
@@ -137,5 +139,14 @@ export function registerVaultRoutes (app: FastifyInstance, config: AppConfig): v
     } finally {
       db.close()
     }
+  })
+
+  app.get('/api/vault/review', async () => {
+    const workspace = vaultWorkspacePath(config.dataDir)
+    const [git, health] = await Promise.all([
+      readGitStatus(workspace),
+      runHealthCheck(workspace),
+    ])
+    return { git, health }
   })
 }

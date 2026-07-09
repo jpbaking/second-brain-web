@@ -223,3 +223,4 @@ Tree clean at HEAD. Active: milestone 06, next item: m06-01.
 - 03:49 STARTED m06-05: Lock status UI.
 - 03:51 DONE m06-05: Lock status UI. Added `/api/vault/lock` endpoint to `vault/routes.ts` and updated `ChatScreen.tsx` to poll and display the lock status dynamically in the transcript header. All web build/lint and server tests pass. Committing.
 - 03:51 STARTED m06-06: Review-before-commit backend. Implement `GET /api/vault/review` aggregating git status and health check.
+- 03:53 DONE m06-06: Review-before-commit backend. Updated `readGitStatus` to optionally include a `diffSummary` using `git diff HEAD --stat`. Created `GET /api/vault/review` endpoint. Added tests to `vault-status-api.test.ts`. Committing.
