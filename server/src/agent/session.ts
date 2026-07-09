@@ -207,7 +207,13 @@ export class AgentSessionService {
   }
 
   /** Build the SDK start config from the captured config plus the current key. */
-  private startConfig (captured: CapturedConfig): AgentModelConfig & { cwd: string, systemPrompt?: string, enableTools?: boolean } {
+  private startConfig (captured: CapturedConfig): AgentModelConfig & {
+    cwd: string
+    systemPrompt?: string
+    enableTools: boolean
+    enableSpawnAgent: boolean
+    enableAgentTeams: boolean
+  } {
     const snap = this.opts.snapshotFor(captured.providerProfileId)
     const model = toModelConfig({
       profileId: captured.providerProfileId,
@@ -222,7 +228,11 @@ export class AgentSessionService {
       ...model,
       cwd: this.opts.vaultCwd,
       ...(this.opts.systemPrompt !== undefined ? { systemPrompt: this.opts.systemPrompt } : {}),
+      // The SDK requires all three runtime feature flags (config.enableTools →
+      // enable_tools, etc.). Sub-agents and teams are off for the MVP.
       enableTools: this.opts.enableTools ?? true,
+      enableSpawnAgent: false,
+      enableAgentTeams: false,
     }
   }
 

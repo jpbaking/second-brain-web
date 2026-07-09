@@ -60,9 +60,15 @@ describe('toModelConfig', () => {
     })
   })
 
-  it('omits apiKey entirely for a keyless profile', () => {
-    const cfg = toModelConfig(snap({ providerId: 'openai-compatible', baseUrl: 'http://127.0.0.1:1234/v1' }))
+  it('omits apiKey for a keyless cloud profile', () => {
+    const cfg = toModelConfig(snap({ providerId: 'anthropic', apiKey: null }))
     expect('apiKey' in cfg).toBe(false)
+  })
+
+  it('supplies a placeholder key for a keyless openai-compatible endpoint (LM Studio)', () => {
+    // The SDK openai-compatible provider requires a non-empty apiKey string.
+    const cfg = toModelConfig(snap({ providerId: 'openai-compatible', baseUrl: 'http://127.0.0.1:1234/v1', apiKey: null }))
+    expect(cfg.apiKey).toBe('not-needed')
     expect(cfg.baseUrl).toBe('http://127.0.0.1:1234/v1')
   })
 })

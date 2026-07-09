@@ -51,6 +51,13 @@ export function normaliseOpenAiBaseUrl (baseUrl: string): string {
   return pathname === '' || pathname === '/' ? `${trimmed}/v1` : trimmed
 }
 
+/**
+ * Placeholder key for keyless OpenAI-compatible endpoints (e.g. LM Studio).
+ * The SDK's openai-compatible provider requires a non-empty apiKey string even
+ * when the local server ignores it; without one it throws on `apiKey.trim()`.
+ */
+const OPENAI_COMPATIBLE_PLACEHOLDER_KEY = 'not-needed'
+
 /** Build the SDK model config from a captured provider snapshot. */
 export function toModelConfig (snapshot: ProviderSnapshot): AgentModelConfig {
   const config: AgentModelConfig = {
@@ -58,6 +65,7 @@ export function toModelConfig (snapshot: ProviderSnapshot): AgentModelConfig {
     modelId: snapshot.modelId,
   }
   if (snapshot.apiKey !== null) config.apiKey = snapshot.apiKey
+  else if (snapshot.providerId === 'openai-compatible') config.apiKey = OPENAI_COMPATIBLE_PLACEHOLDER_KEY
   if (snapshot.baseUrl !== null) {
     config.baseUrl = snapshot.providerId === 'openai-compatible'
       ? normaliseOpenAiBaseUrl(snapshot.baseUrl)
@@ -101,7 +109,13 @@ export interface AgentCapabilities {
 }
 
 export interface AgentStartInput {
-  config: AgentModelConfig & { systemPrompt?: string, cwd?: string, enableTools?: boolean }
+  config: AgentModelConfig & {
+    systemPrompt?: string
+    cwd?: string
+    enableTools?: boolean
+    enableSpawnAgent?: boolean
+    enableAgentTeams?: boolean
+  }
   prompt?: string
   initialMessages?: unknown[]
   /** Approval + policy wiring; resolvers must be installed before start (m00-06). */
