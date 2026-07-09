@@ -68,6 +68,7 @@ export function ChatScreen () {
   const [input, setInput] = useState('')
   const [error, setError] = useState<string | null>(null)
   const [selectedProvider, setSelectedProvider] = useState('')
+  const [selectedPreset, setSelectedPreset] = useState('normal')
   const streamAbort = useRef<AbortController | null>(null)
 
   const loadSessions = useCallback(async () => {
@@ -130,7 +131,7 @@ export function ChatScreen () {
   async function newChat () {
     setError(null)
     const providerProfileId = selectedProvider === '' ? undefined : selectedProvider
-    const res = await sendJson('POST', '/api/chat/sessions', { title: 'New chat', providerProfileId })
+    const res = await sendJson('POST', '/api/chat/sessions', { title: 'New chat', providerProfileId, approvalPreset: selectedPreset })
     if (res.status === 401) { window.location.assign('/login'); return }
     if (!res.ok) { setError((await res.json().catch(() => ({})) as { error?: string }).error ?? 'Could not start a chat.'); return }
     const session = await res.json() as ChatSession
@@ -194,6 +195,14 @@ export function ChatScreen () {
                 {providers.filter(p => p.enabled).map(p => (
                   <option key={p.id} value={p.id}>{p.displayName}{p.isDefault ? ' (default)' : ''}</option>
                 ))}
+              </select>
+            </div>
+            <div className='field'>
+              <label className='label' htmlFor='preset'>Approval Preset</label>
+              <select id='preset' className='input' value={selectedPreset} onChange={e => setSelectedPreset(e.target.value)}>
+                <option value='normal'>Normal</option>
+                <option value='read-only'>Read-only</option>
+                <option value='high-trust'>High-trust</option>
               </select>
             </div>
             <div className='field' style={{ display: 'flex', alignItems: 'flex-end' }}>

@@ -12,7 +12,7 @@ Deliverable:
       Verify: `npm test --workspace server` verifies the preset is stored and retrieved on session creation.
 - [x] **m06-02** — Tool policy preset enforcement: Update `tool-policy.ts` to enforce presets. `read-only` denies all mutating tools; `normal` asks for mutating tools (except catalog edits which are allowed per current rules? Or requires asking per preset rules); `high-trust` allows mutating tools without asking.
       Verify: `npm test --workspace server` verifies tool policy correctly allows/denies/asks based on the session's preset.
-- [ ] **m06-03** — Preset selection UI: Update the web `/chat` New Chat form to include a preset selector.
+- [x] **m06-03** — Preset selection UI: Update the web `/chat` New Chat form to include a preset selector.
       Verify: `npm run lint` and `npm run build` pass. Headless render check confirms the preset selector is present.
 - [ ] **m06-04** — Session write lock integration: A chat session must acquire the `vault_lock` before starting a mutating tool, and maintain the heartbeat while running. Refuse execution and surface a lock error if another session holds the lock. Release the lock when the session goes idle or is closed.
       Verify: `npm test --workspace server` proves concurrent mutating sessions are prevented and locks are managed correctly.

@@ -217,3 +217,5 @@ Tree clean at HEAD. Active: milestone 06, next item: m06-01.
 - 03:38 STARTED m06-02: Tool policy preset enforcement (`read-only` denies mutating, `normal` asks, `high-trust` allows).
 - 03:39 DONE m06-02: Tool policy preset enforcement. Updated `evaluateTool` to accept `ApprovalPreset` and apply rules to file/shell mutations while retaining the strict `library/` protection invariant regardless of preset. Updated `AgentSessionService` to pass the session's preset when requesting tool approval. Added unit tests for presets. All tests pass. Committing.
 - 03:39 STARTED m06-03: Preset selection UI. Update the web `/chat` New Chat form to include a preset selector.
+- 03:40 DONE m06-03: Preset selection UI. Added preset `select` to `ChatScreen.tsx` and wired it into `POST /api/chat/sessions`. Ran `npm run lint` and `npm run build` for the web workspace successfully. Committing.
+- 03:40 STARTED m06-04: Session write lock integration. Acquire `vault_lock` before starting a mutating tool, maintain heartbeat, surface lock errors.
