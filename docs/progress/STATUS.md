@@ -1,6 +1,6 @@
 # STATUS — single source of truth
 
-Updated: 2026-07-09 (milestone 5 complete)
+Updated: 2026-07-10 (milestone 6 complete)
 
 ## Where we are
 
@@ -31,16 +31,17 @@ Updated: 2026-07-09 (milestone 5 complete)
   and never at rest (only `v1:` ciphertext on disk).
 - **Milestone 5A — Cline SDK Chat: COMPLETE (10/10).** SDK integration is complete with local LM Studio verified end-to-end. Streaming, persistence, and session rehydration fully implemented without provider key leakage.
 - **Milestone 5B — Manual Context Compaction: COMPLETE (6/6).**
-- Active milestone: **Milestone 6 — Tool Approvals And Write Lock**.
-- Checklist: `docs/progress/milestones/milestone-06-tool-approvals.md` (needs to be created).
+- **Milestone 6 — Tool Approvals And Write Lock: COMPLETE (9/9).**
+- Active milestone: **Milestone 7 — Quick Capture And Uploads**.
+- Checklist: `docs/progress/milestones/milestone-07-quick-capture-and-uploads.md`.
 - App runnable: yes, with `SECOND_BRAIN_WEB_DATA_DIR` pointing at a private
-  `0700` data root. Core DB schema at v8 (adds `chat_sessions`, `chat_events`).
+  `0700` data root. Core DB schema at v10.
 
 ## Current Phase
-All phases complete for Milestone 6!
+Milestone 7 — Quick Capture And Uploads
 
 ## Next step
-- Present completion of Milestone 6.
+- Begin `m07-01`: Quick capture box.
 - SDK notes (m5a-01): provider ids map anthropic→anthropic, openai→openai-native,
   openai-compatible→openai-compatible; model config is `CoreModelConfig`
   (providerId/modelId/apiKey/baseUrl/headers); storage root is set via
