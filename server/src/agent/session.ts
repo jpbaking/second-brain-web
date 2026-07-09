@@ -1,4 +1,4 @@
-import { appendEvent, createSession, getSession, getSessionBySdkId, readEventsSince, setSdkSessionId } from './chat-store.js'
+import { appendEvent, createSession, getSession, getSessionBySdkId, readEventsSince, setSdkSessionId, saveCompaction } from './chat-store.js'
 import { toModelConfig } from './runner.js'
 import { TOOL_POLICIES, evaluateTool } from './tool-policy.js'
 import type { AgentRunner, AgentModelConfig, SdkApprovalRequest, ToolApprovalDecision } from './runner.js'
@@ -120,6 +120,40 @@ export class AgentSessionService {
     if (translated === null) return
     const event = appendEvent(this.db, session.id, translated.type, translated.payload)
     this.fanOut(session.id, event)
+
+    if (translated.type === 'ended') {
+      this.checkCompaction(session.id)
+    }
+  }
+
+  private checkCompaction (chatSessionId: string): void {
+    const events = readEventsSince(this.db, chatSessionId, 0)
+    let reqIndex = -1
+    for (let i = events.length - 1; i >= 0; i--) {
+      if (events[i].type === 'compaction_requested') { reqIndex = i; break }
+      if (events[i].type === 'user_message') break // Stopped looking (another user turn).
+    }
+    if (reqIndex !== -1) {
+      let text = ''
+      for (let i = reqIndex + 1; i < events.length; i++) {
+        const e = events[i]
+        if (e.type === 'chunk' || e.type === 'agent_event') {
+          const payload = e.payload as { text?: string, event?: { text?: string } } | null
+          if (typeof payload?.text === 'string') text += payload.text
+          else if (typeof payload?.event?.text === 'string') text += payload.event.text
+        }
+      }
+      const match = text.match(/<compaction_summary>([\s\S]*?)<\/compaction_summary>/)
+      if (match) {
+        // Prevent duplicate compactions if multiple 'ended' happen for the same turn.
+        const summary = match[1].trim()
+        const alreadyCompacted = events.slice(reqIndex).some(e => e.type === 'compaction')
+        if (!alreadyCompacted) {
+          saveCompaction(this.db, chatSessionId, summary)
+          this.emitEvent(chatSessionId, 'compaction', { summary })
+        }
+      }
+    }
   }
 
   private fanOut (chatSessionId: string, event: ChatEvent): void {

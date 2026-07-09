@@ -8,7 +8,7 @@ Deferred post-MVP: automatic compaction triggers based on token/context pressure
 
 - [x] **m5b-01** — Compaction data model: Update `chat_sessions` schema to support storing a `compaction_summary` text and `compacted_at` timestamp. Add `compaction` to the valid `chat_events` types.
       Verify: `npm test --workspace server -- chat-store.test.ts` includes checks for updating and retrieving compaction state.
-- [ ] **m5b-02** — Compaction request handler: Implement the backend logic for `POST /api/chat/sessions/:id/compact` to instruct the agent to generate a summary of the current working context (preserving task state, unfiled facts, pending approvals, etc.).
+- [x] **m5b-02** — Compaction request handler: Implement the backend logic for `POST /api/chat/sessions/:id/compact` to instruct the agent to generate a summary of the current working context (preserving task state, unfiled facts, pending approvals, etc.).
       Verify: `npm test --workspace server -- chat-api.test.ts` verifies the compaction intent is accepted and routed to the agent session.
 - [ ] **m5b-03** — Compaction event persistence: Process the agent's summary response, persist it to the session record, and append a `compaction` event to the `chat_events` timeline to be broadcast via SSE.
       Verify: `npm test --workspace server -- agent-session.test.ts` verifies the summary is stored and the timeline event is dispatched.

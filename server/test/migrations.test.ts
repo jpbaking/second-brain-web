@@ -36,7 +36,7 @@ describe('database migrations', () => {
     expect(tableExists(core, 'chat_sessions')).toBe(true)
     expect(tableExists(core, 'chat_events')).toBe(true)
     expect(tableExists(sidecar, 'vault_index_metadata')).toBe(true)
-    expect(schemaVersion(core)).toBe(8)
+    expect(schemaVersion(core)).toBe(9)
     expect(schemaVersion(sidecar)).toBe(1)
     core.close()
     sidecar.close()

@@ -48,7 +48,17 @@ class FakeRunner implements AgentRunner {
     this.sends.push({ sessionId, text: input.text })
   }
 
-  subscribe (): () => void { return () => {} }
+  private listeners = new Set<(event: unknown) => void>()
+
+  subscribe (listener: (event: unknown) => void): () => void {
+    this.listeners.add(listener)
+    return () => this.listeners.delete(listener)
+  }
+  
+  emit (event: unknown): void {
+    for (const listener of this.listeners) listener(event)
+  }
+
   async readMessages (sessionId: string): Promise<unknown[]> { return this.messagesById.get(sessionId) ?? [] }
   async stop (): Promise<void> {}
 }
@@ -143,5 +153,32 @@ describe('AgentSessionService', () => {
     const db = freshDb()
     const svc = new AgentSessionService(db, new FakeRunner(), { snapshotFor: () => undefined, vaultCwd: '/vault' })
     expect(() => svc.create({ title: 'C' })).toThrow(/provider profile/)
+  })
+
+  it('processes compaction summary upon ended event and emits compaction event', async () => {
+    const db = freshDb()
+    const runner = new FakeRunner()
+    const svc = new AgentSessionService(db, runner, { snapshotFor: () => snap({}), vaultCwd: '/vault' })
+    const s = svc.create({ title: 'Compaction', providerProfileId: 'p-1' })
+    await svc.compactSession(s.id)
+
+    // Simulate agent streaming the summary
+    const sdkId = getSession(db, s.id)!.sdkSessionId!
+    const summaryXML = `<compaction_summary>
+      Task state: completed
+      Vault status: clean
+    </compaction_summary>`
+    runner.emit({ type: 'chunk', sessionId: sdkId, payload: { text: 'Here is the summary:\n' } })
+    runner.emit({ type: 'chunk', sessionId: sdkId, payload: { text: summaryXML } })
+    
+    // Simulate turn ending
+    let emittedCompaction: unknown = null
+    svc.onEvent(s.id, (e) => { if (e.type === 'compaction') emittedCompaction = e.payload })
+    runner.emit({ type: 'ended', sessionId: sdkId, payload: null })
+
+    const updated = getSession(db, s.id)
+    expect(updated?.compactionSummary).toContain('Task state: completed')
+    expect(updated?.compactedAt).toBeDefined()
+    expect(emittedCompaction).toEqual({ summary: 'Task state: completed\n      Vault status: clean' })
   })
 })
