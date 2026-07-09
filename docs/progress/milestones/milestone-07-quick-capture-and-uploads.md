@@ -1,6 +1,6 @@
 # Milestone 07 - Quick Capture And Uploads
 
-- [ ] **m07-01:** Quick capture box UI component and routing. (Verification: `npm run lint && npm run build --workspace web` and visual inspection)
+- [x] **m07-01:** Quick capture box UI component and routing. (Verification: `npm run lint && npm run build --workspace web` and visual inspection)
 - [ ] **m07-02:** Backend endpoint for quick capture intake routing to agent/vault workflow. (Verification: `npm test --workspace server -- quick-capture.test.ts`)
 - [ ] **m07-03:** Inbox intake wizard fields UI. (Verification: visual UI verification)
 - [ ] **m07-04:** File upload UI component and basic dropzone. (Verification: visual UI verification)

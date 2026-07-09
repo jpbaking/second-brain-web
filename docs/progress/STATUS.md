@@ -41,7 +41,7 @@ Updated: 2026-07-10 (milestone 6 complete)
 Milestone 7 — Quick Capture And Uploads
 
 ## Next step
-- Begin `m07-01`: Quick capture box.
+- Begin `m07-02`: Backend endpoint for quick capture intake routing to agent/vault workflow.
 - SDK notes (m5a-01): provider ids map anthropic→anthropic, openai→openai-native,
   openai-compatible→openai-compatible; model config is `CoreModelConfig`
   (providerId/modelId/apiKey/baseUrl/headers); storage root is set via

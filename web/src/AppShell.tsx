@@ -12,6 +12,7 @@ interface NavItem { href: string, label: string, short: string }
 const NAV_ITEMS: NavItem[] = [
   { href: '/', label: 'Command centre', short: 'Home' },
   { href: '/chat', label: 'Chat', short: 'Chat' },
+  { href: '/capture', label: 'Capture', short: 'Capture' },
   { href: '/follow-ups', label: 'Follow-ups', short: 'Queue' },
   { href: '/reports', label: 'Reports', short: 'Reports' },
   { href: '/vault', label: 'Vault', short: 'Vault' },

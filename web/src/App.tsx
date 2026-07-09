@@ -4,6 +4,7 @@ import { VaultSettings } from './VaultSettings.js'
 import { ProviderSettings } from './ProviderSettings.js'
 import { ChatScreen } from './ChatScreen.js'
 import { CommandCenter } from './CommandCenter.js'
+import { QuickCapture } from './QuickCapture.js'
 import { Stub } from './Stub.js'
 import { AppShell } from './AppShell.js'
 
@@ -52,6 +53,7 @@ function routedScreen (path: string) {
     case '/vault': return <VaultSettings />
     case '/providers': return <ProviderSettings />
     case '/chat': return <ChatScreen />
+    case '/capture': return <QuickCapture />
     case '/follow-ups':
       return <Stub title='Follow-up queue' blurb='Reminders and commitments the secretary is keeping watch on.' />
     case '/reports':
