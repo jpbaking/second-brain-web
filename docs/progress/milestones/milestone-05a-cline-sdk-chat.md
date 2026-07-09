@@ -102,7 +102,7 @@ in `/v1`.
       Verify: prod build; authenticated headless load of `/chat` shows the list
       + composer; SSE reconnect after reload restores the transcript; 390×844
       screenshot; `npm run lint && npm test && npm run build` pass.
-- [ ] **m5a-10** — Milestone deliverable check (LIVE): end-to-end against a real
+- [x] **m5a-10** — Milestone deliverable check (LIVE): end-to-end against a real
       model — LM Studio (`lmstudio`, baseUrl `…/v1`) or a configured cloud
       profile — the owner sends a message, sees a streamed reply, an approval
       round-trips, a `library/` non-catalog write is refused, and the session

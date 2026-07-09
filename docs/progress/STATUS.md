@@ -29,26 +29,15 @@ Updated: 2026-07-09 (milestone 5 complete)
   set default, test, delete) wired into the shell nav. Verified e2e: keyed
   profile create→mask→default→snapshot with the plaintext key never returned
   and never at rest (only `v1:` ciphertext on disk).
-- Active milestone: **Milestone 5A — Cline SDK Chat** (10 items; offline-
-  verifiable items first, one live-model deliverable check last).
-- Checklist: `docs/progress/milestones/milestone-05a-cline-sdk-chat.md`
-  (milestone 5 checklist complete).
+- **Milestone 5A — Cline SDK Chat: COMPLETE (10/10).** SDK integration is complete with local LM Studio verified end-to-end. Streaming, persistence, and session rehydration fully implemented without provider key leakage.
+- Active milestone: **Milestone 5B — Manual Context Compaction**.
+- Checklist: `docs/progress/milestones/milestone-05b-manual-context-compaction.md` (needs to be created).
 - App runnable: yes, with `SECOND_BRAIN_WEB_DATA_DIR` pointing at a private
   `0700` data root. Core DB schema at v8 (adds `chat_sessions`, `chat_events`).
 
 ## Next step
 
-- **m5a-10 (LIVE deliverable check) — BLOCKED pending the principal.** All of
-  5A's offline work (m5a-01..09) is done, built, and tested. The final check
-  needs a reachable model: **start LM Studio at `http://127.0.0.1:1234/v1`
-  (the seeded default profile already points there) OR configure a cloud
-  provider key in Provider settings.** Then verify end-to-end: send a message →
-  streamed reply; an approval round-trips; a `library/` non-catalog write is
-  refused; the session survives a browser refresh AND a server restart
-  (rehydration); no provider key leaks to the browser or logs.
-- When unblocked, run m5a-10 with the running server, capture evidence in the
-  journal, full lint/test/build, and grep to prove no key leaked. Then Milestone
-  5A is complete → proceed to Milestone 5B (Manual Context Compaction).
+- Create the checklist for **Milestone 5B — Manual Context Compaction** based on `docs/project-plan/phase-006-implementation-roadmap.md`, then proceed with the first item.
 - SDK notes (m5a-01): provider ids map anthropic→anthropic, openai→openai-native,
   openai-compatible→openai-compatible; model config is `CoreModelConfig`
   (providerId/modelId/apiKey/baseUrl/headers); storage root is set via

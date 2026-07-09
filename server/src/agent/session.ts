@@ -86,6 +86,8 @@ export class AgentSessionService {
   private readonly live = new Map<string, string>()
   /** chatSessionId → SSE listeners for live events. */
   private readonly subscribers = new Map<string, Set<(event: ChatEvent) => void>>()
+  /** sdkSessionId → buffered events before session mapping is established */
+  private readonly earlyEvents = new Map<string, SdkEnvelope[]>()
   /** toolCallId → parked approval resolver awaiting a human decision. */
   private readonly pendingApprovals = new Map<string, { resolve: (d: ToolApprovalDecision) => void, chatSessionId: string }>()
   private readonly unsubscribeRunner: () => void
@@ -105,7 +107,15 @@ export class AgentSessionService {
     const sdkSessionId = envelopeSdkSessionId(env)
     if (sdkSessionId === undefined) return
     const session = getSessionBySdkId(this.db, sdkSessionId)
-    if (session === undefined) return
+    if (session === undefined) {
+      let buffered = this.earlyEvents.get(sdkSessionId)
+      if (!buffered) {
+        buffered = []
+        this.earlyEvents.set(sdkSessionId, buffered)
+      }
+      buffered.push(env)
+      return
+    }
     const translated = translateSdkEvent(env)
     if (translated === null) return
     const event = appendEvent(this.db, session.id, translated.type, translated.payload)
@@ -227,7 +237,7 @@ export class AgentSessionService {
     return {
       ...model,
       cwd: this.opts.vaultCwd,
-      ...(this.opts.systemPrompt !== undefined ? { systemPrompt: this.opts.systemPrompt } : {}),
+      ...(this.opts.systemPrompt !== undefined ? { systemPrompt: this.opts.systemPrompt } : { systemPrompt: 'You are working in the principal\'s second-brain vault.' }),
       // The SDK requires all three runtime feature flags (config.enableTools →
       // enable_tools, etc.). Sub-agents and teams are off for the MVP.
       enableTools: this.opts.enableTools ?? true,
@@ -264,6 +274,15 @@ export class AgentSessionService {
     }
     setSdkSessionId(this.db, chatSessionId, sdkSessionId)
     this.live.set(chatSessionId, sdkSessionId)
+
+    const buffered = this.earlyEvents.get(sdkSessionId)
+    if (buffered !== undefined) {
+      this.earlyEvents.delete(sdkSessionId)
+      for (const env of buffered) {
+        this.handleSdkEvent(env)
+      }
+    }
+
     return sdkSessionId
   }
 
