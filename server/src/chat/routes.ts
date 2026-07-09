@@ -35,11 +35,12 @@ export function registerChatRoutes (app: FastifyInstance, config: AppConfig, run
   })
 
   app.post('/api/chat/sessions', async (req, reply) => {
-    const body = (req.body ?? {}) as { title?: unknown, providerProfileId?: unknown }
+    const body = (req.body ?? {}) as { title?: unknown, providerProfileId?: unknown, approvalPreset?: unknown }
     const title = str(body.title) ?? 'New chat'
     const providerProfileId = str(body.providerProfileId) ?? null
+    const approvalPreset = (body.approvalPreset === 'read-only' || body.approvalPreset === 'high-trust') ? body.approvalPreset : 'normal'
     try {
-      const session = service.create({ title, providerProfileId })
+      const session = service.create({ title, providerProfileId, approvalPreset })
       return await reply.code(201).send(session)
     } catch (err) {
       return await reply.code(400).send({ error: err instanceof Error ? err.message : 'could not create session' })

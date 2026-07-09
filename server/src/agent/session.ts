@@ -1,6 +1,7 @@
 import { appendEvent, createSession, getSession, getSessionBySdkId, readEventsSince, setSdkSessionId, saveCompaction } from './chat-store.js'
 import { toModelConfig } from './runner.js'
-import { TOOL_POLICIES, evaluateTool } from './tool-policy.js'
+import { TOOL_POLICIES, evaluateTool, isMutatingTool } from './tool-policy.js'
+import { acquireLock, heartbeatLock, releaseLock } from '../vault/lock.js'
 import type { AgentRunner, AgentModelConfig, SdkApprovalRequest, ToolApprovalDecision } from './runner.js'
 import type { ChatEvent, ChatSession } from './chat-store.js'
 import type { ProviderSnapshot } from '../providers/snapshot.js'
@@ -89,7 +90,9 @@ export class AgentSessionService {
   /** sdkSessionId → buffered events before session mapping is established */
   private readonly earlyEvents = new Map<string, SdkEnvelope[]>()
   /** toolCallId → parked approval resolver awaiting a human decision. */
-  private readonly pendingApprovals = new Map<string, { resolve: (d: ToolApprovalDecision) => void, chatSessionId: string }>()
+  private readonly pendingApprovals = new Map<string, { resolve: (d: ToolApprovalDecision) => void, chatSessionId: string, toolName: string }>()
+  /** chatSessionId → vault lockId held by this session. */
+  private readonly locks = new Map<string, string>()
   private readonly unsubscribeRunner: () => void
 
   constructor (
@@ -124,6 +127,16 @@ export class AgentSessionService {
     if (translated.type === 'ended') {
       this.live.delete(session.id)
       this.checkCompaction(session.id)
+      const lockId = this.locks.get(session.id)
+      if (lockId !== undefined) {
+        releaseLock(this.db, lockId)
+        this.locks.delete(session.id)
+      }
+    } else {
+      const lockId = this.locks.get(session.id)
+      if (lockId !== undefined) {
+        heartbeatLock(this.db, lockId)
+      }
     }
   }
 
@@ -188,6 +201,18 @@ export class AgentSessionService {
     // Fail any parked approvals closed rather than leaving turns hung.
     for (const { resolve } of this.pendingApprovals.values()) resolve({ approved: false, reason: 'server shutting down' })
     this.pendingApprovals.clear()
+    for (const lockId of this.locks.values()) releaseLock(this.db, lockId)
+    this.locks.clear()
+  }
+
+  private ensureLock (sessionId: string, toolName: string): boolean {
+    if (this.locks.has(sessionId)) return true
+    const lockRes = acquireLock(this.db, { sessionId, operation: toolName })
+    if (lockRes.acquired && lockRes.lock !== null) {
+      this.locks.set(sessionId, lockRes.lock.lockId)
+      return true
+    }
+    return false
   }
 
   /**
@@ -208,7 +233,14 @@ export class AgentSessionService {
       }
       return { approved: false, ...(decision.reason !== undefined ? { reason: decision.reason } : {}) }
     }
-    if (decision.decision === 'allow') return { approved: true }
+    if (decision.decision === 'allow') {
+      if (session !== undefined && isMutatingTool(req.toolName)) {
+        if (!this.ensureLock(session.id, req.toolName)) {
+          return { approved: false, reason: 'Another session holds the vault lock.' }
+        }
+      }
+      return { approved: true }
+    }
 
     // 'ask' → park for a human decision.
     const toolCallId = req.toolCallId ?? req.id
@@ -218,7 +250,7 @@ export class AgentSessionService {
     }
     this.emitEvent(session.id, 'approval_request', { toolCallId, toolName: req.toolName })
     return await new Promise<ToolApprovalDecision>((resolve) => {
-      this.pendingApprovals.set(toolCallId, { resolve, chatSessionId: session.id })
+      this.pendingApprovals.set(toolCallId, { resolve, chatSessionId: session.id, toolName: req.toolName })
     })
   }
 
@@ -227,8 +259,18 @@ export class AgentSessionService {
     const parked = this.pendingApprovals.get(toolCallId)
     if (parked === undefined) return false
     this.pendingApprovals.delete(toolCallId)
-    parked.resolve({ approved, ...(reason !== undefined ? { reason } : {}) })
-    this.emitEvent(parked.chatSessionId, 'approval_resolved', { toolCallId, approved })
+    
+    let finalApproved = approved
+    let finalReason = reason
+    if (approved && isMutatingTool(parked.toolName)) {
+      if (!this.ensureLock(parked.chatSessionId, parked.toolName)) {
+        finalApproved = false
+        finalReason = 'Another session holds the vault lock.'
+      }
+    }
+
+    parked.resolve({ approved: finalApproved, ...(finalReason !== undefined ? { reason: finalReason } : {}) })
+    this.emitEvent(parked.chatSessionId, 'approval_resolved', { toolCallId, approved: finalApproved })
     return true
   }
 
@@ -238,12 +280,12 @@ export class AgentSessionService {
   }
 
   /** Create a chat session and capture its provider config. Does not start the SDK yet. */
-  create (input: { title: string, providerProfileId?: string | null }): ChatSession {
+  create (input: { title: string, providerProfileId?: string | null, approvalPreset?: ApprovalPreset }): ChatSession {
     const snap = this.opts.snapshotFor(input.providerProfileId ?? null)
     if (snap === undefined) {
       throw new Error('no enabled provider profile available; configure one in Provider settings first')
     }
-    const session = createSession(this.db, { title: input.title, providerProfileId: snap.profileId })
+    const session = createSession(this.db, { title: input.title, providerProfileId: snap.profileId, approvalPreset: input.approvalPreset })
     appendEvent(this.db, session.id, 'session_config', capturedFromSnapshot(snap))
     return session
   }
