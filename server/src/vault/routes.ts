@@ -8,6 +8,7 @@ import { runHealthCheck } from './health.js'
 import { readGitStatus } from './git-status.js'
 import { readCommandCenter } from './command-center.js'
 import { readLock } from './lock.js'
+import { commitVault } from './commit.js'
 import type { AppConfig } from '../config.js'
 import type { VaultConfigPatch } from './config.js'
 import type { FastifyInstance } from 'fastify'
@@ -148,5 +149,16 @@ export function registerVaultRoutes (app: FastifyInstance, config: AppConfig): v
       runHealthCheck(workspace),
     ])
     return { git, health }
+  })
+
+  app.post('/api/vault/commit', async (req, reply) => {
+    const db = openCoreDb(config.dataDir)
+    try {
+      const result = await commitVault(db, config.dataDir)
+      if (!result.success) return await reply.code(400).send(result)
+      return result
+    } finally {
+      db.close()
+    }
   })
 }

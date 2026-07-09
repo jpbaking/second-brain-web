@@ -8,6 +8,7 @@ import { prepareDatabases } from '../src/migrations.js'
 import { generateOwnerAuth, writeOwnerAuth } from '../src/auth/bootstrap.js'
 import { totpCode } from '../src/auth/totp.js'
 import { runGit } from '../src/vault/git.js'
+import { vaultWorkspacePath } from '../src/vault/config.js'
 import { VAULT_MARKERS } from '../src/vault/detect.js'
 import { CHALLENGE_COOKIE, SESSION_COOKIE } from '../src/auth/cookies.js'
 import type { FastifyInstance } from 'fastify'
@@ -42,10 +43,11 @@ async function seedFullVault (): Promise<string> {
   return bare
 }
 
-async function authedApp (): Promise<{ app: FastifyInstance, cookie: string }> {
+async function authedApp (): Promise<{ app: FastifyInstance, cookie: string, workspace: string }> {
   const root = mkdtempSync(path.join(tmpdir(), 'sbw-vaultstatus-'))
   scratch.push(root)
-  const config = loadConfig({ SECOND_BRAIN_WEB_DATA_DIR: path.join(root, 'data') })
+  const dataDir = path.join(root, 'data')
+  const config = loadConfig({ SECOND_BRAIN_WEB_DATA_DIR: dataDir })
   prepareDatabases(config.dataDir)
   const { password, state } = await generateOwnerAuth()
   writeOwnerAuth(config.dataDir, state)
@@ -61,7 +63,9 @@ async function authedApp (): Promise<{ app: FastifyInstance, cookie: string }> {
     headers: { cookie: `${CHALLENGE_COOKIE}=${challenge}` },
     payload: { code },
   })
-  return { app, cookie: `${SESSION_COOKIE}=${cookieValue(totp.headers['set-cookie'], SESSION_COOKIE)}` }
+  // @ts-expect-error test util
+  const workspace = vaultWorkspacePath(config.dataDir)
+  return { app, cookie: `${SESSION_COOKIE}=${cookieValue(totp.headers['set-cookie'], SESSION_COOKIE)}`, workspace }
 }
 
 afterEach(async () => {
@@ -124,5 +128,30 @@ describe('vault status API', () => {
     expect(body.git.isRepo).toBe(true)
     expect(body.git.branch).toBe('main')
     expect(body.health.available).toBe(false) // scripts/health.py isn't present in the bare vault
+  })
+
+  it('commits and pushes dirty state via /api/vault/commit', async () => {
+    const bare = await seedFullVault()
+    const { app, cookie, workspace } = await authedApp()
+
+    await app.inject({
+      method: 'PUT',
+      url: '/api/vault/config',
+      headers: { cookie },
+      payload: { remoteUrl: bare, branch: 'main' },
+    })
+    await app.inject({ method: 'POST', url: '/api/vault/sync', headers: { cookie } })
+
+    // Simulate dirty state
+    writeFileSync(path.join(workspace, 'dirty-file.txt'), 'dirty')
+    const rev1 = await app.inject({ method: 'GET', url: '/api/vault/review', headers: { cookie } })
+    expect(rev1.json().git.dirty).toBe(true)
+
+    const commitRes = await app.inject({ method: 'POST', url: '/api/vault/commit', headers: { cookie } })
+    expect(commitRes.statusCode).toBe(200)
+    expect(commitRes.json().success).toBe(true)
+
+    const rev2 = await app.inject({ method: 'GET', url: '/api/vault/review', headers: { cookie } })
+    expect(rev2.json().git.dirty).toBe(false)
   })
 })

@@ -38,7 +38,7 @@ Updated: 2026-07-09 (milestone 5 complete)
 
 ## Next step
 
-- Start **m06-07**: Explicit commit/push action.
+- Start **m06-08**: Review & Commit UI.
 - SDK notes (m5a-01): provider ids map anthropic→anthropic, openai→openai-native,
   openai-compatible→openai-compatible; model config is `CoreModelConfig`
   (providerId/modelId/apiKey/baseUrl/headers); storage root is set via

@@ -20,7 +20,7 @@ Deliverable:
       Verify: `npm run lint` and `npm run build` pass.
 - [x] **m06-06** — Review-before-commit backend: Implement an endpoint `GET /api/vault/review` that aggregates `readGitStatus` (changed files, diff summary) and `runHealthCheck` output into a single review object.
       Verify: `npm test --workspace server` proves the review payload is correctly aggregated.
-- [ ] **m06-07** — Explicit commit/push action: Implement a mutating endpoint `POST /api/vault/commit` that commits the current dirty state with a generated message and pushes to the configured remote.
+- [x] **m06-07** — Explicit commit/push action: Implement a mutating endpoint `POST /api/vault/commit` that commits the current dirty state with a generated message and pushes to the configured remote.
       Verify: `npm test --workspace server` proves the commit and push operations succeed and clear the dirty state.
 - [ ] **m06-08** — Review & Commit UI: Add a "Review & Commit" interface accessible from the Chat or Command Center when the vault is dirty, displaying the review summary and a Confirm button to trigger the commit/push.
       Verify: `npm run lint` and `npm run build` pass.
