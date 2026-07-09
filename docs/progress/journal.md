@@ -202,4 +202,9 @@ Tree DIRTY at 52af498. Active: milestone 5A, item m5a-10 in progress (STARTED wi
 - 21:00 DONE m5b-01: Compaction data model. Update `chat_sessions` schema to support `compaction_summary` text and `compacted_at` timestamp. Add `compaction` to `chat_events`.
 - 21:01 DONE m5b-02: Compaction request handler. Added `POST /api/chat/sessions/:id/compact` logic.
 - 21:03 DONE m5b-03: Compaction event persistence. Intercept `<compaction_summary>` in chunks, save summary, emit event.
-- 21:06 STARTED m5b-04: Rehydration path. Update AgentSessionService to prepend summary on resume.
+- 21:06 DONE m5b-04: Rehydration path. Updated AgentSessionService to prepend summary on resume.
+- 21:08 DONE m5b-05: Chat web UI. Added "Compact Context" button and rendered compaction event in transcript.
+- 21:09 STARTED m5b-06: Deliverable check. End-to-end verification.
+- 21:24 DONE m5b-06: Deliverable check. Fixed m5b06-part2.mjs to use stream reader instead of fetch abort which was crashing Node with a SocketError after `fuser -k` was hit, preventing the validation from completing. Re-ran successfully: agent remembered "Bob" and "apples" from the compacted summary, proving rehydration worked beautifully. Full lint/test/build passes. Committing.
+
+## 2026-07-09 21:24 — session end. Milestone 5B complete (6/6). Next: Milestone 6 (Tool Approvals And Write Lock) checklist creation.

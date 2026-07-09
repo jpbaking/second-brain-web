@@ -122,6 +122,7 @@ export class AgentSessionService {
     this.fanOut(session.id, event)
 
     if (translated.type === 'ended') {
+      this.live.delete(session.id)
       this.checkCompaction(session.id)
     }
   }
@@ -130,13 +131,16 @@ export class AgentSessionService {
     const events = readEventsSince(this.db, chatSessionId, 0)
     let reqIndex = -1
     for (let i = events.length - 1; i >= 0; i--) {
-      if (events[i].type === 'compaction_requested') { reqIndex = i; break }
-      if (events[i].type === 'user_message') break // Stopped looking (another user turn).
+      const ev = events[i]
+      if (!ev) continue
+      if (ev.type === 'compaction_requested') { reqIndex = i; break }
+      if (ev.type === 'user_message') break // Stopped looking (another user turn).
     }
     if (reqIndex !== -1) {
       let text = ''
       for (let i = reqIndex + 1; i < events.length; i++) {
         const e = events[i]
+        if (!e) continue
         if (e.type === 'chunk' || e.type === 'agent_event') {
           const payload = e.payload as { text?: string, event?: { text?: string } } | null
           if (typeof payload?.text === 'string') text += payload.text
@@ -144,10 +148,10 @@ export class AgentSessionService {
         }
       }
       const match = text.match(/<compaction_summary>([\s\S]*?)<\/compaction_summary>/)
-      if (match) {
+      if (match && match[1] !== undefined) {
         // Prevent duplicate compactions if multiple 'ended' happen for the same turn.
         const summary = match[1].trim()
-        const alreadyCompacted = events.slice(reqIndex).some(e => e.type === 'compaction')
+        const alreadyCompacted = events.slice(reqIndex).some(e => e?.type === 'compaction')
         if (!alreadyCompacted) {
           saveCompaction(this.db, chatSessionId, summary)
           this.emitEvent(chatSessionId, 'compaction', { summary })
@@ -336,10 +340,15 @@ export class AgentSessionService {
   async compactSession (chatSessionId: string): Promise<{ sdkSessionId: string }> {
     const text = 'SYSTEM: Please generate a concise summary of the current working context, preserving task state, unfiled facts, pending approvals, and any other critical details. Start your response with `<compaction_summary>` and end it with `</compaction_summary>`.'
     appendEvent(this.db, chatSessionId, 'compaction_requested', null)
-    const wasLive = this.live.has(chatSessionId)
-    const sdkSessionId = await this.ensureLive(chatSessionId, wasLive ? undefined : text)
-    if (wasLive) await this.runner.send(sdkSessionId, { type: 'user_message', text })
-    return { sdkSessionId }
+    try {
+      const wasLive = this.live.has(chatSessionId)
+      const sdkSessionId = await this.ensureLive(chatSessionId, wasLive ? undefined : text)
+      if (wasLive) await this.runner.send(sdkSessionId, { type: 'user_message', text })
+      return { sdkSessionId }
+    } catch (err) {
+      console.error('compactSession error:', err)
+      throw err
+    }
   }
 
   /**

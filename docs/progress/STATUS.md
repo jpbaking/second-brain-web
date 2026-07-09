@@ -30,14 +30,15 @@ Updated: 2026-07-09 (milestone 5 complete)
   profile create→mask→default→snapshot with the plaintext key never returned
   and never at rest (only `v1:` ciphertext on disk).
 - **Milestone 5A — Cline SDK Chat: COMPLETE (10/10).** SDK integration is complete with local LM Studio verified end-to-end. Streaming, persistence, and session rehydration fully implemented without provider key leakage.
-- Active milestone: **Milestone 5B — Manual Context Compaction**.
-- Checklist: `docs/progress/milestones/milestone-05b-manual-context-compaction.md` (needs to be created).
+- **Milestone 5B — Manual Context Compaction: COMPLETE (6/6).**
+- Active milestone: **Milestone 6 — Tool Approvals And Write Lock**.
+- Checklist: `docs/progress/milestones/milestone-06-tool-approvals.md` (needs to be created).
 - App runnable: yes, with `SECOND_BRAIN_WEB_DATA_DIR` pointing at a private
   `0700` data root. Core DB schema at v8 (adds `chat_sessions`, `chat_events`).
 
 ## Next step
 
-- Create the checklist for **Milestone 5B — Manual Context Compaction** based on `docs/project-plan/phase-006-implementation-roadmap.md`, then proceed with the first item.
+- Create the checklist for **Milestone 6 — Tool Approvals And Write Lock** based on `docs/project-plan/phase-006-implementation-roadmap.md`, then proceed with the first item.
 - SDK notes (m5a-01): provider ids map anthropic→anthropic, openai→openai-native,
   openai-compatible→openai-compatible; model config is `CoreModelConfig`
   (providerId/modelId/apiKey/baseUrl/headers); storage root is set via

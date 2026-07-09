@@ -12,9 +12,9 @@ Deferred post-MVP: automatic compaction triggers based on token/context pressure
       Verify: `npm test --workspace server -- chat-api.test.ts` verifies the compaction intent is accepted and routed to the agent session.
 - [x] **m5b-03** — Compaction event persistence: Process the agent's summary response, persist it to the session record, and append a `compaction` event to the `chat_events` timeline to be broadcast via SSE.
       Verify: `npm test --workspace server -- agent-session.test.ts` verifies the summary is stored and the timeline event is dispatched.
-- [ ] **m5b-04** — Rehydration path: Update `AgentSessionService` resume logic to rehydrate a session using the `compaction_summary` as the foundation, truncating or omitting the prior messages from the prompt.
+- [x] **m5b-04** — Rehydration path: Update `AgentSessionService` resume logic to rehydrate a session using the `compaction_summary` as the foundation, truncating or omitting the prior messages from the prompt.
       Verify: `npm test --workspace server -- agent-session.test.ts` proves that a restarted session builds its `initialMessages` from the compaction summary when available.
-- [ ] **m5b-05** — Chat web UI: Add a "Compact Context" button to the ChatScreen interface. Render `compaction` events in the transcript as a visual break or system notice.
+- [x] **m5b-05** — Chat web UI: Add a "Compact Context" button to the ChatScreen interface. Render `compaction` events in the transcript as a visual break or system notice.
       Verify: `npm run lint` and `npm run build` pass for the web workspace. Headless render check confirms the button and event display.
-- [ ] **m5b-06** — Deliverable check: End-to-end verification. Create a session, converse to build context, manually trigger compaction, verify the summary is saved and rendered, restart the server, and verify the agent resumes using the summarized context.
+- [x] **m5b-06** — Deliverable check: End-to-end verification. Create a session, converse to build context, manually trigger compaction, verify the summary is saved and rendered, restart the server, and verify the agent resumes using the summarized context.
       Verify: Live run with evidence in the journal; full lint/test/build pass.
