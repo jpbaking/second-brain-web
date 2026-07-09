@@ -41,7 +41,11 @@ Updated: 2026-07-10 (milestone 6 complete)
 Milestone 7 — Quick Capture And Uploads
 
 ## Next step
-- Begin `m07-02`: Backend endpoint for quick capture intake routing to agent/vault workflow.
+- Begin `m07-03`: Inbox intake wizard fields UI. (m07-02 done: `POST /api/capture`
+  routes a captured note through the agent — creates a high-trust chat session
+  and dispatches a filing instruction so facts land in `memory/` via the vault
+  workflow; the `library/` guard still applies. QuickCapture UI is now
+  functional end-to-end, verified live against LM Studio.)
 - SDK notes (m5a-01): provider ids map anthropic→anthropic, openai→openai-native,
   openai-compatible→openai-compatible; model config is `CoreModelConfig`
   (providerId/modelId/apiKey/baseUrl/headers); storage root is set via

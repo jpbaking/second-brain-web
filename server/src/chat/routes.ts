@@ -14,7 +14,7 @@ import type { FastifyInstance } from 'fastify'
  * {@link AgentSessionService} whose in-memory live-session map must persist for
  * the app's lifetime, so the service (and its DB connection) is built once here.
  */
-export function registerChatRoutes (app: FastifyInstance, config: AppConfig, runner: AgentRunner): void {
+export function registerChatRoutes (app: FastifyInstance, config: AppConfig, runner: AgentRunner): AgentSessionService {
   const db = openCoreDb(config.dataDir)
 
   const secretsEnv = { SECOND_BRAIN_WEB_SECRETS_KEY: config.secretsKey }
@@ -175,4 +175,6 @@ export function registerChatRoutes (app: FastifyInstance, config: AppConfig, run
       return await reply.code(502).send({ error: err instanceof Error ? err.message : 'agent send failed' })
     }
   })
+
+  return service
 }

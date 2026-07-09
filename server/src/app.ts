@@ -12,6 +12,7 @@ import { registerAuthGuard } from './auth/guard.js'
 import { registerVaultRoutes } from './vault/routes.js'
 import { registerProviderRoutes } from './providers/routes.js'
 import { registerChatRoutes } from './chat/routes.js'
+import { registerCaptureRoutes } from './chat/capture.js'
 import { ClineAgentRunner } from './agent/cline-runner.js'
 import type { AgentRunner } from './agent/runner.js'
 
@@ -41,7 +42,8 @@ export function buildApp (config?: AppConfig, deps?: AppDeps): FastifyInstance {
     registerAuthRoutes(app, config)
     registerVaultRoutes(app, config)
     registerProviderRoutes(app, config)
-    registerChatRoutes(app, config, deps?.agentRunner ?? new ClineAgentRunner(config.dataDir))
+    const agentService = registerChatRoutes(app, config, deps?.agentRunner ?? new ClineAgentRunner(config.dataDir))
+    registerCaptureRoutes(app, agentService)
   }
 
   app.get('/api/status', async (_req, reply) => {
