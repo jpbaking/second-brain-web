@@ -15,6 +15,7 @@ import {
   readEventsSince,
   renameSession,
   setSdkSessionId,
+  saveCompaction,
 } from '../src/agent/chat-store.js'
 import type { DatabaseSync } from 'node:sqlite'
 
@@ -64,6 +65,19 @@ describe('chat session store', () => {
     setSdkSessionId(db, s.id, 'sdk-def')
     expect(getSessionBySdkId(db, 'sdk-abc')).toBeUndefined()
     expect(getSessionBySdkId(db, 'sdk-def')?.id).toBe(s.id)
+  })
+
+  it('saves and retrieves compaction state', () => {
+    const db = freshDb()
+    const s = createSession(db, { title: 'Compaction Test' })
+    expect(s.compactionSummary).toBeNull()
+    expect(s.compactedAt).toBeNull()
+
+    expect(saveCompaction(db, s.id, 'My Summary')).toBe(true)
+
+    const updated = getSession(db, s.id)
+    expect(updated?.compactionSummary).toBe('My Summary')
+    expect(updated?.compactedAt).toBeDefined()
   })
 })
 

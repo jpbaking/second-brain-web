@@ -19,6 +19,8 @@ export interface ChatSession {
   providerProfileId: string | null
   sdkSessionId: string | null
   status: ChatSessionStatus
+  compactionSummary: string | null
+  compactedAt: string | null
   createdAt: string
   updatedAt: string
 }
@@ -43,6 +45,8 @@ interface SessionRow {
   provider_profile_id: string | null
   sdk_session_id: string | null
   status: string
+  compaction_summary: string | null
+  compacted_at: string | null
   created_at: string
   updated_at: string
 }
@@ -63,6 +67,8 @@ function toSession (row: SessionRow): ChatSession {
     providerProfileId: row.provider_profile_id,
     sdkSessionId: row.sdk_session_id,
     status: row.status === 'closed' ? 'closed' : 'active',
+    compactionSummary: row.compaction_summary,
+    compactedAt: row.compacted_at,
     createdAt: row.created_at,
     updatedAt: row.updated_at,
   }
@@ -87,8 +93,8 @@ export function createSession (db: DatabaseSync, input: CreateSessionInput, now:
   const id = randomUUID()
   const iso = now.toISOString()
   db.prepare(`
-    INSERT INTO chat_sessions (id, title, provider_profile_id, sdk_session_id, status, created_at, updated_at)
-    VALUES (?, ?, ?, NULL, 'active', ?, ?)
+    INSERT INTO chat_sessions (id, title, provider_profile_id, sdk_session_id, status, compaction_summary, compacted_at, created_at, updated_at)
+    VALUES (?, ?, ?, NULL, 'active', NULL, NULL, ?, ?)
   `).run(id, input.title, input.providerProfileId ?? null, iso, iso)
   return toSession(sessionRow(db, id) as SessionRow)
 }
@@ -110,9 +116,12 @@ export function getSessionBySdkId (db: DatabaseSync, sdkSessionId: string): Chat
 }
 
 export function renameSession (db: DatabaseSync, id: string, title: string, now: Date = new Date()): boolean {
-  const changes = db.prepare('UPDATE chat_sessions SET title = ?, updated_at = ? WHERE id = ?')
-    .run(title, now.toISOString(), id).changes
-  return Number(changes) > 0
+  return db.prepare('UPDATE chat_sessions SET title = ?, updated_at = ? WHERE id = ?').run(title, now.toISOString(), id).changes > 0
+}
+
+export function saveCompaction (db: DatabaseSync, id: string, summary: string, now: Date = new Date()): boolean {
+  const iso = now.toISOString()
+  return db.prepare('UPDATE chat_sessions SET compaction_summary = ?, compacted_at = ?, updated_at = ? WHERE id = ?').run(summary, iso, iso, id).changes > 0
 }
 
 export function closeSession (db: DatabaseSync, id: string, now: Date = new Date()): boolean {

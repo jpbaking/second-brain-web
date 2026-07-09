@@ -130,6 +130,13 @@ const coreMigrations: Migration[] = [
       CREATE INDEX chat_events_session_seq ON chat_events (session_id, seq);
     `,
   },
+  {
+    version: 9,
+    sql: `
+      ALTER TABLE chat_sessions ADD COLUMN compaction_summary TEXT;
+      ALTER TABLE chat_sessions ADD COLUMN compacted_at TEXT;
+    `,
+  },
 ]
 
 const sidecarMigrations: Migration[] = [
