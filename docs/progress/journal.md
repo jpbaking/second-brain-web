@@ -220,3 +220,6 @@ Tree clean at HEAD. Active: milestone 06, next item: m06-01.
 - 03:40 DONE m06-03: Preset selection UI. Added preset `select` to `ChatScreen.tsx` and wired it into `POST /api/chat/sessions`. Ran `npm run lint` and `npm run build` for the web workspace successfully. Committing.
 - 03:40 STARTED m06-04: Session write lock integration. Acquire `vault_lock` before starting a mutating tool, maintain heartbeat, surface lock errors.
 - 03:42 DONE m06-04: Session write lock integration. Updated `AgentSessionService` to track locks, acquire lock before approving mutating tool (with `ensureLock`), and release on `ended` or `dispose()`. Added tests to `chat-approvals.test.ts`. Committing.
+- 03:49 STARTED m06-05: Lock status UI.
+- 03:51 DONE m06-05: Lock status UI. Added `/api/vault/lock` endpoint to `vault/routes.ts` and updated `ChatScreen.tsx` to poll and display the lock status dynamically in the transcript header. All web build/lint and server tests pass. Committing.
+- 03:51 STARTED m06-06: Review-before-commit backend. Implement `GET /api/vault/review` aggregating git status and health check.

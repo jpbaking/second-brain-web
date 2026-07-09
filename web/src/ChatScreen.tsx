@@ -59,6 +59,8 @@ function toTranscript (events: ChatEvent[]): { lines: Line[], approvals: Pending
   return { lines, approvals: [...approvals.values()] }
 }
 
+interface LockState { held: boolean, stale: boolean, lock: { sessionId: string | null, operation: string | null } | null }
+
 export function ChatScreen () {
   const [sessions, setSessions] = useState<ChatSession[]>([])
   const [providers, setProviders] = useState<ProviderProfile[]>([])
@@ -69,6 +71,7 @@ export function ChatScreen () {
   const [error, setError] = useState<string | null>(null)
   const [selectedProvider, setSelectedProvider] = useState('')
   const [selectedPreset, setSelectedPreset] = useState('normal')
+  const [lockState, setLockState] = useState<LockState | null>(null)
   const streamAbort = useRef<AbortController | null>(null)
 
   const loadSessions = useCallback(async () => {
@@ -127,6 +130,22 @@ export function ChatScreen () {
   }
 
   useEffect(() => () => streamAbort.current?.abort(), [])
+
+  useEffect(() => {
+    let active = true
+    const poll = async () => {
+      for (;;) {
+        if (!active) break
+        try {
+          const res = await getJson('/api/vault/lock')
+          if (res.ok) setLockState(await res.json() as LockState)
+        } catch { /* ignore */ }
+        await new Promise(resolve => setTimeout(resolve, 2000))
+      }
+    }
+    poll().catch(() => {})
+    return () => { active = false }
+  }, [])
 
   async function newChat () {
     setError(null)
@@ -235,7 +254,14 @@ export function ChatScreen () {
 
         {activeId !== null && (
           <section className='stack-2' aria-label='Transcript'>
-            <h2 className='card-title'>Transcript</h2>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline' }}>
+              <h2 className='card-title' style={{ margin: 0 }}>Transcript</h2>
+              {lockState?.held && (
+                <div style={{ fontSize: '0.85rem', color: lockState.lock?.sessionId === activeId ? 'var(--color-primary)' : 'var(--color-error, #d32f2f)', border: '1px solid currentColor', padding: '2px 8px', borderRadius: '4px' }}>
+                  {lockState.lock?.sessionId === activeId ? 'Write lock held' : 'Vault locked by another session'}
+                </div>
+              )}
+            </div>
             <div className='form-actions' style={{ margin: 0, flexWrap: 'wrap' }} data-testid='workflow-bar'>
               {workflows.map(w => (
                 <button key={w} className='btn btn-secondary' type='button' onClick={() => { runWorkflow(w).catch(() => {}) }}>/{w}</button>

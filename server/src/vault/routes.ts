@@ -129,4 +129,13 @@ export function registerVaultRoutes (app: FastifyInstance, config: AppConfig): v
       db.close()
     }
   })
+
+  app.get('/api/vault/lock', async () => {
+    const db = openCoreDb(config.dataDir)
+    try {
+      return readLock(db)
+    } finally {
+      db.close()
+    }
+  })
 }

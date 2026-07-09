@@ -16,7 +16,7 @@ Deliverable:
       Verify: `npm run lint` and `npm run build` pass. Headless render check confirms the preset selector is present.
 - [x] **m06-04** — Session write lock integration: A chat session must acquire the `vault_lock` before starting a mutating tool, and maintain the heartbeat while running. Refuse execution and surface a lock error if another session holds the lock. Release the lock when the session goes idle or is closed.
       Verify: `npm test --workspace server` proves concurrent mutating sessions are prevented and locks are managed correctly.
-- [ ] **m06-05** — Lock status UI: Update the AppShell or ChatScreen to visually indicate if the current session holds the write lock, or if it is blocked by another session.
+- [x] **m06-05** — Lock status UI: Update the AppShell or ChatScreen to visually indicate if the current session holds the write lock, or if it is blocked by another session.
       Verify: `npm run lint` and `npm run build` pass.
 - [ ] **m06-06** — Review-before-commit backend: Implement an endpoint `GET /api/vault/review` that aggregates `readGitStatus` (changed files, diff summary) and `runHealthCheck` output into a single review object.
       Verify: `npm test --workspace server` proves the review payload is correctly aggregated.
