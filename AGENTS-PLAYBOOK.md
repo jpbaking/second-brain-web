@@ -13,6 +13,17 @@ limits, or get interrupted — treat that as certain, not unlucky. Follow the
 protocols below exactly and any future agent (or a weaker model) can pick up
 where you stopped by reading this one file.
 
+## Repo layout
+
+All app source lives under `app/` — it is the npm workspace root
+(`app/server`, `app/web`, `app/scripts`, `app/Dockerfile`), so **run every
+`npm` command from `app/`** (e.g. `cd app && npm test --workspace server`).
+The repo root holds only docs and the run-it layer: `docs/`, `README.md`,
+`docker-compose.yaml`, `compose-helper.sh` + `compose-helper.env`, and
+`.env.example`. The primary local run path is `./compose-helper.sh up` from
+the root. Older milestone checklists and journal entries predate this layout
+and reference root-relative paths — read them accordingly; never rewrite them.
+
 ## Rule zero: the repo is your memory
 
 Your chat context is disposable. Anything not written to a file **and

@@ -16,7 +16,7 @@ deployment.
 
 ```bash
 # Build the image (multi-stage: builds server + web, ships production deps only).
-docker build -t second-brain-web .
+docker build -t second-brain-web ./app
 
 # Run it with a durable named volume for the data root.
 docker run -d --name second-brain-web \
@@ -114,7 +114,7 @@ host, pointed at the same data location. With a **bind-mounted** data directory:
 ```bash
 # Run the container with a host directory instead of a named volume:
 #   -v /srv/second-brain-web/data:/data
-SECOND_BRAIN_WEB_DATA_DIR=/srv/second-brain-web/data ./scripts/generate-deploy-key.sh
+SECOND_BRAIN_WEB_DATA_DIR=/srv/second-brain-web/data app/scripts/generate-deploy-key.sh
 ```
 
 Or generate an ed25519 key by hand into the data root:
@@ -133,7 +133,7 @@ the vault's Git host, then set the vault remote URL in the app's Vault settings.
 Rebuild the image and recreate the container; the data volume is untouched:
 
 ```bash
-docker build -t second-brain-web .
+docker build -t second-brain-web ./app
 docker rm -f second-brain-web
 docker run -d --name second-brain-web -p 127.0.0.1:8722:8722 \
   -v sbw-data:/data -e SECOND_BRAIN_WEB_SECRETS_KEY="$(cat /path/to/secrets.key)" \

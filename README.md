@@ -56,9 +56,11 @@ front the app with a TLS-terminating proxy (e.g. nginx-proxy-manager) — see
 
 ## Development (hot reload)
 
-Requirements: Node.js 22 or newer.
+Requirements: Node.js 22 or newer. All app source lives under `app/` (the npm
+workspace root); docs and compose files stay at the repo root.
 
 ```sh
+cd app
 npm install
 install -d -m 700 /tmp/second-brain-web-data
 SECOND_BRAIN_WEB_DATA_DIR=/tmp/second-brain-web-data npm run dev
@@ -77,7 +79,7 @@ npm run dev
 ```
 
 For a production-style run without Docker: `npm run build`, then
-`SECOND_BRAIN_WEB_DATA_DIR=… npm start` and check
+`SECOND_BRAIN_WEB_DATA_DIR=… npm start` (both from `app/`) and check
 `curl http://127.0.0.1:8722/api/status`.
 
 ## Host Bootstrap (without Docker)
@@ -91,7 +93,7 @@ start instead.)
 Owner authentication (password plus TOTP):
 
 ```sh
-SECOND_BRAIN_WEB_DATA_DIR=/data/second-brain-web ./scripts/reset-auth.sh
+SECOND_BRAIN_WEB_DATA_DIR=/data/second-brain-web app/scripts/reset-auth.sh
 ```
 
 It prints a one-time password and an `otpauth://` setup URI once — record the
@@ -102,7 +104,7 @@ it replaces the credentials and invalidates the old ones.
 Vault SSH deploy key:
 
 ```sh
-SECOND_BRAIN_WEB_DATA_DIR=/data/second-brain-web ./scripts/generate-deploy-key.sh
+SECOND_BRAIN_WEB_DATA_DIR=/data/second-brain-web app/scripts/generate-deploy-key.sh
 ```
 
 It creates an ed25519 key under `ssh/` (private key mode 600, never printed) and
