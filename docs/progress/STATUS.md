@@ -1,6 +1,6 @@
 # STATUS — single source of truth
 
-Updated: 2026-07-10 (milestone 9A ready, 0/6)
+Updated: 2026-07-10 (milestone 9A in progress, 1/6)
 
 ## Where we are
 
@@ -51,7 +51,9 @@ Updated: 2026-07-10 (milestone 9A ready, 0/6)
 Milestone 9A — Follow-Up Queue
 
 ## Next step
-- Begin `m9a-01`: parse reminders and commitments into typed queue items.
+- Begin `m9a-02`: authenticated follow-up data and date/direction/completion
+  filters. Parser now honours the vault checkbox/section formats and preserves
+  due date, completion, direction, source file/line, and safe Markdown links.
 - SDK notes (m5a-01): provider ids map anthropic→anthropic, openai→openai-native,
   openai-compatible→openai-compatible; model config is `CoreModelConfig`
   (providerId/modelId/apiKey/baseUrl/headers); storage root is set via
