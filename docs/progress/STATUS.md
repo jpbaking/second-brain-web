@@ -1,6 +1,6 @@
 # STATUS — single source of truth
 
-Updated: 2026-07-11 (milestone 13 COMPLETE 4/4 — local build/run UX via compose-helper)
+Updated: 2026-07-11 (milestone 14 COMPLETE 4/4 — app source moved under `app/`)
 
 ## Where we are
 
@@ -81,7 +81,14 @@ production hardening (Docker, deploy + backup docs, secret-perm checks,
 structured logs, smoke + cold-start verification).
 
 ## Next step
-- No milestones remain queued. **Milestone 13 (principal-directed) COMPLETE:**
+- No milestones remain queued. **Milestone 14 (principal-directed) COMPLETE:**
+  all app source now lives under `app/` (npm workspace root — run npm commands
+  from there); repo root holds docs + compose only; `spike/` deleted (findings
+  kept in `docs/spike/findings.md`); compose builds from `context: ./app`;
+  bootstrap scripts work unchanged from `app/scripts`; README/deploy docs/
+  AGENTS-PLAYBOOK updated. Verified: full gate from `app/` (259 tests), clean-
+  slate compose cycle with a real login, dev-server boot from `app/`.
+- **Milestone 13 (principal-directed) COMPLETE:**
   compose-helper (`./compose-helper.sh up`) is the primary local build/run path
   (committed `compose-helper.sh` + `compose-helper.env` + `docker-compose.yaml`
   + `.env.example`; README quick start rewritten; deployment.md points at it),
