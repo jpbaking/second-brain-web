@@ -4,21 +4,27 @@ Status: **approved by the principal 2026-07-11, execution deferred.** Do not
 start implementation until the principal says go. The gated checklist lives at
 `docs/progress/milestones/milestone-15-provider-provisioning.md`.
 
+**Revision 2 (2026-07-11): YAML-only.** The principal does not want to manage
+providers via the UI. The YAML file is the *sole* source of provider config;
+provider management via the web UI and API is removed (the roadmap milestone-5
+CRUD becomes historical). This supersedes revision 1's dual-source
+reconciliation design — see "What replaces the milestone-5 UI" below.
+
 ## Goal
 
-Provider profiles (Anthropic / OpenAI / OpenAI-compatible) can be pre-set
-*before* `docker run`, so a fresh deployment is fully usable without touching
-the `/providers` UI. The quick start becomes:
+Provider profiles (Anthropic / OpenAI / OpenAI-compatible) are configured
+declaratively before `docker run` — the YAML file is the only way providers
+enter the system. The quick start becomes:
 
 ```sh
 ./configure            # interactive: generates SECRETS_KEY, encrypts provider keys
-./compose-helper.sh up # boots with providers already provisioned
+./compose-helper.sh up # boots with providers fully provisioned
 ```
 
 ## Non-goals
 
-- Replacing the `/providers` UI — it remains fully functional for ad-hoc
-  profiles and for editing.
+- Managing providers at runtime. Changing a provider = edit YAML (via
+  `configure` or by hand) + restart the container.
 - Supporting plaintext keys anywhere at rest, even transiently. This design
   strengthens the existing hard rule, never relaxes it.
 - Multi-file or remote config sources. One local YAML file.
@@ -62,31 +68,58 @@ Field rules:
 | `default` | Optional bool; more than one `true` refuses startup |
 | `enabled` | Optional bool, default `true` |
 
-## Reconciliation semantics (declarative, boot-time)
+## Load semantics (YAML is the sole source, boot-time)
 
-On every startup, after migrations and before serving:
+No reconciliation is needed — there is only one writer. On every startup,
+after migrations and before serving:
 
-1. Parse the file (missing file / unset env / empty `providers:` map → no-op).
-   A path that exists but is a directory is treated as misconfiguration: log a
-   warning and skip (this covers the docker bind-mount gotcha below).
+1. Parse the file (missing file / unset env / empty `providers:` map → app
+   boots with zero providers; chat refuses to start sessions with the existing
+   "no enabled provider profile" error). A path that exists but is a directory
+   is misconfiguration: log a warning and treat as absent (covers the docker
+   bind-mount gotcha below).
 2. Validate every entry (rules above). Any violation → refuse startup
-   (`setup error:` style, like the secret-permission check), because a silent
-   partial import would be worse than a loud failure.
-3. **Upsert by config key.** YAML-managed profiles are marked as such (new
-   nullable-unique `config_key` column on `provider_profiles`, core migration
-   v11). Re-running is idempotent; UI edits to a YAML-managed profile are
-   overwritten on the next boot — that is the declarative contract and must be
-   stated in the UI copy for such profiles ("managed by providers.yaml").
-4. Profiles whose `config_key` no longer appears in the YAML are **disabled,
-   not deleted** — chat sessions reference `provider_profile_id` for key
-   re-resolution on resume, so deletion could strand resumable sessions.
-   Deleting a disabled ex-YAML profile stays a manual UI action.
-5. `default: true` sets `is_default` (clearing any other default). No YAML
-   default → existing default untouched.
-6. If any YAML entry has a `key`, `SECOND_BRAIN_WEB_SECRETS_KEY` must be set,
-   else refuse startup.
+   (`setup error:` style, like the secret-permission check) — a silent partial
+   import would be worse than a loud failure.
+3. **Rebuild the `provider_profiles` table from the YAML** — full replace,
+   with the YAML map key as the profile `id`. The table survives purely as a
+   derived cache so the existing snapshot/chat plumbing (`snapshotFor`,
+   `provider_profile_id` on sessions, captured `session_config` events) keeps
+   working unchanged. Because the id is the stable YAML key, a session resumed
+   after a restart re-resolves its key correctly as long as the entry still
+   exists; a removed entry surfaces as the existing "profile not found /
+   cannot be decrypted" error at resume time.
+4. Exactly one `default: true` (zero is allowed only when the map is empty;
+   with entries present, exactly one — simpler than revision 1 because there
+   is no pre-existing UI default to preserve).
+5. If any entry has a `key`, `SECOND_BRAIN_WEB_SECRETS_KEY` must be set, else
+   refuse startup.
 
-UI-created profiles (no `config_key`) are never touched by reconciliation.
+**One-time migration note for existing deployments:** profiles created via
+the old UI (random ids) are wiped by the first YAML rebuild. Re-declare them
+in `providers.yaml` (re-entering keys through `configure`); old chat sessions
+referencing the random ids will show the existing profile-missing error on
+resume, which is acceptable — new sessions are unaffected.
+
+## What replaces the milestone-5 UI
+
+Provider *management* is removed; a minimal read-only surface remains:
+
+- **Remove:** `POST/PUT/DELETE /api/providers*` (create/edit/delete/set-default)
+  and the corresponding add/edit forms on the `/providers` page. This deletes
+  the only API paths that ever carried plaintext keys over HTTP — a real
+  attack-surface reduction, not just simplification.
+- **Keep, read-only:** `GET /api/providers` (name, type, model, base URL,
+  `key: configured|none`, default flag — note `key_last4` disappears; it
+  cannot be derived from ciphertext and `configure` should not persist it) and
+  `POST /api/providers/:id/test` (the connectivity Test action is genuinely
+  useful and read-only costs nothing).
+- The `/providers` page becomes a read-only status list with Test buttons and
+  a hint: "Providers are configured in providers.yaml — run ./configure".
+  Nav label may drop from the top bar into the vault/settings area if we want
+  the density win; decide at build time.
+- Milestone-5 tests for the removed endpoints are deleted with the endpoints;
+  the store keeps only what the cache rebuild and read paths need.
 
 ## Crypto: one implementation, thin wrappers
 
@@ -166,9 +199,12 @@ of a crash.
 - Add the zero-dependency `yaml` npm package to the server workspace (no YAML
   parser exists today). JSON was considered and rejected: hand-editability is
   the point.
-- Core DB migration v11: `ALTER TABLE provider_profiles ADD COLUMN config_key
-  TEXT UNIQUE` (nullable). Bump the schema-version assertions in
-  `migrations.test.ts` / `status.test.ts` (currently v10).
+- **No schema migration needed** (revision 2): the full-replace rebuild uses
+  the existing `provider_profiles` table with YAML keys as ids. The
+  `key_last4` column stops being populated (see read-only UI notes); core
+  schema stays at v10.
+- Provider CRUD endpoints, their web forms, and their tests are removed;
+  `GET /api/providers` + `POST /api/providers/:id/test` remain (read-only).
 - README quick start gains the `./configure` step; deployment.md documents the
   YAML for non-compose deploys; backup-restore.md notes that `providers.yaml`
   + `.env` live *outside* the data volume and need their own backup.
@@ -177,9 +213,9 @@ of a crash.
 
 - Whether `configure` also runs the owner `reset-auth` step (probably yes as
   an optional final prompt — it completes the zero-to-working story).
-- Whether the `/providers` UI should hard-block edits to YAML-managed profiles
-  or allow them with a "will be overwritten on restart" banner (banner is
-  cheaper; blocking is safer UX).
+- Where the read-only providers view lives: keep `/providers` in the top nav,
+  or fold it into the vault/settings area (frees a nav slot — see the parked
+  nav-density TODO).
 
 ## Milestone breakdown
 

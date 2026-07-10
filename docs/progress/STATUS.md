@@ -84,10 +84,13 @@ structured logs, smoke + cold-start verification).
 - **Milestone 15 (declarative provider provisioning) is DOCUMENTED and GATED —
   do not start until the principal says go.** Design:
   `docs/design/provider-provisioning.md`; checklist:
-  `docs/progress/milestones/milestone-15-provider-provisioning.md` (5 items:
-  encrypt-secret CLI → YAML reconciliation + migration v11 → configure
-  scripts → compose/docs wiring → deliverable e2e). Principal directive
-  2026-07-11: "document first; don't execute yet."
+  `docs/progress/milestones/milestone-15-provider-provisioning.md` (6 items:
+  encrypt-secret CLI → YAML-only boot load (no migration) → retire provider
+  CRUD to a read-only view → configure scripts → compose/docs wiring →
+  deliverable e2e). **Design revision 2 (2026-07-11): YAML-only** — the
+  principal does not want UI provider management; the YAML is the sole source
+  and the plaintext-key-carrying API endpoints are removed. Principal
+  directive stands: "document first; don't execute yet."
 - **Milestone 14 (principal-directed) COMPLETE:**
   all app source now lives under `app/` (npm workspace root — run npm commands
   from there); repo root holds docs + compose only; `spike/` deleted (findings
