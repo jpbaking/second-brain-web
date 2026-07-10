@@ -246,3 +246,8 @@ Tree clean at 1e9d4bd. Active: milestone 07, next item: m07-01.
 Tree clean at 5b4c4ce. Active: milestone 07, next item: m07-03.
 - 16:48 STARTED m07-03: add the inbox intake wizard fields UI while preserving the fast quick-capture path
 - 16:53 DONE m07-03: `/capture` now has accessible Note/Upload tabs; Upload exposes all seven optional intake fields using lazyway controls and responsive grids. Verified by web lint/build plus headless Chrome at 390 and 1280: correct active tab and labels, no horizontal overflow; mobile screenshot visually inspected. Committing.
+
+## 2026-07-10 16:55 — session continues
+Tree clean at 61d913d. Principal directed autonomous continuation through all remaining phases unless blocked or a decision is required. Active: milestone 07, next item: m07-04.
+- 16:55 STARTED m07-04: add file picker, drag-and-drop selection, selected-file list, and removal controls to the Upload tab
+- 16:58 DONE m07-04: Upload tab now supports multiple file selection by picker or drag/drop, identity-based deduplication, a responsive selected-file list with sizes, and removal. Verified web lint/build; headless Chrome at 390 with two synthetic files (including a long filename) showed both rows, no horizontal overflow, and a visually sound dropzone/list. Committing.

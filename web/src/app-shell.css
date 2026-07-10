@@ -15,6 +15,63 @@
   display: none;
 }
 
+.upload-dropzone {
+  min-height: 168px;
+  border: 1px dashed var(--brand-blue);
+  border-radius: var(--radius-md);
+  background: var(--surface);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  padding: var(--space-4);
+  text-align: center;
+}
+
+.upload-dropzone.is-dragging {
+  border-style: solid;
+  background: var(--amber-surface);
+}
+
+.upload-dropzone-title {
+  font-weight: var(--fw-semibold);
+  color: var(--ink);
+}
+
+.upload-dropzone-copy,
+.upload-file-size {
+  color: var(--muted);
+}
+
+.upload-file-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  border-top: 1px solid var(--line);
+}
+
+.upload-file-row {
+  min-width: 0;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto auto;
+  align-items: center;
+  gap: var(--space-2);
+  padding-block: var(--space-2);
+  border-bottom: 1px solid var(--line);
+}
+
+.upload-file-name {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.upload-file-size {
+  white-space: nowrap;
+  font-family: var(--font-mono);
+  font-size: var(--ui-small);
+}
+
 @media (max-width: 768px) {
   .app-nav-links {
     display: none;

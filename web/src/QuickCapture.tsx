@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useRef, useState } from 'react'
 
 export function QuickCapture () {
   const [mode, setMode] = useState<'note' | 'upload'>('note')
@@ -122,6 +122,18 @@ export function QuickCapture () {
 }
 
 function InboxIntakeFields () {
+  const fileInput = useRef<HTMLInputElement>(null)
+  const [files, setFiles] = useState<File[]>([])
+  const [dragging, setDragging] = useState(false)
+
+  function addFiles (incoming: FileList | File[]) {
+    setFiles((current) => {
+      const byIdentity = new Map(current.map((file) => [fileIdentity(file), file]))
+      for (const file of Array.from(incoming)) byIdentity.set(fileIdentity(file), file)
+      return Array.from(byIdentity.values())
+    })
+  }
+
   return (
     <section
       id='upload-intake-panel'
@@ -133,6 +145,60 @@ function InboxIntakeFields () {
         <h2 className='card-title'>Intake details</h2>
         <p className='card-description'>Add context for the secretary. All fields are optional.</p>
       </div>
+
+      <div
+        className={`upload-dropzone${dragging ? ' is-dragging' : ''}`}
+        onDragEnter={(event) => { event.preventDefault(); setDragging(true) }}
+        onDragOver={(event) => { event.preventDefault(); setDragging(true) }}
+        onDragLeave={(event) => {
+          if (!event.currentTarget.contains(event.relatedTarget as Node | null)) setDragging(false)
+        }}
+        onDrop={(event) => {
+          event.preventDefault()
+          setDragging(false)
+          addFiles(event.dataTransfer.files)
+        }}
+      >
+        <input
+          ref={fileInput}
+          id='intake-files'
+          className='sr-only'
+          type='file'
+          multiple
+          onChange={(event) => {
+            if (event.target.files !== null) addFiles(event.target.files)
+            event.target.value = ''
+          }}
+        />
+        <span className='upload-dropzone-title'>Drop files here</span>
+        <span className='upload-dropzone-copy'>or choose them from this device</span>
+        <button type='button' className='btn btn-secondary btn-sm' onClick={() => fileInput.current?.click()}>
+          Choose files
+        </button>
+      </div>
+
+      {files.length > 0 && (
+        <div className='stack-2' aria-live='polite'>
+          <h3 className='label'>Selected files ({files.length})</h3>
+          <ul className='upload-file-list'>
+            {files.map((file) => (
+              <li key={fileIdentity(file)} className='upload-file-row'>
+                <span className='upload-file-name'>{file.name}</span>
+                <span className='upload-file-size'>{formatFileSize(file.size)}</span>
+                <button
+                  type='button'
+                  className='btn btn-quiet btn-sm'
+                  aria-label={`Remove ${file.name}`}
+                  title={`Remove ${file.name}`}
+                  onClick={() => setFiles((current) => current.filter((item) => fileIdentity(item) !== fileIdentity(file)))}
+                >
+                  Remove
+                </button>
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
 
       <div className='field'>
         <label htmlFor='intake-description' className='label'>Short description</label>
@@ -182,4 +248,14 @@ function InboxIntakeFields () {
       </div>
     </section>
   )
+}
+
+function fileIdentity (file: File) {
+  return `${file.name}:${file.size}:${file.lastModified}`
+}
+
+function formatFileSize (bytes: number) {
+  if (bytes < 1024) return `${bytes} B`
+  if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`
+  return `${(bytes / (1024 * 1024)).toFixed(1)} MB`
 }

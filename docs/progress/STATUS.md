@@ -1,6 +1,6 @@
 # STATUS — single source of truth
 
-Updated: 2026-07-10 (milestone 7 in progress, 3/8)
+Updated: 2026-07-10 (milestone 7 in progress, 4/8)
 
 ## Where we are
 
@@ -41,10 +41,9 @@ Updated: 2026-07-10 (milestone 7 in progress, 3/8)
 Milestone 7 — Quick Capture And Uploads
 
 ## Next step
-- Begin `m07-04`: file upload UI component and basic dropzone. The `/capture`
-  screen now keeps fast note capture in its own tab and provides an Upload tab
-  with the optional intake fields specified in phase 005: description, date,
-  urgency, related people/projects, desired handling, and secretary notes.
+- Begin `m07-05`: authenticated file/folder upload endpoint with safe writing
+  under `inbox/uploads/...`. The Upload tab now accepts multiple files by picker
+  or drag/drop, deduplicates selections, shows sizes, and supports removal.
 - SDK notes (m5a-01): provider ids map anthropic→anthropic, openai→openai-native,
   openai-compatible→openai-compatible; model config is `CoreModelConfig`
   (providerId/modelId/apiKey/baseUrl/headers); storage root is set via
