@@ -1,6 +1,6 @@
 import { randomBytes, randomUUID } from 'node:crypto'
 import { createWriteStream } from 'node:fs'
-import { mkdir, rename, rm } from 'node:fs/promises'
+import { mkdir, rename, rm, writeFile } from 'node:fs/promises'
 import path from 'node:path'
 import { pipeline } from 'node:stream/promises'
 import fastifyMultipart from '@fastify/multipart'
@@ -16,6 +16,16 @@ export interface StoredUpload {
   originalName: string
   path: string
   bytes: number
+}
+
+export interface IntakeMetadata {
+  description?: string
+  date?: string
+  people?: string
+  projects?: string
+  urgency?: 'low' | 'normal' | 'high' | 'urgent'
+  workflow?: 'process-inbox' | 'create-report' | 'prep-meeting' | 'file-later'
+  notes?: string
 }
 
 export function registerUploadRoutes (app: FastifyInstance, config: AppConfig): void {
@@ -40,14 +50,22 @@ export function registerUploadRoutes (app: FastifyInstance, config: AppConfig): 
     const relativeRoot = path.posix.join('inbox', 'uploads', uploadId)
     const destinationRoot = path.join(workspace, ...relativeRoot.split('/'))
     const stored: StoredUpload[] = []
+    const metadata: Record<string, string> = {}
 
     try {
       await mkdir(path.dirname(destinationRoot), { recursive: true })
       await mkdir(destinationRoot, { recursive: false })
 
       for await (const part of req.parts()) {
-        if (part.type !== 'file') continue
+        if (part.type === 'field') {
+          if (typeof part.value !== 'string') throw new IntakeValidationError(`Invalid intake field: ${part.fieldname}`)
+          metadata[part.fieldname] = part.value
+          continue
+        }
         const relativeName = safeUploadPath(part.filename)
+        if (relativeName.toLowerCase() === '_intake.md') {
+          throw new UnsafeUploadPathError('The filename _intake.md is reserved for intake metadata.')
+        }
         if (stored.some(file => file.path === path.posix.join(relativeRoot, relativeName))) {
           throw new UnsafeUploadPathError(`Duplicate upload path: ${relativeName}`)
         }
@@ -76,13 +94,21 @@ export function registerUploadRoutes (app: FastifyInstance, config: AppConfig): 
         return await reply.code(400).send({ error: 'At least one file is required.' })
       }
 
-      return await reply.code(201).send({ uploadId, path: relativeRoot, files: stored })
+      const intake = parseIntakeMetadata(metadata)
+      const intakePath = path.posix.join(relativeRoot, '_intake.md')
+      await writeFile(
+        path.join(destinationRoot, '_intake.md'),
+        buildIntakeMarkdown(intake, stored, new Date()),
+        { encoding: 'utf8', flag: 'wx', mode: 0o600 }
+      )
+
+      return await reply.code(201).send({ uploadId, path: relativeRoot, intakePath, files: stored })
     } catch (error) {
       await rm(destinationRoot, { recursive: true, force: true })
       if (isUploadLimitError(error)) {
         return await reply.code(413).send({ error: `Upload exceeds the ${config.uploadMaxBytes}-byte per-file limit.` })
       }
-      if (error instanceof UnsafeUploadPathError) {
+      if (error instanceof UnsafeUploadPathError || error instanceof IntakeValidationError) {
         return await reply.code(400).send({ error: error.message })
       }
       throw error
@@ -94,6 +120,7 @@ export function registerUploadRoutes (app: FastifyInstance, config: AppConfig): 
 }
 
 export class UnsafeUploadPathError extends Error {}
+export class IntakeValidationError extends Error {}
 class UploadLimitError extends Error {}
 
 export function safeUploadPath (filename: string): string {
@@ -116,6 +143,79 @@ function sanitiseSegment (segment: string): string {
     const code = character.codePointAt(0) ?? 0
     return code < 32 || code === 127 ? '_' : character
   }).join('').slice(0, 180)
+}
+
+export function parseIntakeMetadata (fields: Record<string, string>): IntakeMetadata {
+  const allowed = new Set(['description', 'date', 'people', 'projects', 'urgency', 'workflow', 'notes'])
+  const unknown = Object.keys(fields).find(field => !allowed.has(field))
+  if (unknown !== undefined) throw new IntakeValidationError(`Unknown intake field: ${unknown}`)
+
+  const value = (name: string, max: number): string | undefined => {
+    const trimmed = fields[name]?.trim()
+    if (trimmed === undefined || trimmed === '') return undefined
+    if (trimmed.length > max) throw new IntakeValidationError(`Intake field is too long: ${name}`)
+    return trimmed
+  }
+
+  const date = value('date', 10)
+  if (date !== undefined) {
+    const parsed = new Date(`${date}T00:00:00.000Z`)
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(date) || Number.isNaN(parsed.getTime()) || parsed.toISOString().slice(0, 10) !== date) {
+      throw new IntakeValidationError('Invalid intake date.')
+    }
+  }
+  const urgency = value('urgency', 10)
+  if (urgency !== undefined && !['low', 'normal', 'high', 'urgent'].includes(urgency)) {
+    throw new IntakeValidationError('Invalid intake urgency.')
+  }
+  const workflow = value('workflow', 30)
+  if (workflow !== undefined && !['process-inbox', 'create-report', 'prep-meeting', 'file-later'].includes(workflow)) {
+    throw new IntakeValidationError('Invalid desired handling.')
+  }
+
+  const result: IntakeMetadata = {}
+  const description = value('description', 1000)
+  const people = value('people', 1000)
+  const projects = value('projects', 1000)
+  const notes = value('notes', 4000)
+  if (description !== undefined) result.description = description
+  if (date !== undefined) result.date = date
+  if (people !== undefined) result.people = people
+  if (projects !== undefined) result.projects = projects
+  if (urgency !== undefined) result.urgency = urgency as NonNullable<IntakeMetadata['urgency']>
+  if (workflow !== undefined) result.workflow = workflow as NonNullable<IntakeMetadata['workflow']>
+  if (notes !== undefined) result.notes = notes
+  return result
+}
+
+export function buildIntakeMarkdown (metadata: IntakeMetadata, files: StoredUpload[], createdAt: Date): string {
+  const lines = [
+    '# Inbox intake',
+    '',
+    `- Uploaded: ${createdAt.toISOString()}`,
+    `- Files: ${files.length}`,
+  ]
+  appendListValue(lines, 'Date received or created', metadata.date)
+  appendListValue(lines, 'Urgency', metadata.urgency)
+  appendListValue(lines, 'Related people', metadata.people)
+  appendListValue(lines, 'Related projects', metadata.projects)
+  appendListValue(lines, 'Desired handling', metadata.workflow)
+  lines.push('', '## Uploaded files', '', ...files.map(file => `- \`${inlineCode(file.path.split('/').slice(3).join('/'))}\``))
+  appendSection(lines, 'Description', metadata.description)
+  appendSection(lines, 'Notes for the secretary', metadata.notes)
+  return `${lines.join('\n')}\n`
+}
+
+function inlineCode (value: string): string {
+  return value.replaceAll('`', "'").replaceAll('\n', ' ')
+}
+
+function appendListValue (lines: string[], label: string, value: string | undefined): void {
+  if (value !== undefined) lines.push(`- ${label}: ${value.replaceAll('\n', ' ')}`)
+}
+
+function appendSection (lines: string[], heading: string, value: string | undefined): void {
+  if (value !== undefined) lines.push('', `## ${heading}`, '', value)
 }
 
 function createUploadId (now: Date = new Date()): string {
