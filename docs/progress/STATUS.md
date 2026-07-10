@@ -1,6 +1,6 @@
 # STATUS — single source of truth
 
-Updated: 2026-07-10 (milestone 12 in progress, 3/7)
+Updated: 2026-07-10 (milestone 12 in progress, 4/7)
 
 ## Where we are
 
@@ -77,11 +77,16 @@ Milestone 12 — Production Hardening (final milestone, not yet started)
 - Checklist: `docs/progress/milestones/milestone-12-production-hardening.md`.
 
 ## Next step
-- Begin `m12-04`: enforce secret file permission checks at startup — owner.json,
-  ssh/deploy_key (and .pub?), and any key material must be private (0600 file /
-  0700 dir); refuse or warn on world/group access. Likely a small module run
-  from `index.ts` (or fold into config/status). Verification:
-  `secret-permissions.test.ts`.
+- Begin `m12-05`: structured (JSON) request/error logs with no secret leakage.
+  Fastify already logs JSON via pino; the task is to confirm/assert it (and that
+  nothing sensitive is logged). Verification: `structured-logs.test.ts`.
+- m12-04 DONE: `server/src/security/secret-permissions.ts` —
+  `checkSecretPermissions`/`assertSecretPermissions` refuse startup when
+  `auth/owner.json` or `ssh/deploy_key` grant any group/other bit (`.pub`
+  excluded; missing files skipped). Wired into `index.ts` (exits 1 with an
+  actionable chmod message). Verified `secret-permissions.test.ts` (4) + full
+  server suite (256) + a real container (boots at 0600; after `chmod 644` +
+  restart it exits 1 with "secret files are accessible by other users…").
 - m12-03 DONE: wrote `docs/deploy/backup-restore.md` — data-root subdir table
   (db/auth not recoverable; ssh regenerable; workspaces re-clonable; indexes a
   rebuildable cache), volume tar backup, restore into a fresh volume (chown
