@@ -24,7 +24,27 @@ export function SearchScreen () {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [searched, setSearched] = useState(false)
+  const [reindexing, setReindexing] = useState(false)
+  const [notice, setNotice] = useState<string | null>(null)
+  const [reindexed, setReindexed] = useState(0)
   const debounced = useDebounced(query.trim(), 250)
+
+  async function reindex () {
+    setReindexing(true)
+    setNotice(null)
+    try {
+      const response = await fetch('/api/search/reindex', { method: 'POST' })
+      if (response.status === 401) { window.location.assign('/login'); return }
+      if (!response.ok) throw new Error('Reindex failed.')
+      const body = await response.json() as { count: number }
+      setNotice(`Reindexed ${body.count} item${body.count === 1 ? '' : 's'}.`)
+      setReindexed(value => value + 1) // re-run any active search against the fresh index
+    } catch (reason: unknown) {
+      setNotice(reason instanceof Error ? reason.message : 'Reindex failed.')
+    } finally {
+      setReindexing(false)
+    }
+  }
 
   useEffect(() => {
     if (debounced === '') {
@@ -53,7 +73,7 @@ export function SearchScreen () {
       })
       .finally(() => { if (active) setLoading(false) })
     return () => { active = false }
-  }, [debounced, kind])
+  }, [debounced, kind, reindexed])
 
   return (
     <div className='app-page'>
@@ -74,8 +94,14 @@ export function SearchScreen () {
               {KINDS.map(option => <option key={option.id} value={option.id}>{option.label}</option>)}
             </select>
           </div>
+          <div className='field search-reindex'>
+            <button type='button' className='btn btn-secondary' disabled={reindexing} onClick={() => { reindex().catch(() => {}) }}>
+              {reindexing ? 'Reindexing…' : 'Reindex'}
+            </button>
+          </div>
         </div>
 
+        {notice !== null && <div className='alert alert-info' role='status'><span>{notice}</span></div>}
         {error !== null && <div className='alert alert-danger' role='alert'><span>{error}</span></div>}
         {loading && <p role='status'>Searching…</p>}
         {!loading && error === null && searched && results.length === 0 && (

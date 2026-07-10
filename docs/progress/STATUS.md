@@ -1,6 +1,6 @@
 # STATUS — single source of truth
 
-Updated: 2026-07-10 (milestone 10 in progress, 5/6)
+Updated: 2026-07-10 (milestone 10 COMPLETE 6/6; next: milestone 11)
 
 ## Where we are
 
@@ -49,54 +49,35 @@ Updated: 2026-07-10 (milestone 10 in progress, 5/6)
   (guard + write-lock), with Mark done / Edit actions in the UI. Verified full
   lint/test/build (227 tests) + a real headless-Chrome e2e (filter → inspect →
   safely update; write dispatched to the agent).
+- **Milestone 10 — Derived Search: COMPLETE (6/6).** Scan `memory/` +
+  `library/catalog.md` + `reports/` into typed records (`scanSearchRecords`);
+  FTS5 `vault_search` sidecar built deterministically (`buildSearchIndex`);
+  guarded `GET /api/search?q=&kind=` (safe prefix-token MATCH, ranked, snippets);
+  responsive `/search` screen with debounced query, kind filter, highlighted
+  snippets, and a Reindex button; `rebuildSearchIndex` runs on demand
+  (`POST /api/search/reindex`) and after commit/sync. Verified full
+  lint/test/build (238 tests) + a real headless-Chrome e2e (search memory +
+  reports, open a report hit → 200 content, reindex picks up a new file).
 - App runnable: yes, with `SECOND_BRAIN_WEB_DATA_DIR` pointing at a private
   `0700` data root. Core DB schema at v10; sidecar (`indexes/vault.sqlite`)
   at v2 (adds the FTS5 `vault_search` table).
 
 ## Current Phase
-Milestone 10 — Derived Search (not yet started)
-- Checklist: `docs/progress/milestones/milestone-10-derived-search.md`.
+Milestone 11 — Explorer (not yet started)
 
 ## Next step
-- Begin `m10-06`: milestone deliverable. Optionally add a small "Reindex"
-  affordance on the search screen (POST `/api/search/reindex`), then run
-  `npm run lint && npm test && npm run build` plus a browser e2e proving
-  search of memory + reports and opening a hit. Backend triggers already wired.
-- m10-05 DONE: `rebuildSearchIndex(dataDir)` (`server/src/search/reindex.ts`)
-  rescans + rewrites `vault_search` (full DELETE+reinsert → no stale rows on
-  delete/rename/edit). Manual `POST /api/search/reindex` (guarded) returns the
-  count; `reindexAfterVaultChange` (best-effort, never fails the request) is
-  called after a successful `/api/vault/commit` and `/api/vault/sync`. Verified
-  `search-rebuild.test.ts` (2: staleness after delete+edit; on-demand endpoint
-  picks up a new file) + full server suite (238) + lint/build.
-- m10-04 DONE: `web/src/SearchScreen.tsx` (`/search`, nav entry added) — a
-  debounced query box + kind filter hitting `/api/search`, ranked results with
-  a `<mark>`-highlighted snippet (split on the API's `[ ]` markers), title,
-  path, kind badge, date; empty/loading/error states. Verified web lint+build
-  and a real headless-Chrome e2e (typed "domain" → 4 ranked hits, highlight
-  present, Search nav present, no overflow at 390/1280).
-- m10-03 DONE: guarded `GET /api/search?q=&kind=` (`server/src/search/
-  routes.ts`, wired in app.ts) tokenises input into safe `"tok"*` prefix terms
-  (implicit AND, FTS operators can't reach the matcher), queries `vault_search`
-  ordered by rank, returns hits with `snippet(-1,'[',']','…',12)`. 400 on empty
-  q / bad kind; optional `kind` filter. Verified `search-api.test.ts` (5) +
-  full server suite (236) + lint/build.
-- m10-02 DONE: sidecar migration v2 adds FTS5 `vault_search (path, title, body,
-  kind UNINDEXED, mtime UNINDEXED)`; `buildSearchIndex(db, records)` clears +
-  reinserts in one transaction (deterministic, no dup on rebuild) and stamps
-  `search_record_count`. Node `node:sqlite` has FTS5 (snippet/rank verified).
-  Updated migrations/status version assertions to sidecar v2. Verified
-  `search-index.test.ts` (2) + full server suite (231) + lint/build.
-- m10-01 DONE: `scanSearchRecords(workspace)` in `server/src/search/scan.ts`
-  walks `memory/**.md`, `library/catalog.md`, and reuses `scanReports` (adding
-  body text: markdown raw, HTML tag-stripped, PDF title-only). Skips symlinks
-  (not `isFile()`) and unsupported extensions; newest-first, path-stable order;
-  512KB read cap. Verified `search-scan.test.ts` (2) + server lint/build.
-- m9a-06 DONE: wired Mark done / Edit UI actions to the m9a-05 endpoints and
-  ran the deliverable e2e. Caught and fixed a real bug — the `complete` POST
-  was sending a JSON content-type with no body (Fastify 400); now only `edit`
-  carries a JSON body. Verified full lint/test/build + headless-Chrome e2e
-  (`runnerStarts:1`, success notice, no horizontal overflow).
+- Create the Milestone 11 (Explorer) checklist by copying its steps from
+  `phase-006-implementation-roadmap.md` (link extraction → graph/list explorer
+  → area filters → detail panel) into
+  `docs/progress/milestones/milestone-11-explorer.md`, one checkbox per step
+  with a verification command. Then start `m11-01`.
+- m10-06 DONE: added a Reindex button to `/search` (POST `/api/search/reindex`
+  with a count notice, re-running the active query). Ran full lint/test/build
+  (238) + a headless-Chrome deliverable e2e: searched "domain" across memory +
+  reports, filtered to the report, opened the hit's authenticated content URL
+  (`/api/reports/content/...` → 200 with the report body), then wrote a new
+  note and used Reindex to make it searchable (0 → "Reindexed 3 items." → 1).
+- Milestone 10 items m10-01…m10-05 done — see journal for per-item evidence.
 - SDK notes (m5a-01): provider ids map anthropic→anthropic, openai→openai-native,
   openai-compatible→openai-compatible; model config is `CoreModelConfig`
   (providerId/modelId/apiKey/baseUrl/headers); storage root is set via

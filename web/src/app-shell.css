@@ -271,6 +271,14 @@
   color: var(--muted);
 }
 
+.search-reindex {
+  justify-content: flex-end;
+}
+
+.search-reindex .btn {
+  align-self: end;
+}
+
 .search-list {
   list-style: none;
   margin: 0;
