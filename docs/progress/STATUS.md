@@ -1,6 +1,6 @@
 # STATUS — single source of truth
 
-Updated: 2026-07-11 (milestone 15 documented + gated; milestone 14 COMPLETE)
+Updated: 2026-07-11 (milestone 16 COMPLETE 4/4 — chat-first UI; milestone 15 still documented + gated)
 
 ## Where we are
 
@@ -81,6 +81,17 @@ production hardening (Docker, deploy + backup docs, secret-perm checks,
 structured logs, smoke + cold-start verification).
 
 ## Next step
+- **Milestone 16 (chat-first UI) COMPLETE (4/4):** the landing page is the
+  last active chat (new-chat welcome when history is empty); Claude/ChatGPT-
+  style shell — left sidebar (New chat, recents with active highlight,
+  secondary nav, sign out), persistent ≥1024px, drawer + hamburger topbar
+  below; routes: `/` + `/chat[/:id|/new]` = chat, command centre moved to
+  `/command-centre`; first send creates the session with a title derived from
+  the message; `sendMessage` now fans `user_message` out to SSE so your own
+  message appears live; `appendEvent` bumps `updated_at` for true last-active
+  ordering. Verified full gate (260 tests) + two headless-Chrome e2es at
+  390/1280 (landing/rewrite, drawer, create-on-first-send, sticky composer).
+  The old top-nav density TODO is resolved by the sidebar.
 - **Milestone 15 (declarative provider provisioning) is DOCUMENTED and GATED —
   do not start until the principal says go.** Design:
   `docs/design/provider-provisioning.md`; checklist:
@@ -189,10 +200,6 @@ structured logs, smoke + cold-start verification).
   Slim it by installing only the server workspace's prod deps, or copy a pruned
   node_modules. Functional, just large.
 
-- Top nav now has 9 items (added Search + Explorer): at ~1280 the desktop
-  labels wrap to two lines and the mobile bottom-nav clips the last items
-  (Vault/Models). Page has no horizontal overflow, but the nav needs a density
-  pass (overflow menu / horizontal scroll / shorter labels) — its own UI task.
 
 - Follow-up item `text` keeps the inline `source: [label](path)` markdown, so
   it shows raw in the queue row (the resolved link is also shown separately as
