@@ -42,10 +42,11 @@ describe('status endpoint', () => {
       schemaVersion: 10
     })
     expect(body.databases.sidecar).toMatchObject({
+      // bumped when the FTS5 vault_search migration (m10-02) landed
       exists: true,
       state: 'ready',
       integrity: 'ok',
-      schemaVersion: 1
+      schemaVersion: 2
     })
     expect(body.auth).toEqual({
       configured: false,

@@ -1,6 +1,6 @@
 # STATUS — single source of truth
 
-Updated: 2026-07-10 (milestone 10 in progress, 1/6)
+Updated: 2026-07-10 (milestone 10 in progress, 2/6)
 
 ## Where we are
 
@@ -50,17 +50,25 @@ Updated: 2026-07-10 (milestone 10 in progress, 1/6)
   lint/test/build (227 tests) + a real headless-Chrome e2e (filter → inspect →
   safely update; write dispatched to the agent).
 - App runnable: yes, with `SECOND_BRAIN_WEB_DATA_DIR` pointing at a private
-  `0700` data root. Core DB schema at v10.
+  `0700` data root. Core DB schema at v10; sidecar (`indexes/vault.sqlite`)
+  at v2 (adds the FTS5 `vault_search` table).
 
 ## Current Phase
 Milestone 10 — Derived Search (not yet started)
 - Checklist: `docs/progress/milestones/milestone-10-derived-search.md`.
 
 ## Next step
-- Begin `m10-02`: build a SQLite FTS5 index from `scanSearchRecords()` with a
-  deterministic (re)build. Sidecar lives at `indexes/vault.sqlite` (phase-005);
-  `SearchRecord` = `{ path, kind: memory|catalog|report, title, text, mtime }`
-  from `server/src/search/scan.ts`. Verification: `search-index.test.ts`.
+- Begin `m10-03`: authenticated search API over the FTS index — query
+  `vault_search` (MATCH), return ranked hits with `snippet(...)`, path, kind,
+  title, mtime. Guard like other `/api/` routes; use `buildSearchIndex` /
+  `searchIndexCount` in `server/src/search/index-build.ts` and `openSidecarDb`.
+  Verification: `search-api.test.ts`.
+- m10-02 DONE: sidecar migration v2 adds FTS5 `vault_search (path, title, body,
+  kind UNINDEXED, mtime UNINDEXED)`; `buildSearchIndex(db, records)` clears +
+  reinserts in one transaction (deterministic, no dup on rebuild) and stamps
+  `search_record_count`. Node `node:sqlite` has FTS5 (snippet/rank verified).
+  Updated migrations/status version assertions to sidecar v2. Verified
+  `search-index.test.ts` (2) + full server suite (231) + lint/build.
 - m10-01 DONE: `scanSearchRecords(workspace)` in `server/src/search/scan.ts`
   walks `memory/**.md`, `library/catalog.md`, and reuses `scanReports` (adding
   body text: markdown raw, HTML tag-stripped, PDF title-only). Skips symlinks

@@ -156,6 +156,21 @@ const sidecarMigrations: Migration[] = [
       )
     `,
   },
+  {
+    version: 2,
+    // FTS5 index over the vault's searchable text (phase-005: lexical search
+    // over memory/, library/catalog.md, and reports/). path + title + body are
+    // searchable; kind + mtime are stored for display/filtering only.
+    sql: `
+      CREATE VIRTUAL TABLE vault_search USING fts5 (
+        path,
+        title,
+        body,
+        kind UNINDEXED,
+        mtime UNINDEXED
+      )
+    `,
+  },
 ]
 
 export class MigrationError extends Error {}
