@@ -1,6 +1,6 @@
 # STATUS — single source of truth
 
-Updated: 2026-07-10 (milestone 10 in progress, 4/6)
+Updated: 2026-07-10 (milestone 10 in progress, 5/6)
 
 ## Where we are
 
@@ -58,10 +58,17 @@ Milestone 10 — Derived Search (not yet started)
 - Checklist: `docs/progress/milestones/milestone-10-derived-search.md`.
 
 ## Next step
-- Begin `m10-05`: rebuild the index on demand and after vault changes. Add a
-  rebuild entry point (scan + `buildSearchIndex` on the sidecar) and call it
-  after mutating flows (commit/upload) + expose a manual trigger; ensure no
-  stale rows. Verification: `search-rebuild.test.ts`.
+- Begin `m10-06`: milestone deliverable. Optionally add a small "Reindex"
+  affordance on the search screen (POST `/api/search/reindex`), then run
+  `npm run lint && npm test && npm run build` plus a browser e2e proving
+  search of memory + reports and opening a hit. Backend triggers already wired.
+- m10-05 DONE: `rebuildSearchIndex(dataDir)` (`server/src/search/reindex.ts`)
+  rescans + rewrites `vault_search` (full DELETE+reinsert → no stale rows on
+  delete/rename/edit). Manual `POST /api/search/reindex` (guarded) returns the
+  count; `reindexAfterVaultChange` (best-effort, never fails the request) is
+  called after a successful `/api/vault/commit` and `/api/vault/sync`. Verified
+  `search-rebuild.test.ts` (2: staleness after delete+edit; on-demand endpoint
+  picks up a new file) + full server suite (238) + lint/build.
 - m10-04 DONE: `web/src/SearchScreen.tsx` (`/search`, nav entry added) — a
   debounced query box + kind filter hitting `/api/search`, ranked results with
   a `<mark>`-highlighted snippet (split on the API's `[ ]` markers), title,

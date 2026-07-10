@@ -1,4 +1,5 @@
 import { openSidecarDb } from '../db.js'
+import { rebuildSearchIndex } from './reindex.js'
 import type { SearchKind } from './scan.js'
 import type { AppConfig } from '../config.js'
 import type { FastifyInstance } from 'fastify'
@@ -50,6 +51,12 @@ export function registerSearchRoutes (app: FastifyInstance, config: AppConfig): 
     } finally {
       db.close()
     }
+  })
+
+  // On-demand rebuild ("reindex app cache" action). The reindex is synchronous
+  // and cheap for a single-user vault.
+  app.post('/api/search/reindex', async () => {
+    return { count: rebuildSearchIndex(config.dataDir) }
   })
 }
 

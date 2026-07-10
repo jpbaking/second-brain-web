@@ -9,6 +9,7 @@ import { readGitStatus } from './git-status.js'
 import { readCommandCenter } from './command-center.js'
 import { readLock } from './lock.js'
 import { commitVault } from './commit.js'
+import { reindexAfterVaultChange } from '../search/reindex.js'
 import type { AppConfig } from '../config.js'
 import type { VaultConfigPatch } from './config.js'
 import type { FastifyInstance } from 'fastify'
@@ -81,6 +82,8 @@ export function registerVaultRoutes (app: FastifyInstance, config: AppConfig): v
     try {
       const result = await syncVault(db, config.dataDir)
       const detection = detectVault(vaultWorkspacePath(config.dataDir))
+      // A pull/clone can change any indexed file — refresh the search cache.
+      reindexAfterVaultChange(config.dataDir, app.log)
       return { ...result, detection }
     } finally {
       db.close()
@@ -156,6 +159,8 @@ export function registerVaultRoutes (app: FastifyInstance, config: AppConfig): v
     try {
       const result = await commitVault(db, config.dataDir)
       if (!result.success) return await reply.code(400).send(result)
+      // The vault content just changed on disk — refresh the search cache.
+      reindexAfterVaultChange(config.dataDir, app.log)
       return result
     } finally {
       db.close()
