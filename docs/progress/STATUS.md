@@ -54,13 +54,13 @@ Updated: 2026-07-10 (milestone 9A COMPLETE 6/6; next: milestone 10)
 
 ## Current Phase
 Milestone 10 — Derived Search (not yet started)
+- Checklist: `docs/progress/milestones/milestone-10-derived-search.md`.
 
 ## Next step
-- Create the Milestone 10 checklist by copying its steps from
-  `phase-006-implementation-roadmap.md` (scan memory/reports/catalogs → build
-  SQLite FTS index → search UI → rebuild on demand/after vault changes) into
-  `docs/progress/milestones/milestone-10-derived-search.md`, one checkbox per
-  step with a verification command. Then start `m10-01`.
+- Begin `m10-01`: scan `memory/`, report files, and catalogs into typed search
+  records (path/type/title/text/mtime), skipping symlinks and unsupported
+  files. Reuse the report scanner patterns from `server/src/reports/` and the
+  vault workspace resolver. Verification: `search-scan.test.ts`.
 - m9a-06 DONE: wired Mark done / Edit UI actions to the m9a-05 endpoints and
   ran the deliverable e2e. Caught and fixed a real bug — the `complete` POST
   was sending a JSON content-type with no body (Fastify 400); now only `edit`
