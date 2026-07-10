@@ -1,6 +1,6 @@
 # STATUS — single source of truth
 
-Updated: 2026-07-10 (milestone 11 COMPLETE 6/6)
+Updated: 2026-07-10 (milestone 12 in progress, 1/7)
 
 ## Where we are
 
@@ -77,12 +77,17 @@ Milestone 12 — Production Hardening (final milestone, not yet started)
 - Checklist: `docs/progress/milestones/milestone-12-production-hardening.md`.
 
 ## Next step
-- Begin `m12-01`: multi-stage Dockerfile building `server` + `web`, running the
-  server with the data root on a volume. Check whether Docker is available in
-  this env first (`docker version`); if not, build the artifacts and keep the
-  Dockerfile copy-only, and journal which path was used. See the milestone-12
-  checklist for the full breakdown (deploy guide, backup/restore, secret perm
-  checks, structured logs, smoke tests). Much of this is ops/docs, not app code.
+- Begin `m12-02`: deployment guide (`docs/deploy/deployment.md`) — reverse
+  proxy in front of the container, HTTPS termination assumptions, required env
+  (`SECOND_BRAIN_WEB_SECRETS_KEY`, data volume), and running `reset-auth` to
+  set up the owner. Verification per the m12 checklist.
+- m12-01 DONE: multi-stage `Dockerfile` (node:24-slim) builds server+web and
+  runs `node server/dist/index.js`; `.dockerignore` keeps the context clean.
+  Data root at `/data` (volume), created `700 node` so the app's privacy check
+  passes; binds `0.0.0.0:8722`. Verified `docker build` succeeds AND a run
+  against a named volume serves `/api/health`→200, `/login`→200, `/api/status`
+  →200 with `/data` at `700 node` and structured JSON logs. Docker daemon IS
+  available in this env.
 - m10-06 DONE: added a Reindex button to `/search` (POST `/api/search/reindex`
   with a count notice, re-running the active query). Ran full lint/test/build
   (238) + a headless-Chrome deliverable e2e: searched "domain" across memory +

@@ -1,0 +1,14 @@
+# Keep the build context small and force a clean install/build in the image.
+**/node_modules
+**/dist
+.git
+.gitignore
+docs/progress
+spike
+**/*.log
+# Never ship local state or secrets into an image.
+data
+**/.env
+**/.env.*
+**/*.sqlite
+**/*.sqlite-*
