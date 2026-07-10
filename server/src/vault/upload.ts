@@ -1,12 +1,14 @@
 import { randomBytes, randomUUID } from 'node:crypto'
 import { createWriteStream } from 'node:fs'
-import { mkdir, rename, rm, writeFile } from 'node:fs/promises'
+import { mkdir, rename, rm, stat, writeFile } from 'node:fs/promises'
 import path from 'node:path'
 import { pipeline } from 'node:stream/promises'
 import fastifyMultipart from '@fastify/multipart'
 import { openCoreDb } from '../db.js'
 import { vaultWorkspacePath } from './config.js'
 import { acquireLock, releaseLock } from './lock.js'
+import { WorkflowNotFoundError, expandWorkflow } from '../agent/workflows.js'
+import type { AgentSessionService } from '../agent/session.js'
 import type { AppConfig } from '../config.js'
 import type { FastifyInstance } from 'fastify'
 
@@ -28,7 +30,7 @@ export interface IntakeMetadata {
   notes?: string
 }
 
-export function registerUploadRoutes (app: FastifyInstance, config: AppConfig): void {
+export function registerUploadRoutes (app: FastifyInstance, config: AppConfig, service: AgentSessionService): void {
   app.register(fastifyMultipart, {
     limits: { fileSize: config.uploadMaxBytes, files: MAX_FILES },
     preservePath: true,
@@ -115,6 +117,49 @@ export function registerUploadRoutes (app: FastifyInstance, config: AppConfig): 
     } finally {
       releaseLock(db, lock.lock.lockId)
       db.close()
+    }
+  })
+
+  app.post('/api/uploads/:uploadId/process', async (req, reply) => {
+    const uploadId = (req.params as { uploadId: string }).uploadId
+    if (!/^\d{4}-\d{2}-\d{2}_\d{6}_[a-f0-9]{6}$/.test(uploadId)) {
+      return await reply.code(400).send({ error: 'Invalid upload identifier.' })
+    }
+
+    const relativeRoot = path.posix.join('inbox', 'uploads', uploadId)
+    const destinationRoot = path.join(vaultWorkspacePath(config.dataDir), ...relativeRoot.split('/'))
+    try {
+      if (!(await stat(destinationRoot)).isDirectory()) throw new Error('not a directory')
+    } catch {
+      return await reply.code(404).send({ error: 'Upload not found.' })
+    }
+
+    let prompt: string
+    try {
+      prompt = expandWorkflow(vaultWorkspacePath(config.dataDir), 'inbox')
+    } catch (error) {
+      if (error instanceof WorkflowNotFoundError) {
+        return await reply.code(409).send({ error: 'The vault inbox workflow is unavailable.' })
+      }
+      throw error
+    }
+    prompt += `\n\nProcess the newly uploaded intake at \`${relativeRoot}\`. Read its \`_intake.md\` companion for context and keep every original unchanged except for moves and renames allowed by the vault rules.`
+
+    let session
+    try {
+      session = service.create({ title: `Inbox: ${uploadId}`, approvalPreset: 'high-trust' })
+    } catch (error) {
+      return await reply.code(400).send({ error: error instanceof Error ? error.message : 'Could not start inbox processing.' })
+    }
+
+    try {
+      await service.sendMessage(session.id, prompt)
+      return await reply.code(202).send({ ok: true, sessionId: session.id })
+    } catch (error) {
+      return await reply.code(502).send({
+        error: error instanceof Error ? error.message : 'Agent dispatch failed.',
+        sessionId: session.id,
+      })
     }
   })
 }

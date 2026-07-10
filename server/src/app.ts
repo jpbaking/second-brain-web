@@ -42,10 +42,10 @@ export function buildApp (config?: AppConfig, deps?: AppDeps): FastifyInstance {
     registerAuthGuard(app, config)
     registerAuthRoutes(app, config)
     registerVaultRoutes(app, config)
-    registerUploadRoutes(app, config)
     registerProviderRoutes(app, config)
     const agentService = registerChatRoutes(app, config, deps?.agentRunner ?? new ClineAgentRunner(config.dataDir))
     registerCaptureRoutes(app, agentService)
+    registerUploadRoutes(app, config, agentService)
   }
 
   app.get('/api/status', async (_req, reply) => {

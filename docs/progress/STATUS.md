@@ -1,6 +1,6 @@
 # STATUS — single source of truth
 
-Updated: 2026-07-10 (milestone 7 in progress, 6/8)
+Updated: 2026-07-10 (milestone 7 in progress, 7/8)
 
 ## Where we are
 
@@ -41,10 +41,10 @@ Updated: 2026-07-10 (milestone 7 in progress, 6/8)
 Milestone 7 — Quick Capture And Uploads
 
 ## Next step
-- Begin `m07-07`: post-upload action to dispatch the `/inbox.md` workflow.
-  Every successful upload now includes an app-authored `_intake.md` carrying
-  validated optional context plus an upload manifest; `_intake.md` is reserved
-  so browser-supplied originals cannot overwrite it.
+- Begin `m07-08`: end-to-end milestone deliverable check. The Upload tab now
+  posts files and intake context to the vault, reports the resulting path, and
+  offers an explicit Process inbox action; the backend expands the vault's real
+  inbox workflow into a high-trust agent session scoped to that intake.
 - SDK notes (m5a-01): provider ids map anthropic→anthropic, openai→openai-native,
   openai-compatible→openai-compatible; model config is `CoreModelConfig`
   (providerId/modelId/apiKey/baseUrl/headers); storage root is set via

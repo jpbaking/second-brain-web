@@ -125,8 +125,16 @@ function InboxIntakeFields () {
   const fileInput = useRef<HTMLInputElement>(null)
   const [files, setFiles] = useState<File[]>([])
   const [dragging, setDragging] = useState(false)
+  const [uploading, setUploading] = useState(false)
+  const [processing, setProcessing] = useState(false)
+  const [error, setError] = useState<string | null>(null)
+  const [upload, setUpload] = useState<{ uploadId: string, path: string } | null>(null)
+  const [processingSessionId, setProcessingSessionId] = useState<string | null>(null)
 
   function addFiles (incoming: FileList | File[]) {
+    setUpload(null)
+    setProcessingSessionId(null)
+    setError(null)
     setFiles((current) => {
       const byIdentity = new Map(current.map((file) => [fileIdentity(file), file]))
       for (const file of Array.from(incoming)) byIdentity.set(fileIdentity(file), file)
@@ -134,12 +142,55 @@ function InboxIntakeFields () {
     })
   }
 
+  async function submitUpload (event: React.FormEvent<HTMLFormElement>) {
+    event.preventDefault()
+    if (files.length === 0) return
+    setUploading(true)
+    setError(null)
+    setUpload(null)
+    setProcessingSessionId(null)
+    try {
+      const body = new FormData(event.currentTarget)
+      body.delete('files')
+      for (const file of files) body.append('files', file, file.webkitRelativePath || file.name)
+      const response = await fetch('/api/uploads', { method: 'POST', body })
+      if (response.status === 401) return window.location.assign('/login')
+      const result = await response.json() as { uploadId?: string, path?: string, error?: string }
+      if (!response.ok || result.uploadId === undefined || result.path === undefined) {
+        throw new Error(result.error ?? 'Upload failed.')
+      }
+      setUpload({ uploadId: result.uploadId, path: result.path })
+    } catch (uploadError) {
+      setError(uploadError instanceof Error ? uploadError.message : 'Upload failed.')
+    } finally {
+      setUploading(false)
+    }
+  }
+
+  async function processUpload () {
+    if (upload === null) return
+    setProcessing(true)
+    setError(null)
+    try {
+      const response = await fetch(`/api/uploads/${encodeURIComponent(upload.uploadId)}/process`, { method: 'POST' })
+      if (response.status === 401) return window.location.assign('/login')
+      const result = await response.json() as { sessionId?: string, error?: string }
+      if (!response.ok || result.sessionId === undefined) throw new Error(result.error ?? 'Could not start inbox processing.')
+      setProcessingSessionId(result.sessionId)
+    } catch (processError) {
+      setError(processError instanceof Error ? processError.message : 'Could not start inbox processing.')
+    } finally {
+      setProcessing(false)
+    }
+  }
+
   return (
-    <section
+    <form
       id='upload-intake-panel'
       className='tab-panel stack-3'
       role='tabpanel'
       aria-labelledby='upload-intake-tab'
+      onSubmit={(event) => { submitUpload(event).catch(() => {}) }}
     >
       <div>
         <h2 className='card-title'>Intake details</h2>
@@ -200,6 +251,27 @@ function InboxIntakeFields () {
         </div>
       )}
 
+      {error !== null && (
+        <div className='alert alert-danger' role='alert'>
+          <span className='alert-title'>Upload</span>
+          <span>{error}</span>
+        </div>
+      )}
+
+      {upload !== null && (
+        <div className='alert alert-success' role='status'>
+          <span className='alert-title'>Uploaded</span>
+          <span>{upload.path}</span>
+        </div>
+      )}
+
+      {processingSessionId !== null && (
+        <div className='alert alert-info' role='status'>
+          <span className='alert-title'>Inbox processing started</span>
+          <a href='/chat'>Open chat</a>
+        </div>
+      )}
+
       <div className='field'>
         <label htmlFor='intake-description' className='label'>Short description</label>
         <input id='intake-description' name='description' className='input' type='text' />
@@ -246,7 +318,23 @@ function InboxIntakeFields () {
         <label htmlFor='intake-notes' className='label'>Notes for the secretary</label>
         <textarea id='intake-notes' name='notes' className='textarea' rows={4} />
       </div>
-    </section>
+
+      <div className='form-actions'>
+        <button type='submit' className='btn btn-primary' disabled={uploading || files.length === 0}>
+          {uploading ? 'Uploading…' : 'Upload files'}
+        </button>
+        {upload !== null && processingSessionId === null && (
+          <button
+            type='button'
+            className='btn btn-secondary'
+            disabled={processing}
+            onClick={() => { processUpload().catch(() => {}) }}
+          >
+            {processing ? 'Starting…' : 'Process inbox'}
+          </button>
+        )}
+      </div>
+    </form>
   )
 }
 
