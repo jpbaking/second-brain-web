@@ -13,7 +13,7 @@ import { runGit } from '../src/vault/git.js'
 const scratch: string[] = []
 const GIT_ID = ['-c', 'user.email=loop@example.com', '-c', 'user.name=Loop Test']
 
-async function fixture (): Promise<{ dataDir: string, workspace: string }> {
+async function fixture (): Promise<{ dataDir: string, workspace: string, remote: string }> {
   const root = mkdtempSync(path.join(tmpdir(), 'sbw-commit-loop-'))
   scratch.push(root)
   const config = loadConfig({ SECOND_BRAIN_WEB_DATA_DIR: path.join(root, 'data') })
@@ -31,7 +31,7 @@ async function fixture (): Promise<{ dataDir: string, workspace: string }> {
   const db = openCoreDb(config.dataDir)
   writeVaultConfig(db, { remoteUrl: remote, branch: 'main' })
   db.close()
-  return { dataDir: config.dataDir, workspace }
+  return { dataDir: config.dataDir, workspace, remote }
 }
 
 afterEach(() => {
@@ -75,5 +75,19 @@ describe('commit, health, push loop', () => {
     expect(message.stdout).toContain('- memory.md')
     const author = await runGit(['log', '-1', '--pretty=%an <%ae>'], { cwd: workspace })
     expect(author.stdout.trim()).toBe('Second Brain Web <system@secondbrain.local>')
+  })
+
+  it('pushes the new commit to the configured remote branch', async () => {
+    const { dataDir, workspace, remote } = await fixture()
+    writeFileSync(path.join(workspace, 'pushed.md'), 'push proof\n')
+    const db = openCoreDb(dataDir)
+    const result = await commitVault(db, dataDir)
+    db.close()
+
+    expect(result.success).toBe(true)
+    const local = await runGit(['rev-parse', 'HEAD'], { cwd: workspace })
+    const remoteHead = await runGit(['--git-dir', remote, 'rev-parse', 'refs/heads/main'])
+    expect(remoteHead.stdout.trim()).toBe(local.stdout.trim())
+    expect(result.commit).toBe(remoteHead.stdout.trim())
   })
 })

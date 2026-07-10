@@ -1,6 +1,6 @@
 # STATUS — single source of truth
 
-Updated: 2026-07-10 (milestone 8 in progress, 3/6)
+Updated: 2026-07-10 (milestone 8 in progress, 4/6)
 
 ## Where we are
 
@@ -46,9 +46,10 @@ Updated: 2026-07-10 (milestone 8 in progress, 3/6)
 Milestone 8 — Commit, Health, Push Loop
 
 ## Next step
-- Begin `m08-04`: verify push through the configured deploy key and branch.
-  Healthy commits now use a generated audit message with reviewed-file count,
-  UTC operation timestamp, and every pre-staging changed path.
+- Begin `m08-05`: surface health, commit, push, and lock failures with safe
+  recovery UI state. Integration now proves the configured remote branch lands
+  on exactly the SHA returned by the commit loop; SSH remotes continue through
+  the existing deploy-key-scoped `GIT_SSH_COMMAND` runner.
 - SDK notes (m5a-01): provider ids map anthropic→anthropic, openai→openai-native,
   openai-compatible→openai-compatible; model config is `CoreModelConfig`
   (providerId/modelId/apiKey/baseUrl/headers); storage root is set via
