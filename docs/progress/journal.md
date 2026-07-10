@@ -277,3 +277,8 @@ Tree clean at 61d913d. Principal directed autonomous continuation through all re
 - 17:23 CLOCK NOTE: host clock moved backwards after the live-model run; prior 17:24–17:26 labels reflect earlier observed clock progression. Append-only history is intentionally unchanged.
 - 17:23 STARTED m09-01: scan reports recursively and derive path/type/title/date/size metadata without following symlinks
 - 17:24 DONE m09-01: added `scanReports`: recursive HTML/PDF/Markdown metadata (POSIX relative path, type, HTML title/Markdown H1/filename fallback, year, filename-or-mtime date, mtime, bytes), newest-first sorting, ignores unsupported files and symlinks. Verified `reports-scan.test.ts` (2), server lint/build pass. Committing.
+
+## 2026-07-10 17:25 — goal continuation
+Tree clean at a20e5d3. Active: milestone 09, next item: m09-02.
+- 17:25 STARTED m09-02: add authenticated report listing and realpath-confined content serving for HTML, PDF, and Markdown
+- 17:27 DONE m09-02: added guarded report list/content routes. Content serving resolves root+target realpaths, confines target beneath reports/, rejects traversal components, symlink escape, directories/missing files, and unsupported extensions; sends explicit MIME + nosniff. Verified `reports-api.test.ts` (3: auth, metadata/content, rejection matrix), server lint/build pass. Committing.
