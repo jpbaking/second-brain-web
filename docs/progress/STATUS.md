@@ -1,6 +1,6 @@
 # STATUS — single source of truth
 
-Updated: 2026-07-10 (milestone 8 complete, 6/6)
+Updated: 2026-07-10 (milestone 9 ready, 0/6)
 
 ## Where we are
 
@@ -40,7 +40,7 @@ Updated: 2026-07-10 (milestone 8 complete, 6/6)
   review includes untracked uploads; health gates staging; audited commits push
   to the configured branch; push failures remain visible and retryable.
 - Active milestone: **Milestone 9 — Report Browser** (checklist to create).
-- Checklist: Milestone 9 checklist creation is the next progress item.
+- Checklist: `docs/progress/milestones/milestone-09-report-browser.md`.
 - App runnable: yes, with `SECOND_BRAIN_WEB_DATA_DIR` pointing at a private
   `0700` data root. Core DB schema at v10.
 
@@ -48,7 +48,7 @@ Updated: 2026-07-10 (milestone 8 complete, 6/6)
 Milestone 9 — Report Browser
 
 ## Next step
-- Create the Milestone 9 checklist from phase 006, then start report scanning.
+- Begin `m09-01`: scan report files and derive safe metadata.
 - SDK notes (m5a-01): provider ids map anthropic→anthropic, openai→openai-native,
   openai-compatible→openai-compatible; model config is `CoreModelConfig`
   (providerId/modelId/apiKey/baseUrl/headers); storage root is set via
@@ -59,7 +59,7 @@ Milestone 9 — Report Browser
 - `docs/spike/findings.md` — m00-10 decisions (binding on implementation).
 - `docs/project-plan/phase-006-implementation-roadmap.md` — Milestone 7.
 - `docs/project-plan/phase-005-files-reports-and-derived-indexes.md` — upload
-  paths, intake fields, and companion metadata rules.
+  and authenticated report-browser rules.
 - `docs/project-plan/master-plan.md` — hard rules, runtime layout, auth
   crypto, and secrets handling.
 - `docs/project-plan/phase-002-security-auth-and-secrets.md` — password,
