@@ -1,6 +1,6 @@
 # STATUS — single source of truth
 
-Updated: 2026-07-10 (milestone 11 in progress, 2/6)
+Updated: 2026-07-10 (milestone 11 in progress, 3/6)
 
 ## Where we are
 
@@ -67,11 +67,18 @@ Milestone 11 — Explorer (not yet started)
 - Checklist: `docs/progress/milestones/milestone-11-explorer.md`.
 
 ## Next step
-- Begin `m11-03`: authenticated explorer API returning nodes + edges with area
-  filters. Nodes = distinct paths in `vault_links` (as from/to) grouped by area
-  (memory subfolder / library / reports); edges from `vault_links`. Guard like
-  other `/api/` routes; open the sidecar per request (see search routes).
-  Verification: `explorer-api.test.ts`.
+- Begin `m11-04`: responsive graph/list explorer screen wired into shell nav.
+  API: `GET /api/explorer?area=` → `{ areas[], nodes:[{path,area,degree}],
+  edges:[{from,to,label}] }`. MVP can be a grouped list (by area) of nodes with
+  their outgoing links; a light SVG/force graph is optional. Add nav entry +
+  `/explorer` route. Verification: web lint+build + responsive visual.
+- m11-03 DONE: guarded `GET /api/explorer?area=` (`server/src/explorer/
+  routes.ts`, wired in app.ts) reads `vault_links` and returns
+  `{areas, nodes:[{path,area,degree}], edges:[{from,to,label}]}`. `areaOf()`
+  maps a path to a memory subfolder / library / reports; `?area=` narrows to
+  edges touching that area (areas list stays whole-graph). Verified
+  `explorer-api.test.ts` (5: auth, full graph incl. degree, area filter,
+  areaOf, empty) + full server suite (249) + lint/build.
 - m11-02 DONE: sidecar migration v3 adds `vault_links (from_path, to_path,
   label)` + from/to indexes. `buildLinkGraph`/`rebuildLinkGraph`
   (`server/src/explorer/graph.ts`) clear+reinsert in one txn (deterministic, no
