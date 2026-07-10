@@ -15,6 +15,7 @@ import { registerChatRoutes } from './chat/routes.js'
 import { registerCaptureRoutes } from './chat/capture.js'
 import { registerUploadRoutes } from './vault/upload.js'
 import { registerReportRoutes } from './reports/routes.js'
+import { registerFollowUpRoutes } from './follow-ups/routes.js'
 import { ClineAgentRunner } from './agent/cline-runner.js'
 import type { AgentRunner } from './agent/runner.js'
 
@@ -45,6 +46,7 @@ export function buildApp (config?: AppConfig, deps?: AppDeps): FastifyInstance {
     registerVaultRoutes(app, config)
     registerProviderRoutes(app, config)
     registerReportRoutes(app, config)
+    registerFollowUpRoutes(app, config)
     const agentService = registerChatRoutes(app, config, deps?.agentRunner ?? new ClineAgentRunner(config.dataDir))
     registerCaptureRoutes(app, agentService)
     registerUploadRoutes(app, config, agentService)
