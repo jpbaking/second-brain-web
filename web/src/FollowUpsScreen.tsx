@@ -40,6 +40,36 @@ export function FollowUpsScreen () {
   const [today, setToday] = useState('')
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
+  const [reload, setReload] = useState(0)
+  const [busyId, setBusyId] = useState<string | null>(null)
+  const [notice, setNotice] = useState<string | null>(null)
+  const [editing, setEditing] = useState<{ id: string, text: string } | null>(null)
+
+  async function act (item: FollowUpItem, action: 'complete' | 'edit', text?: string) {
+    setBusyId(item.id)
+    setNotice(null)
+    try {
+      // `complete` has no body; setting a JSON content-type without one makes
+      // Fastify reject the request, so only send the header/body for `edit`.
+      const init: RequestInit = action === 'edit'
+        ? { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ text }) }
+        : { method: 'POST' }
+      const response = await fetch(`/api/follow-ups/${item.id}/${action}`, init)
+      if (response.status === 401) { window.location.assign('/login'); return }
+      const body = await response.json() as { error?: string }
+      if (!response.ok) throw new Error(body.error ?? 'The action could not be filed.')
+      setEditing(null)
+      setNotice(action === 'complete'
+        ? 'Marked done — the secretary is filing the change in your vault.'
+        : 'Edit sent — the secretary is updating your vault.')
+      // The write happens asynchronously through the agent, so refresh shortly.
+      setTimeout(() => setReload(value => value + 1), 400)
+    } catch (reason: unknown) {
+      setNotice(reason instanceof Error ? reason.message : 'The action could not be filed.')
+    } finally {
+      setBusyId(null)
+    }
+  }
 
   useEffect(() => {
     let active = true
@@ -63,7 +93,7 @@ export function FollowUpsScreen () {
         if (active) setLoading(false)
       })
     return () => { active = false }
-  }, [filter])
+  }, [filter, reload])
 
   return (
     <div className='app-page'>
@@ -89,6 +119,7 @@ export function FollowUpsScreen () {
           ))}
         </div>
 
+        {notice !== null && <div className='alert alert-info' role='status'><span>{notice}</span></div>}
         {error !== null && <div className='alert alert-danger' role='alert'><span>{error}</span></div>}
         {loading && <p role='status'>Loading follow-ups…</p>}
         {!loading && error === null && items.length === 0 && <p className='followup-empty'>Nothing in this queue.</p>}
@@ -104,6 +135,23 @@ export function FollowUpsScreen () {
                       <span className='followup-link'>→ {item.linkedSource}</span>
                     )}
                   </span>
+                  {editing?.id === item.id && (
+                    <form
+                      className='followup-edit'
+                      onSubmit={event => { event.preventDefault(); act(item, 'edit', editing.text.trim()).catch(() => {}) }}
+                    >
+                      <input
+                        className='input'
+                        aria-label='Edit follow-up text'
+                        value={editing.text}
+                        onChange={event => setEditing({ id: item.id, text: event.target.value })}
+                      />
+                      <div className='followup-edit-actions'>
+                        <button type='submit' className='btn btn-primary btn-sm' disabled={busyId === item.id || editing.text.trim() === ''}>Save</button>
+                        <button type='button' className='btn btn-ghost btn-sm' onClick={() => setEditing(null)}>Cancel</button>
+                      </div>
+                    </form>
+                  )}
                 </div>
                 <div className='followup-meta'>
                   <span className='badge'>{labelForKind(item)}</span>
@@ -111,6 +159,16 @@ export function FollowUpsScreen () {
                     <time className={`followup-due ${dueClass(item, today)}`} dateTime={item.dueDate}>
                       {dueLabel(item.dueDate, today)}
                     </time>
+                  )}
+                  {!item.completed && editing?.id !== item.id && (
+                    <div className='followup-actions'>
+                      <button type='button' className='btn btn-primary btn-sm' disabled={busyId === item.id} onClick={() => { act(item, 'complete').catch(() => {}) }}>
+                        {busyId === item.id ? 'Filing…' : 'Mark done'}
+                      </button>
+                      <button type='button' className='btn btn-secondary btn-sm' disabled={busyId === item.id} onClick={() => setEditing({ id: item.id, text: item.text })}>
+                        Edit
+                      </button>
+                    </div>
                   )}
                 </div>
               </li>

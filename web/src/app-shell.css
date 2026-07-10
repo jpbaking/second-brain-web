@@ -250,6 +250,23 @@
   color: var(--accent, var(--ink));
 }
 
+.followup-actions {
+  display: flex;
+  gap: var(--space-2);
+}
+
+.followup-edit {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  margin-top: var(--space-2);
+}
+
+.followup-edit-actions {
+  display: flex;
+  gap: var(--space-2);
+}
+
 .followup-empty {
   color: var(--muted);
 }

@@ -5,4 +5,4 @@
 - [x] **m9a-03:** Build the responsive follow-up queue screen and filter tabs. (Verification: `npm run lint --workspace web && npm run build --workspace web` plus responsive visual verification)
 - [x] **m9a-04:** Link queue items to their source file and line where possible. (Verification: `npm test --workspace server -- follow-ups-api.test.ts -t "source" && npm run build --workspace web`)
 - [x] **m9a-05:** Route completion and edits through a vault-safe agent workflow. (Verification: `npm test --workspace server -- follow-ups-action.test.ts`)
-- [ ] **m9a-06:** Deliverable check: filter, inspect, and safely update practical follow-ups. (Verification: `npm run lint && npm test && npm run build` plus browser end-to-end verification)
+- [x] **m9a-06:** Deliverable check: filter, inspect, and safely update practical follow-ups. (Verification: `npm run lint && npm test && npm run build` plus browser end-to-end verification)

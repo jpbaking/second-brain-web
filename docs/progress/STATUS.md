@@ -1,6 +1,6 @@
 # STATUS — single source of truth
 
-Updated: 2026-07-10 (milestone 9A in progress, 5/6)
+Updated: 2026-07-10 (milestone 9A COMPLETE 6/6; next: milestone 10)
 
 ## Where we are
 
@@ -42,31 +42,30 @@ Updated: 2026-07-10 (milestone 9A in progress, 5/6)
 - **Milestone 9 — Report Browser: COMPLETE (6/6).** Authenticated report
   scanning/serving, responsive search/filter shelf, HTML open, PDF/Markdown
   download, and command-centre recents are complete.
-- Active milestone: **Milestone 9A — Follow-Up Queue**.
-- Checklist: `docs/progress/milestones/milestone-09a-follow-up-queue.md`.
+- **Milestone 9A — Follow-Up Queue: COMPLETE (6/6).** Typed parser for
+  reminders/commitments; guarded `/api/follow-ups` filters+counts; responsive
+  queue screen with filter tabs; source `file:line` + vault-safe `linkedSource`;
+  `POST /api/follow-ups/:id/complete|edit` routing changes through the agent
+  (guard + write-lock), with Mark done / Edit actions in the UI. Verified full
+  lint/test/build (227 tests) + a real headless-Chrome e2e (filter → inspect →
+  safely update; write dispatched to the agent).
 - App runnable: yes, with `SECOND_BRAIN_WEB_DATA_DIR` pointing at a private
   `0700` data root. Core DB schema at v10.
 
 ## Current Phase
-Milestone 9A — Follow-Up Queue
+Milestone 10 — Derived Search (not yet started)
 
 ## Next step
-- Begin `m9a-06`: milestone deliverable. Wire the queue UI action(s) —
-  Mark done (and edit) POST to `/api/follow-ups/:id/complete|edit` — then run
-  `npm run lint && npm test && npm run build` plus a browser e2e proving
-  filter → inspect → safely update. Action routes + tests already exist.
-- m9a-05 DONE: `POST /api/follow-ups/:id/complete` and `.../edit` route the
-  change through `AgentSessionService` (guard + write-lock + inspectable
-  session), never a direct file write; 404 on unknown id, 400 on no provider/
-  empty edit text. Verified `follow-ups-action.test.ts` (5) + server
-  lint/build.
-- m9a-04 DONE: API surfaces each item's `sourceFile:sourceLine` and a
-  vault-safe `linkedSource` (in-vault relative links resolved; external/
-  escaping links dropped). Queue rows render origin + `→ linkedSource`.
-  Verified `follow-ups-api.test.ts -t source` and web build; 390px visual
-  confirms the link wraps with no overflow.
-- m9a-03 DONE: `/follow-ups` renders the guarded endpoint — filter tabs with
-  live counts, per-item text/kind/direction/due-date (overdue+today emphasis).
+- Create the Milestone 10 checklist by copying its steps from
+  `phase-006-implementation-roadmap.md` (scan memory/reports/catalogs → build
+  SQLite FTS index → search UI → rebuild on demand/after vault changes) into
+  `docs/progress/milestones/milestone-10-derived-search.md`, one checkbox per
+  step with a verification command. Then start `m10-01`.
+- m9a-06 DONE: wired Mark done / Edit UI actions to the m9a-05 endpoints and
+  ran the deliverable e2e. Caught and fixed a real bug — the `complete` POST
+  was sending a JSON content-type with no body (Fastify 400); now only `edit`
+  carries a JSON body. Verified full lint/test/build + headless-Chrome e2e
+  (`runnerStarts:1`, success notice, no horizontal overflow).
 - SDK notes (m5a-01): provider ids map anthropic→anthropic, openai→openai-native,
   openai-compatible→openai-compatible; model config is `CoreModelConfig`
   (providerId/modelId/apiKey/baseUrl/headers); storage root is set via
@@ -90,6 +89,11 @@ Milestone 9A — Follow-Up Queue
   was needed.)
 
 ## Known issues / parked TODOs
+
+- Follow-up item `text` keeps the inline `source: [label](path)` markdown, so
+  it shows raw in the queue row (the resolved link is also shown separately as
+  `→ linkedSource`). Cosmetic; parser (m9a-01) deliberately preserves text.
+  Consider stripping the trailing `— source: [...](...)` from the display text.
 
 - Global `~/.cline/skills` and rules paths merge into agent sessions — run
   the production app under a dedicated system user (fold into phase-007
