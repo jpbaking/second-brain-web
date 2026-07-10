@@ -1,6 +1,6 @@
 # STATUS — single source of truth
 
-Updated: 2026-07-11 (progress files reorganised: history archived, backlog extracted)
+Updated: 2026-07-11 (milestone 17 activated)
 
 ## Where we are
 
@@ -26,25 +26,23 @@ Updated: 2026-07-11 (progress files reorganised: history archived, backlog extra
 
 ## Current phase
 
-Backlog-driven. **No milestone is active.** All future work is listed in
-`docs/progress/BACKLOG.md` and starts only when the principal says go.
-Milestone 15 (YAML-only provider provisioning) is fully designed and gated —
-do not start it without an explicit go.
+**Milestone 17 — encrypted TOTP secret at rest is active.** The principal
+directed the next recommended backlog item on 2026-07-11. Milestone 15
+(YAML-only provider provisioning) remains fully designed and gated.
 
 ## Next step
 
-- None queued. If the principal names a backlog item: create/activate its
-  milestone checklist, point this section at its first item, and run the
-  playbook work loop.
+- **m17-01:** define encrypted owner-state v2 and persistence helpers.
+- Checklist: `docs/progress/milestones/milestone-17-encrypted-totp.md`.
 
 ## Read before working
 
 - `AGENTS-PLAYBOOK.md` — always, top to bottom.
-- `docs/progress/BACKLOG.md` — the work queue.
-- The design doc referenced by whichever backlog item is activated
-  (e.g. `docs/design/provider-provisioning.md` for milestone 15).
-- `docs/project-plan/master-plan.md` — hard rules (secrets, vault guard,
-  single-user), if touching auth/providers/vault writes.
+- `docs/progress/milestones/milestone-17-encrypted-totp.md`.
+- `docs/project-plan/master-plan.md` — especially the dedicated secrets-key
+  rule.
+- `docs/project-plan/phase-002-security-auth-and-secrets.md` — TOTP storage
+  and reset behaviour.
 
 ## Questions for the principal
 
