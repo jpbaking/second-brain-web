@@ -21,6 +21,15 @@ function cookieValue (header: string | string[] | undefined, name: string): stri
   return values.find(value => value.startsWith(`${name}=`))?.slice(name.length + 1).split(';')[0]
 }
 
+/** Local YYYY-MM-DD for today+offset days, matching the route's date handling. */
+function localDate (offsetDays: number): string {
+  const date = new Date()
+  date.setDate(date.getDate() + offsetDays)
+  const month = String(date.getMonth() + 1).padStart(2, '0')
+  const day = String(date.getDate()).padStart(2, '0')
+  return `${date.getFullYear()}-${month}-${day}`
+}
+
 async function fixture (): Promise<{ app: FastifyInstance, cookie: string, notes: string }> {
   const root = mkdtempSync(path.join(tmpdir(), 'sbw-follow-api-'))
   scratch.push(root)
@@ -28,8 +37,10 @@ async function fixture (): Promise<{ app: FastifyInstance, cookie: string, notes
   prepareDatabases(config.dataDir)
   const notes = path.join(vaultWorkspacePath(config.dataDir), 'memory', 'notes')
   mkdirSync(notes, { recursive: true })
-  writeFileSync(path.join(notes, 'reminders.md'), '## Open\n- [ ] 2026-07-09 due: Late\n- [ ] 2026-07-10 due: Today\n- [ ] 2026-07-15 due: Soon\n- [ ] Undated\n## Done\n- [x] 2026-07-01 due: Finished\n')
-  writeFileSync(path.join(notes, 'commitments.md'), '## I owe\n- [ ] 2026-07-11 due: Send reply\n## Waiting on\n- [ ] 2026-07-12 due: Receive approval\n')
+  // Dates are computed from the real current date — the route filters against
+  // `new Date()`, so hardcoded dates rot as the clock advances past them.
+  writeFileSync(path.join(notes, 'reminders.md'), `## Open\n- [ ] ${localDate(-1)} due: Late\n- [ ] ${localDate(0)} due: Today\n- [ ] ${localDate(5)} due: Soon\n- [ ] Undated\n## Done\n- [x] ${localDate(-9)} due: Finished\n`)
+  writeFileSync(path.join(notes, 'commitments.md'), `## I owe\n- [ ] ${localDate(1)} due: Send reply\n## Waiting on\n- [ ] ${localDate(2)} due: Receive approval\n`)
   const { password, state } = await generateOwnerAuth()
   writeOwnerAuth(config.dataDir, state)
   const app = buildApp(config)
