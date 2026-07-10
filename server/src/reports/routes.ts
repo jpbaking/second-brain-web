@@ -30,6 +30,10 @@ export function registerReportRoutes (app: FastifyInstance, config: AppConfig): 
     if (contentType === undefined) return await reply.code(415).send({ error: 'Unsupported report type.' })
     reply.header('content-type', contentType)
     reply.header('x-content-type-options', 'nosniff')
+    if (path.extname(resolved).toLowerCase() !== '.html') {
+      const filename = path.basename(resolved).replace(/["\r\n]/g, '_')
+      reply.header('content-disposition', `attachment; filename="${filename}"`)
+    }
     return await reply.send(createReadStream(resolved))
   })
 }

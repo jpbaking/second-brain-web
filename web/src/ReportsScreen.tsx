@@ -81,12 +81,21 @@ export function ReportsScreen () {
             {filtered.map(report => (
               <li key={report.path} className='report-row'>
                 <div className='report-main'>
-                  <a className='report-title' href={`/api/reports/content/${encodeReportPath(report.path)}`}>{report.title}</a>
+                  <span className='report-title'>{report.title}</span>
                   <span className='report-path'>{report.path}</span>
                 </div>
                 <span className='badge'>{labelFor(report.type)}</span>
                 <time dateTime={report.date}>{report.date}</time>
                 <span className='report-size'>{formatBytes(report.bytes)}</span>
+                <a
+                  className='btn btn-secondary btn-sm report-action'
+                  href={`/api/reports/content/${encodeReportPath(report.path)}`}
+                  target={report.type === 'html' ? '_blank' : undefined}
+                  rel={report.type === 'html' ? 'noreferrer' : undefined}
+                  download={report.type === 'html' ? undefined : ''}
+                >
+                  {report.type === 'html' ? 'Open' : 'Download'}
+                </a>
               </li>
             ))}
           </ul>

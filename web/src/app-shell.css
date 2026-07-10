@@ -88,7 +88,7 @@
 
 .report-row {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) auto 100px 72px;
+  grid-template-columns: minmax(0, 1fr) auto 100px 72px auto;
   align-items: center;
   gap: var(--space-3);
   padding-block: var(--space-3);
@@ -103,9 +103,8 @@
 }
 
 .report-title {
-  width: fit-content;
   font-weight: var(--fw-semibold);
-  color: var(--brand-blue);
+  color: var(--ink);
 }
 
 .report-path,
@@ -169,6 +168,10 @@
   .report-row time,
   .report-size {
     grid-column: auto;
+  }
+
+  .report-action {
+    width: fit-content;
   }
   .app-nav-links {
     display: none;

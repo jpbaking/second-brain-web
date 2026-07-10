@@ -70,6 +70,12 @@ describe('report API', () => {
     expect(html.headers['content-type']).toMatch(/^text\/html/)
     expect(html.body).toContain('Private brief')
     expect(html.headers['x-content-type-options']).toBe('nosniff')
+    expect(html.headers['content-disposition']).toBeUndefined()
+
+    const markdown = await app.inject({ method: 'GET', url: '/api/reports/content/2026/notes.md', headers: { cookie } })
+    expect(markdown.statusCode).toBe(200)
+    expect(markdown.headers['content-type']).toMatch(/^text\/markdown/)
+    expect(markdown.headers['content-disposition']).toBe('attachment; filename="notes.md"')
   })
 
   it('rejects traversal, symlink escapes, directories, missing files, and unsupported types', async () => {
