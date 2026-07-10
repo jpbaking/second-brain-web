@@ -1,6 +1,6 @@
 # STATUS — single source of truth
 
-Updated: 2026-07-10 (milestone 8 in progress, 1/6)
+Updated: 2026-07-10 (milestone 8 in progress, 2/6)
 
 ## Where we are
 
@@ -46,9 +46,10 @@ Updated: 2026-07-10 (milestone 8 in progress, 1/6)
 Milestone 8 — Commit, Health, Push Loop
 
 ## Next step
-- Begin `m08-02`: make vault health a required pre-commit gate. Review now asks
-  git for every untracked file (not collapsed directories), and its diff summary
-  includes new originals that `git diff HEAD --stat` cannot see.
+- Begin `m08-03`: commit healthy vault changes with an auditable generated
+  message. `commitVault` now runs health after taking the writer lock and before
+  staging; unavailable, ambiguous, or non-zero results leave every change local
+  and unstaged, and the result includes health evidence.
 - SDK notes (m5a-01): provider ids map anthropic→anthropic, openai→openai-native,
   openai-compatible→openai-compatible; model config is `CoreModelConfig`
   (providerId/modelId/apiKey/baseUrl/headers); storage root is set via

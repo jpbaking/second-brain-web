@@ -145,6 +145,7 @@ describe('vault status API', () => {
     await app.inject({ method: 'POST', url: '/api/vault/sync', headers: { cookie } })
 
     // Simulate dirty state
+    writeFileSync(path.join(workspace, 'scripts', 'health.py'), 'print("All checks passed: 0 issues")\n')
     writeFileSync(path.join(workspace, 'dirty-file.txt'), 'dirty')
     const rev1 = await app.inject({ method: 'GET', url: '/api/vault/review', headers: { cookie } })
     expect(rev1.json().git.dirty).toBe(true)

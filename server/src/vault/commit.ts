@@ -2,12 +2,15 @@ import { readVaultConfig, vaultWorkspacePath, writeVaultConfig } from './config.
 import { runGit } from './git.js'
 import { readGitStatus } from './git-status.js'
 import { acquireLock, releaseLock } from './lock.js'
+import { runHealthCheck } from './health.js'
+import type { HealthResult } from './health.js'
 import type { DatabaseSync } from 'node:sqlite'
 
 export interface VaultCommitResult {
   success: boolean
   commit: string | null
   message: string
+  health?: HealthResult
 }
 
 export async function commitVault (db: DatabaseSync, dataDir: string, now: Date = new Date()): Promise<VaultCommitResult> {
@@ -37,6 +40,17 @@ export async function commitVault (db: DatabaseSync, dataDir: string, now: Date 
   const lockId = lock.lock?.lockId ?? null
 
   try {
+    const health = await runHealthCheck(workspace)
+    writeVaultConfig(db, {
+      lastHealth: JSON.stringify({ available: health.available, issueCount: health.issueCount, ranAt: health.ranAt }),
+    }, now)
+    if (!health.available || health.issueCount !== 0) {
+      const reason = health.message ?? (health.issueCount === null
+        ? 'The health result could not be interpreted.'
+        : `The vault health check reported ${health.issueCount} issue${health.issueCount === 1 ? '' : 's'}.`)
+      return { success: false, commit: status.commit, message: `Commit blocked: ${reason}`, health }
+    }
+
     // Stage all changes
     const add = await runGit(['-C', workspace, 'add', '.'])
     if (add.code !== 0) {
@@ -67,7 +81,7 @@ export async function commitVault (db: DatabaseSync, dataDir: string, now: Date 
     const commit = head.code === 0 ? head.stdout.trim() : null
     writeVaultConfig(db, { lastCommit: commit }, now)
 
-    return { success: true, commit, message: 'Successfully committed and pushed changes.' }
+    return { success: true, commit, message: 'Successfully committed and pushed changes.', health }
   } catch (err) {
     const message = err instanceof Error ? err.message : String(err)
     return { success: false, commit: status.commit, message }
