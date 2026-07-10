@@ -1,6 +1,6 @@
 # STATUS — single source of truth
 
-Updated: 2026-07-10 (milestone 7 complete, 8/8)
+Updated: 2026-07-10 (milestone 8 ready, 0/6)
 
 ## Where we are
 
@@ -38,7 +38,7 @@ Updated: 2026-07-10 (milestone 7 complete, 8/8)
   the UI can explicitly dispatch the vault inbox workflow for an upload.
 - Active milestone: **Milestone 8 — Commit, Health, Push Loop** (checklist to
   create from the roadmap).
-- Checklist: Milestone 8 checklist creation is the next progress item.
+- Checklist: `docs/progress/milestones/milestone-08-commit-health-push.md`.
 - App runnable: yes, with `SECOND_BRAIN_WEB_DATA_DIR` pointing at a private
   `0700` data root. Core DB schema at v10.
 
@@ -46,7 +46,9 @@ Updated: 2026-07-10 (milestone 7 complete, 8/8)
 Milestone 8 — Commit, Health, Push Loop
 
 ## Next step
-- Create the Milestone 8 checklist from phase 006, then start its first item.
+- Begin `m08-01`: detect changed files after mutating workflows and expose the
+  review state. Existing m06 review/commit code is the baseline; Milestone 8
+  adds the required health-gated orchestration and explicit failure states.
 - SDK notes (m5a-01): provider ids map anthropic→anthropic, openai→openai-native,
   openai-compatible→openai-compatible; model config is `CoreModelConfig`
   (providerId/modelId/apiKey/baseUrl/headers); storage root is set via
