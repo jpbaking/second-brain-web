@@ -1,6 +1,6 @@
 # STATUS — single source of truth
 
-Updated: 2026-07-10 (milestone 7 in progress, 4/8)
+Updated: 2026-07-10 (milestone 7 in progress, 5/8)
 
 ## Where we are
 
@@ -41,9 +41,10 @@ Updated: 2026-07-10 (milestone 7 in progress, 4/8)
 Milestone 7 — Quick Capture And Uploads
 
 ## Next step
-- Begin `m07-05`: authenticated file/folder upload endpoint with safe writing
-  under `inbox/uploads/...`. The Upload tab now accepts multiple files by picker
-  or drag/drop, deduplicates selections, shows sizes, and supports removal.
+- Begin `m07-06`: companion `_intake.md` metadata for uploads. `POST /api/uploads`
+  now streams up to 100 files into a unique timestamped `inbox/uploads/...`
+  directory under the vault lock, preserving nested paths and bytes while
+  rejecting traversal, duplicates, and files over the configurable limit.
 - SDK notes (m5a-01): provider ids map anthropic→anthropic, openai→openai-native,
   openai-compatible→openai-compatible; model config is `CoreModelConfig`
   (providerId/modelId/apiKey/baseUrl/headers); storage root is set via

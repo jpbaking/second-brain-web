@@ -44,8 +44,12 @@ describe('loadConfig', () => {
     const config = loadConfig({ SECOND_BRAIN_WEB_DATA_DIR: dir })
     expect(config.host).toBe('127.0.0.1')
     expect(config.port).toBe(8722)
+    expect(config.uploadMaxBytes).toBe(50 * 1024 * 1024)
     expect(() =>
       loadConfig({ SECOND_BRAIN_WEB_DATA_DIR: dir, SECOND_BRAIN_WEB_PORT: 'nope' })
     ).toThrow(/valid port/)
+    expect(() =>
+      loadConfig({ SECOND_BRAIN_WEB_DATA_DIR: dir, SECOND_BRAIN_WEB_UPLOAD_MAX_BYTES: '0' })
+    ).toThrow(/UPLOAD_MAX_BYTES/)
   })
 })

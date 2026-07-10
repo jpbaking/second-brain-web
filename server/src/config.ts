@@ -19,6 +19,8 @@ export interface AppConfig {
   dataDir: string
   /** Provider-key encryption key (SECOND_BRAIN_WEB_SECRETS_KEY); may be unset. */
   secretsKey: string | undefined
+  /** Maximum size of one uploaded file. */
+  uploadMaxBytes: number
 }
 
 export class ConfigError extends Error {}
@@ -50,12 +52,18 @@ export function loadConfig (env: NodeJS.ProcessEnv = process.env): AppConfig {
     throw new ConfigError(`SECOND_BRAIN_WEB_PORT is not a valid port: ${env.SECOND_BRAIN_WEB_PORT}`)
   }
 
+  const uploadMaxBytes = Number(env.SECOND_BRAIN_WEB_UPLOAD_MAX_BYTES ?? 50 * 1024 * 1024)
+  if (!Number.isSafeInteger(uploadMaxBytes) || uploadMaxBytes < 1) {
+    throw new ConfigError(`SECOND_BRAIN_WEB_UPLOAD_MAX_BYTES is not valid: ${env.SECOND_BRAIN_WEB_UPLOAD_MAX_BYTES}`)
+  }
+
   return {
     // Bind to localhost by default (master plan: production defaults).
     host: env.SECOND_BRAIN_WEB_HOST ?? '127.0.0.1',
     port,
     dataDir: resolved,
     secretsKey: env.SECOND_BRAIN_WEB_SECRETS_KEY,
+    uploadMaxBytes,
   }
 }
 
