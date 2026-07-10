@@ -1,6 +1,6 @@
 # STATUS — single source of truth
 
-Updated: 2026-07-10 (milestone 12 in progress, 1/7)
+Updated: 2026-07-10 (milestone 12 in progress, 2/7)
 
 ## Where we are
 
@@ -77,10 +77,17 @@ Milestone 12 — Production Hardening (final milestone, not yet started)
 - Checklist: `docs/progress/milestones/milestone-12-production-hardening.md`.
 
 ## Next step
-- Begin `m12-02`: deployment guide (`docs/deploy/deployment.md`) — reverse
-  proxy in front of the container, HTTPS termination assumptions, required env
-  (`SECOND_BRAIN_WEB_SECRETS_KEY`, data volume), and running `reset-auth` to
-  set up the owner. Verification per the m12 checklist.
+- Begin `m12-03`: backup/restore documentation (`docs/deploy/backup-restore.md`)
+  for the data volume (db, indexes, ssh, auth, workspaces), incl. a restore that
+  boots against the restored data root. Note: `indexes/` is a rebuildable cache
+  (reindex from Search), so a backup can optionally skip it.
+- m12-02 DONE: wrote `docs/deploy/deployment.md` — Docker build/run (publish to
+  127.0.0.1 + volume), env table (DATA_DIR/SECRETS_KEY/HOST/PORT/UPLOAD_MAX/
+  NODE_ENV), reverse-proxy + **HTTPS required** (cookies are `Secure` under
+  `NODE_ENV=production`) with nginx + Caddy examples, first-run owner setup, and
+  vault SSH deploy-key setup. Verified the grep check AND that the documented
+  `docker exec … node server/dist/cli/reset-auth.js /data` really works in the
+  container (prints OTP + TOTP URI, writes owner.json 600).
 - m12-01 DONE: multi-stage `Dockerfile` (node:24-slim) builds server+web and
   runs `node server/dist/index.js`; `.dockerignore` keeps the context clean.
   Data root at `/data` (volume), created `700 node` so the app's privacy check
