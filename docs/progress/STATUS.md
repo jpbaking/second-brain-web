@@ -1,6 +1,6 @@
 # STATUS — single source of truth
 
-Updated: 2026-07-10 (milestone 9 ready, 0/6)
+Updated: 2026-07-10 (milestone 9 in progress, 1/6)
 
 ## Where we are
 
@@ -48,7 +48,9 @@ Updated: 2026-07-10 (milestone 9 ready, 0/6)
 Milestone 9 — Report Browser
 
 ## Next step
-- Begin `m09-01`: scan report files and derive safe metadata.
+- Begin `m09-02`: traversal-safe authenticated report list/content routes.
+  Report scanning now derives path, type, title, year, date, mtime, and size for
+  HTML/PDF/Markdown, ignores other files and symlinks, and sorts newest first.
 - SDK notes (m5a-01): provider ids map anthropic→anthropic, openai→openai-native,
   openai-compatible→openai-compatible; model config is `CoreModelConfig`
   (providerId/modelId/apiKey/baseUrl/headers); storage root is set via

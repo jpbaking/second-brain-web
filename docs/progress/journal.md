@@ -273,3 +273,7 @@ Tree clean at 61d913d. Principal directed autonomous continuation through all re
 - 17:24 STARTED m08-06: milestone deliverable — prove healthy commit+push, unhealthy local retention, push recovery, and full regression
 - 17:25 DONE m08-06: `commit-loop.test.ts` all 4 pass (health-blocked remains unstaged/local; healthy audited commit; exact remote branch push; offline-remote retry). Full monorepo lint clean, 45 server files/211 tests pass, both builds pass. Milestone 8 complete (6/6). Committing.
 - 17:26 DONE progress: created Milestone 9 Report Browser checklist (6 items): scan metadata, authenticated serving, shelf/filter/search UI, open/download, command-centre recents, deliverable. STATUS points at m09-01. Committing.
+
+- 17:23 CLOCK NOTE: host clock moved backwards after the live-model run; prior 17:24–17:26 labels reflect earlier observed clock progression. Append-only history is intentionally unchanged.
+- 17:23 STARTED m09-01: scan reports recursively and derive path/type/title/date/size metadata without following symlinks
+- 17:24 DONE m09-01: added `scanReports`: recursive HTML/PDF/Markdown metadata (POSIX relative path, type, HTML title/Markdown H1/filename fallback, year, filename-or-mtime date, mtime, bytes), newest-first sorting, ignores unsupported files and symlinks. Verified `reports-scan.test.ts` (2), server lint/build pass. Committing.
