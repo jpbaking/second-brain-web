@@ -1,6 +1,6 @@
 # STATUS — single source of truth
 
-Updated: 2026-07-10 (milestone 7 in progress, 7/8)
+Updated: 2026-07-10 (milestone 7 complete, 8/8)
 
 ## Where we are
 
@@ -32,19 +32,21 @@ Updated: 2026-07-10 (milestone 7 in progress, 7/8)
 - **Milestone 5A — Cline SDK Chat: COMPLETE (10/10).** SDK integration is complete with local LM Studio verified end-to-end. Streaming, persistence, and session rehydration fully implemented without provider key leakage.
 - **Milestone 5B — Manual Context Compaction: COMPLETE (6/6).**
 - **Milestone 6 — Tool Approvals And Write Lock: COMPLETE (9/9).**
-- Active milestone: **Milestone 7 — Quick Capture And Uploads**.
-- Checklist: `docs/progress/milestones/milestone-07-quick-capture-and-uploads.md`.
+- **Milestone 7 — Quick Capture And Uploads: COMPLETE (8/8).** Quick capture
+  routes through the agent; multipart uploads stream unchanged originals into
+  locked, traversal-safe timestamped inbox folders with `_intake.md` context;
+  the UI can explicitly dispatch the vault inbox workflow for an upload.
+- Active milestone: **Milestone 8 — Commit, Health, Push Loop** (checklist to
+  create from the roadmap).
+- Checklist: Milestone 8 checklist creation is the next progress item.
 - App runnable: yes, with `SECOND_BRAIN_WEB_DATA_DIR` pointing at a private
   `0700` data root. Core DB schema at v10.
 
 ## Current Phase
-Milestone 7 — Quick Capture And Uploads
+Milestone 8 — Commit, Health, Push Loop
 
 ## Next step
-- Begin `m07-08`: end-to-end milestone deliverable check. The Upload tab now
-  posts files and intake context to the vault, reports the resulting path, and
-  offers an explicit Process inbox action; the backend expands the vault's real
-  inbox workflow into a high-trust agent session scoped to that intake.
+- Create the Milestone 8 checklist from phase 006, then start its first item.
 - SDK notes (m5a-01): provider ids map anthropic→anthropic, openai→openai-native,
   openai-compatible→openai-compatible; model config is `CoreModelConfig`
   (providerId/modelId/apiKey/baseUrl/headers); storage root is set via
