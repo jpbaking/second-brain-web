@@ -1,6 +1,6 @@
 # STATUS — single source of truth
 
-Updated: 2026-07-10 (milestone 12 in progress, 5/7)
+Updated: 2026-07-10 (milestone 12 in progress, 6/7)
 
 ## Where we are
 
@@ -77,10 +77,13 @@ Milestone 12 — Production Hardening (final milestone, not yet started)
 - Checklist: `docs/progress/milestones/milestone-12-production-hardening.md`.
 
 ## Next step
-- Begin `m12-06`: minimal smoke tests that boot the built app and exercise
-  health + login + an authenticated route. Could be a vitest that builds the
-  app (inject) covering the full auth handshake + one guarded route, or a script
-  that runs the container. Verification: `smoke.test.ts`.
+- Begin `m12-07` (milestone + roadmap deliverable): `npm run lint && npm test
+  && npm run build` plus a documented container cold-start against a persisted
+  data volume. The docker build + run + backup/restore cycles are already
+  proven (m12-01/03); m12-07 is the final all-green + a clean cold-start check.
+- m12-06 DONE: added `smoke.test.ts` — boots the app and walks health 200 →
+  guarded route 401 → full password+TOTP login → guarded route 200 with the
+  session. Verified `smoke.test.ts` (1) + full server suite (259) + lint/build.
 - m12-05 DONE: `buildApp` now takes a `logStream` seam and applies pino
   `redact` for `req.headers.cookie`/`authorization` (defence-in-depth; default
   serializer already omits headers/bodies). Verified `structured-logs.test.ts`
