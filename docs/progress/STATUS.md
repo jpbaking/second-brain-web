@@ -77,10 +77,12 @@ Milestone 12 — Production Hardening (final milestone, not yet started)
 - Checklist: `docs/progress/milestones/milestone-12-production-hardening.md`.
 
 ## Next step
-- Begin `m12-01` (see the milestone-12 checklist for the full breakdown of
-  Dockerfile/deploy guide, reverse-proxy + HTTPS notes, backup/restore docs,
-  secret permission checks, structured logs, smoke tests). Much of this is
-  ops/docs rather than app code.
+- Begin `m12-01`: multi-stage Dockerfile building `server` + `web`, running the
+  server with the data root on a volume. Check whether Docker is available in
+  this env first (`docker version`); if not, build the artifacts and keep the
+  Dockerfile copy-only, and journal which path was used. See the milestone-12
+  checklist for the full breakdown (deploy guide, backup/restore, secret perm
+  checks, structured logs, smoke tests). Much of this is ops/docs, not app code.
 - m10-06 DONE: added a Reindex button to `/search` (POST `/api/search/reindex`
   with a count notice, re-running the active query). Ran full lint/test/build
   (238) + a headless-Chrome deliverable e2e: searched "domain" across memory +
