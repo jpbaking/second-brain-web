@@ -1,6 +1,6 @@
 # STATUS — single source of truth
 
-Updated: 2026-07-10 (milestone 6 complete)
+Updated: 2026-07-10 (milestone 7 in progress, 3/8)
 
 ## Where we are
 
@@ -41,11 +41,10 @@ Updated: 2026-07-10 (milestone 6 complete)
 Milestone 7 — Quick Capture And Uploads
 
 ## Next step
-- Begin `m07-03`: Inbox intake wizard fields UI. (m07-02 done: `POST /api/capture`
-  routes a captured note through the agent — creates a high-trust chat session
-  and dispatches a filing instruction so facts land in `memory/` via the vault
-  workflow; the `library/` guard still applies. QuickCapture UI is now
-  functional end-to-end, verified live against LM Studio.)
+- Begin `m07-04`: file upload UI component and basic dropzone. The `/capture`
+  screen now keeps fast note capture in its own tab and provides an Upload tab
+  with the optional intake fields specified in phase 005: description, date,
+  urgency, related people/projects, desired handling, and secretary notes.
 - SDK notes (m5a-01): provider ids map anthropic→anthropic, openai→openai-native,
   openai-compatible→openai-compatible; model config is `CoreModelConfig`
   (providerId/modelId/apiKey/baseUrl/headers); storage root is set via
@@ -54,7 +53,9 @@ Milestone 7 — Quick Capture And Uploads
 ## Read before working
 
 - `docs/spike/findings.md` — m00-10 decisions (binding on implementation).
-- `docs/project-plan/phase-006-implementation-roadmap.md` — Milestone 5.
+- `docs/project-plan/phase-006-implementation-roadmap.md` — Milestone 7.
+- `docs/project-plan/phase-005-files-reports-and-derived-indexes.md` — upload
+  paths, intake fields, and companion metadata rules.
 - `docs/project-plan/master-plan.md` — hard rules, runtime layout, auth
   crypto, and secrets handling.
 - `docs/project-plan/phase-002-security-auth-and-secrets.md` — password,

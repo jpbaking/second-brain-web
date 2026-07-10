@@ -1,6 +1,7 @@
 import { useState } from 'react'
 
 export function QuickCapture () {
+  const [mode, setMode] = useState<'note' | 'upload'>('note')
   const [content, setContent] = useState('')
   const [saving, setSaving] = useState(false)
   const [message, setMessage] = useState<string | null>(null)
@@ -47,6 +48,31 @@ export function QuickCapture () {
       </header>
 
       <main className='action-card' aria-live='polite'>
+        <div className='tab-list' role='tablist' aria-label='Capture type'>
+          <button
+            type='button'
+            className={`tab${mode === 'note' ? ' active' : ''}`}
+            role='tab'
+            aria-selected={mode === 'note'}
+            aria-controls='note-capture-panel'
+            id='note-capture-tab'
+            onClick={() => setMode('note')}
+          >
+            Note
+          </button>
+          <button
+            type='button'
+            className={`tab${mode === 'upload' ? ' active' : ''}`}
+            role='tab'
+            aria-selected={mode === 'upload'}
+            aria-controls='upload-intake-panel'
+            id='upload-intake-tab'
+            onClick={() => setMode('upload')}
+          >
+            Upload
+          </button>
+        </div>
+
         {error !== null && (
           <div className='alert alert-danger' role='alert'>
             <span className='alert-title'>Error</span>
@@ -60,27 +86,100 @@ export function QuickCapture () {
           </div>
         )}
 
-        <form onSubmit={(e) => { handleSubmit(e).catch(() => {}) }} className='stack-2'>
-          <div className='field'>
-            <label htmlFor='capture-content' className='label'>Note</label>
-            <textarea
-              id='capture-content'
-              className='input'
-              value={content}
-              onChange={(e) => setContent(e.target.value)}
-              rows={5}
-              required
-              disabled={saving}
-              placeholder="What's on your mind?"
-            />
-          </div>
-          <div className='form-actions'>
-            <button type='submit' className='btn btn-primary' disabled={saving || !content.trim()}>
-              {saving ? 'Saving…' : 'Capture'}
-            </button>
-          </div>
-        </form>
+        {mode === 'note'
+          ? (
+            <form
+              id='note-capture-panel'
+              role='tabpanel'
+              aria-labelledby='note-capture-tab'
+              onSubmit={(e) => { handleSubmit(e).catch(() => {}) }}
+              className='stack-2'
+            >
+              <div className='field'>
+                <label htmlFor='capture-content' className='label'>Note</label>
+                <textarea
+                  id='capture-content'
+                  className='textarea'
+                  value={content}
+                  onChange={(e) => setContent(e.target.value)}
+                  rows={5}
+                  required
+                  disabled={saving}
+                  placeholder="What's on your mind?"
+                />
+              </div>
+              <div className='form-actions'>
+                <button type='submit' className='btn btn-primary' disabled={saving || !content.trim()}>
+                  {saving ? 'Saving…' : 'Capture'}
+                </button>
+              </div>
+            </form>
+            )
+          : <InboxIntakeFields />}
       </main>
     </div>
+  )
+}
+
+function InboxIntakeFields () {
+  return (
+    <section
+      id='upload-intake-panel'
+      className='tab-panel stack-3'
+      role='tabpanel'
+      aria-labelledby='upload-intake-tab'
+    >
+      <div>
+        <h2 className='card-title'>Intake details</h2>
+        <p className='card-description'>Add context for the secretary. All fields are optional.</p>
+      </div>
+
+      <div className='field'>
+        <label htmlFor='intake-description' className='label'>Short description</label>
+        <input id='intake-description' name='description' className='input' type='text' />
+      </div>
+
+      <div className='grid-2'>
+        <div className='field'>
+          <label htmlFor='intake-date' className='label'>Date received or created</label>
+          <input id='intake-date' name='date' className='input' type='date' />
+        </div>
+        <div className='field'>
+          <label htmlFor='intake-urgency' className='label'>Urgency</label>
+          <select id='intake-urgency' name='urgency' className='select' defaultValue='normal'>
+            <option value='low'>Low</option>
+            <option value='normal'>Normal</option>
+            <option value='high'>High</option>
+            <option value='urgent'>Urgent</option>
+          </select>
+        </div>
+      </div>
+
+      <div className='grid-2'>
+        <div className='field'>
+          <label htmlFor='intake-people' className='label'>Related people</label>
+          <input id='intake-people' name='people' className='input' type='text' />
+        </div>
+        <div className='field'>
+          <label htmlFor='intake-projects' className='label'>Related projects</label>
+          <input id='intake-projects' name='projects' className='input' type='text' />
+        </div>
+      </div>
+
+      <div className='field'>
+        <label htmlFor='intake-workflow' className='label'>Desired handling</label>
+        <select id='intake-workflow' name='workflow' className='select' defaultValue='process-inbox'>
+          <option value='process-inbox'>Process inbox</option>
+          <option value='create-report'>Create a report</option>
+          <option value='prep-meeting'>Prepare for a meeting</option>
+          <option value='file-later'>File for later</option>
+        </select>
+      </div>
+
+      <div className='field'>
+        <label htmlFor='intake-notes' className='label'>Notes for the secretary</label>
+        <textarea id='intake-notes' name='notes' className='textarea' rows={4} />
+      </div>
+    </section>
   )
 }
