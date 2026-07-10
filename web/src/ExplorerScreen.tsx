@@ -3,12 +3,23 @@ import { useEffect, useMemo, useState } from 'react'
 interface ExplorerEdge { from: string, to: string, label: string }
 interface ExplorerNode { path: string, area: string, degree: number }
 interface ExplorerGraph { areas: string[], nodes: ExplorerNode[], edges: ExplorerEdge[] }
+interface ExplorerNodeDetail {
+  path: string
+  area: string
+  title: string
+  exists: boolean
+  preview: string
+  outgoing: Array<{ to: string, label: string }>
+  incoming: Array<{ from: string, label: string }>
+}
 
 export function ExplorerScreen () {
   const [graph, setGraph] = useState<ExplorerGraph>({ areas: [], nodes: [], edges: [] })
   const [area, setArea] = useState('all')
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
+  const [selected, setSelected] = useState<string | null>(null)
+  const [detail, setDetail] = useState<ExplorerNodeDetail | null>(null)
 
   useEffect(() => {
     let active = true
@@ -27,6 +38,21 @@ export function ExplorerScreen () {
       .finally(() => { if (active) setLoading(false) })
     return () => { active = false }
   }, [area])
+
+  useEffect(() => {
+    if (selected === null) { setDetail(null); return }
+    let active = true
+    setDetail(null)
+    fetch(`/api/explorer/node?path=${encodeURIComponent(selected)}`)
+      .then(async response => {
+        if (response.status === 401) return window.location.assign('/login')
+        if (!response.ok) throw new Error('Could not load that page.')
+        const body = await response.json() as ExplorerNodeDetail
+        if (active) setDetail(body)
+      })
+      .catch(() => { if (active) setDetail(null) })
+    return () => { active = false }
+  }, [selected])
 
   // Outgoing links per node, so each node shows what it points at.
   const outgoing = useMemo(() => {
@@ -61,6 +87,56 @@ export function ExplorerScreen () {
           <p className='explorer-summary'>{graph.nodes.length} pages · {graph.edges.length} links</p>
         </div>
 
+        {selected !== null && (
+          <section className='explorer-detail' aria-label='Page detail'>
+            {detail === null
+              ? <p role='status'>Loading page…</p>
+              : (
+                <>
+                  <div className='explorer-detail-head'>
+                    <div>
+                      <span className='explorer-detail-title'>{detail.title}</span>
+                      <span className='explorer-path'>{detail.path}</span>
+                    </div>
+                    <button type='button' className='btn btn-ghost btn-sm' onClick={() => setSelected(null)}>Close</button>
+                  </div>
+                  {!detail.exists && <p className='explorer-missing'>This page is linked but does not exist yet.</p>}
+                  {detail.preview !== '' && <p className='explorer-detail-preview'>{detail.preview}</p>}
+                  <div className='explorer-detail-links'>
+                    <div>
+                      <h3 className='explorer-detail-heading'>Links to ({detail.outgoing.length})</h3>
+                      {detail.outgoing.length === 0
+                        ? <p className='explorer-missing'>Nothing.</p>
+                        : (
+                          <ul className='explorer-links'>
+                            {detail.outgoing.map(edge => (
+                              <li key={`out:${edge.to}:${edge.label}`} className='explorer-link'>
+                                → <button type='button' className='explorer-jump' onClick={() => setSelected(edge.to)}>{titleOf(edge.to)}</button> <span className='explorer-link-label'>{edge.label}</span>
+                              </li>
+                            ))}
+                          </ul>
+                          )}
+                    </div>
+                    <div>
+                      <h3 className='explorer-detail-heading'>Linked from ({detail.incoming.length})</h3>
+                      {detail.incoming.length === 0
+                        ? <p className='explorer-missing'>Nothing.</p>
+                        : (
+                          <ul className='explorer-links'>
+                            {detail.incoming.map(edge => (
+                              <li key={`in:${edge.from}:${edge.label}`} className='explorer-link'>
+                                ← <button type='button' className='explorer-jump' onClick={() => setSelected(edge.from)}>{titleOf(edge.from)}</button> <span className='explorer-link-label'>{edge.label}</span>
+                              </li>
+                            ))}
+                          </ul>
+                          )}
+                    </div>
+                  </div>
+                </>
+                )}
+          </section>
+        )}
+
         {error !== null && <div className='alert alert-danger' role='alert'><span>{error}</span></div>}
         {loading && <p role='status'>Loading explorer…</p>}
         {!loading && error === null && nodes.length === 0 && (
@@ -71,7 +147,7 @@ export function ExplorerScreen () {
             {nodes.map(node => (
               <li key={node.path} className='explorer-row'>
                 <div className='explorer-main'>
-                  <span className='explorer-title'>{titleOf(node.path)}</span>
+                  <button type='button' className='explorer-title' onClick={() => setSelected(node.path)}>{titleOf(node.path)}</button>
                   <span className='explorer-path'>{node.path}</span>
                   {(outgoing.get(node.path) ?? []).length > 0 && (
                     <ul className='explorer-links'>

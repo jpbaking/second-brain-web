@@ -1,6 +1,6 @@
 # STATUS — single source of truth
 
-Updated: 2026-07-10 (milestone 11 in progress, 4/6)
+Updated: 2026-07-10 (milestone 11 in progress, 5/6)
 
 ## Where we are
 
@@ -67,11 +67,16 @@ Milestone 11 — Explorer (not yet started)
 - Checklist: `docs/progress/milestones/milestone-11-explorer.md`.
 
 ## Next step
-- Begin `m11-05`: add area filters + a detail panel to the explorer (path,
-  title, latest dated entries, incoming/outgoing links). The area filter
-  already exists (m11-04); m11-05 adds selecting a node to open a detail panel
-  (may need a per-node API returning its links both directions + a text
-  preview). Verification: `explorer-api.test.ts -t "detail"` + web build.
+- Begin `m11-06`: milestone deliverable. Run `npm run lint && npm test &&
+  npm run build` plus a browser e2e proving visual exploration of memory/
+  library relationships and opening a node (filter by area → open a node →
+  follow a link via the detail panel). Everything is wired already.
+- m11-05 DONE: added `GET /api/explorer/node?path=` (path-confined, real-file
+  only) → `{path, area, title, exists, preview, outgoing, incoming}`; explorer
+  screen now opens a detail panel on node click (title, path, preview, Links
+  to / Linked from with jump buttons, dangling-target note, Close). Verified
+  `explorer-api.test.ts -t "detail"` (3) + full server suite (252) + web
+  lint/build + headless-Chrome e2e (open hub → 3 out/1 in, jump + close work).
 - m11-04 DONE: `web/src/ExplorerScreen.tsx` (`/explorer`, nav entry added) —
   fetches `/api/explorer`, area filter dropdown, `N pages · M links` summary,
   nodes sorted by degree with their outgoing `→ target label` links, area

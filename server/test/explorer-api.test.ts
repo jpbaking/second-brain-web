@@ -98,4 +98,34 @@ describe('explorer API', () => {
   it('builds an empty graph from no edges', () => {
     expect(buildGraph([], null)).toEqual({ areas: [], nodes: [], edges: [] })
   })
+
+  it('serves node detail with title, preview, and links in both directions', async () => {
+    const { app, cookie } = await fixture()
+    const detail = (await app.inject({ method: 'GET', url: '/api/explorer/node?path=memory/notes/index.md', headers: { cookie } })).json()
+
+    expect(detail).toMatchObject({ path: 'memory/notes/index.md', area: 'notes', title: 'Index', exists: true })
+    expect(detail.preview).toContain('Alice')
+    expect(detail.outgoing).toContainEqual({ to: 'memory/people/alice.md', label: 'Alice' })
+    expect(detail.outgoing).toContainEqual({ to: 'reports/2026/weekly.md', label: 'weekly' })
+    // Linked from the weekly report.
+    expect(detail.incoming).toContainEqual({ from: 'reports/2026/weekly.md', label: 'notes' })
+  })
+
+  it('reports a dangling link target in node detail as not existing', async () => {
+    const { app, cookie } = await fixture()
+    // apollo.md is linked from alice but never created on disk.
+    const detail = (await app.inject({ method: 'GET', url: '/api/explorer/node?path=memory/projects/apollo.md', headers: { cookie } })).json()
+    expect(detail).toMatchObject({ exists: false, title: 'apollo', preview: '' })
+    expect(detail.incoming).toContainEqual({ from: 'memory/people/alice.md', label: 'Apollo' })
+    expect(detail.outgoing).toEqual([])
+  })
+
+  it('rejects unsafe or missing paths in node detail', async () => {
+    const { app, cookie } = await fixture()
+    expect((await app.inject({ method: 'GET', url: '/api/explorer/node', headers: { cookie } })).statusCode).toBe(400)
+    expect((await app.inject({ method: 'GET', url: '/api/explorer/node?path=../etc/passwd', headers: { cookie } })).statusCode).toBe(400)
+    expect((await app.inject({ method: 'GET', url: '/api/explorer/node?path=/etc/passwd', headers: { cookie } })).statusCode).toBe(400)
+    // Detail requires authentication too.
+    expect((await app.inject({ method: 'GET', url: '/api/explorer/node?path=memory/notes/index.md' })).statusCode).toBe(401)
+  })
 })
