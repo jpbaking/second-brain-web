@@ -7,6 +7,7 @@ import { CommandCenter } from './CommandCenter.js'
 import { QuickCapture } from './QuickCapture.js'
 import { ReportsScreen } from './ReportsScreen.js'
 import { FollowUpsScreen } from './FollowUpsScreen.js'
+import { SearchScreen } from './SearchScreen.js'
 import { AppShell } from './AppShell.js'
 
 interface SystemStatus {
@@ -59,6 +60,8 @@ function routedScreen (path: string) {
       return <FollowUpsScreen />
     case '/reports':
       return <ReportsScreen />
+    case '/search':
+      return <SearchScreen />
     default: return <CommandCenter />
   }
 }

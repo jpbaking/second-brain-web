@@ -15,6 +15,7 @@ const NAV_ITEMS: NavItem[] = [
   { href: '/capture', label: 'Capture', short: 'Capture' },
   { href: '/follow-ups', label: 'Follow-ups', short: 'Queue' },
   { href: '/reports', label: 'Reports', short: 'Reports' },
+  { href: '/search', label: 'Search', short: 'Search' },
   { href: '/vault', label: 'Vault', short: 'Vault' },
   { href: '/providers', label: 'Providers', short: 'Models' },
 ]

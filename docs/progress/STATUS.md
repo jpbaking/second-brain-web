@@ -1,6 +1,6 @@
 # STATUS — single source of truth
 
-Updated: 2026-07-10 (milestone 10 in progress, 3/6)
+Updated: 2026-07-10 (milestone 10 in progress, 4/6)
 
 ## Where we are
 
@@ -58,12 +58,16 @@ Milestone 10 — Derived Search (not yet started)
 - Checklist: `docs/progress/milestones/milestone-10-derived-search.md`.
 
 ## Next step
-- Begin `m10-04`: responsive search screen wired into the shell nav (query
-  box, ranked results with snippet/kind/path/date, empty+loading states). API:
-  `GET /api/search?q=&kind=` → `{ query, count, results:[{path,kind,title,
-  mtime,snippet}] }`; snippet marks matches with `[` `]`. Add a nav entry +
-  route in `web/src/App.tsx`/`AppShell.tsx`. Verification: web lint+build +
-  responsive visual.
+- Begin `m10-05`: rebuild the index on demand and after vault changes. Add a
+  rebuild entry point (scan + `buildSearchIndex` on the sidecar) and call it
+  after mutating flows (commit/upload) + expose a manual trigger; ensure no
+  stale rows. Verification: `search-rebuild.test.ts`.
+- m10-04 DONE: `web/src/SearchScreen.tsx` (`/search`, nav entry added) — a
+  debounced query box + kind filter hitting `/api/search`, ranked results with
+  a `<mark>`-highlighted snippet (split on the API's `[ ]` markers), title,
+  path, kind badge, date; empty/loading/error states. Verified web lint+build
+  and a real headless-Chrome e2e (typed "domain" → 4 ranked hits, highlight
+  present, Search nav present, no overflow at 390/1280).
 - m10-03 DONE: guarded `GET /api/search?q=&kind=` (`server/src/search/
   routes.ts`, wired in app.ts) tokenises input into safe `"tok"*` prefix terms
   (implicit AND, FTS operators can't reach the matcher), queries `vault_search`
@@ -109,6 +113,11 @@ Milestone 10 — Derived Search (not yet started)
   was needed.)
 
 ## Known issues / parked TODOs
+
+- Top nav now has 8 items (added Search): at ~1280 the desktop labels wrap to
+  two lines and the mobile bottom-nav labels are tight (Models near the edge).
+  Page has no horizontal overflow, but the nav wants a density pass (overflow
+  menu / horizontal scroll / shorter labels) — do as its own UI task.
 
 - Follow-up item `text` keeps the inline `source: [label](path)` markdown, so
   it shows raw in the queue row (the resolved link is also shown separately as
