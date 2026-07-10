@@ -1,6 +1,6 @@
 # STATUS — single source of truth
 
-Updated: 2026-07-10 (milestone 10 COMPLETE 6/6; next: milestone 11)
+Updated: 2026-07-10 (milestone 11 in progress, 1/6)
 
 ## Where we are
 
@@ -67,11 +67,18 @@ Milestone 11 — Explorer (not yet started)
 - Checklist: `docs/progress/milestones/milestone-11-explorer.md`.
 
 ## Next step
-- Begin `m11-01`: extract links from vault markdown (memory, catalogue, report
-  sources) into typed edges (from_path/to_path/label), resolving vault-relative
-  targets and dropping external/escaping links. Reuse the `resolveLinkedSource`
-  pattern in `server/src/follow-ups/parse.ts` and the `scanSearchRecords`
-  walk. Verification: `explorer-links.test.ts`.
+- Begin `m11-02`: persist the link graph in the sidecar (`vault_links` table:
+  from_path/to_path/label) with a deterministic (re)build from
+  `extractVaultLinks()` (`server/src/explorer/links.ts`), and fold it into the
+  existing search reindex so `rebuildSearchIndex`/`reindexAfterVaultChange`
+  also refresh links. Add a sidecar migration v3. Verification:
+  `explorer-graph.test.ts`.
+- m11-01 DONE: `extractVaultLinks(workspace)` (`server/src/explorer/links.ts`)
+  reuses `scanSearchRecords` text and pulls inline markdown links (excludes
+  images), resolving each relative to its source file; drops external/absolute/
+  backslash/anchor-only/vault-escaping targets, strips fragments, dedupes exact
+  edges, sorts by from/to/label. Verified `explorer-links.test.ts` (3) +
+  server lint/build.
 - m10-06 DONE: added a Reindex button to `/search` (POST `/api/search/reindex`
   with a count notice, re-running the active query). Ran full lint/test/build
   (238) + a headless-Chrome deliverable e2e: searched "domain" across memory +
