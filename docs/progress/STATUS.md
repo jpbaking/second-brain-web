@@ -1,6 +1,6 @@
 # STATUS — single source of truth
 
-Updated: 2026-07-10 (milestone 11 in progress, 5/6)
+Updated: 2026-07-10 (milestone 11 COMPLETE 6/6)
 
 ## Where we are
 
@@ -58,52 +58,29 @@ Updated: 2026-07-10 (milestone 11 in progress, 5/6)
   (`POST /api/search/reindex`) and after commit/sync. Verified full
   lint/test/build (238 tests) + a real headless-Chrome e2e (search memory +
   reports, open a report hit → 200 content, reindex picks up a new file).
+- **Milestone 11 — Explorer: COMPLETE (6/6).** Link extraction
+  (`extractVaultLinks`), persisted `vault_links` graph (sidecar v3, rebuilt via
+  `rebuildVaultIndexes` on the search reindex triggers), guarded
+  `GET /api/explorer?area=` (nodes+edges+areas) and `GET /api/explorer/node`
+  (path-confined detail: title/preview/exists + incoming+outgoing), and the
+  responsive `/explorer` screen: area filter, degree-sorted node list with
+  outgoing links, and a click-to-open detail panel with jump-between-nodes and
+  dangling-target notes. Verified full lint/test/build (252 tests) + a
+  headless-Chrome e2e (explore → filter → open node → follow link → dangling
+  target).
 - App runnable: yes, with `SECOND_BRAIN_WEB_DATA_DIR` pointing at a private
   `0700` data root. Core DB schema at v10; sidecar (`indexes/vault.sqlite`)
   at v3 (FTS5 `vault_search` + `vault_links` graph table).
 
 ## Current Phase
-Milestone 11 — Explorer (not yet started)
-- Checklist: `docs/progress/milestones/milestone-11-explorer.md`.
+Milestone 12 — Production Hardening (final milestone, not yet started)
+- Checklist: `docs/progress/milestones/milestone-12-production-hardening.md`.
 
 ## Next step
-- Begin `m11-06`: milestone deliverable. Run `npm run lint && npm test &&
-  npm run build` plus a browser e2e proving visual exploration of memory/
-  library relationships and opening a node (filter by area → open a node →
-  follow a link via the detail panel). Everything is wired already.
-- m11-05 DONE: added `GET /api/explorer/node?path=` (path-confined, real-file
-  only) → `{path, area, title, exists, preview, outgoing, incoming}`; explorer
-  screen now opens a detail panel on node click (title, path, preview, Links
-  to / Linked from with jump buttons, dangling-target note, Close). Verified
-  `explorer-api.test.ts -t "detail"` (3) + full server suite (252) + web
-  lint/build + headless-Chrome e2e (open hub → 3 out/1 in, jump + close work).
-- m11-04 DONE: `web/src/ExplorerScreen.tsx` (`/explorer`, nav entry added) —
-  fetches `/api/explorer`, area filter dropdown, `N pages · M links` summary,
-  nodes sorted by degree with their outgoing `→ target label` links, area
-  badges, empty/loading/error states. Verified web lint+build + headless-Chrome
-  e2e (6 nodes, hub "index" degree 4 first, 7 link lines, area filter →
-  people=5 nodes, Explorer nav present, no overflow at 390/1280).
-- m11-03 DONE: guarded `GET /api/explorer?area=` (`server/src/explorer/
-  routes.ts`, wired in app.ts) reads `vault_links` and returns
-  `{areas, nodes:[{path,area,degree}], edges:[{from,to,label}]}`. `areaOf()`
-  maps a path to a memory subfolder / library / reports; `?area=` narrows to
-  edges touching that area (areas list stays whole-graph). Verified
-  `explorer-api.test.ts` (5: auth, full graph incl. degree, area filter,
-  areaOf, empty) + full server suite (249) + lint/build.
-- m11-02 DONE: sidecar migration v3 adds `vault_links (from_path, to_path,
-  label)` + from/to indexes. `buildLinkGraph`/`rebuildLinkGraph`
-  (`server/src/explorer/graph.ts`) clear+reinsert in one txn (deterministic, no
-  stale edges). New `rebuildVaultIndexes(dataDir)` rebuilds search + links
-  together; `reindexAfterVaultChange` and `POST /api/search/reindex` (now
-  returns `{count, links}`) use it. Updated migrations/status assertions to
-  sidecar v3. Verified `explorer-graph.test.ts` (3) + full server suite (244) +
-  lint/build.
-- m11-01 DONE: `extractVaultLinks(workspace)` (`server/src/explorer/links.ts`)
-  reuses `scanSearchRecords` text and pulls inline markdown links (excludes
-  images), resolving each relative to its source file; drops external/absolute/
-  backslash/anchor-only/vault-escaping targets, strips fragments, dedupes exact
-  edges, sorts by from/to/label. Verified `explorer-links.test.ts` (3) +
-  server lint/build.
+- Begin `m12-01` (see the milestone-12 checklist for the full breakdown of
+  Dockerfile/deploy guide, reverse-proxy + HTTPS notes, backup/restore docs,
+  secret permission checks, structured logs, smoke tests). Much of this is
+  ops/docs rather than app code.
 - m10-06 DONE: added a Reindex button to `/search` (POST `/api/search/reindex`
   with a count notice, re-running the active query). Ran full lint/test/build
   (238) + a headless-Chrome deliverable e2e: searched "domain" across memory +
