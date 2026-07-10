@@ -1,6 +1,6 @@
 # STATUS — single source of truth
 
-Updated: 2026-07-10 (milestone 8 ready, 0/6)
+Updated: 2026-07-10 (milestone 8 in progress, 1/6)
 
 ## Where we are
 
@@ -46,9 +46,9 @@ Updated: 2026-07-10 (milestone 8 ready, 0/6)
 Milestone 8 — Commit, Health, Push Loop
 
 ## Next step
-- Begin `m08-01`: detect changed files after mutating workflows and expose the
-  review state. Existing m06 review/commit code is the baseline; Milestone 8
-  adds the required health-gated orchestration and explicit failure states.
+- Begin `m08-02`: make vault health a required pre-commit gate. Review now asks
+  git for every untracked file (not collapsed directories), and its diff summary
+  includes new originals that `git diff HEAD --stat` cannot see.
 - SDK notes (m5a-01): provider ids map anthropic→anthropic, openai→openai-native,
   openai-compatible→openai-compatible; model config is `CoreModelConfig`
   (providerId/modelId/apiKey/baseUrl/headers); storage root is set via

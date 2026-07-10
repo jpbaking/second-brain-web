@@ -44,7 +44,7 @@ export async function readGitStatus (workspacePath: string, options: GitStatusOp
   const branch = await runGit(['-C', workspacePath, 'rev-parse', '--abbrev-ref', 'HEAD'])
   const commit = await runGit(['-C', workspacePath, 'rev-parse', 'HEAD'])
   const subject = await runGit(['-C', workspacePath, 'log', '-1', '--pretty=%s'])
-  const status = await runGit(['-C', workspacePath, 'status', '--porcelain'])
+  const status = await runGit(['-C', workspacePath, 'status', '--porcelain', '--untracked-files=all'])
 
   // Porcelain v1: two status chars, a space, then the path.
   const changedFiles = status.stdout
@@ -54,8 +54,18 @@ export async function readGitStatus (workspacePath: string, options: GitStatusOp
 
   let diffSummary: string | null = null
   if (options.includeDiff === true && changedFiles.length > 0) {
-    const diff = await runGit(['-C', workspacePath, 'diff', 'HEAD', '--stat'])
-    if (diff.code === 0) diffSummary = diff.stdout.trim()
+    const [diff, untracked] = await Promise.all([
+      runGit(['-C', workspacePath, 'diff', 'HEAD', '--stat']),
+      runGit(['-C', workspacePath, 'ls-files', '--others', '--exclude-standard']),
+    ])
+    if (diff.code === 0 && untracked.code === 0) {
+      const parts = [diff.stdout.trim()]
+      const newFiles = untracked.stdout.split('\n').filter(Boolean)
+      if (newFiles.length > 0) {
+        parts.push(newFiles.map(file => `${file} | new file`).join('\n'))
+      }
+      diffSummary = parts.filter(Boolean).join('\n')
+    }
   }
 
   return {
