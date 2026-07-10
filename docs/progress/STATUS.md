@@ -1,6 +1,6 @@
 # STATUS — single source of truth
 
-Updated: 2026-07-10 (milestone 12 COMPLETE 7/7 — roadmap implementation complete)
+Updated: 2026-07-11 (milestone 13 COMPLETE 4/4 — local build/run UX via compose-helper)
 
 ## Where we are
 
@@ -81,10 +81,20 @@ production hardening (Docker, deploy + backup docs, secret-perm checks,
 structured logs, smoke + cold-start verification).
 
 ## Next step
-- No roadmap milestones remain. Options for a future session: work the parked
-  TODOs below (nav density, slim the 1.28GB image, raw-markdown display), or
-  take direction from the principal on post-MVP work (phase-005 stretch goals:
-  embeddings/semantic search, source-coverage view, memory-explorer graph viz).
+- No milestones remain queued. **Milestone 13 (principal-directed) COMPLETE:**
+  compose-helper (`./compose-helper.sh up`) is the primary local build/run path
+  (committed `compose-helper.sh` + `compose-helper.env` + `docker-compose.yaml`
+  + `.env.example`; README quick start rewritten; deployment.md points at it),
+  and the dev servers are proxy-frontable via `SECOND_BRAIN_WEB_HOST` +
+  `SECOND_BRAIN_WEB_DEV_ALLOWED_HOSTS` (vite on PORT, API on PORT+1). Verified
+  with a clean-slate compose cycle incl. a real HTTP login, and a dev-server
+  boot on a configured port.
+- Also repaired: `follow-ups-api.test.ts` fixture dates now derive from the
+  current date (the hardcoded 2026-07-10 "Today" rotted when the clock passed
+  it).
+- Options for a future session: parked TODOs below (nav density, slim the
+  1.28GB image, raw-markdown display), or principal direction on post-MVP work
+  (phase-008 backlog: semantic search, source-coverage view, scheduled briefs…).
 - m12-07 DONE: full `npm run lint && npm test && npm run build` green (259
   tests) + a real cold-start durability check: built the image, booted on a
   named volume, `reset-auth`, then a real HTTP login (password→TOTP→session→
