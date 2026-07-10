@@ -1,6 +1,6 @@
 # STATUS — single source of truth
 
-Updated: 2026-07-10 (milestone 10 in progress, 2/6)
+Updated: 2026-07-10 (milestone 10 in progress, 3/6)
 
 ## Where we are
 
@@ -58,11 +58,18 @@ Milestone 10 — Derived Search (not yet started)
 - Checklist: `docs/progress/milestones/milestone-10-derived-search.md`.
 
 ## Next step
-- Begin `m10-03`: authenticated search API over the FTS index — query
-  `vault_search` (MATCH), return ranked hits with `snippet(...)`, path, kind,
-  title, mtime. Guard like other `/api/` routes; use `buildSearchIndex` /
-  `searchIndexCount` in `server/src/search/index-build.ts` and `openSidecarDb`.
-  Verification: `search-api.test.ts`.
+- Begin `m10-04`: responsive search screen wired into the shell nav (query
+  box, ranked results with snippet/kind/path/date, empty+loading states). API:
+  `GET /api/search?q=&kind=` → `{ query, count, results:[{path,kind,title,
+  mtime,snippet}] }`; snippet marks matches with `[` `]`. Add a nav entry +
+  route in `web/src/App.tsx`/`AppShell.tsx`. Verification: web lint+build +
+  responsive visual.
+- m10-03 DONE: guarded `GET /api/search?q=&kind=` (`server/src/search/
+  routes.ts`, wired in app.ts) tokenises input into safe `"tok"*` prefix terms
+  (implicit AND, FTS operators can't reach the matcher), queries `vault_search`
+  ordered by rank, returns hits with `snippet(-1,'[',']','…',12)`. 400 on empty
+  q / bad kind; optional `kind` filter. Verified `search-api.test.ts` (5) +
+  full server suite (236) + lint/build.
 - m10-02 DONE: sidecar migration v2 adds FTS5 `vault_search (path, title, body,
   kind UNINDEXED, mtime UNINDEXED)`; `buildSearchIndex(db, records)` clears +
   reinserts in one transaction (deterministic, no dup on rebuild) and stamps
