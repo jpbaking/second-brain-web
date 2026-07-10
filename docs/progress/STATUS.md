@@ -1,6 +1,6 @@
 # STATUS — single source of truth
 
-Updated: 2026-07-10 (milestone 9 in progress, 4/6)
+Updated: 2026-07-10 (milestone 9 in progress, 5/6)
 
 ## Where we are
 
@@ -48,9 +48,9 @@ Updated: 2026-07-10 (milestone 9 in progress, 4/6)
 Milestone 9 — Report Browser
 
 ## Next step
-- Begin `m09-05`: add recent report metadata/actions to the command centre.
-  HTML is served inline and opens in a new tab; PDF/Markdown are authenticated
-  attachment downloads with sanitised filenames and explicit shelf actions.
+- Begin `m09-06`: report-browser deliverable check. The command centre now uses
+  the canonical scanner for five recent report metadata records and renders the
+  newest three with direct authenticated Open/Download actions.
 - SDK notes (m5a-01): provider ids map anthropic→anthropic, openai→openai-native,
   openai-compatible→openai-compatible; model config is `CoreModelConfig`
   (providerId/modelId/apiKey/baseUrl/headers); storage root is set via

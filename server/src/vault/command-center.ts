@@ -1,8 +1,10 @@
-import { existsSync, readdirSync, statSync } from 'node:fs'
+import { existsSync, readdirSync } from 'node:fs'
 import path from 'node:path'
 import { readVaultConfig, vaultWorkspacePath } from './config.js'
 import { readGitStatus } from './git-status.js'
 import { readLock } from './lock.js'
+import { scanReports } from '../reports/scan.js'
+import type { ReportMetadata } from '../reports/scan.js'
 import type { GitStatus } from './git-status.js'
 import type { LockState } from './lock.js'
 import type { DatabaseSync } from 'node:sqlite'
@@ -32,12 +34,10 @@ export interface CommandCenter {
   health: HealthSummary | null
   lock: LockState
   inboxBacklog: number
-  recentReports: string[]
+  recentReports: ReportMetadata[]
   reminders: never[]
   commitments: never[]
 }
-
-const REPORT_EXT = /\.(html|pdf|md)$/i
 
 function countFiles (dir: string): number {
   if (!existsSync(dir)) return 0
@@ -47,22 +47,6 @@ function countFiles (dir: string): number {
     else if (entry.isFile()) count += 1
   }
   return count
-}
-
-function listRecentReports (dir: string, limit = 5): string[] {
-  if (!existsSync(dir)) return []
-  const files: Array<{ rel: string, mtime: number }> = []
-  const walk = (current: string): void => {
-    for (const entry of readdirSync(current, { withFileTypes: true })) {
-      const full = path.join(current, entry.name)
-      if (entry.isDirectory()) walk(full)
-      else if (entry.isFile() && REPORT_EXT.test(entry.name)) {
-        files.push({ rel: path.relative(dir, full), mtime: statSync(full).mtimeMs })
-      }
-    }
-  }
-  walk(dir)
-  return files.sort((a, b) => b.mtime - a.mtime).slice(0, limit).map((f) => f.rel)
 }
 
 function parseHealth (raw: string | null): HealthSummary | null {
@@ -90,7 +74,7 @@ export async function readCommandCenter (db: DatabaseSync, dataDir: string): Pro
     health: parseHealth(cfg.lastHealth),
     lock: readLock(db),
     inboxBacklog: countFiles(path.join(workspace, 'inbox')),
-    recentReports: listRecentReports(path.join(workspace, 'reports')),
+    recentReports: scanReports(workspace).slice(0, 5),
     reminders: [],
     commitments: [],
   }

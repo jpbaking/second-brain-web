@@ -11,6 +11,7 @@ interface GitStatus {
 }
 interface LockState { held: boolean, stale: boolean, lock: { operation: string | null } | null }
 interface HealthSummary { available: boolean, issueCount: number | null, ranAt: string }
+interface RecentReport { path: string, title: string, type: 'html' | 'pdf' | 'markdown', date: string }
 
 interface CommandCenterData {
   vault: { configured: boolean, cloned: boolean, branch: string, commit: string | null }
@@ -18,7 +19,7 @@ interface CommandCenterData {
   health: HealthSummary | null
   lock: LockState
   inboxBacklog: number
-  recentReports: string[]
+  recentReports: RecentReport[]
   reminders: never[]
   commitments: never[]
 }
@@ -124,9 +125,38 @@ export function CommandCenter () {
               <dl className='data-list'>
                 <Row label='Inbox backlog' value={String(data.inboxBacklog)} />
                 <Row label='Health issues' value={data.health === null ? 'not run' : String(data.health.issueCount ?? 'unknown')} />
-                <Row label='Recent reports' value={data.recentReports.length === 0 ? 'none' : data.recentReports.slice(0, 3).join(', ')} />
+                <Row label='Recent reports' value={data.recentReports.length === 0 ? 'none' : String(data.recentReports.length)} />
               </dl>
             </section>
+
+            {data.recentReports.length > 0 && (
+              <section className='stack-2' aria-labelledby='recent-reports-title'>
+                <div className='section-head'>
+                  <h2 id='recent-reports-title' className='card-title'>Recent reports</h2>
+                  <a href='/reports'>View all</a>
+                </div>
+                <ul className='report-list'>
+                  {data.recentReports.slice(0, 3).map(report => (
+                    <li className='report-row recent-report-row' key={report.path}>
+                      <div className='report-main'>
+                        <span className='report-title'>{report.title}</span>
+                        <span className='report-path'>{report.path}</span>
+                      </div>
+                      <span className='badge'>{report.type === 'markdown' ? 'MD' : report.type.toUpperCase()}</span>
+                      <time dateTime={report.date}>{report.date}</time>
+                      <a
+                        className='btn btn-secondary btn-sm report-action'
+                        href={`/api/reports/content/${report.path.split('/').map(encodeURIComponent).join('/')}`}
+                        target={report.type === 'html' ? '_blank' : undefined}
+                        rel={report.type === 'html' ? 'noreferrer' : undefined}
+                      >
+                        {report.type === 'html' ? 'Open' : 'Download'}
+                      </a>
+                    </li>
+                  ))}
+                </ul>
+              </section>
+            )}
           </>
         )}
       </main>

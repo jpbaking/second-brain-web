@@ -95,6 +95,10 @@
   border-bottom: 1px solid var(--line);
 }
 
+.recent-report-row {
+  grid-template-columns: minmax(0, 1fr) auto 100px auto;
+}
+
 .report-main {
   min-width: 0;
   display: flex;
@@ -163,6 +167,10 @@
   .report-row {
     grid-template-columns: minmax(0, 1fr) auto;
     gap: var(--space-2);
+  }
+
+  .recent-report-row {
+    grid-template-columns: minmax(0, 1fr) auto;
   }
 
   .report-row time,
