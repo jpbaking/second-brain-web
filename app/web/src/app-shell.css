@@ -1,18 +1,234 @@
 /*
- * App-shell layout only (responsive navigation). Uses lazyway design tokens;
- * no colours or type are redefined. The vendored kit has no mobile nav, so the
- * shell hides the desktop links below the breakpoint and shows a fixed bottom
- * bar instead.
+ * App-shell layout (milestone 16: chat-first). Uses lazyway design tokens; no
+ * colours or type are redefined. A persistent left sidebar (New chat, recent
+ * chats, secondary nav) on wide viewports becomes an off-canvas drawer behind
+ * a slim top bar below the breakpoint.
  */
 
-.nav-right {
+.shell {
+  display: grid;
+  grid-template-columns: 280px minmax(0, 1fr);
+  min-height: 100vh;
+}
+
+.sidebar {
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  padding: var(--space-3);
+  background: var(--surface);
+  border-right: 1px solid var(--line);
+}
+
+.sidebar-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.sidebar-brand {
   display: flex;
   align-items: center;
   gap: var(--space-2);
+  color: var(--ink);
+  font-weight: var(--fw-semibold);
+  text-decoration: none;
 }
 
-.mobile-nav {
+.sidebar-brand img {
+  width: 24px;
+}
+
+.sidebar-dismiss {
   display: none;
+  background: none;
+  border: none;
+  font-size: 22px;
+  line-height: 1;
+  color: var(--muted);
+  cursor: pointer;
+}
+
+.sidebar-new-chat {
+  text-align: center;
+  text-decoration: none;
+}
+
+.sidebar-heading {
+  margin: 0 0 var(--space-1);
+  font-family: var(--font-mono);
+  font-size: var(--ui-kicker);
+  letter-spacing: var(--track-label);
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.sidebar-recents {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow-y: auto;
+}
+
+.sidebar-recents ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.sidebar-empty {
+  margin: 0;
+  color: var(--muted);
+  font-size: var(--ui-small);
+}
+
+.sidebar-chat {
+  display: block;
+  padding: 6px 8px;
+  border-radius: var(--radius-sm);
+  color: var(--ink);
+  text-decoration: none;
+  font-size: var(--ui-small);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.sidebar-chat:hover {
+  background: var(--base);
+}
+
+.sidebar-chat.is-active {
+  background: var(--base);
+  font-weight: var(--fw-semibold);
+}
+
+.sidebar-nav {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding-top: var(--space-2);
+  border-top: 1px solid var(--line);
+}
+
+.sidebar-link {
+  display: block;
+  width: 100%;
+  padding: 6px 8px;
+  border-radius: var(--radius-sm);
+  color: var(--muted);
+  text-decoration: none;
+  font-size: var(--ui-small);
+  text-align: left;
+}
+
+.sidebar-link:hover {
+  color: var(--ink);
+  background: var(--base);
+}
+
+.sidebar-link.is-active {
+  color: var(--ink);
+  background: var(--base);
+  font-weight: var(--fw-semibold);
+}
+
+.sidebar-signout {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font: inherit;
+}
+
+.shell-main {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.shell-topbar {
+  display: none;
+}
+
+.shell-content {
+  flex: 1 1 auto;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.shell-content > * {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.shell-scrim {
+  display: none;
+}
+
+@media (max-width: 1023px) {
+  .shell {
+    grid-template-columns: 1fr;
+  }
+
+  .sidebar {
+    position: fixed;
+    inset: 0 auto 0 0;
+    width: min(300px, 85vw);
+    z-index: 210;
+    transform: translateX(-100%);
+    transition: transform 0.2s ease;
+    box-shadow: 4px 0 24px rgb(20 23 38 / 18%);
+  }
+
+  .sidebar.is-open {
+    transform: none;
+  }
+
+  .sidebar-dismiss {
+    display: block;
+  }
+
+  .shell-scrim {
+    display: block;
+    position: fixed;
+    inset: 0;
+    z-index: 200;
+    background: rgb(20 23 38 / 45%);
+  }
+
+  .shell-topbar {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    padding: 10px var(--space-3);
+    background: var(--base);
+    border-bottom: 1px solid var(--line);
+  }
+
+  .shell-menu {
+    background: none;
+    border: none;
+    font-size: 20px;
+    line-height: 1;
+    cursor: pointer;
+    color: var(--ink);
+  }
+
+  .shell-topbar-brand {
+    color: var(--ink);
+    font-weight: var(--fw-semibold);
+    text-decoration: none;
+  }
 }
 
 .upload-dropzone {
@@ -536,46 +752,5 @@
 
   .report-action {
     width: fit-content;
-  }
-  .app-nav-links {
-    display: none;
-  }
-
-  .mobile-nav {
-    display: flex;
-    position: fixed;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    z-index: 100;
-    background: var(--base);
-    border-top: 1px solid var(--line);
-    justify-content: space-around;
-  }
-
-  .mobile-nav a {
-    flex: 1 1 0;
-    min-height: 52px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 8px 4px;
-    font-family: var(--font-mono);
-    font-size: 11px;
-    letter-spacing: var(--track-label);
-    text-transform: uppercase;
-    text-decoration: none;
-    color: var(--muted);
-    border-top: 2px solid transparent;
-  }
-
-  .mobile-nav a.active {
-    color: var(--brand-blue);
-    border-top-color: var(--accent-amber);
-  }
-
-  /* Keep page content clear of the fixed bottom bar. */
-  body {
-    padding-bottom: 60px;
   }
 }

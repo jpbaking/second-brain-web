@@ -55,7 +55,7 @@ function routedScreen (path: string) {
   switch (path) {
     case '/vault': return <VaultSettings />
     case '/providers': return <ProviderSettings />
-    case '/chat': return <ChatScreen />
+    case '/command-centre': return <CommandCenter />
     case '/capture': return <QuickCapture />
     case '/follow-ups':
       return <FollowUpsScreen />
@@ -65,8 +65,18 @@ function routedScreen (path: string) {
       return <SearchScreen />
     case '/explorer':
       return <ExplorerScreen />
-    default: return <CommandCenter />
+    default:
+      // Chat is the landing surface: `/`, `/chat`, `/chat/new`, `/chat/:id`.
+      return <ChatScreen mode={chatMode(path)} />
   }
+}
+
+/** Landing behaviour: last active chat, an explicit chat, or a fresh one. */
+function chatMode (path: string): { kind: 'auto' } | { kind: 'new' } | { kind: 'session', id: string } {
+  if (path === '/chat/new') return { kind: 'new' }
+  const match = /^\/chat\/([^/]+)$/.exec(path)
+  if (match !== null && match[1] !== undefined) return { kind: 'session', id: match[1] }
+  return { kind: 'auto' }
 }
 
 function StatusPage () {

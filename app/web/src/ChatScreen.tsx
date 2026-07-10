@@ -61,7 +61,9 @@ function toTranscript (events: ChatEvent[]): { lines: Line[], approvals: Pending
 
 interface LockState { held: boolean, stale: boolean, lock: { sessionId: string | null, operation: string | null } | null }
 
-export function ChatScreen () {
+export type ChatMode = { kind: 'auto' } | { kind: 'new' } | { kind: 'session', id: string }
+
+export function ChatScreen ({ mode }: { mode: ChatMode }) {
   const [sessions, setSessions] = useState<ChatSession[]>([])
   const [providers, setProviders] = useState<ProviderProfile[]>([])
   const [workflows, setWorkflows] = useState<string[]>([])
@@ -74,19 +76,33 @@ export function ChatScreen () {
   const [lockState, setLockState] = useState<LockState | null>(null)
   const streamAbort = useRef<AbortController | null>(null)
 
-  const loadSessions = useCallback(async () => {
+  const loadSessions = useCallback(async (): Promise<ChatSession[]> => {
     const res = await getJson('/api/chat/sessions')
-    if (res.status === 401) { window.location.assign('/login'); return }
-    if (res.ok) setSessions((await res.json() as { sessions: ChatSession[] }).sessions)
+    if (res.status === 401) { window.location.assign('/login'); return [] }
+    if (!res.ok) return []
+    const list = (await res.json() as { sessions: ChatSession[] }).sessions
+    setSessions(list)
+    return list
   }, [])
 
   useEffect(() => {
-    loadSessions().catch(() => setError('Could not load chats.'))
+    // Landing behaviour: an explicit session streams directly; auto mode opens
+    // the most recently active chat (rewriting the URL) or falls through to
+    // the new-chat state; `new` always starts fresh.
+    loadSessions().then(list => {
+      if (mode.kind === 'session') {
+        selectSession(mode.id)
+      } else if (mode.kind === 'auto' && list.length > 0 && list[0] !== undefined) {
+        window.history.replaceState(null, '', `/chat/${list[0].id}`)
+        window.dispatchEvent(new Event('chats-changed'))
+        selectSession(list[0].id)
+      }
+    }).catch(() => setError('Could not load chats.'))
     getJson('/api/providers').then(async r => r.ok ? (await r.json() as { profiles: ProviderProfile[] }).profiles : [])
       .then(setProviders).catch(() => {})
     getJson('/api/chat/workflows').then(async r => r.ok ? (await r.json() as { workflows: string[] }).workflows : [])
       .then(setWorkflows).catch(() => {})
-  }, [loadSessions])
+  }, [loadSessions]) // mode is stable per page load (no client-side router)
 
   // Stream events for the active session (replay + live) via a fetch stream.
   const openStream = useCallback((id: string) => {
