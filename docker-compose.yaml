@@ -12,7 +12,9 @@
 services:
   second-brain-web:
     build:
-      context: .
+      # The app source (and its Dockerfile) live under app/; docs and
+      # compose-related files at the repo root stay out of the build context.
+      context: ./app
     image: second-brain-web
     restart: unless-stopped
     ports:

@@ -1,10 +1,8 @@
 # Keep the build context small and force a clean install/build in the image.
+# The context is the app/ directory (see docker-compose.yaml), so repo docs
+# and compose files are already outside it.
 **/node_modules
 **/dist
-.git
-.gitignore
-docs/progress
-spike
 **/*.log
 # Never ship local state or secrets into an image.
 data

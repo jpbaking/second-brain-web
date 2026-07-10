@@ -376,3 +376,8 @@ Tree dirty at 7c0a6ae with the principal's own temp changes (package.json dev-sc
 
 ## 2026-07-11 02:26 — session end (milestone 13 complete)
 Principal-directed milestone 13 (local build/run UX) done in one pass: env-driven dev-server fronting (m13-01, absorbing the principal's temp vite/package.json change), compose-helper as the committed primary run path (m13-02), README/deploy docs rewritten around it (m13-03), and a clean-slate deliverable run with a real login (m13-04). One repair: follow-ups-api fixture dates rotted past 2026-07-10; now computed from the current date. Tree clean; 259 tests green. Next: parked TODOs or principal direction.
+
+## 2026-07-11 02:30 — session continues (principal-directed: app/ restructure)
+Principal approved the app/ subfolder plan and directed deleting spike/. Created milestone 14 checklist (4 items).
+- 02:30 STARTED m14-01: git mv app parts into app/, delete spike/, point compose build.context at ./app
+- 02:32 DONE m14-01: git mv package.json/lockfile/server/web/scripts/Dockerfile/.dockerignore into app/ (history preserved as renames), deleted spike/ (findings remain in docs/spike/findings.md), moved untracked node_modules alongside, removed a leftover root web/.vite cache, pointed compose build.context at ./app, and pruned now-moot .dockerignore entries (docs/spike lines). Dockerfile COPY paths unchanged — the image already used /app internally. Verified ./compose-helper.sh rebuild from the new context → /api/health 200 and a real HTTP password+TOTP login → guarded route 200. Left the gitignored root scratch/ (earlier sessions' harnesses) untouched. Committing.
