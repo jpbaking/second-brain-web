@@ -372,7 +372,9 @@ export class AgentSessionService {
 
   /** Send a user message, starting or rehydrating the SDK session if needed. */
   async sendMessage (chatSessionId: string, text: string): Promise<{ sdkSessionId: string }> {
-    appendEvent(this.db, chatSessionId, 'user_message', { text })
+    // emitEvent (not bare appendEvent) so connected SSE clients see the user's
+    // own message live, not only on replay.
+    this.emitEvent(chatSessionId, 'user_message', { text })
     const wasLive = this.live.has(chatSessionId)
     const sdkSessionId = await this.ensureLive(chatSessionId, wasLive ? undefined : text)
     if (wasLive) await this.runner.send(sdkSessionId, { type: 'user_message', text })
