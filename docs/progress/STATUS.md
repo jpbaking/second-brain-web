@@ -1,6 +1,6 @@
 # STATUS — single source of truth
 
-Updated: 2026-07-10 (milestone 9 in progress, 5/6)
+Updated: 2026-07-10 (milestone 9 complete, 6/6)
 
 ## Where we are
 
@@ -39,18 +39,19 @@ Updated: 2026-07-10 (milestone 9 in progress, 5/6)
 - **Milestone 8 — Commit, Health, Push Loop: COMPLETE (6/6).** Changed-file
   review includes untracked uploads; health gates staging; audited commits push
   to the configured branch; push failures remain visible and retryable.
-- Active milestone: **Milestone 9 — Report Browser** (checklist to create).
-- Checklist: `docs/progress/milestones/milestone-09-report-browser.md`.
+- **Milestone 9 — Report Browser: COMPLETE (6/6).** Authenticated report
+  scanning/serving, responsive search/filter shelf, HTML open, PDF/Markdown
+  download, and command-centre recents are complete.
+- Active milestone: **Milestone 9A — Follow-Up Queue** (checklist to create).
+- Checklist: Milestone 9A checklist creation is the next progress item.
 - App runnable: yes, with `SECOND_BRAIN_WEB_DATA_DIR` pointing at a private
   `0700` data root. Core DB schema at v10.
 
 ## Current Phase
-Milestone 9 — Report Browser
+Milestone 9A — Follow-Up Queue
 
 ## Next step
-- Begin `m09-06`: report-browser deliverable check. The command centre now uses
-  the canonical scanner for five recent report metadata records and renders the
-  newest three with direct authenticated Open/Download actions.
+- Create the Milestone 9A checklist, then begin reminders/commitments parsing.
 - SDK notes (m5a-01): provider ids map anthropic→anthropic, openai→openai-native,
   openai-compatible→openai-compatible; model config is `CoreModelConfig`
   (providerId/modelId/apiKey/baseUrl/headers); storage root is set via
