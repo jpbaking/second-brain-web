@@ -7,6 +7,13 @@ only unauthenticated routes are login, the setup status page, and static assets.
 
 ## 1. Build and run the container
 
+For a local run, the repo ships a `docker-compose.yaml` plus
+[compose-helper](https://github.com/jpbaking/compose-helper) — `cp .env.example
+.env` then `./compose-helper.sh up` builds and starts the same image with the
+data root on the `sbw-data` volume (see the README quick start). The rest of
+this section shows the equivalent plain-`docker` commands for a hardened
+deployment.
+
 ```bash
 # Build the image (multi-stage: builds server + web, ships production deps only).
 docker build -t second-brain-web .
