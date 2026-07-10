@@ -1,6 +1,6 @@
 # STATUS — single source of truth
 
-Updated: 2026-07-10 (milestone 9 complete, 6/6)
+Updated: 2026-07-10 (milestone 9A ready, 0/6)
 
 ## Where we are
 
@@ -42,8 +42,8 @@ Updated: 2026-07-10 (milestone 9 complete, 6/6)
 - **Milestone 9 — Report Browser: COMPLETE (6/6).** Authenticated report
   scanning/serving, responsive search/filter shelf, HTML open, PDF/Markdown
   download, and command-centre recents are complete.
-- Active milestone: **Milestone 9A — Follow-Up Queue** (checklist to create).
-- Checklist: Milestone 9A checklist creation is the next progress item.
+- Active milestone: **Milestone 9A — Follow-Up Queue**.
+- Checklist: `docs/progress/milestones/milestone-09a-follow-up-queue.md`.
 - App runnable: yes, with `SECOND_BRAIN_WEB_DATA_DIR` pointing at a private
   `0700` data root. Core DB schema at v10.
 
@@ -51,7 +51,7 @@ Updated: 2026-07-10 (milestone 9 complete, 6/6)
 Milestone 9A — Follow-Up Queue
 
 ## Next step
-- Create the Milestone 9A checklist, then begin reminders/commitments parsing.
+- Begin `m9a-01`: parse reminders and commitments into typed queue items.
 - SDK notes (m5a-01): provider ids map anthropic→anthropic, openai→openai-native,
   openai-compatible→openai-compatible; model config is `CoreModelConfig`
   (providerId/modelId/apiKey/baseUrl/headers); storage root is set via
