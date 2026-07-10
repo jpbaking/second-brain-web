@@ -1,6 +1,6 @@
 # STATUS — single source of truth
 
-Updated: 2026-07-10 (milestone 12 in progress, 2/7)
+Updated: 2026-07-10 (milestone 12 in progress, 3/7)
 
 ## Where we are
 
@@ -77,10 +77,17 @@ Milestone 12 — Production Hardening (final milestone, not yet started)
 - Checklist: `docs/progress/milestones/milestone-12-production-hardening.md`.
 
 ## Next step
-- Begin `m12-03`: backup/restore documentation (`docs/deploy/backup-restore.md`)
-  for the data volume (db, indexes, ssh, auth, workspaces), incl. a restore that
-  boots against the restored data root. Note: `indexes/` is a rebuildable cache
-  (reindex from Search), so a backup can optionally skip it.
+- Begin `m12-04`: enforce secret file permission checks at startup — owner.json,
+  ssh/deploy_key (and .pub?), and any key material must be private (0600 file /
+  0700 dir); refuse or warn on world/group access. Likely a small module run
+  from `index.ts` (or fold into config/status). Verification:
+  `secret-permissions.test.ts`.
+- m12-03 DONE: wrote `docs/deploy/backup-restore.md` — data-root subdir table
+  (db/auth not recoverable; ssh regenerable; workspaces re-clonable; indexes a
+  rebuildable cache), volume tar backup, restore into a fresh volume (chown
+  1000 + chmod 700), and boot verification. Noted `SECRETS_KEY` lives outside
+  the volume. Empirically ran the full backup→restore→boot cycle: restored
+  container `/api/health`→200 with `owner.json` 600 and `/data` 700 preserved.
 - m12-02 DONE: wrote `docs/deploy/deployment.md` — Docker build/run (publish to
   127.0.0.1 + volume), env table (DATA_DIR/SECRETS_KEY/HOST/PORT/UPLOAD_MAX/
   NODE_ENV), reverse-proxy + **HTTPS required** (cookies are `Secure` under
