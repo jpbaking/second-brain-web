@@ -1,6 +1,6 @@
 # STATUS — single source of truth
 
-Updated: 2026-07-10 (milestone 9A in progress, 4/6)
+Updated: 2026-07-10 (milestone 9A in progress, 5/6)
 
 ## Where we are
 
@@ -51,9 +51,15 @@ Updated: 2026-07-10 (milestone 9A in progress, 4/6)
 Milestone 9A — Follow-Up Queue
 
 ## Next step
-- Begin `m9a-05`: route completion and edits through a vault-safe agent
-  workflow (writes must go through the tool-policy guard / write-lock, not a
-  direct file write). New test: `follow-ups-action.test.ts`.
+- Begin `m9a-06`: milestone deliverable. Wire the queue UI action(s) —
+  Mark done (and edit) POST to `/api/follow-ups/:id/complete|edit` — then run
+  `npm run lint && npm test && npm run build` plus a browser e2e proving
+  filter → inspect → safely update. Action routes + tests already exist.
+- m9a-05 DONE: `POST /api/follow-ups/:id/complete` and `.../edit` route the
+  change through `AgentSessionService` (guard + write-lock + inspectable
+  session), never a direct file write; 404 on unknown id, 400 on no provider/
+  empty edit text. Verified `follow-ups-action.test.ts` (5) + server
+  lint/build.
 - m9a-04 DONE: API surfaces each item's `sourceFile:sourceLine` and a
   vault-safe `linkedSource` (in-vault relative links resolved; external/
   escaping links dropped). Queue rows render origin + `→ linkedSource`.
