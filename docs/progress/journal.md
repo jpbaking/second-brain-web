@@ -390,3 +390,7 @@ Principal approved the app/ subfolder plan and directed deleting spike/. Created
 
 ## 2026-07-11 02:38 — session end (milestone 14 complete)
 App source now lives under app/ (npm workspace root); repo root is docs + compose only; spike/ deleted. History preserved via git mv (use git log --follow across the rename boundary). All npm commands now run from app/ — the playbook has a Repo layout section saying so. Verified end-to-end: gate green from app/, clean-slate compose run with real login, dev boot from app/. Next: parked TODOs or principal direction.
+
+## 2026-07-11 07:04 — session continues (design documentation only)
+Principal approved the milestone-15 concept (declarative provider provisioning: pre-encrypted YAML + interactive configure script) but directed: document first, do not execute. Writing docs/design/provider-provisioning.md + a gated milestone-15 checklist.
+- 07:06 DONE progress: wrote docs/design/provider-provisioning.md (YAML schema + field rules, boot-time reconciliation semantics incl. disable-on-removal and single-default enforcement, stdin-only encrypt-secret CLI reusing secrets/crypto.ts, configure bash+ps1 spec with silent prompts and key-rotation caveat, compose ro-mount + missing-bind-source gotcha, security invariants, migration v11, open decisions) and the GATED milestone-15 checklist (5 items with verification commands, ⛔ do-not-start banner). STATUS points at the gate. Per the principal: documented only, not executed. Committing.

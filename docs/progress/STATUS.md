@@ -1,6 +1,6 @@
 # STATUS — single source of truth
 
-Updated: 2026-07-11 (milestone 14 COMPLETE 4/4 — app source moved under `app/`)
+Updated: 2026-07-11 (milestone 15 documented + gated; milestone 14 COMPLETE)
 
 ## Where we are
 
@@ -81,7 +81,14 @@ production hardening (Docker, deploy + backup docs, secret-perm checks,
 structured logs, smoke + cold-start verification).
 
 ## Next step
-- No milestones remain queued. **Milestone 14 (principal-directed) COMPLETE:**
+- **Milestone 15 (declarative provider provisioning) is DOCUMENTED and GATED —
+  do not start until the principal says go.** Design:
+  `docs/design/provider-provisioning.md`; checklist:
+  `docs/progress/milestones/milestone-15-provider-provisioning.md` (5 items:
+  encrypt-secret CLI → YAML reconciliation + migration v11 → configure
+  scripts → compose/docs wiring → deliverable e2e). Principal directive
+  2026-07-11: "document first; don't execute yet."
+- **Milestone 14 (principal-directed) COMPLETE:**
   all app source now lives under `app/` (npm workspace root — run npm commands
   from there); repo root holds docs + compose only; `spike/` deleted (findings
   kept in `docs/spike/findings.md`); compose builds from `context: ./app`;
