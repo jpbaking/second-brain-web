@@ -1,6 +1,6 @@
 # STATUS — single source of truth
 
-Updated: 2026-07-10 (milestone 9A COMPLETE 6/6; next: milestone 10)
+Updated: 2026-07-10 (milestone 10 in progress, 1/6)
 
 ## Where we are
 
@@ -57,10 +57,15 @@ Milestone 10 — Derived Search (not yet started)
 - Checklist: `docs/progress/milestones/milestone-10-derived-search.md`.
 
 ## Next step
-- Begin `m10-01`: scan `memory/`, report files, and catalogs into typed search
-  records (path/type/title/text/mtime), skipping symlinks and unsupported
-  files. Reuse the report scanner patterns from `server/src/reports/` and the
-  vault workspace resolver. Verification: `search-scan.test.ts`.
+- Begin `m10-02`: build a SQLite FTS5 index from `scanSearchRecords()` with a
+  deterministic (re)build. Sidecar lives at `indexes/vault.sqlite` (phase-005);
+  `SearchRecord` = `{ path, kind: memory|catalog|report, title, text, mtime }`
+  from `server/src/search/scan.ts`. Verification: `search-index.test.ts`.
+- m10-01 DONE: `scanSearchRecords(workspace)` in `server/src/search/scan.ts`
+  walks `memory/**.md`, `library/catalog.md`, and reuses `scanReports` (adding
+  body text: markdown raw, HTML tag-stripped, PDF title-only). Skips symlinks
+  (not `isFile()`) and unsupported extensions; newest-first, path-stable order;
+  512KB read cap. Verified `search-scan.test.ts` (2) + server lint/build.
 - m9a-06 DONE: wired Mark done / Edit UI actions to the m9a-05 endpoints and
   ran the deliverable e2e. Caught and fixed a real bug — the `complete` POST
   was sending a JSON content-type with no body (Fastify 400); now only `edit`
