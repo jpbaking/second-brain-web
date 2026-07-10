@@ -1,0 +1,103 @@
+import { useEffect, useMemo, useState } from 'react'
+
+interface ExplorerEdge { from: string, to: string, label: string }
+interface ExplorerNode { path: string, area: string, degree: number }
+interface ExplorerGraph { areas: string[], nodes: ExplorerNode[], edges: ExplorerEdge[] }
+
+export function ExplorerScreen () {
+  const [graph, setGraph] = useState<ExplorerGraph>({ areas: [], nodes: [], edges: [] })
+  const [area, setArea] = useState('all')
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
+
+  useEffect(() => {
+    let active = true
+    setLoading(true)
+    const params = area === 'all' ? '' : `?area=${encodeURIComponent(area)}`
+    fetch(`/api/explorer${params}`)
+      .then(async response => {
+        if (response.status === 401) return window.location.assign('/login')
+        if (!response.ok) throw new Error('Could not load the explorer.')
+        const body = await response.json() as ExplorerGraph
+        if (!active) return
+        setGraph(body)
+        setError(null)
+      })
+      .catch((reason: unknown) => { if (active) setError(reason instanceof Error ? reason.message : 'Could not load the explorer.') })
+      .finally(() => { if (active) setLoading(false) })
+    return () => { active = false }
+  }, [area])
+
+  // Outgoing links per node, so each node shows what it points at.
+  const outgoing = useMemo(() => {
+    const map = new Map<string, ExplorerEdge[]>()
+    for (const edge of graph.edges) {
+      const list = map.get(edge.from) ?? []
+      list.push(edge)
+      map.set(edge.from, list)
+    }
+    return map
+  }, [graph.edges])
+
+  // Most-connected first, so the hubs of the vault surface at the top.
+  const nodes = useMemo(() => [...graph.nodes].sort((a, b) => b.degree - a.degree || a.path.localeCompare(b.path)), [graph.nodes])
+
+  return (
+    <div className='app-page'>
+      <header className='app-hero'>
+        <h1 className='app-title'>Explorer</h1>
+        <p className='app-tagline'>How the pages in your vault link to one another.</p>
+      </header>
+
+      <main className='action-card stack-3'>
+        <div className='report-toolbar'>
+          <div className='field report-search'>
+            <label className='label' htmlFor='explorer-area'>Area</label>
+            <select id='explorer-area' className='select' value={area} onChange={event => setArea(event.target.value)}>
+              <option value='all'>All areas</option>
+              {graph.areas.map(value => <option key={value} value={value}>{value}</option>)}
+            </select>
+          </div>
+          <p className='explorer-summary'>{graph.nodes.length} pages · {graph.edges.length} links</p>
+        </div>
+
+        {error !== null && <div className='alert alert-danger' role='alert'><span>{error}</span></div>}
+        {loading && <p role='status'>Loading explorer…</p>}
+        {!loading && error === null && nodes.length === 0 && (
+          <p className='followup-empty'>No links found yet. Reindex from Search after adding linked notes.</p>
+        )}
+        {nodes.length > 0 && (
+          <ul className='explorer-list' aria-label={`${nodes.length} pages`}>
+            {nodes.map(node => (
+              <li key={node.path} className='explorer-row'>
+                <div className='explorer-main'>
+                  <span className='explorer-title'>{titleOf(node.path)}</span>
+                  <span className='explorer-path'>{node.path}</span>
+                  {(outgoing.get(node.path) ?? []).length > 0 && (
+                    <ul className='explorer-links'>
+                      {(outgoing.get(node.path) ?? []).map(edge => (
+                        <li key={`${edge.to}:${edge.label}`} className='explorer-link'>
+                          → <span className='explorer-link-target'>{titleOf(edge.to)}</span> <span className='explorer-link-label'>{edge.label}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  )}
+                </div>
+                <div className='explorer-meta'>
+                  <span className='badge'>{node.area}</span>
+                  <span className='explorer-degree'>{node.degree} link{node.degree === 1 ? '' : 's'}</span>
+                </div>
+              </li>
+            ))}
+          </ul>
+        )}
+      </main>
+    </div>
+  )
+}
+
+/** A readable title from a vault path: the file name without extension, spaced. */
+function titleOf (filePath: string): string {
+  const base = filePath.split('/').pop() ?? filePath
+  return base.replace(/\.[^.]+$/, '').replaceAll(/[-_]+/g, ' ')
+}

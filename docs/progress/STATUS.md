@@ -1,6 +1,6 @@
 # STATUS — single source of truth
 
-Updated: 2026-07-10 (milestone 11 in progress, 3/6)
+Updated: 2026-07-10 (milestone 11 in progress, 4/6)
 
 ## Where we are
 
@@ -67,11 +67,17 @@ Milestone 11 — Explorer (not yet started)
 - Checklist: `docs/progress/milestones/milestone-11-explorer.md`.
 
 ## Next step
-- Begin `m11-04`: responsive graph/list explorer screen wired into shell nav.
-  API: `GET /api/explorer?area=` → `{ areas[], nodes:[{path,area,degree}],
-  edges:[{from,to,label}] }`. MVP can be a grouped list (by area) of nodes with
-  their outgoing links; a light SVG/force graph is optional. Add nav entry +
-  `/explorer` route. Verification: web lint+build + responsive visual.
+- Begin `m11-05`: add area filters + a detail panel to the explorer (path,
+  title, latest dated entries, incoming/outgoing links). The area filter
+  already exists (m11-04); m11-05 adds selecting a node to open a detail panel
+  (may need a per-node API returning its links both directions + a text
+  preview). Verification: `explorer-api.test.ts -t "detail"` + web build.
+- m11-04 DONE: `web/src/ExplorerScreen.tsx` (`/explorer`, nav entry added) —
+  fetches `/api/explorer`, area filter dropdown, `N pages · M links` summary,
+  nodes sorted by degree with their outgoing `→ target label` links, area
+  badges, empty/loading/error states. Verified web lint+build + headless-Chrome
+  e2e (6 nodes, hub "index" degree 4 first, 7 link lines, area filter →
+  people=5 nodes, Explorer nav present, no overflow at 390/1280).
 - m11-03 DONE: guarded `GET /api/explorer?area=` (`server/src/explorer/
   routes.ts`, wired in app.ts) reads `vault_links` and returns
   `{areas, nodes:[{path,area,degree}], edges:[{from,to,label}]}`. `areaOf()`
@@ -124,10 +130,10 @@ Milestone 11 — Explorer (not yet started)
 
 ## Known issues / parked TODOs
 
-- Top nav now has 8 items (added Search): at ~1280 the desktop labels wrap to
-  two lines and the mobile bottom-nav labels are tight (Models near the edge).
-  Page has no horizontal overflow, but the nav wants a density pass (overflow
-  menu / horizontal scroll / shorter labels) — do as its own UI task.
+- Top nav now has 9 items (added Search + Explorer): at ~1280 the desktop
+  labels wrap to two lines and the mobile bottom-nav clips the last items
+  (Vault/Models). Page has no horizontal overflow, but the nav needs a density
+  pass (overflow menu / horizontal scroll / shorter labels) — its own UI task.
 
 - Follow-up item `text` keeps the inline `source: [label](path)` markdown, so
   it shows raw in the queue row (the resolved link is also shown separately as
