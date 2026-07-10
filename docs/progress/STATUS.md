@@ -1,6 +1,6 @@
 # STATUS — single source of truth
 
-Updated: 2026-07-10 (milestone 11 in progress, 1/6)
+Updated: 2026-07-10 (milestone 11 in progress, 2/6)
 
 ## Where we are
 
@@ -60,19 +60,26 @@ Updated: 2026-07-10 (milestone 11 in progress, 1/6)
   reports, open a report hit → 200 content, reindex picks up a new file).
 - App runnable: yes, with `SECOND_BRAIN_WEB_DATA_DIR` pointing at a private
   `0700` data root. Core DB schema at v10; sidecar (`indexes/vault.sqlite`)
-  at v2 (adds the FTS5 `vault_search` table).
+  at v3 (FTS5 `vault_search` + `vault_links` graph table).
 
 ## Current Phase
 Milestone 11 — Explorer (not yet started)
 - Checklist: `docs/progress/milestones/milestone-11-explorer.md`.
 
 ## Next step
-- Begin `m11-02`: persist the link graph in the sidecar (`vault_links` table:
-  from_path/to_path/label) with a deterministic (re)build from
-  `extractVaultLinks()` (`server/src/explorer/links.ts`), and fold it into the
-  existing search reindex so `rebuildSearchIndex`/`reindexAfterVaultChange`
-  also refresh links. Add a sidecar migration v3. Verification:
-  `explorer-graph.test.ts`.
+- Begin `m11-03`: authenticated explorer API returning nodes + edges with area
+  filters. Nodes = distinct paths in `vault_links` (as from/to) grouped by area
+  (memory subfolder / library / reports); edges from `vault_links`. Guard like
+  other `/api/` routes; open the sidecar per request (see search routes).
+  Verification: `explorer-api.test.ts`.
+- m11-02 DONE: sidecar migration v3 adds `vault_links (from_path, to_path,
+  label)` + from/to indexes. `buildLinkGraph`/`rebuildLinkGraph`
+  (`server/src/explorer/graph.ts`) clear+reinsert in one txn (deterministic, no
+  stale edges). New `rebuildVaultIndexes(dataDir)` rebuilds search + links
+  together; `reindexAfterVaultChange` and `POST /api/search/reindex` (now
+  returns `{count, links}`) use it. Updated migrations/status assertions to
+  sidecar v3. Verified `explorer-graph.test.ts` (3) + full server suite (244) +
+  lint/build.
 - m11-01 DONE: `extractVaultLinks(workspace)` (`server/src/explorer/links.ts`)
   reuses `scanSearchRecords` text and pulls inline markdown links (excludes
   images), resolving each relative to its source file; drops external/absolute/

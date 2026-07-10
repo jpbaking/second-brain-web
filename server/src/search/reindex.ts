@@ -2,6 +2,7 @@ import { openSidecarDb } from '../db.js'
 import { vaultWorkspacePath } from '../vault/config.js'
 import { scanSearchRecords } from './scan.js'
 import { buildSearchIndex } from './index-build.js'
+import { rebuildLinkGraph } from '../explorer/graph.js'
 
 /**
  * Rebuild the whole search index from the current vault checkout (milestone 10).
@@ -21,14 +22,23 @@ export function rebuildSearchIndex (dataDir: string): number {
 }
 
 /**
+ * Rebuild every derived vault cache (search index + link graph) from the
+ * current checkout. Returns the record/edge counts. Used by the manual reindex
+ * endpoint and the after-vault-change hook so both stay in step.
+ */
+export function rebuildVaultIndexes (dataDir: string): { records: number, links: number } {
+  return { records: rebuildSearchIndex(dataDir), links: rebuildLinkGraph(dataDir) }
+}
+
+/**
  * Best-effort reindex for use inside a vault-mutating request handler: a failed
  * reindex must never fail the underlying operation (the commit/sync already
- * succeeded and the index will be rebuilt on the next trigger or manual run).
+ * succeeded and the caches will be rebuilt on the next trigger or manual run).
  */
 export function reindexAfterVaultChange (dataDir: string, log?: { warn: (msg: string) => void }): void {
   try {
-    rebuildSearchIndex(dataDir)
+    rebuildVaultIndexes(dataDir)
   } catch (err) {
-    log?.warn(`search reindex after vault change failed: ${err instanceof Error ? err.message : String(err)}`)
+    log?.warn(`reindex after vault change failed: ${err instanceof Error ? err.message : String(err)}`)
   }
 }

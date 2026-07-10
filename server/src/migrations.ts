@@ -171,6 +171,20 @@ const sidecarMigrations: Migration[] = [
       )
     `,
   },
+  {
+    version: 3,
+    // Link graph edges (phase-005 vault_links; milestone 11 explorer). Edges
+    // are extracted from markdown links; a rebuildable cache like vault_search.
+    sql: `
+      CREATE TABLE vault_links (
+        from_path TEXT NOT NULL,
+        to_path TEXT NOT NULL,
+        label TEXT NOT NULL
+      );
+      CREATE INDEX vault_links_from ON vault_links (from_path);
+      CREATE INDEX vault_links_to ON vault_links (to_path);
+    `,
+  },
 ]
 
 export class MigrationError extends Error {}
