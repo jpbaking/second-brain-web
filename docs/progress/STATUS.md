@@ -1,6 +1,6 @@
 # STATUS — single source of truth
 
-Updated: 2026-07-10 (milestone 8 in progress, 2/6)
+Updated: 2026-07-10 (milestone 8 in progress, 3/6)
 
 ## Where we are
 
@@ -46,10 +46,9 @@ Updated: 2026-07-10 (milestone 8 in progress, 2/6)
 Milestone 8 — Commit, Health, Push Loop
 
 ## Next step
-- Begin `m08-03`: commit healthy vault changes with an auditable generated
-  message. `commitVault` now runs health after taking the writer lock and before
-  staging; unavailable, ambiguous, or non-zero results leave every change local
-  and unstaged, and the result includes health evidence.
+- Begin `m08-04`: verify push through the configured deploy key and branch.
+  Healthy commits now use a generated audit message with reviewed-file count,
+  UTC operation timestamp, and every pre-staging changed path.
 - SDK notes (m5a-01): provider ids map anthropic→anthropic, openai→openai-native,
   openai-compatible→openai-compatible; model config is `CoreModelConfig`
   (providerId/modelId/apiKey/baseUrl/headers); storage root is set via

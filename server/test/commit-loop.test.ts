@@ -57,4 +57,23 @@ describe('commit, health, push loop', () => {
     const staged = await runGit(['diff', '--cached', '--name-only'], { cwd: workspace })
     expect(staged.stdout.trim()).toBe('')
   })
+
+  it('commits healthy changes with reviewed paths and timestamp in the message', async () => {
+    const { dataDir, workspace } = await fixture()
+    writeFileSync(path.join(workspace, 'memory.md'), 'healthy change\n')
+    const now = new Date('2026-07-10T09:20:00.000Z')
+    const db = openCoreDb(dataDir)
+    const result = await commitVault(db, dataDir, now)
+    db.close()
+
+    expect(result.success).toBe(true)
+    expect(result.commit).toMatch(/^[0-9a-f]{40}$/)
+    expect((await readGitStatus(workspace)).dirty).toBe(false)
+    const message = await runGit(['log', '-1', '--pretty=%B'], { cwd: workspace })
+    expect(message.stdout).toContain('vault: update 1 file via web')
+    expect(message.stdout).toContain('Operation: 2026-07-10T09:20:00.000Z')
+    expect(message.stdout).toContain('- memory.md')
+    const author = await runGit(['log', '-1', '--pretty=%an <%ae>'], { cwd: workspace })
+    expect(author.stdout.trim()).toBe('Second Brain Web <system@secondbrain.local>')
+  })
 })

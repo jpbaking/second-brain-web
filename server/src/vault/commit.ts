@@ -58,9 +58,7 @@ export async function commitVault (db: DatabaseSync, dataDir: string, now: Date 
     }
 
     // Commit
-    const commitMsg = `update vault via web UI\n\n${now.toISOString()}`
-    // We need to set committer identity if not globally set, but let's assume it's set or we set it per command
-    // We can pass -c user.name=SecondBrain -c user.email=system@secondbrain.local
+    const commitMsg = buildCommitMessage(status.changedFiles, now)
     const commitResult = await runGit([
       '-C', workspace,
       '-c', 'user.name=Second Brain Web',
@@ -88,4 +86,10 @@ export async function commitVault (db: DatabaseSync, dataDir: string, now: Date 
   } finally {
     if (lockId !== null) releaseLock(db, lockId)
   }
+}
+
+export function buildCommitMessage (changedFiles: string[], now: Date): string {
+  const count = changedFiles.length
+  const paths = changedFiles.map(file => `- ${file}`).join('\n')
+  return `vault: update ${count} file${count === 1 ? '' : 's'} via web\n\nOperation: ${now.toISOString()}\n\nReviewed paths:\n${paths}`
 }
