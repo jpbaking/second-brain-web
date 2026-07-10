@@ -1,6 +1,6 @@
 # STATUS — single source of truth
 
-Updated: 2026-07-10 (milestone 12 in progress, 4/7)
+Updated: 2026-07-10 (milestone 12 in progress, 5/7)
 
 ## Where we are
 
@@ -77,9 +77,15 @@ Milestone 12 — Production Hardening (final milestone, not yet started)
 - Checklist: `docs/progress/milestones/milestone-12-production-hardening.md`.
 
 ## Next step
-- Begin `m12-05`: structured (JSON) request/error logs with no secret leakage.
-  Fastify already logs JSON via pino; the task is to confirm/assert it (and that
-  nothing sensitive is logged). Verification: `structured-logs.test.ts`.
+- Begin `m12-06`: minimal smoke tests that boot the built app and exercise
+  health + login + an authenticated route. Could be a vitest that builds the
+  app (inject) covering the full auth handshake + one guarded route, or a script
+  that runs the container. Verification: `smoke.test.ts`.
+- m12-05 DONE: `buildApp` now takes a `logStream` seam and applies pino
+  `redact` for `req.headers.cookie`/`authorization` (defence-in-depth; default
+  serializer already omits headers/bodies). Verified `structured-logs.test.ts`
+  (2: JSON lines with level/time/msg + req.method/url + res.statusCode; login
+  password and session cookie never appear in logs) + full server suite (258).
 - m12-04 DONE: `server/src/security/secret-permissions.ts` —
   `checkSecretPermissions`/`assertSecretPermissions` refuse startup when
   `auth/owner.json` or `ssh/deploy_key` grant any group/other bit (`.pub`

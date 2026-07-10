@@ -28,12 +28,30 @@ const webDist = path.resolve(here, '../../web/dist')
 /** Test/embedding seam: override the agent runner (defaults to the live Cline SDK). */
 export interface AppDeps {
   agentRunner?: AgentRunner
+  /** Capture structured logs (tests); defaults to stdout in non-test envs. */
+  logStream?: { write: (line: string) => void }
+}
+
+/**
+ * Structured (JSON) logging config. Fastify/pino already emits JSON and its
+ * default request serializer logs only method/url/host/remote address — never
+ * headers or bodies — so credentials in a login body or the session cookie are
+ * not logged. `redact` is defence-in-depth: if a serializer ever changes to
+ * include headers, the cookie and authorization values are stripped.
+ */
+function loggerOptions (stream?: { write: (line: string) => void }): Record<string, unknown> {
+  return {
+    redact: { paths: ['req.headers.cookie', 'req.headers.authorization'], remove: true },
+    ...(stream !== undefined ? { stream } : {}),
+  }
 }
 
 export function buildApp (config?: AppConfig, deps?: AppDeps): FastifyInstance {
-  const app = Fastify({
-    logger: process.env.NODE_ENV !== 'test',
-  })
+  // Quiet by default under test, unless a stream is injected to assert logging.
+  const logger = process.env.NODE_ENV === 'test' && deps?.logStream === undefined
+    ? false
+    : loggerOptions(deps?.logStream)
+  const app = Fastify({ logger })
 
   app.register(fastifyCookie)
 
