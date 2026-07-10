@@ -1,6 +1,6 @@
 # STATUS — single source of truth
 
-Updated: 2026-07-10 (milestone 12 in progress, 6/7)
+Updated: 2026-07-10 (milestone 12 COMPLETE 7/7 — roadmap implementation complete)
 
 ## Where we are
 
@@ -73,14 +73,24 @@ Updated: 2026-07-10 (milestone 12 in progress, 6/7)
   at v3 (FTS5 `vault_search` + `vault_links` graph table).
 
 ## Current Phase
-Milestone 12 — Production Hardening (final milestone, not yet started)
-- Checklist: `docs/progress/milestones/milestone-12-production-hardening.md`.
+**Roadmap implementation COMPLETE.** All milestones 0–12 are done. The app
+runs as a self-hosted container against a durable data volume, with the full
+feature set (auth, vault clone/health, providers, Cline SDK chat, approvals,
+capture/uploads, commit/push, reports, follow-ups, search, explorer) and
+production hardening (Docker, deploy + backup docs, secret-perm checks,
+structured logs, smoke + cold-start verification).
 
 ## Next step
-- Begin `m12-07` (milestone + roadmap deliverable): `npm run lint && npm test
-  && npm run build` plus a documented container cold-start against a persisted
-  data volume. The docker build + run + backup/restore cycles are already
-  proven (m12-01/03); m12-07 is the final all-green + a clean cold-start check.
+- No roadmap milestones remain. Options for a future session: work the parked
+  TODOs below (nav density, slim the 1.28GB image, raw-markdown display), or
+  take direction from the principal on post-MVP work (phase-005 stretch goals:
+  embeddings/semantic search, source-coverage view, memory-explorer graph viz).
+- m12-07 DONE: full `npm run lint && npm test && npm run build` green (259
+  tests) + a real cold-start durability check: built the image, booted on a
+  named volume, `reset-auth`, then a real HTTP login (password→TOTP→session→
+  guarded route 200) — repeated after `docker restart` AND after replacing the
+  container with a fresh one on the SAME volume; all 200, `/data` stayed
+  `700 node`. Milestone 12 COMPLETE (7/7).
 - m12-06 DONE: added `smoke.test.ts` — boots the app and walks health 200 →
   guarded route 401 → full password+TOTP login → guarded route 200 with the
   session. Verified `smoke.test.ts` (1) + full server suite (259) + lint/build.
@@ -146,6 +156,11 @@ Milestone 12 — Production Hardening (final milestone, not yet started)
   was needed.)
 
 ## Known issues / parked TODOs
+
+- Docker image is ~1.28GB: the runtime `npm ci --omit=dev` still pulls the web
+  workspace's deps (react etc.) which aren't needed at runtime (web is static).
+  Slim it by installing only the server workspace's prod deps, or copy a pruned
+  node_modules. Functional, just large.
 
 - Top nav now has 9 items (added Search + Explorer): at ~1280 the desktop
   labels wrap to two lines and the mobile bottom-nav clips the last items
