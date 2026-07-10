@@ -40,33 +40,25 @@ export function ReviewCommitModal ({ onClose, onSuccess }: ReviewCommitModalProp
         method: 'POST',
         credentials: 'same-origin'
       })
+      const body = await res.json().catch(() => ({})) as { message?: string, error?: string, stage?: string }
       if (!res.ok) {
-        const body = await res.json().catch(() => ({})) as { message?: string }
-        throw new Error(body.message || 'Commit failed')
+        const prefix = body.stage === undefined ? '' : `${body.stage}: `
+        throw new Error(prefix + (body.message ?? body.error ?? 'Commit and push failed.'))
       }
       onSuccess()
-    } catch (e: any) {
-      setError(e.message)
+    } catch (e: unknown) {
+      setError(e instanceof Error ? e.message : 'Commit and push failed.')
       setCommitting(false)
     }
   }
 
+  const healthPasses = review?.health.available === true && review.health.issueCount === 0
+  const canSubmit = review !== null && (!review.git.dirty || healthPasses)
+
   return (
-    <div style={{
-      position: 'fixed',
-      top: 0,
-      left: 0,
-      right: 0,
-      bottom: 0,
-      backgroundColor: 'rgba(0,0,0,0.5)',
-      display: 'flex',
-      alignItems: 'center',
-      justifyContent: 'center',
-      zIndex: 1000
-    }}
-    >
-      <div className='action-card' style={{ maxWidth: '600px', width: '100%', maxHeight: '90vh', overflowY: 'auto' }}>
-        <h2 className='card-title'>Review & Commit</h2>
+    <div className='review-backdrop' role='dialog' aria-modal='true' aria-labelledby='review-title'>
+      <div className='action-card review-dialog'>
+        <h2 id='review-title' className='card-title'>Review and commit</h2>
 
         {error && (
           <div className='alert alert-danger' role='alert'>
@@ -79,23 +71,23 @@ export function ReviewCommitModal ({ onClose, onSuccess }: ReviewCommitModalProp
           ? (
             <div className='stack-2'>
               <div>
-                <strong>Changed Files ({review.git.changedFiles.length})</strong>
-                <pre style={{ fontSize: '0.8rem', padding: '8px', background: '#f5f5f5', borderRadius: '4px' }}>
+                <strong>Changed files ({review.git.changedFiles.length})</strong>
+                <pre className='review-output'>
                   {review.git.changedFiles.join('\n')}
                 </pre>
               </div>
 
               {review.git.diffSummary && (
                 <div>
-                  <strong>Diff Summary</strong>
-                  <pre style={{ fontSize: '0.8rem', padding: '8px', background: '#f5f5f5', borderRadius: '4px' }}>
+                  <strong>Diff summary</strong>
+                  <pre className='review-output'>
                     {review.git.diffSummary}
                   </pre>
                 </div>
               )}
 
               <div>
-                <strong>Health Check</strong>
+                <strong>Health check</strong>
                 {review.health.available
                   ? (
                     <p>Issues: {review.health.issueCount ?? 'unknown'}</p>
@@ -103,20 +95,23 @@ export function ReviewCommitModal ({ onClose, onSuccess }: ReviewCommitModalProp
                   : (
                     <p>Not available</p>
                     )}
+                {review.git.dirty && !healthPasses && (
+                  <p className='field-error'>Commit and push are blocked until the vault health check passes.</p>
+                )}
               </div>
             </div>
             )
           : (
-            <p>Loading review...</p>
+            <p>Loading review…</p>
             )}
 
-        <div className='form-actions' style={{ marginTop: '24px' }}>
+        <div className='form-actions'>
           <button
             className='btn btn-primary'
             onClick={handleCommit}
-            disabled={!review || committing}
+            disabled={!canSubmit || committing}
           >
-            {committing ? 'Committing...' : 'Confirm'}
+            {committing ? 'Committing…' : review?.git.dirty === false ? 'Retry push' : 'Commit and push'}
           </button>
           <button
             className='btn btn-secondary'

@@ -44,6 +44,35 @@
   color: var(--muted);
 }
 
+.review-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  display: grid;
+  place-items: center;
+  padding: var(--space-3);
+  background: rgb(20 23 38 / 55%);
+}
+
+.review-dialog {
+  width: min(100%, 600px);
+  max-height: 90vh;
+  overflow-y: auto;
+}
+
+.review-output {
+  margin-block: var(--space-2);
+  padding: var(--space-2);
+  overflow-x: auto;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  background: var(--surface);
+  font-family: var(--font-mono);
+  font-size: var(--ui-kicker);
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
 .upload-file-list {
   list-style: none;
   margin: 0;

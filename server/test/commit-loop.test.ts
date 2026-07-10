@@ -1,4 +1,4 @@
-import { mkdirSync, mkdtempSync, rmSync, writeFileSync } from 'node:fs'
+import { mkdirSync, mkdtempSync, renameSync, rmSync, writeFileSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import path from 'node:path'
 import { afterEach, describe, expect, it } from 'vitest'
@@ -89,5 +89,27 @@ describe('commit, health, push loop', () => {
     const remoteHead = await runGit(['--git-dir', remote, 'rev-parse', 'refs/heads/main'])
     expect(remoteHead.stdout.trim()).toBe(local.stdout.trim())
     expect(result.commit).toBe(remoteHead.stdout.trim())
+  })
+
+  it('failure recovery retries a push after the local commit made the tree clean', async () => {
+    const { dataDir, workspace, remote } = await fixture()
+    writeFileSync(path.join(workspace, 'recovery.md'), 'recover me\n')
+    const unavailableRemote = `${remote}.offline`
+    renameSync(remote, unavailableRemote)
+    let db = openCoreDb(dataDir)
+    const failed = await commitVault(db, dataDir)
+    db.close()
+    expect(failed.success).toBe(false)
+    expect(failed.stage).toBe('push')
+    expect((await readGitStatus(workspace)).dirty).toBe(false)
+
+    renameSync(unavailableRemote, remote)
+    db = openCoreDb(dataDir)
+    const retried = await commitVault(db, dataDir)
+    db.close()
+    expect(retried.success).toBe(true)
+    expect(retried.stage).toBe('complete')
+    const remoteHead = await runGit(['--git-dir', remote, 'rev-parse', 'refs/heads/main'])
+    expect(remoteHead.stdout.trim()).toBe(retried.commit)
   })
 })
