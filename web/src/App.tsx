@@ -5,6 +5,7 @@ import { ProviderSettings } from './ProviderSettings.js'
 import { ChatScreen } from './ChatScreen.js'
 import { CommandCenter } from './CommandCenter.js'
 import { QuickCapture } from './QuickCapture.js'
+import { ReportsScreen } from './ReportsScreen.js'
 import { Stub } from './Stub.js'
 import { AppShell } from './AppShell.js'
 
@@ -57,7 +58,7 @@ function routedScreen (path: string) {
     case '/follow-ups':
       return <Stub title='Follow-up queue' blurb='Reminders and commitments the secretary is keeping watch on.' />
     case '/reports':
-      return <Stub title='Reports' blurb='Generated reviews and briefings from your vault.' />
+      return <ReportsScreen />
     default: return <CommandCenter />
   }
 }

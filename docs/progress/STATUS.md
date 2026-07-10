@@ -1,6 +1,6 @@
 # STATUS — single source of truth
 
-Updated: 2026-07-10 (milestone 9 in progress, 2/6)
+Updated: 2026-07-10 (milestone 9 in progress, 3/6)
 
 ## Where we are
 
@@ -48,10 +48,9 @@ Updated: 2026-07-10 (milestone 9 in progress, 2/6)
 Milestone 9 — Report Browser
 
 ## Next step
-- Begin `m09-03`: report shelf UI with search and year/type filters. Guarded
-  `GET /api/reports` lists metadata; `GET /api/reports/content/*` realpath-checks
-  containment, rejects symlink escapes/unsupported types, and sends nosniff
-  HTML, PDF, or Markdown content.
+- Begin `m09-04`: explicit open/download behaviour by report type. `/reports`
+  now renders a searchable newest-first shelf with year/type filters, compact
+  metadata rows, and responsive long-title/path handling.
 - SDK notes (m5a-01): provider ids map anthropic→anthropic, openai→openai-native,
   openai-compatible→openai-compatible; model config is `CoreModelConfig`
   (providerId/modelId/apiKey/baseUrl/headers); storage root is set via

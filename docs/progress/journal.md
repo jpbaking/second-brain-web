@@ -282,3 +282,5 @@ Tree clean at 61d913d. Principal directed autonomous continuation through all re
 Tree clean at a20e5d3. Active: milestone 09, next item: m09-02.
 - 17:25 STARTED m09-02: add authenticated report listing and realpath-confined content serving for HTML, PDF, and Markdown
 - 17:27 DONE m09-02: added guarded report list/content routes. Content serving resolves root+target realpaths, confines target beneath reports/, rejects traversal components, symlink escape, directories/missing files, and unsupported extensions; sends explicit MIME + nosniff. Verified `reports-api.test.ts` (3: auth, metadata/content, rejection matrix), server lint/build pass. Committing.
+- 17:28 STARTED m09-03: replace reports stub with responsive searchable shelf and year/type filters
+- 17:31 DONE m09-03: `/reports` now fetches the report index and provides title/path search, year/type filters, newest-first compact rows, type/date/size/path metadata, and loading/error/empty states. Verified web lint/build and headless Chrome with 3 seeded reports at 390/1280: dynamic years, all rows, long title/path wraps, no horizontal overflow; mobile screenshot inspected. Committing.
