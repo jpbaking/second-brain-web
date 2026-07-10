@@ -64,13 +64,14 @@ Updated: 2026-07-10 (milestone 10 COMPLETE 6/6; next: milestone 11)
 
 ## Current Phase
 Milestone 11 — Explorer (not yet started)
+- Checklist: `docs/progress/milestones/milestone-11-explorer.md`.
 
 ## Next step
-- Create the Milestone 11 (Explorer) checklist by copying its steps from
-  `phase-006-implementation-roadmap.md` (link extraction → graph/list explorer
-  → area filters → detail panel) into
-  `docs/progress/milestones/milestone-11-explorer.md`, one checkbox per step
-  with a verification command. Then start `m11-01`.
+- Begin `m11-01`: extract links from vault markdown (memory, catalogue, report
+  sources) into typed edges (from_path/to_path/label), resolving vault-relative
+  targets and dropping external/escaping links. Reuse the `resolveLinkedSource`
+  pattern in `server/src/follow-ups/parse.ts` and the `scanSearchRecords`
+  walk. Verification: `explorer-links.test.ts`.
 - m10-06 DONE: added a Reindex button to `/search` (POST `/api/search/reindex`
   with a count notice, re-running the active query). Ran full lint/test/build
   (238) + a headless-Chrome deliverable e2e: searched "domain" across memory +
