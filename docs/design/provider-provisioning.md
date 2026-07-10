@@ -10,6 +10,11 @@ provider management via the web UI and API is removed (the roadmap milestone-5
 CRUD becomes historical). This supersedes revision 1's dual-source
 reconciliation design — see "What replaces the milestone-5 UI" below.
 
+**Revision 3 (2026-07-11): document order is meaningful.** UI display order =
+YAML document order, and the first enabled entry is the default for new chat
+sessions. The `default:` field and its validation are removed — see the
+ordering convention under "The YAML file".
+
 ## Goal
 
 Provider profiles (Anthropic / OpenAI / OpenAI-compatible) are configured
@@ -37,12 +42,11 @@ committed). Mounted read-only by compose; located by the app via a new env var
 
 ```yaml
 providers:
-  claude:                      # map key = stable config key, [a-z0-9-]+
+  claude:                      # FIRST entry = the default provider for new chats
     display_name: Claude
     provider: anthropic        # anthropic | openai | openai-compatible
     model: claude-haiku-4-5
     key: v1:mm3aX…             # AES-256-GCM ciphertext ONLY (see crypto)
-    default: true
   openai:
     display_name: OpenAI
     provider: openai
@@ -55,18 +59,27 @@ providers:
     model: ornith-1.0-9b       # keyless is fine for openai-compatible
 ```
 
+**Ordering convention (revision 3):** document order is meaningful — the
+read-only UI lists providers in document order, and the **first enabled entry
+is the default** for new chat sessions. There is no `default:` field. This is
+an application convention (the YAML spec treats map order as insignificant),
+which is fine for a hand-edited local file; it is reliable in code because the
+`yaml` package returns a plain JS object and JS preserves string-key insertion
+order — provided keys are not integer-like, hence the key pattern below
+requires a leading letter. Duplicate map keys are rejected at parse time by
+the `yaml` package's defaults.
+
 Field rules:
 
 | Field | Rule |
 |---|---|
-| map key | Required, stable identity for reconciliation, `[a-z0-9-]+` |
+| map key | Required, stable profile identity, `[a-z][a-z0-9-]*` (leading letter keeps JS insertion order intact) |
 | `display_name` | Optional; defaults to the map key |
 | `provider` | Required; one of the three known ids |
 | `model` | Required |
 | `base_url` | Required for `openai-compatible`, optional otherwise |
 | `key` | Optional; **must** start with `v1:` (ciphertext). A non-`v1:` value refuses startup with a message pointing at `./configure`. |
-| `default` | Optional bool; more than one `true` refuses startup |
-| `enabled` | Optional bool, default `true` |
+| `enabled` | Optional bool, default `true`; a disabled first entry passes the default to the next enabled one |
 
 ## Load semantics (YAML is the sole source, boot-time)
 
@@ -82,16 +95,18 @@ after migrations and before serving:
    (`setup error:` style, like the secret-permission check) — a silent partial
    import would be worse than a loud failure.
 3. **Rebuild the `provider_profiles` table from the YAML** — full replace,
-   with the YAML map key as the profile `id`. The table survives purely as a
-   derived cache so the existing snapshot/chat plumbing (`snapshotFor`,
-   `provider_profile_id` on sessions, captured `session_config` events) keeps
-   working unchanged. Because the id is the stable YAML key, a session resumed
-   after a restart re-resolves its key correctly as long as the entry still
-   exists; a removed entry surfaces as the existing "profile not found /
-   cannot be decrypted" error at resume time.
-4. Exactly one `default: true` (zero is allowed only when the map is empty;
-   with entries present, exactly one — simpler than revision 1 because there
-   is no pre-existing UI default to preserve).
+   with the YAML map key as the profile `id`, **inserted in document order**
+   (the read path lists in insertion order, so the UI shows the file's order).
+   The table survives purely as a derived cache so the existing snapshot/chat
+   plumbing (`snapshotFor`, `provider_profile_id` on sessions, captured
+   `session_config` events) keeps working unchanged. Because the id is the
+   stable YAML key, a session resumed after a restart re-resolves its key
+   correctly as long as the entry still exists; a removed entry surfaces as
+   the existing "profile not found / cannot be decrypted" error at resume
+   time.
+4. **The first enabled entry becomes the default** (`is_default`) for new
+   chat sessions. No `default:` field, no exactly-one validation — reordering
+   the file is how you change the default.
 5. If any entry has a `key`, `SECOND_BRAIN_WEB_SECRETS_KEY` must be set, else
    refuse startup.
 
