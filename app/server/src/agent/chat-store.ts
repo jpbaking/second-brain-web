@@ -158,6 +158,9 @@ export function appendEvent (
     INSERT INTO chat_events (session_id, seq, type, payload_json, created_at)
     VALUES (?, ?, ?, ?, ?)
   `).run(sessionId, next.seq, type, payload === undefined ? null : JSON.stringify(payload ?? null), now.toISOString())
+  // Activity bumps the session so listSessions (updated_at DESC) reflects the
+  // truly last-active chat — the landing page depends on this ordering.
+  db.prepare('UPDATE chat_sessions SET updated_at = ? WHERE id = ?').run(now.toISOString(), sessionId)
   return {
     id: Number(info.lastInsertRowid),
     sessionId,

@@ -58,6 +58,17 @@ describe('chat session store', () => {
     expect(renameSession(db, 'nope', 'x')).toBe(false)
   })
 
+  it('bumps updated_at on appended events so the last-active chat lists first', () => {
+    const db = freshDb()
+    const older = createSession(db, { title: 'Older' }, new Date('2026-07-11T10:00:00Z'))
+    createSession(db, { title: 'Newer' }, new Date('2026-07-11T11:00:00Z'))
+    expect(listSessions(db)[0]?.title).toBe('Newer')
+
+    // Activity on the older session makes it the most recently active.
+    appendEvent(db, older.id, 'user_message', { text: 'hi' }, new Date('2026-07-11T12:00:00Z'))
+    expect(listSessions(db)[0]?.title).toBe('Older')
+  })
+
   it('binds and resolves the SDK session id (rehydration mapping)', () => {
     const db = freshDb()
     const s = createSession(db, { title: 'S' })
