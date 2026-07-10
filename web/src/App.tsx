@@ -6,7 +6,7 @@ import { ChatScreen } from './ChatScreen.js'
 import { CommandCenter } from './CommandCenter.js'
 import { QuickCapture } from './QuickCapture.js'
 import { ReportsScreen } from './ReportsScreen.js'
-import { Stub } from './Stub.js'
+import { FollowUpsScreen } from './FollowUpsScreen.js'
 import { AppShell } from './AppShell.js'
 
 interface SystemStatus {
@@ -56,7 +56,7 @@ function routedScreen (path: string) {
     case '/chat': return <ChatScreen />
     case '/capture': return <QuickCapture />
     case '/follow-ups':
-      return <Stub title='Follow-up queue' blurb='Reminders and commitments the secretary is keeping watch on.' />
+      return <FollowUpsScreen />
     case '/reports':
       return <ReportsScreen />
     default: return <CommandCenter />
