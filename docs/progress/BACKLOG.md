@@ -34,8 +34,6 @@ and follow AGENTS-PLAYBOOK.md. Completed checklists move to
 - **Encrypt the TOTP secret at rest.** Currently plaintext base32 in
   `auth/owner.json` (0600) per the phase-002 MVP; encrypt with
   `SECOND_BRAIN_WEB_SECRETS_KEY`.
-- **`reset-auth` should also revoke active DB sessions.** Today it only
-  replaces credentials; live session tokens keep working until expiry.
 
 ## Larger features (from the phase-008 backlog — need principal scoping)
 
@@ -46,6 +44,9 @@ voice capture, rich diff review, backup/restore UI.
 
 ## Dropped / resolved (kept for the record)
 
+- ~~`reset-auth` should also revoke active DB sessions~~ — already implemented
+  in milestone 2: the CLI calls `invalidateSessionsAndChallenges`, which
+  revokes every active DB session and deletes pending login challenges.
 - ~~SDK session artifacts under `~/.cline/data/sessions/`~~ — resolved in
   milestone 5A: `CLINE_DATA_DIR` points at `<dataDir>/sessions`.
 - ~~`spike/test-vault/` cleanup note~~ — `spike/` was deleted in milestone 14.

@@ -413,3 +413,10 @@ Chat-first UI shipped: / = last-active chat (or new-chat welcome), Claude/ChatGP
 
 ## 2026-07-11 07:47 — progress-file reorganisation (principal-directed)
 - 07:47 DONE progress: archived all 21 completed milestone checklists to docs/progress/milestones/archive/ (git mv — history preserved; milestone-15 stays active-but-gated in milestones/). Extracted the work queue to docs/progress/BACKLOG.md (gated m15; six improvements incl. native gemini provider exposure and image slimming; phase-008 pointer; dropped two stale TODOs: CLINE_DATA_DIR was solved in 5A, spike/test-vault died with m14). Rewrote STATUS.md back under its 60-line contract (58 lines). Rewrote AGENTS-PLAYBOOK.md for weaker models: stale "implementation has not started" bootstrap section deleted; explicit no-active-work-means-stop branch; copy-paste command block; backlog-gated milestone-start procedure; archive convention replaces the old "never delete progress files" wording (journal + archive stay immutable); new Known Traps section (npm-from-app/, rebuild-before-dist-harnesses, date-rot, port+1 dev split, pkill self-kill, docker bind-mount dir gotcha). Committing.
+## 2026-07-11 07:57 — session start
+Tree clean at aaf7213. Principal selected reset-auth session revocation from the backlog; activation audit found it was already completed in milestone 2, so no milestone was activated.
+- 07:57 REPAIR: stale backlog entry claimed reset-auth leaves DB sessions active, but `reset-auth.ts` already calls `invalidateSessionsAndChallenges`, `revokeAllSessions` is implemented, and milestone 2 recorded integration evidence that an old session returns 401 after reset. Moving the item to resolved.
+- 07:57 DONE REPAIR: verified by `npm test --workspace server -- reset-invalidation.test.ts` → 2 tests green, including active-session revocation and pending-challenge deletion.
+
+## 2026-07-11 07:57 — session end
+No implementation was needed: reset-auth session revocation was already shipped and remains verified. The stale backlog item is now recorded as resolved; no milestone is active.
