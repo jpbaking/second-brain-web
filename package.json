@@ -12,7 +12,7 @@
     "web"
   ],
   "scripts": {
-    "dev": "concurrently -n server,web \"npm run dev -w server\" \"npm run dev -w web\"",
+    "dev": "concurrently -n server,web \"SECOND_BRAIN_WEB_PORT=$((${SECOND_BRAIN_WEB_PORT:-8722}+1)) npm run dev -w server\" \"npm run dev -w web\"",
     "lint": "npm run lint --workspaces --if-present",
     "format": "npm run format --workspaces --if-present",
     "test": "npm run test --workspaces --if-present",
