@@ -1,6 +1,6 @@
 # STATUS — single source of truth
 
-Updated: 2026-07-10 (milestone 9A in progress, 3/6)
+Updated: 2026-07-10 (milestone 9A in progress, 4/6)
 
 ## Where we are
 
@@ -51,15 +51,16 @@ Updated: 2026-07-10 (milestone 9A in progress, 3/6)
 Milestone 9A — Follow-Up Queue
 
 ## Next step
-- Begin `m9a-04`: link queue items to their source file and line where
-  possible. Parser already carries `sourceFile`/`sourceLine`/`linkedSource`;
-  surface a working link/anchor and test the "source" case in
-  `follow-ups-api.test.ts`.
-- m9a-03 DONE: `/follow-ups` now renders the guarded endpoint — filter tabs
-  (active/overdue/today/week/waiting-on/i-owe/completed) with live counts,
-  per-item text/kind/direction/due-date with overdue+today emphasis, and
-  source file:line. Verified web lint+build and headless Chrome at 390/1280
-  (pills wrap, long text/paths wrap, no horizontal overflow).
+- Begin `m9a-05`: route completion and edits through a vault-safe agent
+  workflow (writes must go through the tool-policy guard / write-lock, not a
+  direct file write). New test: `follow-ups-action.test.ts`.
+- m9a-04 DONE: API surfaces each item's `sourceFile:sourceLine` and a
+  vault-safe `linkedSource` (in-vault relative links resolved; external/
+  escaping links dropped). Queue rows render origin + `→ linkedSource`.
+  Verified `follow-ups-api.test.ts -t source` and web build; 390px visual
+  confirms the link wraps with no overflow.
+- m9a-03 DONE: `/follow-ups` renders the guarded endpoint — filter tabs with
+  live counts, per-item text/kind/direction/due-date (overdue+today emphasis).
 - SDK notes (m5a-01): provider ids map anthropic→anthropic, openai→openai-native,
   openai-compatible→openai-compatible; model config is `CoreModelConfig`
   (providerId/modelId/apiKey/baseUrl/headers); storage root is set via

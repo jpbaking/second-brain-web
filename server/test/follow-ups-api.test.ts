@@ -21,7 +21,7 @@ function cookieValue (header: string | string[] | undefined, name: string): stri
   return values.find(value => value.startsWith(`${name}=`))?.slice(name.length + 1).split(';')[0]
 }
 
-async function fixture (): Promise<{ app: FastifyInstance, cookie: string }> {
+async function fixture (): Promise<{ app: FastifyInstance, cookie: string, notes: string }> {
   const root = mkdtempSync(path.join(tmpdir(), 'sbw-follow-api-'))
   scratch.push(root)
   const config = loadConfig({ SECOND_BRAIN_WEB_DATA_DIR: path.join(root, 'data') })
@@ -38,7 +38,7 @@ async function fixture (): Promise<{ app: FastifyInstance, cookie: string }> {
   const challenge = cookieValue(passwordResponse.headers['set-cookie'], CHALLENGE_COOKIE)
   const code = totpCode(state.totp.secretBase32, { digits: state.totp.digits, period: state.totp.period })
   const totp = await app.inject({ method: 'POST', url: '/api/auth/totp', headers: { cookie: `${CHALLENGE_COOKIE}=${challenge}` }, payload: { code } })
-  return { app, cookie: `${SESSION_COOKIE}=${cookieValue(totp.headers['set-cookie'], SESSION_COOKIE)}` }
+  return { app, cookie: `${SESSION_COOKIE}=${cookieValue(totp.headers['set-cookie'], SESSION_COOKIE)}`, notes }
 }
 
 afterEach(async () => {
@@ -64,6 +64,29 @@ describe('follow-up API', () => {
     const completed = await get('completed')
     expect(completed.items[0].text).toBe('Finished')
     expect(completed.counts).toMatchObject({ active: 6, overdue: 1, today: 1, week: 3, 'waiting-on': 1, 'i-owe': 1, completed: 1 })
+  })
+
+  it('links each item to its source file, line, and vault-safe linked source', async () => {
+    const { app, cookie, notes } = await fixture()
+    writeFileSync(path.join(notes, 'reminders.md'), [
+      '## Open',
+      '- [ ] 2026-07-09 due: Late — source: [thread](../inbox/2026-07-01.md#note)',
+      '- [ ] 2026-07-15 due: Soon — source: [remote](https://example.com/x)',
+      '- [ ] 2026-07-16 due: Plain',
+      '',
+    ].join('\n'))
+    const items = (await app.inject({ method: 'GET', url: '/api/follow-ups?filter=active', headers: { cookie } })).json().items as FollowUpItem[]
+    const byText = (needle: string) => items.find(item => item.text.startsWith(needle))
+
+    const late = byText('Late')
+    expect(late).toMatchObject({ sourceFile: 'memory/notes/reminders.md', sourceLine: 2, linkedSource: 'memory/inbox/2026-07-01.md' })
+
+    // Links that leave the vault or point off-host are not surfaced.
+    expect(byText('Soon')?.linkedSource).toBeNull()
+    expect(byText('Plain')).toMatchObject({ sourceFile: 'memory/notes/reminders.md', sourceLine: 4, linkedSource: null })
+
+    // Commitments still report their own file and line.
+    expect(byText('Send reply')).toMatchObject({ sourceFile: 'memory/notes/commitments.md', sourceLine: 2 })
   })
 
   it('applies date boundaries deterministically', () => {

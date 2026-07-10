@@ -98,7 +98,12 @@ export function FollowUpsScreen () {
               <li key={item.id} className='followup-row'>
                 <div className='followup-main'>
                   <span className='followup-text'>{item.text}</span>
-                  <span className='followup-source'>{item.sourceFile}:{item.sourceLine}</span>
+                  <span className='followup-source'>
+                    <span className='followup-origin'>{item.sourceFile}:{item.sourceLine}</span>
+                    {item.linkedSource !== null && (
+                      <span className='followup-link'>→ {item.linkedSource}</span>
+                    )}
+                  </span>
                 </div>
                 <div className='followup-meta'>
                   <span className='badge'>{labelForKind(item)}</span>

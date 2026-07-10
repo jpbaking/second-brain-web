@@ -214,9 +214,17 @@
 }
 
 .followup-source {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-1) var(--space-2);
   font-family: var(--font-mono);
   font-size: var(--ui-kicker);
   color: var(--muted);
+  overflow-wrap: anywhere;
+}
+
+.followup-link {
+  color: var(--accent, var(--ink));
   overflow-wrap: anywhere;
 }
 
