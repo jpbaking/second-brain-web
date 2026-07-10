@@ -1,6 +1,6 @@
 # STATUS — single source of truth
 
-Updated: 2026-07-10 (milestone 8 in progress, 5/6)
+Updated: 2026-07-10 (milestone 8 complete, 6/6)
 
 ## Where we are
 
@@ -36,20 +36,19 @@ Updated: 2026-07-10 (milestone 8 in progress, 5/6)
   routes through the agent; multipart uploads stream unchanged originals into
   locked, traversal-safe timestamped inbox folders with `_intake.md` context;
   the UI can explicitly dispatch the vault inbox workflow for an upload.
-- Active milestone: **Milestone 8 — Commit, Health, Push Loop** (checklist to
-  create from the roadmap).
-- Checklist: `docs/progress/milestones/milestone-08-commit-health-push.md`.
+- **Milestone 8 — Commit, Health, Push Loop: COMPLETE (6/6).** Changed-file
+  review includes untracked uploads; health gates staging; audited commits push
+  to the configured branch; push failures remain visible and retryable.
+- Active milestone: **Milestone 9 — Report Browser** (checklist to create).
+- Checklist: Milestone 9 checklist creation is the next progress item.
 - App runnable: yes, with `SECOND_BRAIN_WEB_DATA_DIR` pointing at a private
   `0700` data root. Core DB schema at v10.
 
 ## Current Phase
-Milestone 8 — Commit, Health, Push Loop
+Milestone 9 — Report Browser
 
 ## Next step
-- Begin `m08-06`: deliverable check. Commit results now identify their failure
-  stage, a clean retry re-pushes a locally committed HEAD after push failure,
-  and the review modal blocks unhealthy commits while keeping failures visible
-  and retryable.
+- Create the Milestone 9 checklist from phase 006, then start report scanning.
 - SDK notes (m5a-01): provider ids map anthropic→anthropic, openai→openai-native,
   openai-compatible→openai-compatible; model config is `CoreModelConfig`
   (providerId/modelId/apiKey/baseUrl/headers); storage root is set via
