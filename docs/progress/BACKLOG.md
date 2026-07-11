@@ -13,8 +13,8 @@ See `docs/project-plan/phase-008-feature-backlog-and-design-hooks.md` for other 
 ## Improvements
 
 - **Agent runs in `/app`, not the vault — it cannot read/write the vault**
-  (candidate milestone; likely higher priority than the streaming fix — this is
-  why the secretary is slow/unhelpful on any vault question).
+  (IN PROGRESS — milestone 39, `milestones/milestone-39-vault-access.md`).
+  This is why the secretary is slow/unhelpful on any vault question.
   - **Symptom (principal-reported, 2026-07-11):** asked "who's my employer?",
     the agent spends a long time then reports it has "zero read access to your
     vault" and can only see the app's own source. Slow turns on vault questions
@@ -57,7 +57,7 @@ See `docs/project-plan/phase-008-feature-backlog-and-design-hooks.md` for other 
     (`node_modules server web`); "who's my employer?" resolves from `memory/`.
 
 - **Stream chat replies live; stop blocking `/messages` on the whole turn**
-  (candidate milestone 39). Today a chat turn does not stream and the POST
+  (candidate milestone 40). Today a chat turn does not stream and the POST
   hangs for the turn's full duration, which 504s behind any reverse proxy with
   a normal read timeout.
   - **Symptom (principal-reported, 2026-07-11):** chatting via the

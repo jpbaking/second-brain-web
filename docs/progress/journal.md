@@ -923,3 +923,7 @@ Principal shared the real cause of slow turns: the agent reports zero vault acce
 
 ## 19:45 — session end
 Root-caused the "agent can't see the vault" issue (wrong working dir for the claude-code provider, not a mount problem) and documented it for a future milestone. No code change. Awaiting principal direction.
+
+## 2026-07-12 01:25 — session start
+Tree clean at a39dfac. Principal said go: fix vault access.
+- 01:25 progress: opened milestone 39 (Agent vault access — correct working directory). Wrote `milestones/milestone-39-vault-access.md` (4 items: spike → implement+unit → live e2e → regression/docs), pointed STATUS at it, marked the BACKLOG item in-progress, renumbered the streaming candidate to milestone 40. Next: m39-01 spike.

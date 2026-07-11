@@ -1,6 +1,6 @@
 # STATUS — single source of truth
 
-Updated: 2026-07-11 (no active milestone; milestone 38 complete)
+Updated: 2026-07-12 (active: milestone 39 — agent vault access)
 
 ## Where we are
 
@@ -29,11 +29,14 @@ Updated: 2026-07-11 (no active milestone; milestone 38 complete)
 
 ## Active milestone
 
-milestone 38 (Processing Animation and Thinking Blocks) is complete.
+milestone 39 (Agent vault access — correct working directory). Checklist:
+`docs/progress/milestones/milestone-39-vault-access.md`.
 
 ## Next step
 
-Move to the next milestone in the roadmap or await instructions.
+m39-01 — spike: find how the `claude-code` provider's working directory is set
+in `@cline/core`/`@cline/llms` and decide the fix. See the milestone-39 item's
+"known so far" notes and BACKLOG top item.
 
 ## Read before working
 
@@ -48,14 +51,8 @@ Move to the next milestone in the roadmap or await instructions.
 
 - Tracked in `docs/progress/BACKLOG.md` (Improvements section) — do not list
   them here twice.
-- **Agent runs in `/app`, not the vault** (top of BACKLOG Improvements). The
-  `claude-code` agent's working directory is the server cwd, so it cannot
-  read/write the vault (which is present and healthy at
-  `<dataDir>/workspaces/second-brain`); this is the real cause of slow, unhelpful
-  answers to vault questions. `config.cwd`/`workspaceRoot` do not redirect it;
-  needs SDK-internals investigation.
 - **Chat replies do not stream and `/messages` blocks for the whole turn**
-  (candidate milestone 39, top of BACKLOG Improvements). Behind a reverse proxy
+  (candidate milestone 40, in BACKLOG Improvements). Behind a reverse proxy
   this 504s on long turns. Mitigated for now by raised proxy read timeouts on
   nginx-proxy-manager; the proper server-side fix is scoped in BACKLOG.
 - Live Claude Code routing is verified, but the current Pro allowance returned
