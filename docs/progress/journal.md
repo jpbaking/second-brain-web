@@ -1109,3 +1109,5 @@ Tree clean at 69d46a0 (HANDOFF.md untracked). No active milestone; ad-hoc repair
 - 05:24 DONE: .chat-zoom-modal.is-diagram takes calc(100vw/vh - 48px); render effect pins the svg to its viewBox size then fit-and-centres it as the initial transform (scale ≤ 1). Lint, build, web tests (9) green.
 - 05:26 STARTED: centre mermaid diagrams in the chat transcript.
 - 05:27 DONE: .prose .mermaid-diagram svg { display block; margin-inline auto } — centres narrow diagrams, no effect on scrolling wide ones. Lint+build green.
+- 05:30 STARTED: text got selected while dragging a diagram in the zoom modal.
+- 05:30 DONE: userSelect none on the pannable viewport. Lint+build green.

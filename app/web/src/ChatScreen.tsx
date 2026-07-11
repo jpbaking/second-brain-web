@@ -209,7 +209,7 @@ function Mermaid ({ chart, zoomable = false, pannable = false }: { chart: string
         ? (
           <div
             ref={viewportRef}
-            style={{ overflow: 'hidden', width: '100%', height: '100%', cursor: drag.current !== null ? 'grabbing' : 'grab', touchAction: 'none' }}
+            style={{ overflow: 'hidden', width: '100%', height: '100%', cursor: drag.current !== null ? 'grabbing' : 'grab', touchAction: 'none', userSelect: 'none' }}
             onPointerDown={e => {
               drag.current = { startX: e.clientX, startY: e.clientY, x: view.x, y: view.y }
               e.currentTarget.setPointerCapture(e.pointerId)
