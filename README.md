@@ -31,7 +31,8 @@ The primary way to build and run locally is
 ```
 
 `configure` writes everything the runtime needs into the gitignored `.config/`
-directory: the secrets key (`.config/.env`), provider profiles with only
+directory: the secrets key plus the compose settings — bind address, port, and
+environment (`.config/.env`), provider profiles with only
 encrypted keys (`.config/providers.yaml`), and a generated vault SSH deploy key
 (`.config/deploy_key`). For each provider you pick the provider and enter its
 key first, then choose a model from the list it reports (type `f` to filter a

@@ -1,6 +1,6 @@
 # STATUS — single source of truth
 
-Updated: 2026-07-11 (active: milestone 33 — configure prompts for .env settings)
+Updated: 2026-07-11 (active: none — milestone 33 completed)
 
 ## Where we are
 
@@ -29,16 +29,14 @@ Updated: 2026-07-11 (active: milestone 33 — configure prompts for .env setting
 
 ## Active milestone
 
-Milestone 33 — configure prompts for the other .env settings
-(`docs/progress/milestones/milestone-33-configure-env-settings.md`)
-
-Prompt configure/configure.ps1 for BIND, PORT, and NODE_ENV (dev mode), not
-just the secrets key.
+None
 
 ## Next step
 
-m33-01: bash configure prompts for bind/port/dev-mode and writes all four keys
-to `.config/.env`.
+(Milestone 33 completed — configure/configure.ps1 now prompt for BIND, PORT, and
+NODE_ENV/dev-mode alongside the secrets key, writing all four to `.config/.env`
+with existing-value prefill on re-run. Select a new milestone from the backlog.
+Outstanding: PowerShell smoke-test of configure.ps1 on Windows.)
 
 ## Read before working
 

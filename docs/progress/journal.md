@@ -703,3 +703,11 @@ Principal directed: configure should also prompt for the other .env settings
 - 14:09 STARTED m33-01: bash configure prompts for bind/port/dev-mode.
 - 14:14 DONE m33-01: bash configure prompts for BIND/PORT (validated 1-65535)/dev-mode and writes all four keys to .config/.env. Added read_env_value + confirm_default helpers; existing values prefill on re-run. Verified `bash -n` + scripted runs: custom 0.0.0.0/9000/development written; blank re-run preserved them (+ secrets key not rotated); fresh defaults 127.0.0.1/8722/production; invalid port 99999 re-prompts.
 - 14:18 DONE m33-02: mirrored BIND/PORT/NODE_ENV prompts in configure.ps1 (Read-EnvValue + Confirm-Default helpers, port 1-65535 validation loop, dev-mode default from existing, four-key Set-Content write). Also fixed a leftover docker-boolean bug in Get-ProviderModels (now uses Test-DockerImage). No pwsh on host — verified by parity review; Windows run outstanding for principal.
+
+## 2026-07-11 14:20 — session end
+Milestone 33 complete and archived. configure + configure.ps1 now prompt for
+SECOND_BRAIN_WEB_BIND / PORT (validated 1-65535) / NODE_ENV (dev-mode yes-no),
+defaulting to existing .config/.env values or the documented defaults, and write
+all four keys. bash verified by scripted runs; ps1 by parity review (no pwsh —
+Windows smoke-test outstanding). Also fixed a latent docker-boolean bug in the
+ps1 Get-ProviderModels. README updated. Tree clean. Active: none.
