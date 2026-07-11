@@ -474,3 +474,6 @@ Tree clean at 8380b1c. Principal directed the next recommended backlog item; sel
 
 ## 2026-07-11 08:29 — session end (milestone 20 complete)
 Follow-up rows and edit defaults now omit terminal inline source-link Markdown while parser/API text stays canonical for source resolution and agent-routed actions. No milestone is active.
+
+## 2026-07-11 08:32 — session start
+Tree clean at c65653d. Principal directed the next recommended backlog item; selected dedicated-user isolation for bare-metal production. Active: milestone 21, next item: m21-01.

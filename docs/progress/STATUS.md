@@ -1,6 +1,6 @@
 # STATUS — single source of truth
 
-Updated: 2026-07-11 (milestone 20 complete)
+Updated: 2026-07-11 (milestone 21 active)
 
 ## Where we are
 
@@ -26,13 +26,13 @@ Updated: 2026-07-11 (milestone 20 complete)
 
 ## Current phase
 
-Backlog-driven. **No milestone is active.** Milestone 20 cleaned inline source
-attribution from follow-up presentation while preserving canonical API text.
+Backlog-driven. **Milestone 21 is active:** isolate bare-metal production under
+a dedicated system user so operator-global Cline skills/rules cannot merge in.
 Milestone 15 (YAML-only provider provisioning) remains designed and gated.
 
 ## Next step
 
-- None queued. Future work starts only when the principal says go.
+- Complete m21-01: add and validate the hardened systemd unit.
 
 ## Read before working
 
