@@ -12,6 +12,8 @@ import {
   writeOwnerAuth,
 } from '../src/auth/bootstrap.js'
 
+const SECRETS_ENV = { SECOND_BRAIN_WEB_SECRETS_KEY: 'owner-auth-test-key' }
+
 const scratch: string[] = []
 function tempDir (): string {
   const dir = mkdtempSync(path.join(tmpdir(), 'sbw-auth-'))
@@ -80,13 +82,16 @@ describe('writeOwnerAuth', () => {
   it('writes owner.json at mode 0600 with no plaintext password', async () => {
     const dir = tempDir()
     const { password, state } = await generateOwnerAuth()
-    const file = writeOwnerAuth(dir, state)
+    const file = writeOwnerAuth(dir, state, SECRETS_ENV)
 
     expect(file).toBe(path.join(dir, 'auth', OWNER_AUTH_FILE))
     expect(statSync(file).mode & 0o777).toBe(0o600)
     const contents = readFileSync(file, 'utf8')
     expect(contents).not.toContain(password)
+    expect(contents).not.toContain(state.totp.secretBase32)
     expect(JSON.parse(contents).password.hash).toBe(state.password.hash)
+    expect(JSON.parse(contents).version).toBe(2)
+    expect(JSON.parse(contents).totp.secretEncrypted).toMatch(/^v1:/)
   })
 
   it('enforces 0600 even when the file already exists more permissively', async () => {
@@ -100,22 +105,30 @@ describe('writeOwnerAuth', () => {
     const target = path.join(authFile, OWNER_AUTH_FILE)
     writeFileSync(target, 'stale', { mode: 0o644 })
 
-    writeOwnerAuth(dir, state)
+    writeOwnerAuth(dir, state, SECRETS_ENV)
     expect(statSync(target).mode & 0o777).toBe(0o600)
   })
 
   it('invalidates old auth state by replacing it on a repeat run', async () => {
     const dir = tempDir()
     const first = await generateOwnerAuth()
-    writeOwnerAuth(dir, first.state)
+    writeOwnerAuth(dir, first.state, SECRETS_ENV)
     const second = await generateOwnerAuth()
-    const file = writeOwnerAuth(dir, second.state)
+    const file = writeOwnerAuth(dir, second.state, SECRETS_ENV)
 
     // Fresh material each run, and the file holds only the latest.
     expect(second.state.password.hash).not.toBe(first.state.password.hash)
     expect(second.state.totp.secretBase32).not.toBe(first.state.totp.secretBase32)
     const persisted = JSON.parse(readFileSync(file, 'utf8'))
     expect(persisted.password.hash).toBe(second.state.password.hash)
-    expect(persisted.totp.secretBase32).toBe(second.state.totp.secretBase32)
+    expect(persisted.totp.secretBase32).toBeUndefined()
+    expect(persisted.totp.secretEncrypted).toMatch(/^v1:/)
+  })
+
+  it('refuses to persist owner state without the dedicated secrets key', async () => {
+    const dir = tempDir()
+    const { state } = await generateOwnerAuth()
+    expect(() => writeOwnerAuth(dir, state, {})).toThrow(/SECOND_BRAIN_WEB_SECRETS_KEY/)
+    expect(() => readFileSync(path.join(dir, 'auth', OWNER_AUTH_FILE))).toThrow()
   })
 })

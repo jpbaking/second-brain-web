@@ -420,3 +420,7 @@ Tree clean at aaf7213. Principal selected reset-auth session revocation from the
 
 ## 2026-07-11 07:57 — session end
 No implementation was needed: reset-auth session revocation was already shipped and remains verified. The stale backlog item is now recorded as resolved; no milestone is active.
+
+## 2026-07-11 07:58 — session start
+Tree clean at 98ac8de. Active: milestone 17, next item: m17-01.
+- 07:58 STARTED m17-01: define encrypted owner-state v2 persistence using only `SECOND_BRAIN_WEB_SECRETS_KEY`, with focused storage and key-failure tests.

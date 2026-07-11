@@ -3,6 +3,7 @@ import { randomBytes, randomInt } from 'node:crypto'
 import path from 'node:path'
 import { hash } from '@node-rs/argon2'
 import type { Algorithm } from '@node-rs/argon2'
+import { encryptSecret } from '../secrets/crypto.js'
 
 /** Owner auth state lives here, relative to the data root's `auth/` dir. */
 export const OWNER_AUTH_FILE = 'owner.json'
@@ -53,6 +54,16 @@ export interface OwnerAuthState {
     /** MVP: plaintext base32 secret in a 0600 file (phase-002 TOTP Storage). */
     secretBase32: string
     createdAt: string
+  }
+}
+
+/** On-disk owner state. The TOTP secret is never persisted in plaintext. */
+export interface PersistedOwnerAuthState {
+  version: 2
+  createdAt: string
+  password: OwnerAuthState['password']
+  totp: Omit<OwnerAuthState['totp'], 'secretBase32'> & {
+    secretEncrypted: string
   }
 }
 
@@ -177,11 +188,27 @@ export async function generateOwnerAuth (now = new Date()): Promise<GeneratedOwn
  * overwriting any previous state (which invalidates old credentials).
  * Returns the file path.
  */
-export function writeOwnerAuth (dataDir: string, state: OwnerAuthState): string {
+export function writeOwnerAuth (
+  dataDir: string,
+  state: OwnerAuthState,
+  env: NodeJS.ProcessEnv = process.env
+): string {
   const authDir = path.join(dataDir, 'auth')
   mkdirSync(authDir, { recursive: true, mode: 0o700 })
   const file = path.join(authDir, OWNER_AUTH_FILE)
-  writeFileSync(file, JSON.stringify(state, null, 2) + '\n', { mode: 0o600 })
+  const persisted: PersistedOwnerAuthState = {
+    version: 2,
+    createdAt: state.createdAt,
+    password: state.password,
+    totp: {
+      algorithm: state.totp.algorithm,
+      digits: state.totp.digits,
+      period: state.totp.period,
+      secretEncrypted: encryptSecret(state.totp.secretBase32, env),
+      createdAt: state.totp.createdAt,
+    },
+  }
+  writeFileSync(file, JSON.stringify(persisted, null, 2) + '\n', { mode: 0o600 })
   // writeFileSync's mode only applies on creation; enforce 0600 on an
   // existing file too, and against a permissive umask.
   chmodSync(file, 0o600)

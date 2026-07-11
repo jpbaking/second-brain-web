@@ -32,7 +32,7 @@ directed the next recommended backlog item on 2026-07-11. Milestone 15
 
 ## Next step
 
-- **m17-01:** define encrypted owner-state v2 and persistence helpers.
+- **m17-02:** decrypt v2 owner state and migrate legacy v1 state safely.
 - Checklist: `docs/progress/milestones/milestone-17-encrypted-totp.md`.
 
 ## Read before working
