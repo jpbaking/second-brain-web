@@ -29,13 +29,12 @@ Updated: 2026-07-12 (no active milestone; milestone 39 complete)
 
 ## Active milestone
 
-milestone 39 (Agent vault access) is complete. Archived checklist:
-`docs/progress/milestones/archive/milestone-39-vault-access.md`.
+milestone 40 (Stream chat replies live) is active. Checklist:
+`docs/progress/milestones/milestone-40-stream-chat.md`.
 
 ## Next step
 
-Await direction, or pick up milestone 40 (stream chat replies / stop blocking
-`/messages`) from BACKLOG when the principal says go.
+Execute m40-01.
 
 ## Read before working
 

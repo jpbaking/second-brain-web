@@ -939,3 +939,6 @@ Tree clean at a39dfac. Principal said go: fix vault access.
 
 ## 01:56 — session end
 Milestone 39 complete: the claude-code agent now operates in the vault (chdir on first agent start), live-verified end to end (lists + reads the vault). Container is running the fix. Next candidate: milestone 40 (chat streaming / non-blocking `/messages`).
+
+## 2026-07-12 02:27 — session start
+Tree clean at 4a3691b. Active: milestone 40, next item: m40-01.
