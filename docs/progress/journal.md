@@ -592,3 +592,6 @@ Tree clean at 0b8834e. Active: milestone 28, next item: m28-01.
 - 11:15 DONE m28-05: verified by `npm run build` → Preview implemented. Committing.
 - 11:15 DONE milestone 28: Rich diff review completed.
 - 11:15 NOTE m28-05: commit is dd3617d.
+
+## 2026-07-11 11:59 — session start
+Tree clean at 9c69fa5. Active: milestone 29, next item: m29-01.

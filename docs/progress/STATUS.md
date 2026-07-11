@@ -29,11 +29,11 @@ Updated: 2026-07-11 (active: milestone 28)
 
 ## Active milestone
 
-28: Rich Diff Review (`docs/progress/milestones/milestone-28-rich-diff-review.md`)
+29: Playwright Integration Testing (`docs/progress/milestones/milestone-29-playwright-e2e.md`)
 
 ## Next step
 
-Wait for principal to pick the next milestone.
+m29-01: Scaffold Playwright configuration in `app/test/e2e`.
 
 ## Read before working
 
