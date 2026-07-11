@@ -1,6 +1,6 @@
 # STATUS — single source of truth
 
-Updated: 2026-07-11 (milestone 17 complete)
+Updated: 2026-07-11 (milestone 18 activated)
 
 ## Where we are
 
@@ -26,19 +26,20 @@ Updated: 2026-07-11 (milestone 17 complete)
 
 ## Current phase
 
-Backlog-driven. **No milestone is active.** Milestone 17 encrypted the owner
-TOTP secret at rest and safely migrates legacy state. Milestone 15 (YAML-only
+**Milestone 18 — native Gemini provider is active.** The principal directed
+the next recommended backlog item on 2026-07-11. Milestone 15 (YAML-only
 provider provisioning) remains fully designed and gated.
 
 ## Next step
 
-- None queued. Future work starts only when the principal says go.
+- **m18-01:** add Gemini to SDK mapping and provider API validation.
+- Checklist: `docs/progress/milestones/milestone-18-gemini-provider.md`.
 
 ## Read before working
 
 - `AGENTS-PLAYBOOK.md` — always, top to bottom.
-- `docs/progress/BACKLOG.md` — the work queue.
-- The design and project-plan documents relevant to the selected item.
+- `docs/progress/milestones/milestone-18-gemini-provider.md`.
+- `docs/project-plan/master-plan.md` — provider-key security rules.
 
 ## Questions for the principal
 
