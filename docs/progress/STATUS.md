@@ -29,18 +29,17 @@ Updated: 2026-07-11 (no active milestone)
 
 ## Current phase
 
-No milestone is active. Work exists only in `docs/progress/BACKLOG.md` and
-starts only when the principal says go.
+Milestone 27 (Principal Profile) is active.
 
 ## Next step
 
-- None. Awaiting principal direction.
+- m27-01: Create migration 12 in `app/server/src/migrations.ts` to add `principal_profile` table.
 
 ## Read before working
 
 - `AGENTS-PLAYBOOK.md` — always, top to bottom.
 - `docs/progress/BACKLOG.md` — the work queue.
-- The design and project-plan documents relevant to the selected item.
+- `docs/progress/milestones/milestone-27-principal-profile.md` — current milestone.
 
 ## Questions for the principal
 

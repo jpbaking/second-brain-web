@@ -561,3 +561,6 @@ Contradiction and staleness radar shipped. Reverting to no active milestone. Awa
 
 ## 2026-07-11 10:27 — session end (milestone 26 complete)
 Scheduled briefs mode shipped. Reverting to no active milestone. Awaiting principal direction.
+
+## 2026-07-11 10:30 — session start
+Tree clean at 0b502b6. Active: milestone 27, next item: m27-01.
