@@ -17,6 +17,23 @@ function payloadText (payload: unknown): string | undefined {
   return event !== undefined && typeof event.text === 'string' ? event.text : undefined
 }
 
+function agentContent (payload: unknown): { answer?: string, reasoning?: string } {
+  if (payload === null || typeof payload !== 'object') return {}
+  const p = payload as Record<string, unknown>
+  const isReasoning = p.contentType === 'reasoning'
+  if (isReasoning) {
+    if (typeof p.accumulated === 'string') return { reasoning: p.accumulated }
+    if (typeof p.reasoning === 'string') return { reasoning: p.reasoning }
+    if (typeof p.text === 'string') return { reasoning: p.text }
+    return {}
+  }
+  if (typeof p.accumulated === 'string') return { answer: p.accumulated }
+  if ((p.type === 'content_end' || p.type === 'done') && typeof p.text === 'string') return { answer: p.text }
+  // Older providers expose cumulative text directly without typed content.
+  if (typeof p.text === 'string' && typeof p.type !== 'string') return { answer: p.text }
+  return {}
+}
+
 export function splitThinking (text: string): { answer: string, reasoning: string } {
   const reasoning: string[] = []
   const answer = text.replace(/<thinking>([\s\S]*?)(?:<\/thinking>|$)/g, (_match, body: string) => {
@@ -33,6 +50,7 @@ export function foldTranscript (events: ChatEvent[], isLive: boolean): { lines: 
   let assistant: Line | null = null
   let chunkText = ''
   let snapshotText: string | undefined
+  let reasoningSnapshot = ''
   let isProcessing = false
   let statusText: string | undefined
 
@@ -47,7 +65,7 @@ export function foldTranscript (events: ChatEvent[], isLive: boolean): { lines: 
     const line = ensureAssistant(seq)
     const parsed = splitThinking(snapshotText ?? chunkText)
     line.text = parsed.answer
-    line.reasoning = parsed.reasoning
+    line.reasoning = [reasoningSnapshot, parsed.reasoning].filter(Boolean).join('\n\n')
   }
 
   for (const e of events) {
@@ -55,6 +73,7 @@ export function foldTranscript (events: ChatEvent[], isLive: boolean): { lines: 
       assistant = null
       chunkText = ''
       snapshotText = undefined
+      reasoningSnapshot = ''
       isProcessing = true
       statusText = undefined
       lines.push({ key: `u-${e.seq}`, role: 'user', text: payloadText(e.payload) ?? '' })
@@ -69,10 +88,16 @@ export function foldTranscript (events: ChatEvent[], isLive: boolean): { lines: 
       }
     } else if (e.type === 'chunk' || e.type === 'agent_event') {
       isProcessing = true
-      const text = payloadText(e.payload)
-      if (text === undefined || text === '') continue
-      if (e.type === 'chunk') chunkText += text
-      else snapshotText = text
+      if (e.type === 'agent_event') {
+        const content = agentContent(e.payload)
+        if (content.answer !== undefined) snapshotText = content.answer
+        if (content.reasoning !== undefined) reasoningSnapshot = content.reasoning
+        if (content.answer === undefined && content.reasoning === undefined) continue
+      } else {
+        const text = payloadText(e.payload)
+        if (text === undefined || text === '') continue
+        chunkText += text
+      }
       updateAssistant(e.seq)
     } else if (e.type === 'approval_request') {
       const p = e.payload as { toolCallId?: string, toolName?: string }

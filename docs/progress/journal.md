@@ -986,3 +986,11 @@ Tree clean at 6b02546. Principal approved the recommended durable reasoning tran
 
 ## 03:08 — session end
 Milestone 42 complete: incremental words accumulate, cumulative snapshots do not duplicate, and emitted reasoning/activity remains available in collapsible transcript details. Awaiting direction.
+
+## 2026-07-12 03:11 — session start
+Tree clean at b91f0a1. Principal reports reasoning still flashes one word at a time after milestone 42.
+- 03:11 REPAIR STARTED: inspected live SQLite events. LM Studio `agent_event` content deltas carry `text` (one token) and the full sentence in `accumulated`; completed reasoning is typed as `content_end` with `contentType: reasoning` and a `reasoning` field. Fix extraction against these real payloads.
+- 03:12 REPAIR DONE: typed extraction now uses LM Studio `accumulated` for live text/reasoning, `reasoning` for completed reasoning, and final `text` for `content_end`/`done`; raw wrapper chunks remain ignored to avoid duplicating the paired agent event. Added exact live-payload regressions. Verified by clean lint, 332 server + 7 web tests, and full build.
+
+## 03:12 — session end
+LM Studio one-token flashing root cause fixed from live event evidence; rebuilding the running container for handoff.

@@ -22,6 +22,27 @@ describe('foldTranscript', () => {
     expect(result.lines[1]?.text).toBe('The answer is here.')
   })
 
+  it('uses LM Studio accumulated content instead of its one-token text delta', () => {
+    const result = foldTranscript([
+      { seq: 1, type: 'user_message', payload: { text: 'Question' } },
+      { seq: 2, type: 'agent_event', payload: { type: 'content_start', contentType: 'text', text: 'The', accumulated: 'The' } },
+      { seq: 3, type: 'agent_event', payload: { type: 'content_start', contentType: 'text', text: ' answer', accumulated: 'The answer' } },
+      { seq: 4, type: 'agent_event', payload: { type: 'content_start', contentType: 'text', text: ' builds.', accumulated: 'The answer builds.' } },
+    ], true)
+    expect(result.lines[1]?.text).toBe('The answer builds.')
+  })
+
+  it('preserves typed LM Studio reasoning content', () => {
+    const result = foldTranscript([
+      { seq: 1, type: 'user_message', payload: { text: 'Question' } },
+      { seq: 2, type: 'agent_event', payload: { type: 'content_start', contentType: 'reasoning', text: 'Checking', accumulated: 'Checking' } },
+      { seq: 3, type: 'agent_event', payload: { type: 'content_start', contentType: 'reasoning', text: ' notes', accumulated: 'Checking notes' } },
+      { seq: 4, type: 'agent_event', payload: { type: 'content_end', contentType: 'reasoning', reasoning: 'Checking notes carefully.' } },
+      { seq: 5, type: 'agent_event', payload: { type: 'done', text: 'Answer.' } },
+    ], true)
+    expect(result.lines[1]).toMatchObject({ text: 'Answer.', reasoning: 'Checking notes carefully.' })
+  })
+
   it('uses snapshots as canonical when both stream forms are emitted', () => {
     const result = foldTranscript([
       { seq: 1, type: 'user_message', payload: { text: 'Question' } },
