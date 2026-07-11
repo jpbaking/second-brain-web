@@ -647,3 +647,12 @@ STATUS at it. Next item: m31-01.
 - 13:50 DONE m31-06: docker-compose mounts .config/{providers.yaml,deploy_key,deploy_key.pub} + sets SECOND_BRAIN_WEB_SSH_KEY_PATH; .gitignore ignores .config/. Verified `git check-ignore` and `docker compose config` render (mounts + env present).
 - 13:51 STARTED m31-07: update README + STATUS quick-start to .config/ flow.
 - 13:53 DONE m31-07: README + STATUS quick-start updated to .config/ flow; ps1 port note in BACKLOG. Verified by grep.
+
+## 2026-07-11 13:55 — session end
+Milestone 31 (configure revamp) complete: all 7 items ticked and archived.
+Delivered: SSH key import at boot (m31-01), /api/vault/public-key + Vault-page
+display (m31-02/03), listModels()+list-models CLI (m31-04), rewritten configure
+with retry-in-place + model picker + keypair gen writing to .config/ (m31-05),
+compose .config mounts + SSH_KEY_PATH (m31-06), docs (m31-07). 14 new server
+tests + 1 e2e green; full build clean. Tree clean. Active: none — pick next
+from BACKLOG (configure.ps1 port is queued there).
