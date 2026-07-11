@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 import ReactMarkdown from 'react-markdown'
 import remarkGfm from 'remark-gfm'
+import mermaid from 'mermaid'
 import { foldTranscript } from './chat-transcript.js'
 import type { ChatEvent } from './chat-transcript.js'
 
@@ -48,6 +49,31 @@ function titleFrom (text: string): string {
 }
 
 interface LockState { held: boolean, stale: boolean, lock: { sessionId: string | null, operation: string | null } | null }
+
+mermaid.initialize({ startOnLoad: false, theme: 'default' })
+
+function Mermaid ({ chart }: { chart: string }) {
+  const containerRef = useRef<HTMLDivElement>(null)
+  useEffect(() => {
+    let active = true
+    const renderChart = async () => {
+      try {
+        const id = `mermaid-${Math.random().toString(36).substring(2)}`
+        const { svg } = await mermaid.render(id, chart)
+        if (active && containerRef.current) {
+          containerRef.current.innerHTML = svg
+        }
+      } catch (err) {
+        if (active && containerRef.current) {
+          containerRef.current.innerText = `Mermaid syntax error: ${err instanceof Error ? err.message : String(err)}`
+        }
+      }
+    }
+    renderChart().catch(() => {})
+    return () => { active = false }
+  }, [chart])
+  return <div ref={containerRef} className='mermaid-diagram' style={{ overflowX: 'auto', background: 'var(--surface)', padding: 'var(--space-2)', borderRadius: 'var(--radius-md)' }} />
+}
 
 export function ChatScreen ({ mode }: { mode: ChatMode }) {
   const [providers, setProviders] = useState<ProviderProfile[]>([])
@@ -291,7 +317,24 @@ export function ChatScreen ({ mode }: { mode: ChatMode }) {
                     )}
                     {l.text !== '' && (
                       <div className={`chat-bubble${l.role === 'assistant' ? ' prose' : ''}`}>
-                        {l.role === 'assistant' ? <ReactMarkdown remarkPlugins={[remarkGfm]}>{l.text}</ReactMarkdown> : l.text}
+                        {l.role === 'assistant'
+                          ? (
+                            <ReactMarkdown
+                              remarkPlugins={[remarkGfm]}
+                              components={{
+                                code ({ node, className, children, ...props }) {
+                                  const match = /language-(\w+)/.exec(className || '')
+                                  if (match && match[1] === 'mermaid') {
+                                    return <Mermaid chart={String(children).replace(/\n$/, '')} />
+                                  }
+                                  return <code className={className} {...props}>{children}</code>
+                                }
+                              }}
+                            >
+                              {l.text}
+                            </ReactMarkdown>
+                            )
+                          : l.text}
                       </div>
                     )}
                   </div>

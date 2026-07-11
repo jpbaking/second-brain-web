@@ -29,11 +29,11 @@ Updated: 2026-07-12 (no active milestone; milestone 45 complete)
 
 ## Active milestone
 
-Milestone 46 (Markdown messages) is complete. Archived checklist:
-`docs/progress/milestones/archive/milestone-46-markdown-messages.md`.
+Milestone 47 (Mermaid Support) is complete. Archived checklist:
+`docs/progress/milestones/archive/milestone-47-mermaid-support.md`.
 
-Archived: Milestone 45 (Weak-model system prompt) is complete. Archived checklist:
-`docs/progress/milestones/archive/milestone-45-weak-model-prompt.md`.
+Archived: Milestone 46 (Markdown messages) is complete. Archived checklist:
+`docs/progress/milestones/archive/milestone-46-markdown-messages.md`.
 
 ## Next step
 

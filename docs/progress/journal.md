@@ -1061,3 +1061,14 @@ Markdown rendering for agent messages using react-markdown is implemented and ve
 Tree DIRTY (untracked). Principal reported a bug with markdown tables and code blocks.
 - 03:56 REPAIR: added `remark-gfm` to fix table parsing in `react-markdown` and updated `components.css` to prevent `overflow-wrap: anywhere` from breaking `.prose pre` formatting.
 - 03:57 DONE REPAIR: verified by `npm test` and `npm run build` locally.
+
+## 2026-07-12 03:57 — session start
+Tree clean at a7f3ad6. Active: milestone 47, next item: m47-01.
+- 03:57 STARTED m47-01: Add `mermaid` to the `web` workspace.
+- 03:57 DONE m47-01: `npm install --workspace web mermaid`.
+- 03:58 STARTED m47-02: render `mermaid` code blocks as diagrams in `ChatScreen`.
+- 03:59 DONE m47-02: integrated `mermaid` into `react-markdown` via a custom `code` component matching `language-mermaid`. Verified with `npm test` and `npm run build`.
+- 03:59 DONE milestone 47 (Mermaid Support).
+
+## 2026-07-12 03:59 — session end
+Mermaid support implemented in ChatScreen. Awaiting direction.
