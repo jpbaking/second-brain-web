@@ -28,5 +28,5 @@ This milestone addresses glaring layout and theme compliance issues identified a
 - [x] Replace references to the undefined `.btn-ghost` class with `.btn-quiet`.
 
 ## Wrap-up
-- [ ] Verify the fixes visually by checking the local dev server.
-- [ ] Archive this checklist to `docs/progress/milestones/archive/` and update `BACKLOG.md` accordingly.
+- [x] Verify the fixes visually by checking the local dev server.
+- [x] Archive this checklist to `docs/progress/milestones/archive/` and update `BACKLOG.md` accordingly.

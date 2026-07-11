@@ -29,11 +29,11 @@ Updated: 2026-07-11 (active: none — milestone 34 completed)
 
 ## Active milestone
 
-Milestone 35: Layout & Theme UI Fixes (docs/progress/milestones/milestone-35-layout-theme-fixes.md)
+None
 
 ## Next step
 
-Next: m35-01 (ProfileScreen.tsx rewrite)
+Select a new milestone from the backlog. Outstanding: PowerShell launcher smoke-test on Windows.
 
 ## Read before working
 
