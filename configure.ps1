@@ -105,6 +105,21 @@ function Select-Model([string[]]$Models) {
 
 function New-SecretsKey { [Convert]::ToBase64String([Security.Cryptography.RandomNumberGenerator]::GetBytes(32)) }
 
+# Read the value of KEY=... from a file (last occurrence), or ''.
+function Read-EnvValue([string]$Key, [string]$File) {
+  if (-not $File -or -not (Test-Path $File)) { return '' }
+  $line = Get-Content $File | Where-Object { $_ -match "^$Key=" } | Select-Object -Last 1
+  if ($line) { return $line.Substring($line.IndexOf('=') + 1) }
+  return ''
+}
+
+# Yes/no with a default (y|n) applied on blank input; returns $true for yes.
+function Confirm-Default([string]$Prompt, [string]$Default) {
+  $ans = Read-Host $Prompt
+  if (-not $ans) { $ans = $Default }
+  $ans -match '^[Yy]$'
+}
+
 # ---- app CLI bridges (dist first, then the docker image) --------------------
 
 # True when the second-brain-web image is available locally.
@@ -140,7 +155,7 @@ function Get-ProviderModels([string]$Provider, [string]$BaseUrl, [string]$ApiKey
       if ($LASTEXITCODE -eq 0) { return @($out | Where-Object { $_ -ne '' }) }
       return $null
     }
-    if ((Get-Command docker -ErrorAction SilentlyContinue) -and (& docker image inspect second-brain-web 2>$null; $LASTEXITCODE -eq 0)) {
+    if (Test-DockerImage) {
       $out = $ApiKey | & docker run --rm -i -e SBW_LIST_PROVIDER=$Provider -e SBW_LIST_BASE_URL=$BaseUrl second-brain-web node server/dist/cli/list-models.js 2>$null
       if ($LASTEXITCODE -eq 0) { return @($out | Where-Object { $_ -ne '' }) }
       return $null
@@ -150,18 +165,12 @@ function Get-ProviderModels([string]$Provider, [string]$BaseUrl, [string]$ApiKey
   finally { $env:SBW_LIST_PROVIDER = $oldP; $env:SBW_LIST_BASE_URL = $oldB }
 }
 
-# ---- secrets key ------------------------------------------------------------
+# ---- secrets key + runtime settings -----------------------------------------
 
-$SecretsKey = $null
-if (Test-Path $EnvFile) {
-  $line = Get-Content $EnvFile | Where-Object { $_ -match '^SECOND_BRAIN_WEB_SECRETS_KEY=' } | Select-Object -Last 1
-  if ($line) { $SecretsKey = $line.Substring($line.IndexOf('=') + 1) }
-} elseif (Test-Path $RootEnv) {
-  # Migration: pick up a key written by a previous root-level configure.
-  $line = Get-Content $RootEnv | Where-Object { $_ -match '^SECOND_BRAIN_WEB_SECRETS_KEY=' } | Select-Object -Last 1
-  if ($line) { $SecretsKey = $line.Substring($line.IndexOf('=') + 1) }
-}
+# Prior values come from .config/.env, or a legacy root .env on first migration.
+$SrcEnv = if (Test-Path $EnvFile) { $EnvFile } elseif (Test-Path $RootEnv) { $RootEnv } else { '' }
 
+$SecretsKey = Read-EnvValue 'SECOND_BRAIN_WEB_SECRETS_KEY' $SrcEnv
 if ($SecretsKey) {
   if (Confirm-Yes 'Rotate the existing secrets key? (invalidates every stored provider key) [y/N]') {
     $SecretsKey = New-SecretsKey
@@ -172,7 +181,33 @@ if ($SecretsKey) {
   Write-Host 'Generated SECOND_BRAIN_WEB_SECRETS_KEY.'
 }
 
-Set-Content -Path $EnvFile -Value "SECOND_BRAIN_WEB_SECRETS_KEY=$SecretsKey" -Encoding utf8NoBOM
+$DefaultBind = Read-EnvValue 'SECOND_BRAIN_WEB_BIND' $SrcEnv
+if (-not $DefaultBind) { $DefaultBind = '127.0.0.1' }
+$Bind = Read-Host "Host publish address (BIND) [$DefaultBind]"
+if (-not $Bind) { $Bind = $DefaultBind }
+
+$DefaultPort = Read-EnvValue 'SECOND_BRAIN_WEB_PORT' $SrcEnv
+if (-not $DefaultPort) { $DefaultPort = '8722' }
+$Port = ''
+while ($true) {
+  $Port = Read-Host "Host port [$DefaultPort]"
+  if (-not $Port) { $Port = $DefaultPort }
+  if (($Port -match '^\d+$') -and ([int]$Port -ge 1) -and ([int]$Port -le 65535)) { break }
+  Write-Host 'Port must be a number between 1 and 65535.'
+}
+
+# NODE_ENV: production unless the operator opts into development (drops the
+# Secure cookie flag - plain-HTTP LAN only).
+$DevDefault = if ((Read-EnvValue 'SECOND_BRAIN_WEB_NODE_ENV' $SrcEnv) -eq 'development') { 'y' } else { 'n' }
+$DevHint = if ($DevDefault -eq 'y') { 'Y/n' } else { 'y/N' }
+$NodeEnv = if (Confirm-Default "Enable development mode? (disables Secure auth cookies - plain-HTTP LAN only) [$DevHint]" $DevDefault) { 'development' } else { 'production' }
+
+Set-Content -Path $EnvFile -Encoding utf8NoBOM -Value @(
+  "SECOND_BRAIN_WEB_SECRETS_KEY=$SecretsKey"
+  "SECOND_BRAIN_WEB_BIND=$Bind"
+  "SECOND_BRAIN_WEB_PORT=$Port"
+  "SECOND_BRAIN_WEB_NODE_ENV=$NodeEnv"
+)
 Set-FileMode $ConfigDir '700'
 Set-FileMode $EnvFile '600'
 

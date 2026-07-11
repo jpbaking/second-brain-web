@@ -28,6 +28,6 @@ Defaults / semantics (from `.env.example` + `docker-compose.yaml`):
       the entered bind/port and `SECOND_BRAIN_WEB_NODE_ENV=development`; a
       blank-input run yields the defaults; `bash -n configure`.
 
-- [ ] **m33-02** Mirror the same prompts/validation/write in `configure.ps1`.
+- [x] **m33-02** Mirror the same prompts/validation/write in `configure.ps1`.
       Verify: structured parity review against the bash version (no pwsh on the
       host); principal runs on Windows.
