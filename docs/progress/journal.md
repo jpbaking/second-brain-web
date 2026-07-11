@@ -464,3 +464,6 @@ Docker runtime installation is scoped to server production dependencies. The sli
 
 ## 2026-07-11 08:25 — playbook notification update (principal-directed)
 - 08:25 DONE progress: added the `agent-bell` audible notification protocol for completed turns and waits requiring principal action; verified `/home/j.baking/.local/bin/agent-bell` is available on PATH.
+
+## 2026-07-11 08:27 — session start
+Tree clean at 8380b1c. Principal directed the next recommended backlog item; selected the self-contained follow-up display cleanup. Active: milestone 20, next item: m20-01.

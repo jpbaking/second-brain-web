@@ -1,6 +1,6 @@
 # STATUS — single source of truth
 
-Updated: 2026-07-11 (milestone 19 complete)
+Updated: 2026-07-11 (milestone 20 active)
 
 ## Where we are
 
@@ -26,13 +26,13 @@ Updated: 2026-07-11 (milestone 19 complete)
 
 ## Current phase
 
-Backlog-driven. **No milestone is active.** Milestone 19 scoped the Docker
-runtime install to server production dependencies, excluding React/ReactDOM.
+Backlog-driven. **Milestone 20 is active:** clean source-attribution Markdown
+from follow-up presentation while preserving canonical parser/API text.
 Milestone 15 (YAML-only provider provisioning) remains designed and gated.
 
 ## Next step
 
-- None queued. Future work starts only when the principal says go.
+- Complete m20-01: add and wire the presentation-only text formatter.
 
 ## Read before working
 
