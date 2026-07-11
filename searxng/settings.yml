@@ -1,0 +1,19 @@
+# SearXNG settings for second-brain-web (milestone 48). Mounted read-only at
+# /etc/searxng/settings.yml. The instance is internal-only (no published port;
+# reachable solely as http://searxng:8080 on the compose network), so the
+# secret_key below protects nothing security-relevant — it only signs
+# preference cookies that no browser ever sees.
+use_default_settings: true
+
+server:
+  secret_key: 'second-brain-web-internal-only'
+  # The bot-detection limiter needs valkey and only matters for public
+  # instances; the app is the sole client here.
+  limiter: false
+  image_proxy: false
+
+search:
+  # The app's web_search MCP tool consumes the JSON API (disabled by default).
+  formats:
+    - html
+    - json

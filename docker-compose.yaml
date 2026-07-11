@@ -33,6 +33,9 @@ services:
       # on http://localhost and behind HTTPS, but NOT over plain http on a LAN
       # IP. Only relax this for LAN-without-TLS experiments.
       NODE_ENV: '${SECOND_BRAIN_WEB_NODE_ENV:-production}'
+      # Enables the chat agent's web__search / web__fetch tools (milestone 48).
+      # Unset it to run without the searxng service.
+      SECOND_BRAIN_WEB_SEARXNG_URL: 'http://searxng:8080'
     volumes:
       - sbw-data:/data
       # Runtime config lives in the gitignored .config/ dir, produced by
@@ -49,6 +52,25 @@ services:
       retries: 3
     # Matches compose-helper's DCH_STOP_TIMEOUT default.
     stop_grace_period: 30s
+
+  # Self-hosted metasearch backing the chat agent's web tools (milestone 48).
+  # Internal-only: no published port; the app reaches it at http://searxng:8080.
+  searxng:
+    image: searxng/searxng
+    restart: unless-stopped
+    volumes:
+      - ./searxng/settings.yml:/etc/searxng/settings.yml:ro
+    cap_drop:
+      - ALL
+    cap_add:
+      - CHOWN
+      - SETGID
+      - SETUID
+    logging:
+      driver: json-file
+      options:
+        max-size: 1m
+        max-file: '1'
 
 volumes:
   sbw-data:
