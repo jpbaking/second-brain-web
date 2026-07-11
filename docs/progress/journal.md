@@ -439,3 +439,5 @@ Owner TOTP secrets are encrypted at rest exclusively with `SECOND_BRAIN_WEB_SECR
 ## 2026-07-11 08:09 — session start
 Tree clean at 4cf8ce8. Active: milestone 18, next item: m18-01.
 - 08:09 STARTED m18-01: add Gemini to the native SDK mapping and provider API allow-list with focused regressions.
+- 08:11 DONE m18-01: verified by `npm test --workspace server -- agent-runner.test.ts provider-api.test.ts` → 16 tests green. Commit e89532c.
+- 08:11 STARTED m18-02: add a Gemini-specific read-only connectivity probe using the official models endpoint and API-key header.

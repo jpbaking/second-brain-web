@@ -32,7 +32,7 @@ provider provisioning) remains fully designed and gated.
 
 ## Next step
 
-- **m18-02:** add Gemini-aware provider connectivity testing.
+- **m18-03:** add Gemini to provider settings and run the full gate.
 - Checklist: `docs/progress/milestones/milestone-18-gemini-provider.md`.
 
 ## Read before working

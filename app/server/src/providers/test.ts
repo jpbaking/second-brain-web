@@ -31,6 +31,9 @@ export async function testProvider (input: ProviderTestInput, timeoutMs = 10_000
       headers['x-api-key'] = input.apiKey
       headers['anthropic-version'] = '2023-06-01'
     }
+  } else if (input.providerId === 'gemini') {
+    url = `${stripSlash(input.baseUrl ?? 'https://generativelanguage.googleapis.com')}/v1beta/models`
+    if (input.apiKey !== undefined) headers['x-goog-api-key'] = input.apiKey
   } else {
     // openai and openai-compatible both speak the OpenAI REST shape.
     url = `${stripSlash(input.baseUrl ?? 'https://api.openai.com/v1')}/models`

@@ -46,6 +46,26 @@ async function stubProvider (validKey: string): Promise<string> {
   return `http://127.0.0.1:${port}`
 }
 
+/** A stub for Gemini's model-list endpoint and x-goog-api-key authentication. */
+async function stubGeminiProvider (validKey: string): Promise<string> {
+  const server = createServer((req, res) => {
+    if (req.url === '/v1beta/models') {
+      if (req.headers['x-goog-api-key'] === validKey && req.headers.authorization === undefined) {
+        res.writeHead(200, { 'content-type': 'application/json' })
+        res.end(JSON.stringify({ models: [] }))
+        return
+      }
+      res.writeHead(403).end('forbidden')
+      return
+    }
+    res.writeHead(404).end('not found')
+  })
+  servers.push(server)
+  await new Promise<void>(resolve => server.listen(0, '127.0.0.1', resolve))
+  const { port } = server.address() as AddressInfo
+  return `http://127.0.0.1:${port}`
+}
+
 async function authedApp (secretsKey: string): Promise<{ app: FastifyInstance, cookie: string }> {
   const root = mkdtempSync(path.join(tmpdir(), 'sbw-provtest-'))
   scratch.push(root)
@@ -114,6 +134,21 @@ describe('testProvider (unit)', () => {
     expect(result.ok).toBe(false)
     expect(result.status).toBe(null)
     expect(result.message).not.toContain('sk-x')
+  })
+
+  it('tests Gemini through v1beta/models with x-goog-api-key', async () => {
+    const key = 'gemini-test-key'
+    const base = await stubGeminiProvider(key)
+    const result = await testProvider({ providerId: 'gemini', baseUrl: base, modelId: 'gemini-2.5-pro', apiKey: key })
+    expect(result).toMatchObject({ ok: true, status: 200 })
+  })
+
+  it('reports a rejected Gemini key without leaking it', async () => {
+    const base = await stubGeminiProvider('right-key')
+    const badKey = 'wrong-gemini-secret'
+    const result = await testProvider({ providerId: 'gemini', baseUrl: base, modelId: 'gemini-2.5-pro', apiKey: badKey })
+    expect(result).toMatchObject({ ok: false, status: 403 })
+    expect(result.message).not.toContain(badKey)
   })
 })
 
