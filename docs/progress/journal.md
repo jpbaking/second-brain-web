@@ -960,3 +960,5 @@ Tree clean at f0d9f4b. Principal directed expansion of chat controls: mutable pr
 - 02:52 DONE m41-01: active chats retain provider/approval controls; PATCH updates both. Provider changes stop the current SDK binding, append a new captured config, and rehydrate the next turn under that provider. Verified by 25 focused tests and full server/web build.
 - 02:52 STARTED m41-02: add abort-turn service/API support and an Abort composer action while processing.
 - 02:53 DONE m41-02: wired runner stop through service and POST abort route; composer swaps Send for Abort during processing. Verified by 18 focused tests and web build.
+- 02:53 STARTED m41-03: add persistent pinned state, pinned-first ordering, and sidebar controls.
+- 02:54 DONE m41-03: schema v14 adds pinned state; active sessions list pinned-first then by activity; sidebar exposes pin/unpin stars. Verified by 16 focused tests and web build.

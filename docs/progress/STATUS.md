@@ -34,7 +34,7 @@ Milestone 41: Expanded chat controls. Checklist:
 
 ## Next step
 
-Implement m41-03: persistent pinned chats and pinned-first ordering.
+Implement m41-04: clear-history choices, optionally preserving pinned chats.
 
 ## Read before working
 

@@ -10,7 +10,7 @@ import type { ReactNode } from 'react'
  * viewports and an off-canvas drawer (behind a top hamburger bar) below.
  */
 
-interface ChatSessionSummary { id: string, title: string, status: string }
+interface ChatSessionSummary { id: string, title: string, status: string, pinned: boolean }
 
 interface NavItem { href: string, label: string }
 
@@ -101,6 +101,13 @@ export function AppShell ({ path: initialPath, children }: { path: string, child
 
   const chatId = activeChatId(path)
 
+  const togglePin = async (session: ChatSessionSummary) => {
+    const res = await fetch(`/api/chat/sessions/${session.id}`, {
+      method: 'PATCH', credentials: 'same-origin', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ pinned: !session.pinned })
+    })
+    if (res.ok) await loadSessions()
+  }
+
   if (onboarding === null) return null
 
   let navItems = NAV_ITEMS
@@ -167,8 +174,9 @@ export function AppShell ({ path: initialPath, children }: { path: string, child
                         aria-current={s.id === chatId ? 'page' : undefined}
                         title={s.title}
                       >
-                        {s.title}
+                        {s.pinned ? '★ ' : ''}{s.title}
                       </a>
+                      <button className='sidebar-chat-pin' type='button' aria-label={s.pinned ? `Unpin ${s.title}` : `Pin ${s.title}`} onClick={() => { togglePin(s).catch(() => {}) }}>{s.pinned ? '★' : '☆'}</button>
                     </li>
                   ))}
                 </ul>

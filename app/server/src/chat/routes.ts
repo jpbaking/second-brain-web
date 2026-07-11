@@ -3,7 +3,7 @@ import { resolveDefaultSnapshot, resolveSnapshot } from '../providers/snapshot.j
 import { vaultWorkspacePath } from '../vault/config.js'
 import { AgentSessionService } from '../agent/session.js'
 import { WorkflowNotFoundError, expandWorkflow, listWorkflows } from '../agent/workflows.js'
-import { closeSession, getSession, listSessions, readEventsSince, renameSession } from '../agent/chat-store.js'
+import { closeSession, getSession, listSessions, readEventsSince, renameSession, setSessionPinned } from '../agent/chat-store.js'
 import type { AgentRunner } from '../agent/runner.js'
 import type { AppConfig } from '../config.js'
 import type { FastifyInstance } from 'fastify'
@@ -35,7 +35,7 @@ export function registerChatRoutes (app: FastifyInstance, config: AppConfig, run
   })
 
   app.post('/api/chat/sessions', async (req, reply) => {
-    const body = (req.body ?? {}) as { title?: unknown, providerProfileId?: unknown, approvalPreset?: unknown }
+    const body = (req.body ?? {}) as { title?: unknown, providerProfileId?: unknown, approvalPreset?: unknown, pinned?: unknown }
     const title = str(body.title) ?? 'New chat'
     const providerProfileId = str(body.providerProfileId) ?? null
     const approvalPreset = (body.approvalPreset === 'read-only' || body.approvalPreset === 'high-trust') ? body.approvalPreset : 'normal'
@@ -69,6 +69,10 @@ export function registerChatRoutes (app: FastifyInstance, config: AppConfig, run
       try { return await service.updateConfig(id, providerProfileId, approvalPreset) } catch (err) {
         return await reply.code(400).send({ error: err instanceof Error ? err.message : 'could not update session' })
       }
+    }
+    if (typeof body.pinned === 'boolean') {
+      if (!setSessionPinned(db, id, body.pinned)) return await reply.code(404).send({ error: 'session not found' })
+      return getSession(db, id)
     }
     if (title === undefined) return await reply.code(400).send({ error: 'an update is required' })
     return getSession(db, id)

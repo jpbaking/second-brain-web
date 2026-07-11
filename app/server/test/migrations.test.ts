@@ -41,7 +41,7 @@ describe('database migrations', () => {
     expect(tableExists(sidecar, 'vault_index_metadata')).toBe(true)
     expect(tableExists(sidecar, 'vault_search')).toBe(true)
     expect(tableExists(sidecar, 'vault_links')).toBe(true)
-    expect(schemaVersion(core)).toBe(13)
+    expect(schemaVersion(core)).toBe(14)
     expect(schemaVersion(sidecar)).toBe(3)
     core.close()
     sidecar.close()

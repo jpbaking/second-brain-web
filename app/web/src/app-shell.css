@@ -109,6 +109,12 @@
   font-weight: var(--fw-semibold);
 }
 
+.sidebar-recents li { position: relative; }
+.sidebar-chat-pin {
+  position: absolute; right: .25rem; top: .2rem; border: 0; background: transparent;
+  color: var(--text-muted); cursor: pointer; padding: .25rem;
+}
+
 .sidebar-nav {
   display: flex;
   flex-direction: column;

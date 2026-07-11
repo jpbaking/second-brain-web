@@ -179,6 +179,10 @@ const coreMigrations: Migration[] = [
       )
     `,
   },
+  {
+    version: 14,
+    sql: `ALTER TABLE chat_sessions ADD COLUMN pinned INTEGER NOT NULL DEFAULT 0`,
+  },
 ]
 
 const sidecarMigrations: Migration[] = [

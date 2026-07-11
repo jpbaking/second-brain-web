@@ -21,6 +21,7 @@ export interface ChatSession {
   sdkSessionId: string | null
   status: ChatSessionStatus
   approvalPreset: ApprovalPreset
+  pinned: boolean
   compactionSummary: string | null
   compactedAt: string | null
   createdAt: string
@@ -49,6 +50,7 @@ interface SessionRow {
   sdk_session_id: string | null
   status: string
   approval_preset: string
+  pinned: number
   compaction_summary: string | null
   compacted_at: string | null
   created_at: string
@@ -72,6 +74,7 @@ function toSession (row: SessionRow): ChatSession {
     sdkSessionId: row.sdk_session_id,
     status: row.status === 'closed' ? 'closed' : 'active',
     approvalPreset: (row.approval_preset as ApprovalPreset) || 'normal',
+    pinned: row.pinned === 1,
     compactionSummary: row.compaction_summary,
     compactedAt: row.compacted_at,
     createdAt: row.created_at,
@@ -106,8 +109,12 @@ export function createSession (db: DatabaseSync, input: CreateSessionInput, now:
 }
 
 export function listSessions (db: DatabaseSync): ChatSession[] {
-  const rows = db.prepare('SELECT * FROM chat_sessions ORDER BY updated_at DESC').all() as unknown as SessionRow[]
+  const rows = db.prepare("SELECT * FROM chat_sessions WHERE status = 'active' ORDER BY pinned DESC, updated_at DESC").all() as unknown as SessionRow[]
   return rows.map(toSession)
+}
+
+export function setSessionPinned (db: DatabaseSync, id: string, pinned: boolean): boolean {
+  return db.prepare('UPDATE chat_sessions SET pinned = ? WHERE id = ?').run(pinned ? 1 : 0, id).changes > 0
 }
 
 export function getSession (db: DatabaseSync, id: string): ChatSession | undefined {
