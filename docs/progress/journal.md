@@ -972,3 +972,7 @@ Tree clean at f0d9f4b. Principal directed expansion of chat controls: mutable pr
 
 ## 02:58 — session end
 Milestone 41 complete: mutable chat settings, abort, pinning, clear-history choices, and slash autocomplete shipped. Awaiting direction.
+
+## 2026-07-12 03:02 — session start
+Tree clean at 6b02546. Principal approved the recommended durable reasoning transcript implementation.
+- 03:02 STARTED milestone 42: normalise incremental chunks versus cumulative snapshots, then preserve emitted status/reasoning in accessible disclosures. Next: m42-01.

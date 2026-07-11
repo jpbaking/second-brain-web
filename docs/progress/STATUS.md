@@ -1,6 +1,6 @@
 # STATUS — single source of truth
 
-Updated: 2026-07-12 (no active milestone; milestone 41 complete)
+Updated: 2026-07-12 (milestone 42 active)
 
 ## Where we are
 
@@ -29,17 +29,18 @@ Updated: 2026-07-12 (no active milestone; milestone 41 complete)
 
 ## Active milestone
 
-Milestone 41 (Expanded chat controls) is complete. Archived checklist:
-`docs/progress/milestones/archive/milestone-41-chat-controls.md`.
+Milestone 42: Durable reasoning transcript. Checklist:
+`docs/progress/milestones/milestone-42-reasoning-transcript.md`.
 
 ## Next step
 
-Await direction.
+Implement m42-01: tested delta/snapshot transcript normalisation.
 
 ## Read before working
 
 - `AGENTS-PLAYBOOK.md` — always, top to bottom.
 - `docs/progress/BACKLOG.md` — the work queue.
+- `docs/progress/milestones/milestone-42-reasoning-transcript.md` — active checklist.
 
 ## Questions for the principal
 

@@ -12,6 +12,10 @@ See `docs/project-plan/phase-008-feature-backlog-and-design-hooks.md` for other 
 
 ## Improvements
 
+- **Durable reasoning transcript** — in progress as milestone 42: correctly
+  fold incremental chunks and cumulative snapshots, preserve emitted activity,
+  and expose completed reasoning in a collapsible transcript section.
+
 - ~~**Expanded chat controls**~~ — completed in milestone 41: mutable provider
   and approval settings, abort turn, pinned chats, clear-history choices, and
   workflow-backed slash autocomplete.
