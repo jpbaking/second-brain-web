@@ -30,7 +30,7 @@ node-or-docker launchers.
 
 ## Checklist
 
-- [ ] **m34-01** Pure core module `app/server/src/cli/configure-lib.ts`:
+- [x] **m34-01** Pure core module `app/server/src/cli/configure-lib.ts`:
       `.env` parse/serialise preserving unknown keys + key order; providers
       object <-> YAML via `yaml`; slug; provider/id/port validation; runtime
       defaults. Unit-tested.

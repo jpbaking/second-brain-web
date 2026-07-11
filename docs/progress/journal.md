@@ -717,3 +717,4 @@ Principal confirmed (AskUserQuestion): rewrite configure as a Node in-app CLI
 (reuse yaml/encryptSecret/listModels), preserve keys+values not comments. The
 shell scripts become thin node-or-docker launchers. Created milestone 34.
 - 14:20 STARTED m34-01: pure core module cli/configure-lib.ts + tests.
+- 14:22 DONE m34-01: cli/configure-lib.ts (env parse/serialize preserving unknown keys + order; providers YAML round-trip via yaml; slug; validators; runtime defaults). Verified `npm test -- configure-lib.test.ts` → 11 green; lint clean.
