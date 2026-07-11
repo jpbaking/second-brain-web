@@ -52,7 +52,14 @@ function titleFrom (text: string): string {
 
 interface LockState { held: boolean, stale: boolean, lock: { sessionId: string | null, operation: string | null } | null }
 
-mermaid.initialize({ startOnLoad: false, theme: 'default' })
+// suppressErrorRendering stops mermaid appending "bomb" error SVGs to
+// document.body when given an incomplete chart mid-stream; failures still
+// throw and are handled inline by <Mermaid>.
+mermaid.initialize({ startOnLoad: false, theme: 'default', suppressErrorRendering: true })
+
+// True while the containing assistant message is still streaming: a mermaid
+// chart that fails to parse is then merely unfinished, not broken.
+const StreamingContext = createContext(false)
 
 // Full-window preview of a diagram or code block, opened by clicking it in
 // the transcript. The markdown component map is module-level (stable identity,
@@ -125,6 +132,7 @@ function CodeBlock ({ code, lang, zoomable = false }: { code: string, lang: stri
 
 function Mermaid ({ chart, zoomable = false }: { chart: string, zoomable?: boolean }) {
   const containerRef = useRef<HTMLDivElement>(null)
+  const streaming = useContext(StreamingContext)
   useEffect(() => {
     let active = true
     const renderChart = async () => {
@@ -135,14 +143,19 @@ function Mermaid ({ chart, zoomable = false }: { chart: string, zoomable?: boole
           containerRef.current.innerHTML = svg
         }
       } catch (err) {
-        if (active && containerRef.current) {
+        if (!active || containerRef.current === null) return
+        if (streaming) {
+          // Partial chart mid-stream: keep the last good render (or a quiet
+          // placeholder) instead of flashing a syntax error.
+          if (containerRef.current.innerHTML === '') containerRef.current.innerText = 'Rendering diagram…'
+        } else {
           containerRef.current.innerText = `Mermaid syntax error: ${err instanceof Error ? err.message : String(err)}`
         }
       }
     }
     renderChart().catch(() => {})
     return () => { active = false }
-  }, [chart])
+  }, [chart, streaming])
   const openZoom = useContext(ZoomContext)
   return (
     <div
@@ -450,9 +463,11 @@ export function ChatScreen ({ mode }: { mode: ChatMode }) {
                         <div className={`chat-bubble${l.role === 'assistant' ? ' prose' : ''}`}>
                           {l.role === 'assistant'
                             ? (
-                              <ReactMarkdown remarkPlugins={[remarkGfm]} components={markdownComponents}>
-                                {l.text}
-                              </ReactMarkdown>
+                              <StreamingContext.Provider value={l.complete === false}>
+                                <ReactMarkdown remarkPlugins={[remarkGfm]} components={markdownComponents}>
+                                  {l.text}
+                                </ReactMarkdown>
+                              </StreamingContext.Provider>
                               )
                             : l.text}
                         </div>
