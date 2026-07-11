@@ -774,3 +774,27 @@ repair: added reset-auth shorthand to compose-helper.
 
 ## 2026-07-11 16:15 — session end
 repair: added missing 401 redirects in AppShell and ProfileScreen.
+
+## 2026-07-11 16:50 — session start
+Tree dirty at 6296e3a with unexplained diagnostic WIP and no matching STARTED
+entry. Principal directed cleanup and an end-to-end OpenAI-provider test from
+a deleted-volume stack using `jpbaking/second-brain-test`.
+- 16:50 RECOVERY: removed duplicate auth-bypass probes, ad-hoc visual-audit
+  scripts, temporary Cline console logging, temporary logger-level changes,
+  and an unrelated Python runtime-package addition. No product change retained.
+- 16:51 REPAIR: unrestricted baseline found `vault-config-api.test.ts` stale
+  after save-and-sync became atomic: it expected a fake GitHub remote to clone.
+  Updating the test to use a real temporary bare Git remote before stack work.
+- 16:55 DONE REPAIR: temporary bare-remote fixture passes 4/4 targeted tests;
+  full suite 318/318, lint, and production build pass.
+- 16:57 DIAGNOSIS: rebuilt from a new `sbw-data` volume; container healthy;
+  configured OpenAI `/models` test returned 200; SSH clone of
+  `jpbaking/second-brain-test` succeeded at `04c6aac`; chat dispatch reached
+  Cline using `openai-native` and `gpt-5.6-terra`, then OpenAI rejected the
+  generation with `insufficient_quota`. The web/Cline path is responding; the
+  key's generation billing/quota is the blocker. Stack left running.
+
+## 2026-07-11 16:57 — session end
+Recovery cleanup complete and stale atomic vault-config test repaired. OpenAI
+live-path root cause recorded in STATUS: model listing succeeds but generation
+is rejected for insufficient quota. Tree clean after repair commit; active none.

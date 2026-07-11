@@ -1,6 +1,6 @@
 # STATUS — single source of truth
 
-Updated: 2026-07-11 (active: none — milestone 34 completed)
+Updated: 2026-07-11 (active: none — OpenAI live-path diagnosis complete)
 
 ## Where we are
 
@@ -42,7 +42,8 @@ Select a new milestone from the backlog. Outstanding: PowerShell launcher smoke-
 
 ## Questions for the principal
 
-- None currently.
+- The configured OpenAI key can list models, but generation fails with
+  `insufficient_quota`; billing/quota must be restored before chat can answer.
 
 ## Known issues / parked TODOs
 

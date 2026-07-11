@@ -1,4 +1,4 @@
-import { mkdtempSync, rmSync } from 'node:fs'
+import { mkdirSync, mkdtempSync, rmSync, writeFileSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import path from 'node:path'
 import { afterEach, describe, expect, it } from 'vitest'
@@ -8,10 +8,26 @@ import { prepareDatabases } from '../src/migrations.js'
 import { generateOwnerAuth, writeOwnerAuth } from '../src/auth/bootstrap.js'
 import { totpCode } from '../src/auth/totp.js'
 import { CHALLENGE_COOKIE, SESSION_COOKIE } from '../src/auth/cookies.js'
+import { runGit } from '../src/vault/git.js'
 import type { FastifyInstance } from 'fastify'
 
 const scratch: string[] = []
 const apps: FastifyInstance[] = []
+const GIT_ID = ['-c', 'user.email=t@example.com', '-c', 'user.name=Test']
+
+async function seedRemote (branch: string): Promise<string> {
+  const base = mkdtempSync(path.join(tmpdir(), 'sbw-vaultapi-remote-'))
+  scratch.push(base)
+  const src = path.join(base, 'src')
+  mkdirSync(src)
+  await runGit(['init', '-b', branch], { cwd: src })
+  writeFileSync(path.join(src, 'README.md'), '# vault\n')
+  await runGit(['add', '.'], { cwd: src })
+  await runGit([...GIT_ID, 'commit', '-m', 'initial'], { cwd: src })
+  const bare = path.join(base, 'remote.git')
+  await runGit(['clone', '--bare', src, bare])
+  return bare
+}
 
 function cookieValue (h: string | string[] | undefined, name: string): string | undefined {
   const list = Array.isArray(h) ? h : h === undefined ? [] : [h]
@@ -67,17 +83,18 @@ describe('vault config API', () => {
 
   it('persists a valid remote URL, branch, and display name', async () => {
     const { app, cookie } = await authedApp()
+    const remoteUrl = await seedRemote('work')
     const put = await app.inject({
       method: 'PUT',
       url: '/api/vault/config',
       headers: { cookie },
-      payload: { remoteUrl: 'git@github.com:owner/vault.git', branch: 'work', displayName: 'Vault' },
+      payload: { remoteUrl, branch: 'work', displayName: 'Vault' },
     })
     expect(put.statusCode).toBe(200)
-    expect(put.json()).toMatchObject({ remoteUrl: 'git@github.com:owner/vault.git', branch: 'work', displayName: 'Vault' })
+    expect(put.json()).toMatchObject({ remoteUrl, branch: 'work', displayName: 'Vault' })
 
     const get = await app.inject({ method: 'GET', url: '/api/vault/config', headers: { cookie } })
-    expect(get.json()).toMatchObject({ remoteUrl: 'git@github.com:owner/vault.git', branch: 'work' })
+    expect(get.json()).toMatchObject({ remoteUrl, branch: 'work' })
   })
 
   it('rejects an invalid remote URL and an invalid branch', async () => {
