@@ -1027,3 +1027,8 @@ Second-precision timestamps shipped; rebuilding the running container for handof
 Tree clean at 2d54474. Principal asked whether an agent-reported `find` failure means it is absent and directed installation of typical work tools.
 - 03:30 DIAGNOSIS: `find` is present at `/usr/bin/find`; the message was not caused by a missing executable. Inventory found missing `fd` compatibility name, yq, zip/unzip, file, build tools, Python, SQLite CLI, rsync, and common process/network diagnostics.
 - 03:30 STARTED milestone 44: install a broad general-purpose agent toolkit and enforce command availability during the image build. Next: m44-01.
+- 03:32 DONE m44-01: runtime now includes common filesystem/text/archive tools, Git/SSH/rsync, HTTP/DNS/network diagnostics, Python/pip/venv, C/C++ build toolchain, SQLite CLI, shellcheck, and console editors; `fd` aliases Debian `fdfind`. Dockerfile build-time smoke and post-start 29-command smoke both passed. Rebuilt image size: 538,206,741 bytes.
+- 03:32 DONE milestone 44 (General-purpose agent container toolkit).
+
+## 03:32 — session end
+Agent workbench expanded and running; `find` was already present, and all newly required commands are verified. Awaiting direction.

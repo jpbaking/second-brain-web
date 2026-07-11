@@ -1,6 +1,6 @@
 # STATUS — single source of truth
 
-Updated: 2026-07-12 (milestone 44 active)
+Updated: 2026-07-12 (no active milestone; milestone 44 complete)
 
 ## Where we are
 
@@ -29,18 +29,17 @@ Updated: 2026-07-12 (milestone 44 active)
 
 ## Active milestone
 
-Milestone 44: General-purpose agent container toolkit. Checklist:
-`docs/progress/milestones/milestone-44-agent-toolkit.md`.
+Milestone 44 (General-purpose agent container toolkit) is complete. Archived:
+`docs/progress/milestones/archive/milestone-44-agent-toolkit.md`.
 
 ## Next step
 
-Implement m44-01 and verify every installed command in the rebuilt container.
+Await direction.
 
 ## Read before working
 
 - `AGENTS-PLAYBOOK.md` — always, top to bottom.
 - `docs/progress/BACKLOG.md` — the work queue.
-- `docs/progress/milestones/milestone-44-agent-toolkit.md` — active checklist.
 
 ## Questions for the principal
 

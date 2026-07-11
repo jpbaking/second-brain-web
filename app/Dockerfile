@@ -30,8 +30,21 @@ FROM node:24-slim AS runtime
 ENV NODE_ENV=production
 WORKDIR /app
 
-RUN apt-get update && apt-get install -y \
-    git openssh-client ripgrep tree fd-find jq curl wget \
+# General-purpose, non-GUI workbench for the in-container agent. Keep this
+# explicit: the slim base image intentionally omits even commonplace tools.
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    bash ca-certificates coreutils findutils grep sed gawk \
+    diffutils patch file less procps psmisc util-linux \
+    git openssh-client rsync \
+    ripgrep fd-find tree jq yq \
+    curl wget dnsutils iputils-ping netcat-openbsd \
+    tar gzip bzip2 xz-utils zip unzip \
+    python3 python3-pip python3-venv \
+    build-essential pkg-config sqlite3 shellcheck vim-tiny nano \
+    && ln -s /usr/bin/fdfind /usr/local/bin/fd \
+    && for command in find fd rg tree jq yq git ssh curl wget tar gzip bzip2 xz zip unzip file diff patch make gcc g++ python3 pip3 sqlite3 rsync ps pgrep ping nc; do \
+      command -v "$command" >/dev/null || { echo "missing required agent tool: $command" >&2; exit 1; }; \
+    done \
     && rm -rf /var/lib/apt/lists/*
 
 # Production dependencies only (the server's runtime deps; web is static output).
