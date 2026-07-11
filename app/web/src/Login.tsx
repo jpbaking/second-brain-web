@@ -79,7 +79,7 @@ export function Login () {
         <p className='app-tagline'>Owner access needs your password and a one-time code.</p>
       </header>
 
-      <main className='action-card'>
+      <main className='action-card narrow'>
         {error !== null && (
           <div className='alert alert-danger' role='alert'>
             <span className='alert-title'>Sign in</span>

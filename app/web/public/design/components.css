@@ -1333,6 +1333,10 @@ button.tag.active { background: var(--brand-blue); border-color: var(--brand-blu
   box-shadow: var(--shadow-pop);
 }
 
+.action-card.narrow {
+  width: min(100%, 460px);
+}
+
 /* Input + primary action side by side. */
 .input-row {
   display: grid;
