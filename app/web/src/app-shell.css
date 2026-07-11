@@ -681,7 +681,8 @@
 /* The modal body's own padding is the frame; drop the prose block margins so
    the vertical gap matches the horizontal one. */
 .chat-zoom-body .chat-codeblock pre,
-.chat-zoom-body .mermaid-diagram {
+.chat-zoom-body .mermaid-diagram,
+.chat-zoom-body > table {
   margin-block: 0;
 }
 

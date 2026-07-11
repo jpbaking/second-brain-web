@@ -1111,3 +1111,5 @@ Tree clean at 69d46a0 (HANDOFF.md untracked). No active milestone; ad-hoc repair
 - 05:27 DONE: .prose .mermaid-diagram svg { display block; margin-inline auto } — centres narrow diagrams, no effect on scrolling wide ones. Lint+build green.
 - 05:30 STARTED: text got selected while dragging a diagram in the zoom modal.
 - 05:30 DONE: userSelect none on the pannable viewport. Lint+build green.
+- 05:33 STARTED: click-to-expand zoom modal for markdown tables.
+- 05:34 DONE: table renderer in markdownComponents wraps tables in ZoomableTable (cursor zoom-in, opens modal reusing the rendered children); modal shows kind=table with prose styling, margin-block 0 inside the body. Lint, build, web tests (9) green.

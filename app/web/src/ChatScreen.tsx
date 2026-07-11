@@ -64,7 +64,10 @@ const StreamingContext = createContext(false)
 // Full-window preview of a diagram or code block, opened by clicking it in
 // the transcript. The markdown component map is module-level (stable identity,
 // see markdownComponents), so the opener is passed down via context.
-type ZoomContent = { kind: 'mermaid', chart: string } | { kind: 'code', code: string, lang: string | null }
+type ZoomContent =
+  | { kind: 'mermaid', chart: string }
+  | { kind: 'code', code: string, lang: string | null }
+  | { kind: 'table', children: ReactNode }
 const ZoomContext = createContext<(content: ZoomContent) => void>(() => {})
 
 // Plain text of a hast element node (react-markdown's `node` prop).
@@ -250,7 +253,25 @@ const markdownComponents = {
     const code = hastText(node).replace(/\n$/, '')
     const lang = /language-(\w+)/.exec(cls)?.[1] ?? null
     return <CodeBlock code={code} lang={lang} zoomable />
+  },
+  table ({ children }: { node?: unknown, children?: ReactNode }) {
+    return <ZoomableTable>{children}</ZoomableTable>
   }
+}
+
+// Transcript table: clicking opens it in the zoom modal. The already-built
+// React children are reused as the modal's content.
+function ZoomableTable ({ children }: { children?: ReactNode }) {
+  const openZoom = useContext(ZoomContext)
+  return (
+    <table
+      style={{ cursor: 'zoom-in' }}
+      title='Click to expand'
+      onClick={() => openZoom({ kind: 'table', children })}
+    >
+      {children}
+    </table>
+  )
 }
 
 export function ChatScreen ({ mode }: { mode: ChatMode }) {
@@ -513,13 +534,13 @@ export function ChatScreen ({ mode }: { mode: ChatMode }) {
           onClick={e => { if (e.target === e.currentTarget) zoomRef.current?.close() }}
         >
           <div className='modal-head'>
-            <h2 className='modal-title'>{zoom.kind === 'mermaid' ? 'Diagram' : `Code${zoom.lang !== null ? ` — ${zoom.lang}` : ''}`}</h2>
+            <h2 className='modal-title'>{zoom.kind === 'mermaid' ? 'Diagram' : zoom.kind === 'table' ? 'Table' : `Code${zoom.lang !== null ? ` — ${zoom.lang}` : ''}`}</h2>
             <button type='button' className='modal-close' onClick={() => zoomRef.current?.close()}>Close</button>
           </div>
-          <div className={`modal-body chat-zoom-body${zoom.kind === 'code' ? ' prose' : ''}`}>
-            {zoom.kind === 'mermaid'
-              ? <Mermaid chart={zoom.chart} pannable />
-              : <CodeBlock code={zoom.code} lang={zoom.lang} />}
+          <div className={`modal-body chat-zoom-body${zoom.kind !== 'mermaid' ? ' prose' : ''}`}>
+            {zoom.kind === 'mermaid' && <Mermaid chart={zoom.chart} pannable />}
+            {zoom.kind === 'code' && <CodeBlock code={zoom.code} lang={zoom.lang} />}
+            {zoom.kind === 'table' && <table>{zoom.children}</table>}
           </div>
         </dialog>
       )}
