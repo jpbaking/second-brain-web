@@ -1,7 +1,9 @@
-import { createContext, useCallback, useContext, useEffect, useRef, useState, type ReactNode } from 'react'
+import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState, type ReactNode } from 'react'
 import ReactMarkdown from 'react-markdown'
 import remarkGfm from 'remark-gfm'
 import mermaid from 'mermaid'
+import hljs from 'highlight.js/lib/common'
+import 'highlight.js/styles/atom-one-dark.css'
 import { foldTranscript } from './chat-transcript.js'
 import type { ChatEvent } from './chat-transcript.js'
 
@@ -95,6 +97,13 @@ function CopyButton ({ text }: { text: string }) {
 // and a copy button; clicking opens the zoom modal when zoomable.
 function CodeBlock ({ code, lang, zoomable = false }: { code: string, lang: string | null, zoomable?: boolean }) {
   const openZoom = useContext(ZoomContext)
+  // highlight.js escapes the input, so the produced HTML is safe to inject.
+  const highlighted = useMemo(() => {
+    if (lang !== null && hljs.getLanguage(lang) !== undefined) {
+      try { return hljs.highlight(code, { language: lang }).value } catch { /* fall through to plain */ }
+    }
+    return null
+  }, [code, lang])
   return (
     <div className='chat-codeblock'>
       <CopyButton text={code} />
@@ -103,9 +112,12 @@ function CodeBlock ({ code, lang, zoomable = false }: { code: string, lang: stri
         title={zoomable ? 'Click to expand' : undefined}
         onClick={zoomable ? () => openZoom({ kind: 'code', code, lang }) : undefined}
       >
-        <code className={lang === null ? undefined : `language-${lang}`}>
-          {code.split('\n').map((line, index) => <span key={index} className='chat-code-line'>{line === '' ? ' ' : line}</span>)}
-        </code>
+        <span className='chat-code-gutter' aria-hidden='true'>
+          {code.split('\n').map((_, index) => <span key={index}>{index + 1}</span>)}
+        </span>
+        {highlighted === null
+          ? <code className={lang === null ? undefined : `language-${lang}`}>{code}</code>
+          : <code className={`hljs language-${lang}`} dangerouslySetInnerHTML={{ __html: highlighted }} />}
       </pre>
     </div>
   )

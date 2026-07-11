@@ -591,26 +591,34 @@
   opacity: 1;
 }
 
-/* Line numbers via counters: rendered in ::before so they are excluded from
-   text selection and clipboard. */
-.chat-codeblock code {
-  counter-reset: line;
+/* Line numbers in a non-selectable gutter column, so highlighted code HTML
+   stays intact and copy/select never picks the numbers up. */
+.chat-codeblock pre {
+  display: flex;
+  align-items: flex-start;
 }
 
-.chat-code-line {
-  display: block;
-  counter-increment: line;
-  white-space: pre;
-}
-
-.chat-code-line::before {
-  content: counter(line);
-  display: inline-block;
-  width: 3ch;
+.chat-code-gutter {
+  display: flex;
+  flex-direction: column;
+  flex: none;
+  min-width: 3ch;
   margin-right: var(--space-3);
   text-align: right;
   opacity: 0.45;
   user-select: none;
+}
+
+.chat-codeblock pre code {
+  display: block;
+  flex: 1;
+  white-space: pre;
+}
+
+/* The imported hljs theme sets its own background; the pre already has one. */
+.chat-codeblock .hljs {
+  background: transparent;
+  padding: 0;
 }
 
 /* Full-window preview of a chat code block or mermaid diagram. Grows to fit
