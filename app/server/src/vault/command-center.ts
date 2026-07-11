@@ -4,9 +4,11 @@ import { readVaultConfig, vaultWorkspacePath } from './config.js'
 import { readGitStatus } from './git-status.js'
 import { readLock } from './lock.js'
 import { scanReports } from '../reports/scan.js'
+import { readRadar } from '../search/radar.js'
 import type { ReportMetadata } from '../reports/scan.js'
 import type { GitStatus } from './git-status.js'
 import type { LockState } from './lock.js'
+import type { RadarData } from '../search/radar.js'
 import type { DatabaseSync } from 'node:sqlite'
 
 /**
@@ -37,6 +39,7 @@ export interface CommandCenter {
   recentReports: ReportMetadata[]
   reminders: never[]
   commitments: never[]
+  radar: RadarData
 }
 
 function countFiles (dir: string): number {
@@ -58,8 +61,8 @@ function parseHealth (raw: string | null): HealthSummary | null {
   }
 }
 
-export async function readCommandCenter (db: DatabaseSync, dataDir: string): Promise<CommandCenter> {
-  const cfg = readVaultConfig(db, dataDir)
+export async function readCommandCenter (coreDb: DatabaseSync, sidecarDb: DatabaseSync, dataDir: string): Promise<CommandCenter> {
+  const cfg = readVaultConfig(coreDb, dataDir)
   const workspace = vaultWorkspacePath(dataDir)
   const git = await readGitStatus(workspace)
 
@@ -72,10 +75,11 @@ export async function readCommandCenter (db: DatabaseSync, dataDir: string): Pro
     },
     git,
     health: parseHealth(cfg.lastHealth),
-    lock: readLock(db),
+    lock: readLock(coreDb),
     inboxBacklog: countFiles(path.join(workspace, 'inbox')),
     recentReports: scanReports(workspace).slice(0, 5),
     reminders: [],
     commitments: [],
+    radar: readRadar(sidecarDb),
   }
 }

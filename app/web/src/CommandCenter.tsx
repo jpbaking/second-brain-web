@@ -12,6 +12,8 @@ interface GitStatus {
 interface LockState { held: boolean, stale: boolean, lock: { operation: string | null } | null }
 interface HealthSummary { available: boolean, issueCount: number | null, ranAt: string }
 interface RecentReport { path: string, title: string, type: 'html' | 'pdf' | 'markdown', date: string }
+interface RadarItem { path: string, title: string, mtime?: string }
+interface RadarData { staleProjects: RadarItem[], stalePeople: RadarItem[], warnings: RadarItem[] }
 
 interface CommandCenterData {
   vault: { configured: boolean, cloned: boolean, branch: string, commit: string | null }
@@ -22,6 +24,7 @@ interface CommandCenterData {
   recentReports: RecentReport[]
   reminders: never[]
   commitments: never[]
+  radar: RadarData
 }
 
 async function getJson (url: string): Promise<Response> {
@@ -126,6 +129,15 @@ export function CommandCenter () {
                 <Row label='Inbox backlog' value={String(data.inboxBacklog)} />
                 <Row label='Health issues' value={data.health === null ? 'not run' : String(data.health.issueCount ?? 'unknown')} />
                 <Row label='Recent reports' value={data.recentReports.length === 0 ? 'none' : String(data.recentReports.length)} />
+              </dl>
+            </section>
+
+            <section className='stack-2' aria-label='Radar'>
+              <h2 className='card-title'>Radar</h2>
+              <dl className='data-list'>
+                <Row label='Stale projects (60+ days)' value={data.radar ? String(data.radar.staleProjects.length) : '0'} />
+                <Row label='Stale people (60+ days)' value={data.radar ? String(data.radar.stalePeople.length) : '0'} />
+                <Row label='Pages with warnings' value={data.radar ? String(data.radar.warnings.length) : '0'} />
               </dl>
             </section>
 

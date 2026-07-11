@@ -85,6 +85,7 @@ describe('command center API', () => {
     expect(body.recentReports[0]).toMatchObject({ path: '2026/weekly.md', title: 'report', type: 'markdown', year: 2026 })
     expect(body.reminders).toEqual([])
     expect(body.commitments).toEqual([])
+    expect(body.radar).toEqual({ staleProjects: [], stalePeople: [], warnings: [] })
     expect(body.health).toBeNull()
   })
 })

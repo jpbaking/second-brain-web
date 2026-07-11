@@ -530,3 +530,10 @@ Automatic context compaction shipped. Reverting to no active milestone. Awaiting
 Tree clean at 9f29b0d. Active: milestone 23, next item: m23-01.
 
 - 10:15 STARTED m23-01: Implement `readRadar(db)` in `app/server/src/search/radar.ts` using `vault_search`.
+- 10:15 DONE m23-01: Added `readRadar` and FTS queries. Verified by `npm test`.
+- 10:16 DONE m23-02: Added `radar` to `CommandCenterData` and wired through `readCommandCenter`. Verified by `npm test`.
+- 10:17 DONE m23-03: Rendered counts in UI in `CommandCenter.tsx`. Verified by `npm run build`.
+- 10:18 DONE m23: Milestone 23 complete (3/3). All tests and builds pass.
+
+## 2026-07-11 10:18 — session end (milestone 23 complete)
+Contradiction and staleness radar shipped. Reverting to no active milestone. Awaiting principal direction.

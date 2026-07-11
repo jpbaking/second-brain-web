@@ -1,6 +1,6 @@
 import { existsSync } from 'node:fs'
 import path from 'node:path'
-import { openCoreDb } from '../db.js'
+import { openCoreDb, openSidecarDb } from '../db.js'
 import { readVaultConfig, vaultWorkspacePath, writeVaultConfig } from './config.js'
 import { detectVault } from './detect.js'
 import { syncVault } from './sync.js'
@@ -92,10 +92,12 @@ export function registerVaultRoutes (app: FastifyInstance, config: AppConfig): v
 
   app.get('/api/command-center', async () => {
     const db = openCoreDb(config.dataDir)
+    const sidecarDb = openSidecarDb(config.dataDir)
     try {
-      return await readCommandCenter(db, config.dataDir)
+      return await readCommandCenter(db, sidecarDb, config.dataDir)
     } finally {
       db.close()
+      sidecarDb.close()
     }
   })
 

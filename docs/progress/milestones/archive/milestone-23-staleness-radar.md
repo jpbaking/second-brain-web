@@ -9,9 +9,9 @@ Verification command for backend changes:
 
 ## Checklist
 
-- [ ] m23-01: Implement `readRadar(db)` in `app/server/src/search/radar.ts` using `vault_search`.
+- [x] m23-01: Implement `readRadar(db)` in `app/server/src/search/radar.ts` using `vault_search`.
       Run: `npm test --workspace server -- radar.test.ts`
-- [ ] m23-02: Add radar data to `CommandCenterData` and `readCommandCenter`.
+- [x] m23-02: Add radar data to `CommandCenterData` and `readCommandCenter`.
       Run: `npm test --workspace server -- command-center.test.ts`
-- [ ] m23-03: Render radar data in `CommandCenter.tsx`.
+- [x] m23-03: Render radar data in `CommandCenter.tsx`.
       Run: `npm run lint --workspace web && npm run build --workspace web`
