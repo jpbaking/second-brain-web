@@ -32,7 +32,7 @@ Milestone 15 (YAML-only provider provisioning) remains designed and gated.
 
 ## Next step
 
-- Complete m21-01: add and validate the hardened systemd unit.
+- Complete m21-02: document and verify the dedicated-user operator flow.
 
 ## Read before working
 

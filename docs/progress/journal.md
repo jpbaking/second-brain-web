@@ -477,3 +477,5 @@ Follow-up rows and edit defaults now omit terminal inline source-link Markdown w
 
 ## 2026-07-11 08:32 — session start
 Tree clean at c65653d. Principal directed the next recommended backlog item; selected dedicated-user isolation for bare-metal production. Active: milestone 21, next item: m21-01.
+- 08:32 STARTED m21-01: add a validated systemd service contract with a dedicated account, private state, root-owned environment input, loopback binding, and home isolation.
+- 08:34 DONE m21-01: `systemd-analyze verify` accepted the unit (only unrelated host xfs accounting notices); assertions confirmed dedicated user, 0700 StateDirectory, ProtectHome, root environment-file path, and loopback binding.

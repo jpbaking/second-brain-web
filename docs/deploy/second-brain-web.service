@@ -1,0 +1,42 @@
+[Unit]
+Description=Second Brain Web
+Documentation=https://github.com/jpbaking/second-brain-web
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=second-brain-web
+Group=second-brain-web
+WorkingDirectory=/opt/second-brain-web/app
+EnvironmentFile=/etc/second-brain-web/environment
+Environment=NODE_ENV=production
+Environment=SECOND_BRAIN_WEB_DATA_DIR=/var/lib/second-brain-web
+Environment=SECOND_BRAIN_WEB_HOST=127.0.0.1
+Environment=SECOND_BRAIN_WEB_PORT=8722
+ExecStart=/usr/bin/env node server/dist/index.js
+Restart=on-failure
+RestartSec=5s
+TimeoutStopSec=30s
+
+# systemd creates /var/lib/second-brain-web owned by the service account.
+StateDirectory=second-brain-web
+StateDirectoryMode=0700
+UMask=0077
+
+# Keep interactive users' ~/.cline skills and rules outside the service view.
+ProtectHome=true
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectKernelTunables=true
+ProtectKernelModules=true
+ProtectKernelLogs=true
+ProtectControlGroups=true
+ProtectClock=true
+RestrictSUIDSGID=true
+LockPersonality=true
+RestrictRealtime=true
+
+[Install]
+WantedBy=multi-user.target
