@@ -1,6 +1,6 @@
 # STATUS — single source of truth
 
-Updated: 2026-07-11 (active: none — milestone 31 completed)
+Updated: 2026-07-11 (active: milestone 32 — port configure.ps1)
 
 ## Where we are
 
@@ -29,14 +29,16 @@ Updated: 2026-07-11 (active: none — milestone 31 completed)
 
 ## Active milestone
 
-None
+Milestone 32 — port configure.ps1
+(`docs/progress/milestones/milestone-32-configure-ps1-port.md`)
+
+Bring `configure.ps1` to parity with the milestone-31 bash `configure`.
+No pwsh on this host: verified by structured parity review; the principal
+runs it on Windows to confirm execution.
 
 ## Next step
 
-(Milestone 31 completed — configure revamp: retry-in-place input, provider+key-
-first model picker, generated vault keypair shown on the Vault page, all runtime
-config in a gitignored `.config/` dir mounted by compose. Select a new milestone
-from the backlog. Note: `configure.ps1` still needs porting — see BACKLOG.)
+m32-01: rewrite `configure.ps1` to mirror `configure`.
 
 ## Read before working
 

@@ -656,3 +656,9 @@ with retry-in-place + model picker + keypair gen writing to .config/ (m31-05),
 compose .config mounts + SSH_KEY_PATH (m31-06), docs (m31-07). 14 new server
 tests + 1 e2e green; full build clean. Tree clean. Active: none — pick next
 from BACKLOG (configure.ps1 port is queued there).
+
+## 2026-07-11 13:56 — session start (continued)
+Principal directed the queued configure.ps1 port. Created milestone 32, pointed
+STATUS at it. No pwsh on this Linux host — verification is a structured parity
+review; principal runs on Windows. Next: m32-01.
+- 13:57 STARTED m32-01: rewrite configure.ps1 to mirror the bash configure.
