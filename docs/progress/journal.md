@@ -484,3 +484,6 @@ Tree clean at c65653d. Principal directed the next recommended backlog item; sel
 
 ## 2026-07-11 08:35 — session end (milestone 21 complete)
 Bare-metal production now has a validated dedicated-user systemd path that hides interactive homes from Cline; container isolation is unchanged. No milestone is active.
+
+## 2026-07-11 08:36 — milestone 15 activation
+Principal directed the recommended next backlog item; selected declarative provider provisioning because its revision-3 design and verification checklist are complete. Active: milestone 15, next item: m15-01.

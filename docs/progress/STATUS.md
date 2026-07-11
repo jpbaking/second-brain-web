@@ -1,6 +1,6 @@
 # STATUS — single source of truth
 
-Updated: 2026-07-11 (milestone 21 complete)
+Updated: 2026-07-11 (milestone 15 active)
 
 ## Where we are
 
@@ -26,13 +26,13 @@ Updated: 2026-07-11 (milestone 21 complete)
 
 ## Current phase
 
-Backlog-driven. **No milestone is active.** Milestone 21 added the isolated
-dedicated-user systemd path for bare-metal production.
-Milestone 15 (YAML-only provider provisioning) remains designed and gated.
+**Milestone 15 is active:** declarative provider provisioning (YAML-only).
+The principal authorised the recommended next backlog item on 2026-07-11.
 
 ## Next step
 
-- None queued. Future work starts only when the principal says go.
+- Complete `m15-01`: add and verify the stdin-only `encrypt-secret` CLI.
+- Checklist: `docs/progress/milestones/milestone-15-provider-provisioning.md`.
 
 ## Read before working
 

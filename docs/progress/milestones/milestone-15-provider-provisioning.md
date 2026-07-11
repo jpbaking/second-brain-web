@@ -1,8 +1,6 @@
-# Milestone 15 - Declarative Provider Provisioning (GATED — do not start)
+# Milestone 15 - Declarative Provider Provisioning (ACTIVE)
 
-> ⛔ **Documented only. The principal approved the design (2026-07-11) but
-> directed "document first; don't execute yet." Do not begin `m15-01` until
-> the principal explicitly says go.** Design: [provider-provisioning.md](../../design/provider-provisioning.md)
+> Activated by the principal on 2026-07-11. Design: [provider-provisioning.md](../../design/provider-provisioning.md)
 > — **revision 2 (YAML-only)**: the principal does not want to manage providers
 > via the UI, so the YAML is the sole source and provider CRUD is removed.
 
