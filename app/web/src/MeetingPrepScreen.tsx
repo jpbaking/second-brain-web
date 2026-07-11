@@ -50,21 +50,21 @@ export function MeetingPrepScreen () {
         )}
 
         <form className='stack-2' onSubmit={submit}>
-          <div className='form-group'>
-            <label htmlFor='prep-title' className='form-label'>Meeting title</label>
-            <input id='prep-title' className='form-input' value={title} onChange={(e) => setTitle(e.target.value)} required />
+          <div className='field'>
+            <label htmlFor='prep-title' className='label'>Meeting title</label>
+            <input id='prep-title' className='input' value={title} onChange={(e) => setTitle(e.target.value)} required />
           </div>
-          <div className='form-group'>
-            <label htmlFor='prep-date' className='form-label'>Date / Time</label>
-            <input id='prep-date' className='form-input' value={date} onChange={(e) => setDate(e.target.value)} placeholder='e.g., Tomorrow at 2 PM' />
+          <div className='field'>
+            <label htmlFor='prep-date' className='label'>Date / Time</label>
+            <input id='prep-date' className='input' value={date} onChange={(e) => setDate(e.target.value)} placeholder='e.g., Tomorrow at 2 PM' />
           </div>
-          <div className='form-group'>
-            <label htmlFor='prep-attendees' className='form-label'>Attendees</label>
-            <input id='prep-attendees' className='form-input' value={attendees} onChange={(e) => setAttendees(e.target.value)} placeholder='e.g., John, Sarah' />
+          <div className='field'>
+            <label htmlFor='prep-attendees' className='label'>Attendees</label>
+            <input id='prep-attendees' className='input' value={attendees} onChange={(e) => setAttendees(e.target.value)} placeholder='e.g., John, Sarah' />
           </div>
-          <div className='form-group'>
-            <label htmlFor='prep-objective' className='form-label'>Objective</label>
-            <textarea id='prep-objective' className='form-input' value={objective} onChange={(e) => setObjective(e.target.value)} placeholder='What is the goal of this meeting?' rows={3} />
+          <div className='field'>
+            <label htmlFor='prep-objective' className='label'>Objective</label>
+            <textarea id='prep-objective' className='textarea' value={objective} onChange={(e) => setObjective(e.target.value)} placeholder='What is the goal of this meeting?' rows={3} />
           </div>
 
           <div className='form-actions'>
