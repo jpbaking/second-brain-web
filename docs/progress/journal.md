@@ -696,3 +696,8 @@ scripts gained a substring filter + pager for long model lists. Verified: bash
 `bash -n` + scripted stub runs (filter/number/manual paths); ps1 by parity
 review (no pwsh on host — Windows execution smoke-test outstanding for the
 principal). Tree clean. Active: none.
+
+## 2026-07-11 14:08 — session start (continued)
+Principal directed: configure should also prompt for the other .env settings
+(BIND, PORT, NODE_ENV), not just the secrets key. Created milestone 33.
+- 14:09 STARTED m33-01: bash configure prompts for bind/port/dev-mode.
