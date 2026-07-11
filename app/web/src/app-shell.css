@@ -559,9 +559,66 @@
   border: 1px solid var(--line);
 }
 
-/* Full-window preview of a chat code block or mermaid diagram. */
+.mermaid-diagram {
+  position: relative;
+}
+
+/* Copy-source button pinned to a block's upper-right corner. */
+.chat-codeblock {
+  position: relative;
+}
+
+.chat-copy-btn {
+  position: absolute;
+  top: var(--space-2);
+  right: var(--space-2);
+  z-index: 1;
+  display: grid;
+  place-items: center;
+  width: 28px;
+  height: 28px;
+  padding: 0;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  background: var(--surface);
+  color: var(--muted);
+  cursor: pointer;
+  opacity: 0.75;
+}
+
+.chat-copy-btn:hover {
+  color: var(--ink);
+  opacity: 1;
+}
+
+/* Line numbers via counters: rendered in ::before so they are excluded from
+   text selection and clipboard. */
+.chat-codeblock code {
+  counter-reset: line;
+}
+
+.chat-code-line {
+  display: block;
+  counter-increment: line;
+  white-space: pre;
+}
+
+.chat-code-line::before {
+  content: counter(line);
+  display: inline-block;
+  width: 3ch;
+  margin-right: var(--space-3);
+  text-align: right;
+  opacity: 0.45;
+  user-select: none;
+}
+
+/* Full-window preview of a chat code block or mermaid diagram. Grows to fit
+   wide content; narrow content stretches to the minimum width instead. */
 .chat-zoom-modal {
-  width: min(1100px, calc(100vw - 48px));
+  width: fit-content;
+  min-width: min(1100px, calc(100vw - 48px));
+  max-width: calc(100vw - 48px);
   max-height: calc(100vh - 48px);
   display: flex;
   flex-direction: column;
@@ -570,6 +627,13 @@
 .chat-zoom-modal .chat-zoom-body {
   overflow: auto;
   flex: 1;
+}
+
+/* Let wide code push the modal out to its max width (the scrollable pre
+   would otherwise never report its full width); narrow code still fills. */
+.chat-zoom-body .chat-codeblock pre {
+  width: max-content;
+  min-width: 100%;
 }
 
 .chat-zoom-modal .mermaid-diagram svg {

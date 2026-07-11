@@ -66,6 +66,51 @@ function hastText (node: unknown): string {
   return (n.children ?? []).map(hastText).join('')
 }
 
+// Icon-only button copying the raw markdown source of a block. Clicks must
+// not bubble: the block underneath opens the zoom modal.
+function CopyButton ({ text }: { text: string }) {
+  const [copied, setCopied] = useState(false)
+  return (
+    <button
+      type='button'
+      className='chat-copy-btn'
+      aria-label='Copy source'
+      title='Copy source'
+      onClick={e => {
+        e.stopPropagation()
+        navigator.clipboard.writeText(text).then(() => {
+          setCopied(true)
+          setTimeout(() => setCopied(false), 1500)
+        }).catch(() => {})
+      }}
+    >
+      {copied
+        ? <svg width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='currentColor' strokeWidth='2' strokeLinecap='round' strokeLinejoin='round' aria-hidden='true'><path d='M20 6 9 17l-5-5' /></svg>
+        : <svg width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='currentColor' strokeWidth='2' strokeLinecap='round' strokeLinejoin='round' aria-hidden='true'><rect x='9' y='9' width='13' height='13' rx='2' /><path d='M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1' /></svg>}
+    </button>
+  )
+}
+
+// Fenced code block: line numbers (CSS counters, excluded from copy/select)
+// and a copy button; clicking opens the zoom modal when zoomable.
+function CodeBlock ({ code, lang, zoomable = false }: { code: string, lang: string | null, zoomable?: boolean }) {
+  const openZoom = useContext(ZoomContext)
+  return (
+    <div className='chat-codeblock'>
+      <CopyButton text={code} />
+      <pre
+        style={zoomable ? { cursor: 'zoom-in' } : undefined}
+        title={zoomable ? 'Click to expand' : undefined}
+        onClick={zoomable ? () => openZoom({ kind: 'code', code, lang }) : undefined}
+      >
+        <code className={lang === null ? undefined : `language-${lang}`}>
+          {code.split('\n').map((line, index) => <span key={index} className='chat-code-line'>{line === '' ? ' ' : line}</span>)}
+        </code>
+      </pre>
+    </div>
+  )
+}
+
 function Mermaid ({ chart, zoomable = false }: { chart: string, zoomable?: boolean }) {
   const containerRef = useRef<HTMLDivElement>(null)
   useEffect(() => {
@@ -89,12 +134,14 @@ function Mermaid ({ chart, zoomable = false }: { chart: string, zoomable?: boole
   const openZoom = useContext(ZoomContext)
   return (
     <div
-      ref={containerRef}
       className='mermaid-diagram'
-      style={{ overflowX: 'auto', background: 'var(--surface)', padding: 'var(--space-2)', borderRadius: 'var(--radius-md)', cursor: zoomable ? 'zoom-in' : undefined }}
+      style={{ background: 'var(--surface)', padding: 'var(--space-2)', borderRadius: 'var(--radius-md)', cursor: zoomable ? 'zoom-in' : undefined }}
       title={zoomable ? 'Click to expand' : undefined}
       onClick={zoomable ? () => openZoom({ kind: 'mermaid', chart }) : undefined}
-    />
+    >
+      <CopyButton text={chart} />
+      <div ref={containerRef} style={{ overflowX: 'auto' }} />
+    </div>
   )
 }
 
@@ -110,7 +157,6 @@ const markdownComponents = {
     return <code className={className} {...props}>{children}</code>
   },
   pre ({ node, children }: { node?: unknown, children?: ReactNode }) {
-    const openZoom = useContext(ZoomContext)
     const codeNode = (node as { children?: Array<{ properties?: { className?: unknown } }> })?.children?.[0]
     const classNames = codeNode?.properties?.className
     const cls = Array.isArray(classNames) ? classNames.join(' ') : ''
@@ -119,11 +165,7 @@ const markdownComponents = {
     if (cls.includes('language-mermaid')) return <>{children}</>
     const code = hastText(node).replace(/\n$/, '')
     const lang = /language-(\w+)/.exec(cls)?.[1] ?? null
-    return (
-      <pre style={{ cursor: 'zoom-in' }} title='Click to expand' onClick={() => openZoom({ kind: 'code', code, lang })}>
-        {children}
-      </pre>
-    )
+    return <CodeBlock code={code} lang={lang} zoomable />
   }
 }
 
@@ -353,7 +395,7 @@ export function ChatScreen ({ mode }: { mode: ChatMode }) {
           <div className={`modal-body chat-zoom-body${zoom.kind === 'code' ? ' prose' : ''}`}>
             {zoom.kind === 'mermaid'
               ? <Mermaid chart={zoom.chart} />
-              : <pre><code>{zoom.code}</code></pre>}
+              : <CodeBlock code={zoom.code} lang={zoom.lang} />}
           </div>
         </dialog>
       )}
