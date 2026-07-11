@@ -551,6 +551,14 @@
   overflow-wrap: anywhere;
 }
 
+/* Mermaid diagrams lost their <pre> wrapper (it became the zoom modal's
+   clickable code box), so box and space them here — consecutive diagrams
+   need the separation. */
+.prose .mermaid-diagram {
+  margin-block: 1.6em;
+  border: 1px solid var(--line);
+}
+
 /* Full-window preview of a chat code block or mermaid diagram. */
 .chat-zoom-modal {
   width: min(1100px, calc(100vw - 48px));
