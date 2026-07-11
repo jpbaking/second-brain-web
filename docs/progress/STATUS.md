@@ -1,6 +1,6 @@
 # STATUS — single source of truth
 
-Updated: 2026-07-12 (milestone 45 active)
+Updated: 2026-07-12 (no active milestone; milestone 45 complete)
 
 ## Where we are
 
@@ -29,18 +29,17 @@ Updated: 2026-07-12 (milestone 45 active)
 
 ## Active milestone
 
-Milestone 45: Weak-model system prompt. Checklist:
-`docs/progress/milestones/milestone-45-weak-model-prompt.md`.
+Milestone 45 (Weak-model system prompt) is complete. Archived checklist:
+`docs/progress/milestones/archive/milestone-45-weak-model-prompt.md`.
 
 ## Next step
 
-Implement m45-02: full regression, live prompt verification, and archive.
+Await direction.
 
 ## Read before working
 
 - `AGENTS-PLAYBOOK.md` — always, top to bottom.
 - `docs/progress/BACKLOG.md` — the work queue.
-- `docs/progress/milestones/milestone-45-weak-model-prompt.md` — active checklist.
 
 ## Questions for the principal
 

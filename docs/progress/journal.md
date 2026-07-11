@@ -1039,3 +1039,9 @@ Tree clean at e6647bd. Principal directed improvement of the system prompt for w
 - 03:35 STARTED milestone 45: add a compact role/workflow/evidence/safety/context prompt while keeping `.clinerules` authoritative. Next: m45-01.
 - 03:36 STARTED m45-01: implement and test the structured default prompt.
 - 03:37 DONE m45-01: replaced the one-line fallback with a compact operating contract covering role/rule authority, inspect-plan-act-verify workflow, evidence/uncertainty, command-failure handling, 64K context discipline, and communication. Detailed `.clinerules` remain authoritative. Verified by 12 focused tests, clean lint, and full build.
+- 03:37 STARTED m45-02: run full regression, rebuild production, and verify the deployed bundle contains the enhanced prompt.
+- 03:38 DONE m45-02: full 332 server + 9 web tests green; production container rebuilt healthy; deployed `server/dist/agent/system-prompt.js` contains the 64K context contract and the runner config assertion proves it is passed on start.
+- 03:38 DONE milestone 45 (Weak-model system prompt).
+
+## 03:38 — session end
+Structured weak-model prompt deployed and verified. Awaiting direction.
