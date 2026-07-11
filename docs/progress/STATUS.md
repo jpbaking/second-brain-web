@@ -32,7 +32,7 @@ directed the next recommended backlog item on 2026-07-11. Milestone 15
 
 ## Next step
 
-- **m17-02:** decrypt v2 owner state and migrate legacy v1 state safely.
+- **m17-03:** update reset-auth, fixtures, call sites, and operator docs.
 - Checklist: `docs/progress/milestones/milestone-17-encrypted-totp.md`.
 
 ## Read before working

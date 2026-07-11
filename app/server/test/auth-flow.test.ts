@@ -13,16 +13,17 @@ import type { FastifyInstance } from 'fastify'
 
 const scratch: string[] = []
 const apps: FastifyInstance[] = []
+const SECRETS_ENV = { SECOND_BRAIN_WEB_SECRETS_KEY: 'auth-flow-test-key' }
 
 interface Fixture { app: FastifyInstance, password: string, state: OwnerAuthState }
 
 async function fixture (): Promise<Fixture> {
   const root = mkdtempSync(path.join(tmpdir(), 'sbw-authflow-'))
   scratch.push(root)
-  const config = loadConfig({ SECOND_BRAIN_WEB_DATA_DIR: path.join(root, 'data') })
+  const config = loadConfig({ SECOND_BRAIN_WEB_DATA_DIR: path.join(root, 'data'), ...SECRETS_ENV })
   prepareDatabases(config.dataDir)
   const { password, state } = await generateOwnerAuth()
-  writeOwnerAuth(config.dataDir, state)
+  writeOwnerAuth(config.dataDir, state, SECRETS_ENV)
   const app = buildApp(config)
   apps.push(app)
   return { app, password, state }

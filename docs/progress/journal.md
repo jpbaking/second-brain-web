@@ -424,3 +424,5 @@ No implementation was needed: reset-auth session revocation was already shipped 
 ## 2026-07-11 07:58 — session start
 Tree clean at 98ac8de. Active: milestone 17, next item: m17-01.
 - 07:58 STARTED m17-01: define encrypted owner-state v2 persistence using only `SECOND_BRAIN_WEB_SECRETS_KEY`, with focused storage and key-failure tests.
+- 08:00 DONE m17-01: verified by `npm test --workspace server -- auth-bootstrap.test.ts` → 9 tests green. Commit 02e4646.
+- 08:00 STARTED m17-02: decrypt v2 owner state for login and safely migrate legacy v1 plaintext state without changing credentials.

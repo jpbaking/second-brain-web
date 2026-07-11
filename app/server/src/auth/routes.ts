@@ -25,6 +25,7 @@ import type { FastifyInstance } from 'fastify'
  * verifies the code against that challenge, then creates a session.
  */
 export function registerAuthRoutes (app: FastifyInstance, config: AppConfig): void {
+  const secretsEnv = { SECOND_BRAIN_WEB_SECRETS_KEY: config.secretsKey }
   // Guarded probe the front end calls to check whether it is authenticated.
   app.get('/api/session', async (req) => {
     return { authenticated: true, sessionId: req.sessionId }
@@ -61,7 +62,7 @@ export function registerAuthRoutes (app: FastifyInstance, config: AppConfig): vo
         reply.header('retry-after', Math.ceil(throttled.retryAfterMs / 1000))
         return await reply.code(429).send({ error: 'too many attempts' })
       }
-      if (!await verifyOwnerPassword(config.dataDir, password)) {
+      if (!await verifyOwnerPassword(config.dataDir, password, secretsEnv)) {
         recordFailure(db, keys)
         return await reply.code(401).send({ error: 'invalid credentials' })
       }
@@ -79,7 +80,7 @@ export function registerAuthRoutes (app: FastifyInstance, config: AppConfig): vo
     const code = typeof body?.code === 'string' ? body.code : ''
     const challengeToken = req.cookies[CHALLENGE_COOKIE]
 
-    const owner = readOwnerAuth(config.dataDir)
+    const owner = readOwnerAuth(config.dataDir, secretsEnv)
     if (owner === null) {
       return await reply.code(503).send({ error: 'auth not configured' })
     }
