@@ -17,10 +17,12 @@ export function ProfileScreen () {
   useEffect(() => {
     fetch('/api/profile')
       .then(async r => {
+        if (r.status === 401) { window.location.assign('/login'); return }
         if (!r.ok) throw new Error('Failed to load profile')
         return r.json()
       })
       .then(data => {
+        if (!data) return
         setProfile(data)
         setLoading(false)
       })
@@ -42,6 +44,7 @@ export function ProfileScreen () {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(profile)
       })
+      if (res.status === 401) { window.location.assign('/login'); return }
       if (!res.ok) throw new Error('Failed to save profile')
       const updated = await res.json()
       setProfile(updated)

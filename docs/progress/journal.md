@@ -768,3 +768,9 @@ Tree clean at 4cebaa1. Active: milestone 35, next item: m35-01.
 
 ## 2026-07-11 16:08 — session end
 repair: added reset-auth shorthand to compose-helper.
+
+- 16:15 STARTED repair: add missing 401 redirects in AppShell and ProfileScreen
+- 16:15 DONE repair: added 401 redirects in AppShell and ProfileScreen.
+
+## 2026-07-11 16:15 — session end
+repair: added missing 401 redirects in AppShell and ProfileScreen.

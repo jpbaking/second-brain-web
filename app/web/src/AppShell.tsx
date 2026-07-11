@@ -78,8 +78,14 @@ export function AppShell ({ path: initialPath, children }: { path: string, child
 
   useEffect(() => {
     Promise.all([
-      fetch('/api/providers', { credentials: 'same-origin' }).then(async r => r.ok ? await r.json() as { profiles: unknown[] } : { profiles: [] }),
-      fetch('/api/vault/status', { credentials: 'same-origin' }).then(async r => r.ok ? await r.json() as { configured: boolean } : { configured: false })
+      fetch('/api/providers', { credentials: 'same-origin' }).then(async r => {
+        if (r.status === 401) { window.location.assign('/login'); return { profiles: [] } }
+        return r.ok ? await r.json() as { profiles: unknown[] } : { profiles: [] }
+      }),
+      fetch('/api/vault/status', { credentials: 'same-origin' }).then(async r => {
+        if (r.status === 401) { window.location.assign('/login'); return { configured: false } }
+        return r.ok ? await r.json() as { configured: boolean } : { configured: false }
+      })
     ]).then(([prov, vault]) => {
       const providersCount = prov.profiles.length
       const vaultConfigured = vault.configured
