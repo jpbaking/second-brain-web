@@ -1,340 +1,37 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-# configure — interactive setup for second-brain-web's runtime config.
-#
-# Writes everything the compose runtime needs into a gitignored .config/ dir:
-#   .config/.env            SECOND_BRAIN_WEB_SECRETS_KEY (mode 600)
-#   .config/providers.yaml  provider profiles, API keys pre-encrypted (mode 644)
-#   .config/deploy_key(.pub) vault SSH deploy key (mode 644 — see note below)
-#
-# Design notes:
-#   * Invalid input re-prompts in place; the script never aborts on a typo.
-#   * Provider + key are entered first, then the model is chosen from the list
-#     the provider reports (falling back to manual entry if the query fails).
-#   * The deploy key is generated here; its public half is also shown on the
-#     Vault page so you can register it with your Git host.
-#   * providers.yaml and deploy_key are mode 644 so the unprivileged container
-#     user can read the read-only bind mounts. They hold, respectively, only
-#     ciphertext and a key whose private half the app copies to a 600 file in
-#     the data volume before use. The .config/ directory itself is 700, so
-#     nothing here is exposed to other users on the host.
+# configure — launcher for the interactive Node configurator
+# (app/server/src/cli/configure.ts). All logic lives in the app so it is
+# written once and shared with Windows via configure.ps1. This shim just finds
+# a way to run it: the built app with host Node, else the Docker image.
 
 ROOT=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)
 CONFIG_DIR="$ROOT/.config"
-ENV_FILE="$CONFIG_DIR/.env"
-PROVIDERS_FILE="$CONFIG_DIR/providers.yaml"
-KEY_FILE="$CONFIG_DIR/deploy_key"
-
-umask 077
 mkdir -p "$CONFIG_DIR"
-chmod 700 "$CONFIG_DIR"
+chmod 700 "$CONFIG_DIR" 2>/dev/null || true
 
-# ---- prompt helpers ---------------------------------------------------------
-
-prompt() {
-  local label=$1 value
-  printf '%s' "$label" >&2
-  IFS= read -r value
-  printf '%s' "$value"
-}
-
-secret_prompt() {
-  local label=$1 value
-  printf '%s' "$label" >&2
-  if [[ -t 0 ]]; then IFS= read -r -s value; printf '\n' >&2; else IFS= read -r value; fi
-  printf '%s' "$value"
-}
-
-# Re-prompt until a value is given.
-prompt_required() {
-  local label=$1 value
-  while true; do
-    value=$(prompt "$label")
-    [[ -n "$value" ]] && { printf '%s' "$value"; return; }
-    printf '%s\n' 'A value is required — please try again.' >&2
-  done
-}
-
-# Re-prompt until the value matches a regex.
-prompt_match() {
-  local label=$1 regex=$2 err=$3 value
-  while true; do
-    value=$(prompt "$label")
-    [[ "$value" =~ $regex ]] && { printf '%s' "$value"; return; }
-    printf '%s\n' "$err" >&2
-  done
-}
-
-# Yes/no; returns 0 for yes.
-confirm() {
-  local ans
-  ans=$(prompt "$1")
-  [[ "$ans" =~ ^[Yy]$ ]]
-}
-
-yaml_quote() {
-  local value=${1//\'/\'\'}
-  printf "'%s'" "$value"
-}
-
-# Lowercase, hyphenate, and trim a string into a valid config key.
-slugify() {
-  printf '%s' "$1" \
-    | tr '[:upper:]' '[:lower:]' \
-    | sed 's/[^a-z0-9-]/-/g; s/-\{2,\}/-/g; s/^-*//; s/-*$//'
-}
-
-# Show a list (read on stdin) on the terminal, paging through less/more when it
-# is taller than the window. Output goes to stderr so it never mixes with a
-# value captured via command substitution elsewhere.
-page_list() {
-  local content rows n
-  content=$(cat)
-  rows=$(tput lines 2>/dev/null || printf '24')
-  n=$(printf '%s\n' "$content" | wc -l)
-  if [[ -t 2 ]] && (( n > rows - 2 )); then
-    if command -v less >/dev/null; then printf '%s\n' "$content" | less -FX -R >&2
-    elif command -v more >/dev/null; then printf '%s\n' "$content" | more >&2
-    else printf '%s\n' "$content" >&2
-    fi
-  else
-    printf '%s\n' "$content" >&2
-  fi
-}
-
-# Pick from the global `models` array into the global `model`. A long list can
-# be narrowed with a case-insensitive substring filter, and is paged when it
-# does not fit the window. 'm' always allows manual entry.
-choose_model() {
-  local filter='' choice idx n
-  local -a shown
-  while true; do
-    shown=()
-    for idx in "${!models[@]}"; do
-      if [[ -z "$filter" || ${models[$idx],,} == *"${filter,,}"* ]]; then shown+=("$idx"); fi
-    done
-    if (( ${#shown[@]} == 0 )); then
-      printf '  No models match "%s" — showing all.\n' "$filter" >&2
-      filter=''
-      continue
-    fi
-    {
-      [[ -n "$filter" ]] && printf '  Filter "%s" — %d match(es):\n' "$filter" "${#shown[@]}"
-      for n in "${!shown[@]}"; do printf '    %3d) %s\n' "$((n + 1))" "${models[${shown[$n]}]}"; done
-    } | page_list
-    choice=$(prompt "  Select a model [1-${#shown[@]}], 'f' to filter, or 'm' to type one: ")
-    if [[ "$choice" == m ]]; then
-      model=$(prompt_required '  Model: '); return
-    elif [[ "$choice" == f ]]; then
-      filter=$(prompt '  Filter (substring, blank = show all): ')
-    elif [[ "$choice" =~ ^[0-9]+$ ]] && (( choice >= 1 && choice <= ${#shown[@]} )); then
-      model=${models[${shown[$((choice - 1))]}]}; return
-    else
-      printf "  Enter a number between 1 and %d, 'f', or 'm'.\n" "${#shown[@]}" >&2
-    fi
-  done
-}
-
-# Read the value of KEY=... from a file (last occurrence), or empty.
-read_env_value() {
-  local key=$1 file=$2
-  [[ -n "$file" && -f "$file" ]] || return 0
-  sed -n "s/^$key=//p" "$file" | tail -n 1
-}
-
-# Yes/no with a default (y|n) applied on blank input; returns 0 for yes.
-confirm_default() {
-  local ans default=$2
-  ans=$(prompt "$1")
-  [[ -z "$ans" ]] && ans=$default
-  [[ "$ans" =~ ^[Yy]$ ]]
-}
-
-# ---- app CLI bridges (dist first, then the docker image) --------------------
-
-encrypt_secret() {
-  if [[ -f "$ROOT/app/server/dist/cli/encrypt-secret.js" ]]; then
-    printf '%s' "$1" | SECOND_BRAIN_WEB_SECRETS_KEY="$secrets_key" node "$ROOT/app/server/dist/cli/encrypt-secret.js"
-    return
-  fi
-  if docker image inspect second-brain-web >/dev/null 2>&1; then
-    printf '%s' "$1" | docker run --rm -i -e SECOND_BRAIN_WEB_SECRETS_KEY="$secrets_key" second-brain-web node server/dist/cli/encrypt-secret.js
-    return
-  fi
-  printf '%s\n' 'configure: build the app (`cd app && npm run build`) or the second-brain-web image, then run again.' >&2
-  exit 1
-}
-
-# Print the provider's model ids (one per line) or return non-zero. The API key
-# is read from stdin so it never lands in the process arguments.
-list_models() {
-  local provider=$1 base_url=$2
-  if [[ -f "$ROOT/app/server/dist/cli/list-models.js" ]]; then
-    SBW_LIST_PROVIDER="$provider" SBW_LIST_BASE_URL="$base_url" \
-      node "$ROOT/app/server/dist/cli/list-models.js"
-    return
-  fi
-  if docker image inspect second-brain-web >/dev/null 2>&1; then
-    docker run --rm -i -e SBW_LIST_PROVIDER="$provider" -e SBW_LIST_BASE_URL="$base_url" \
-      second-brain-web node server/dist/cli/list-models.js
-    return
-  fi
-  return 1
-}
-
-# ---- secrets key ------------------------------------------------------------
-
-# Prior values come from .config/.env, or a legacy root .env on first migration.
-src_env=''
-if [[ -f "$ENV_FILE" ]]; then src_env="$ENV_FILE"
-elif [[ -f "$ROOT/.env" ]]; then src_env="$ROOT/.env"; fi
-
-existing_key=$(read_env_value SECOND_BRAIN_WEB_SECRETS_KEY "$src_env")
-if [[ -n "$existing_key" ]]; then
-  secrets_key=$existing_key
-  if confirm 'Rotate the existing secrets key? (invalidates every stored provider key) [y/N] '; then
-    secrets_key=$(openssl rand -base64 32)
-    printf '%s\n' 'Rotated the secrets key — re-enter every provider key below.' >&2
-  fi
-else
-  secrets_key=$(openssl rand -base64 32)
-  printf '%s\n' 'Generated SECOND_BRAIN_WEB_SECRETS_KEY.' >&2
+# One-time migration: seed .config/.env from a legacy repo-root .env so existing
+# secrets/settings survive. compose-helper prefers a root .env, so warn to drop it.
+if [[ ! -f "$CONFIG_DIR/.env" && -f "$ROOT/.env" ]]; then
+  cp "$ROOT/.env" "$CONFIG_DIR/.env"
+  chmod 600 "$CONFIG_DIR/.env" 2>/dev/null || true
+  printf 'configure: migrated %s → %s. Remove the repo-root .env (compose-helper prefers it).\n' \
+    "$ROOT/.env" "$CONFIG_DIR/.env" >&2
 fi
 
-# ---- runtime settings (compose variable substitution) -----------------------
-
-default_bind=$(read_env_value SECOND_BRAIN_WEB_BIND "$src_env"); default_bind=${default_bind:-127.0.0.1}
-bind=$(prompt "Host publish address (BIND) [$default_bind]: ")
-[[ -z "$bind" ]] && bind=$default_bind
-
-default_port=$(read_env_value SECOND_BRAIN_WEB_PORT "$src_env"); default_port=${default_port:-8722}
-while true; do
-  port=$(prompt "Host port [$default_port]: ")
-  [[ -z "$port" ]] && port=$default_port
-  [[ "$port" =~ ^[0-9]+$ ]] && (( port >= 1 && port <= 65535 )) && break
-  printf 'Port must be a number between 1 and 65535.\n' >&2
-done
-
-# NODE_ENV: production unless the operator opts into development (which drops the
-# Secure cookie flag — plain-HTTP LAN only).
-dev_default='n'
-[[ "$(read_env_value SECOND_BRAIN_WEB_NODE_ENV "$src_env")" == development ]] && dev_default='y'
-dev_hint=$([[ $dev_default == y ]] && printf 'Y/n' || printf 'y/N')
-if confirm_default "Enable development mode? (disables Secure auth cookies — plain-HTTP LAN only) [$dev_hint] " "$dev_default"; then
-  node_env=development
-else
-  node_env=production
+DIST="$ROOT/app/server/dist/cli/configure.js"
+if command -v node >/dev/null 2>&1 && [[ -f "$DIST" ]]; then
+  SBW_CONFIG_DIR="$CONFIG_DIR" exec node "$DIST"
 fi
 
-{
-  printf 'SECOND_BRAIN_WEB_SECRETS_KEY=%s\n' "$secrets_key"
-  printf 'SECOND_BRAIN_WEB_BIND=%s\n' "$bind"
-  printf 'SECOND_BRAIN_WEB_PORT=%s\n' "$port"
-  printf 'SECOND_BRAIN_WEB_NODE_ENV=%s\n' "$node_env"
-} > "$ENV_FILE"
-chmod 600 "$ENV_FILE"
-
-# A root-level .env would shadow .config/.env (compose-helper prefers the root),
-# leaving the real secrets key unused. Offer to remove the stale copy.
-if [[ -f "$ROOT/.env" ]]; then
-  printf '%s\n' 'A legacy .env at the repo root will take precedence over .config/.env.' >&2
-  if confirm 'Remove the legacy repo-root .env? [y/N] '; then
-    rm -f "$ROOT/.env"
-    printf 'Removed %s.\n' "$ROOT/.env" >&2
-  fi
+if command -v docker >/dev/null 2>&1 && docker image inspect second-brain-web >/dev/null 2>&1; then
+  # -u maps host ownership onto the files written into the mount; ssh-keygen is
+  # skipped gracefully if the slim image lacks it (run with host Node to generate).
+  exec docker run --rm -it -u "$(id -u):$(id -g)" \
+    -v "$CONFIG_DIR:/config" -e SBW_CONFIG_DIR=/config \
+    second-brain-web node server/dist/cli/configure.js
 fi
 
-# ---- providers --------------------------------------------------------------
-
-printf 'providers:\n' > "$PROVIDERS_FILE"
-count=0
-while confirm "$([[ $count -eq 0 ]] && printf '\nAdd a provider? [y/N] ' || printf '\nAdd another provider? [y/N] ')"; do
-  provider=$(prompt_match '  Provider (anthropic|gemini|openai|openai-compatible): ' \
-    '^(anthropic|gemini|openai|openai-compatible)$' \
-    '  Invalid provider — choose anthropic, gemini, openai, or openai-compatible.')
-
-  base_url=''
-  if [[ "$provider" == openai-compatible ]]; then
-    base_url=$(prompt_required '  Base URL: ')
-  fi
-
-  api_key=$(secret_prompt '  API key (blank for none): ')
-
-  # Query the provider for its model list; fall back to manual entry.
-  model=''
-  if [[ -n "$api_key" ]]; then
-    printf '  Querying available models…\n' >&2
-    if models_raw=$(printf '%s' "$api_key" | list_models "$provider" "$base_url" 2>/dev/null) \
-        && [[ -n "$models_raw" ]]; then
-      mapfile -t models <<< "$models_raw"
-      choose_model
-    else
-      printf '  Could not list models automatically — enter one manually.\n' >&2
-      model=$(prompt_required '  Model: ')
-    fi
-  else
-    model=$(prompt_required '  Model: ')
-  fi
-
-  default_id=$(slugify "$provider-$model")
-  id=''
-  while true; do
-    id=$(prompt "  Config key [$default_id]: ")
-    [[ -z "$id" ]] && id=$default_id
-    [[ "$id" =~ ^[a-z][a-z0-9-]*$ ]] && break
-    printf '  Config key must be lowercase letters, digits, and hyphens (start with a letter).\n' >&2
-  done
-
-  display_name=$(prompt "  Display name [$model]: ")
-  [[ -z "$display_name" ]] && display_name=$model
-
-  ciphertext=''
-  if [[ -n "$api_key" ]]; then ciphertext=$(encrypt_secret "$api_key"); fi
-  unset api_key
-
-  {
-    printf '  %s:\n' "$id"
-    printf '    display_name: %s\n' "$(yaml_quote "$display_name")"
-    printf '    provider: %s\n' "$provider"
-    printf '    model: %s\n' "$(yaml_quote "$model")"
-    [[ -n "$base_url" ]] && printf '    base_url: %s\n' "$(yaml_quote "$base_url")"
-    [[ -n "$ciphertext" ]] && printf '    key: %s\n' "$(yaml_quote "$ciphertext")"
-  } >> "$PROVIDERS_FILE"
-  count=$((count + 1))
-  printf '  Added provider "%s".\n' "$id" >&2
-done
-if [[ $count -eq 0 ]]; then printf '  {}\n' >> "$PROVIDERS_FILE"; fi
-chmod 644 "$PROVIDERS_FILE"
-
-# ---- vault deploy key -------------------------------------------------------
-
-generate_key() {
-  if ! command -v ssh-keygen >/dev/null; then
-    printf '\nconfigure: ssh-keygen not found — skipping vault key generation. Install OpenSSH and re-run to add one.\n' >&2
-    return
-  fi
-  ssh-keygen -t ed25519 -N '' -C 'second-brain-web deploy key' -f "$KEY_FILE" >/dev/null
-  # World-readable so the container user can read the read-only bind mount; the
-  # app copies the private half to a 600 file in the data volume before use.
-  chmod 644 "$KEY_FILE" "$KEY_FILE.pub"
-  printf '\nGenerated a vault SSH deploy key. Add this PUBLIC key to your Git host\n' >&2
-  printf '(with write access) — it is also shown on the Vault page:\n\n' >&2
-  cat "$KEY_FILE.pub" >&2
-  printf '\n  GitHub: repository → Settings → Deploy keys → Add deploy key → tick "Allow write access".\n' >&2
-}
-
-if [[ -f "$KEY_FILE" ]]; then
-  if confirm $'\nA vault deploy key already exists. Rotate it? (invalidates the old one) [y/N] '; then
-    rm -f "$KEY_FILE" "$KEY_FILE.pub"
-    generate_key
-  else
-    printf 'Keeping the existing vault deploy key.\n' >&2
-  fi
-else
-  generate_key
-fi
-
-# ---- done -------------------------------------------------------------------
-
-printf '\nConfigured %d provider(s) into %s.\nNext: ./compose-helper.sh up\n' "$count" "$CONFIG_DIR"
+printf 'configure: need Node with the built app (cd app && npm run build) or the second-brain-web Docker image.\n' >&2
+exit 1

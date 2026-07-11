@@ -46,7 +46,7 @@ node-or-docker launchers.
       preserve an unknown `.env` key; (b) add a provider with model filter;
       assert the resulting `.env`/`providers.yaml`.
 
-- [ ] **m34-03** Retire the shell logic: `configure` (bash) and `configure.ps1`
+- [x] **m34-03** Retire the shell logic: `configure` (bash) and `configure.ps1`
       become thin launchers that run `node …/dist/cli/configure.js` when Node is
       present, else `docker run -it -u <uid> -v ./.config:/config … configure.js`,
       passing `SBW_CONFIG_DIR`.
