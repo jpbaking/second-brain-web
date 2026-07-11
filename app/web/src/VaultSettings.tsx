@@ -84,8 +84,7 @@ export function VaultSettings () {
     try {
       const res = await sendJson('PUT', '/api/vault/config', { remoteUrl, branch, displayName })
       if (res.ok) {
-        setNotice('Vault settings saved.')
-        await load()
+        window.location.assign('/')
       } else if (res.status === 401) {
         window.location.assign('/login')
       } else {

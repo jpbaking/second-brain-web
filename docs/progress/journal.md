@@ -744,4 +744,6 @@ Tree was dirty from out-of-band repairs.
 - 15:16 REPAIR: updated README.md to use `./compose-helper.sh exec` for auth bootstrap.
 - 15:16 REPAIR: combined vault config save and sync operations in the backend (`PUT /api/vault/config`) to rollback on clone failure, and removed the standalone "Clone / sync now" button from the web UI.
 
-## 15:16 — session end
+- 15:18 REPAIR: updated web UI to redirect user to chat (`/`) on successful vault save/sync.
+
+## 15:18 — session end

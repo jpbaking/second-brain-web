@@ -33,7 +33,7 @@ None
 
 ## Next step
 
-(Out-of-band repairs applied: Dockerfile git tools installed, README auth setup corrected to use compose-helper, and vault config save combined with sync. Select a new milestone from the backlog. Outstanding: PowerShell launcher smoke-test on Windows.)
+(Out-of-band repairs applied: Dockerfile git tools installed, README auth setup corrected, vault config save combined with sync, and UI redirect to chat on successful sync added. Select a new milestone from the backlog. Outstanding: PowerShell launcher smoke-test on Windows.)
 
 ## Read before working
 
