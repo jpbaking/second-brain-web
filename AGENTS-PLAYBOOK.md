@@ -137,18 +137,20 @@ use `repair:` (fixing something broken) or `progress:` (progress-file edits).
    must know.
 3. Append a session-end journal entry with a one-line handoff.
 4. Commit.
-5. Run `agent-bell` immediately before the final response so the principal is
-   audibly notified that the agent is done.
+5. Run `/home/j.baking/Music/agents-notification/done` immediately before the
+   final response so the principal is audibly notified that the agent is done.
 
 ## Audible notification protocol
 
-`agent-bell` is installed on `PATH`. Run it exactly once whenever control is
-being handed back to the principal for either of these reasons:
+Two notification commands exist. Run the appropriate one exactly once whenever
+control is being handed back to the principal:
 
-- **Done:** all work requested for the turn is complete; run `agent-bell`
-  immediately before the final response.
+- **Done:** all work requested for the turn is complete; run
+  `/home/j.baking/Music/agents-notification/done` immediately before the
+  final response.
 - **Waiting:** progress cannot continue without user input, approval, a
-  credential, or another principal-only action; run `agent-bell` immediately
+  credential, or another principal-only action; run
+  `/home/j.baking/Music/agents-notification/action-needed` immediately
   before asking for that action.
 
 Do not ring for ordinary commentary updates, tool approvals that the runtime
@@ -179,8 +181,9 @@ something only the principal can provide:
 4. Move on **only if** the next item does not depend on the blocked one;
    otherwise commit, write the session-end entry, and stop. A clean stop with
    a good question beats a mess of guesses.
-5. Before asking the principal for the required action, run `agent-bell` as
-   specified by the Audible notification protocol.
+5. Before asking the principal for the required action, run
+   `/home/j.baking/Music/agents-notification/action-needed` as specified by
+   the Audible notification protocol.
 
 ## Scope discipline
 
