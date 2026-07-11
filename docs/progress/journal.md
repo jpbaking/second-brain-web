@@ -525,3 +525,8 @@ Tree clean at 7d17d8b. Active: milestone 22, next item: m22-01.
 
 ## 2026-07-11 10:13 — session end (milestone 22 complete)
 Automatic context compaction shipped. Reverting to no active milestone. Awaiting principal direction.
+
+## 2026-07-11 10:15 — session start
+Tree clean at 9f29b0d. Active: milestone 23, next item: m23-01.
+
+- 10:15 STARTED m23-01: Implement `readRadar(db)` in `app/server/src/search/radar.ts` using `vault_search`.

@@ -29,17 +29,16 @@ Updated: 2026-07-11 (no active milestone)
 
 ## Current phase
 
-No milestone is active. Work exists only in `docs/progress/BACKLOG.md` and
-starts only when the principal says go.
+Active: Milestone 23 (Contradiction and Staleness Radar).
 
 ## Next step
 
-- None. Awaiting principal direction.
+- m23-01: Implement `readRadar(db)` in `app/server/src/search/radar.ts` using `vault_search`.
 
 ## Read before working
 
 - `AGENTS-PLAYBOOK.md` — always, top to bottom.
-- `docs/progress/BACKLOG.md` — the work queue.
+- `docs/progress/milestones/milestone-23-staleness-radar.md` — active checklist.
 - The design and project-plan documents relevant to the selected item.
 
 ## Questions for the principal
