@@ -43,6 +43,20 @@ describe('foldTranscript', () => {
     expect(result.lines[1]).toMatchObject({ text: 'Answer.', reasoning: 'Checking notes carefully.' })
   })
 
+  it('builds delta-only reasoning and preserves every completed iteration', () => {
+    const result = foldTranscript([
+      { seq: 1, type: 'user_message', payload: { text: 'Question' } },
+      { seq: 2, type: 'agent_event', payload: { type: 'content_start', contentType: 'reasoning', reasoning: 'First' } },
+      { seq: 3, type: 'agent_event', payload: { type: 'content_start', contentType: 'reasoning', reasoning: ' thought.' } },
+      { seq: 4, type: 'agent_event', payload: { type: 'content_end', contentType: 'reasoning', reasoning: 'First thought.' } },
+      { seq: 5, type: 'agent_event', payload: { type: 'content_start', contentType: 'reasoning', reasoning: 'Second' } },
+      { seq: 6, type: 'agent_event', payload: { type: 'content_start', contentType: 'reasoning', reasoning: ' thought.' } },
+      { seq: 7, type: 'agent_event', payload: { type: 'content_end', contentType: 'reasoning', reasoning: 'Second thought.' } },
+      { seq: 8, type: 'agent_event', payload: { type: 'done', text: 'Answer.' } },
+    ], true)
+    expect(result.lines[1]).toMatchObject({ text: 'Answer.', reasoning: 'First thought.\n\nSecond thought.' })
+  })
+
   it('uses snapshots as canonical when both stream forms are emitted', () => {
     const result = foldTranscript([
       { seq: 1, type: 'user_message', payload: { text: 'Question' } },

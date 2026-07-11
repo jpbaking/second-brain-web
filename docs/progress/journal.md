@@ -994,3 +994,11 @@ Tree clean at b91f0a1. Principal reports reasoning still flashes one word at a t
 
 ## 03:12 — session end
 LM Studio one-token flashing root cause fixed from live event evidence; rebuilding the running container for handoff.
+
+## 2026-07-12 03:15 — session start
+Tree clean at c668e2c. Principal reports the live Working disclosure still flashes reasoning tokens and only retains the final reasoning block.
+- 03:15 REPAIR STARTED: live events confirm reasoning `content_start` carries delta-only `reasoning` tokens, while each iteration emits a complete `content_end.reasoning`. Implement active-block accumulation plus preservation of every completed iteration.
+- 03:19 REPAIR DONE: live reasoning tokens now append within the active block; each `content_end.reasoning` seals and retains that iteration; subsequent iterations start a new active block without replacing history. Exact two-iteration regression added. Verified by 8 web tests, clean web lint, and production web build.
+
+## 03:19 — session end
+Working disclosure now builds reasoning sentences and the completed disclosure retains every reasoning iteration. Rebuilding the running container for handoff.
