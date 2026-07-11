@@ -85,12 +85,14 @@ describe('AgentSessionService', () => {
 
     const session = svc.create({ title: 'Chat 1' })
     // Captured config event has provider/model but never the key.
+    svc.flushEvents()
     const captured = readEventsSince(db, session.id, 0).find(e => e.type === 'session_config')
     expect(captured?.payload).toMatchObject({ providerId: 'openai-compatible', modelId: 'model-a' })
     expect(JSON.stringify(captured?.payload)).not.toContain('sk-secret')
 
     const res = await svc.sendMessage(session.id, 'hello')
-    expect(res.sdkSessionId).toBe('sdk-1')
+    expect(res.accepted).toBe(true)
+    await new Promise(r => setTimeout(r, 10))
     // First message starts the SDK session with the prompt (not send()).
     expect(runner.starts).toHaveLength(1)
     expect(runner.starts[0]?.prompt).toBe('hello')
@@ -98,6 +100,7 @@ describe('AgentSessionService', () => {
     expect(runner.sends).toHaveLength(0)
     // Mapping + user_message event persisted.
     expect(getSession(db, session.id)?.sdkSessionId).toBe('sdk-1')
+    svc.flushEvents()
     expect(readEventsSince(db, session.id, 0).some(e => e.type === 'user_message')).toBe(true)
   })
 
@@ -220,6 +223,7 @@ describe('AgentSessionService', () => {
       await new Promise(resolve => setTimeout(resolve, 10))
 
       // Auto-compaction should trigger and append 'compaction_requested'
+      svc.flushEvents()
       const events = readEventsSince(db, s.id, 0)
       const requested = events.some(e => e.type === 'compaction_requested')
       expect(requested).toBe(true)
@@ -247,6 +251,7 @@ describe('AgentSessionService', () => {
 
       await new Promise(resolve => setTimeout(resolve, 10))
 
+      svc.flushEvents()
       const events = readEventsSince(db, s.id, 0)
       const requested = events.some(e => e.type === 'compaction_requested')
       expect(requested).toBe(false)
@@ -269,6 +274,7 @@ describe('AgentSessionService', () => {
       runner.emit({ type: 'ended', sessionId: sdkId, payload: null })
 
       await new Promise(resolve => setTimeout(resolve, 10))
+      svc.flushEvents()
       const events1 = readEventsSince(db, s.id, 0)
       expect(events1.filter(e => e.type === 'compaction_requested').length).toBe(1)
 
@@ -277,6 +283,7 @@ describe('AgentSessionService', () => {
       runner.emit({ type: 'ended', sessionId: newSdkId, payload: null })
 
       await new Promise(resolve => setTimeout(resolve, 10))
+      svc.flushEvents()
       const events2 = readEventsSince(db, s.id, 0)
       // Should STILL be 1, because currentlyCompacting was true
       expect(events2.filter(e => e.type === 'compaction_requested').length).toBe(1)

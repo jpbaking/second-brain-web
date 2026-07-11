@@ -72,6 +72,7 @@ describe('AgentSessionService approvals', () => {
     })
     expect(decision.approved).toBe(false)
     expect(decision.reason).toMatch(/library/)
+    svc.flushEvents()
     expect(readEventsSince(db, chatId, 0).some(e => e.type === 'approval_auto_denied')).toBe(true)
     // Resolving a toolCallId that never parked returns false.
     expect(svc.resolveApproval('t1', true)).toBe(false)
@@ -84,6 +85,7 @@ describe('AgentSessionService approvals', () => {
       sessionId: 'sdk-1', toolCallId: 't2', toolName: 'editor', input: { path: 'notes/scratch.md' },
     })
     // The request is streamed but not yet resolved.
+    svc.flushEvents()
     expect(readEventsSince(db, chatId, 0).some(e => e.type === 'approval_request')).toBe(true)
     let settled = false
     pending.then(() => { settled = true }).catch(() => {})
@@ -92,6 +94,7 @@ describe('AgentSessionService approvals', () => {
 
     expect(svc.resolveApproval('t2', true)).toBe(true)
     expect(await pending).toEqual({ approved: true })
+    svc.flushEvents()
     expect(readEventsSince(db, chatId, 0).some(e => e.type === 'approval_resolved')).toBe(true)
   })
 

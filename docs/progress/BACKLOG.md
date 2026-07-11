@@ -59,8 +59,8 @@ See `docs/project-plan/phase-008-feature-backlog-and-design-hooks.md` for other 
     dirs (`inbox library memory reports scripts`), not `/app`
     (`node_modules server web`); "who's my employer?" resolves from `memory/`.
 
-- **Stream chat replies live; stop blocking `/messages` on the whole turn**
-  (candidate milestone 40). Today a chat turn does not stream and the POST
+- ~~**Stream chat replies live; stop blocking `/messages` on the whole turn**~~
+  (completed in milestone 40). Today a chat turn does not stream and the POST
   hangs for the turn's full duration, which 504s behind any reverse proxy with
   a normal read timeout.
   - **Symptom (principal-reported, 2026-07-11):** chatting via the

@@ -942,3 +942,5 @@ Milestone 39 complete: the claude-code agent now operates in the vault (chdir on
 
 ## 2026-07-12 02:27 — session start
 Tree clean at 4a3691b. Active: milestone 40, next item: m40-01.
+- 02:28 STARTED m40-01: establish sdk-session binding early and batch DB inserts
+- 02:32 DONE m40: Stream chat replies live, async /messages, and batch DB writes.

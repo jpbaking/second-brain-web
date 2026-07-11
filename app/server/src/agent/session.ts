@@ -99,7 +99,13 @@ export class AgentSessionService {
   private readonly pendingApprovals = new Map<string, { resolve: (d: ToolApprovalDecision) => void, chatSessionId: string, toolName: string }>()
   /** chatSessionId → vault lockId held by this session. */
   private readonly locks = new Map<string, string>()
+  /** chatSessionId awaiting its first event to bind its sdkSessionId. */
+  private pendingStartChatSessionId: string | null = null
   private readonly unsubscribeRunner: () => void
+
+  private eventQueue: ChatEvent[] = []
+  private flushTimer: ReturnType<typeof setTimeout> | null = null
+  private sessionSeqs = new Map<string, number>()
 
   constructor (
     private readonly db: DatabaseSync,
@@ -115,7 +121,18 @@ export class AgentSessionService {
   private handleSdkEvent (env: SdkEnvelope): void {
     const sdkSessionId = envelopeSdkSessionId(env)
     if (sdkSessionId === undefined) return
-    const session = getSessionBySdkId(this.db, sdkSessionId)
+    let session = getSessionBySdkId(this.db, sdkSessionId)
+
+    // Bind immediately on the first event if we are waiting for a start!
+    if (session === undefined && this.pendingStartChatSessionId !== null) {
+      session = getSession(this.db, this.pendingStartChatSessionId)
+      if (session !== undefined) {
+        setSdkSessionId(this.db, session.id, sdkSessionId)
+        this.live.set(session.id, sdkSessionId)
+        this.pendingStartChatSessionId = null
+      }
+    }
+
     if (session === undefined) {
       let buffered = this.earlyEvents.get(sdkSessionId)
       if (!buffered) {
@@ -127,7 +144,7 @@ export class AgentSessionService {
     }
     const translated = translateSdkEvent(env)
     if (translated === null) return
-    const event = appendEvent(this.db, session.id, translated.type, translated.payload)
+    const event = this.appendEventBatched(session.id, translated.type, translated.payload)
     this.fanOut(session.id, event)
 
     if (translated.type === 'ended') {
@@ -149,6 +166,7 @@ export class AgentSessionService {
   }
 
   private checkCompaction (chatSessionId: string): void {
+    this.flushEvents()
     const events = readEventsSince(this.db, chatSessionId, 0)
     let reqIndex = -1
     for (let i = events.length - 1; i >= 0; i--) {
@@ -181,7 +199,54 @@ export class AgentSessionService {
     }
   }
 
+  private appendEventBatched (sessionId: string, type: string, payload: unknown): ChatEvent {
+    let seq = this.sessionSeqs.get(sessionId)
+    if (seq === undefined) {
+      const row = this.db.prepare('SELECT COALESCE(MAX(seq), 0) AS maxSeq FROM chat_events WHERE session_id = ?').get(sessionId) as { maxSeq: number }
+      seq = row.maxSeq
+    }
+    seq += 1
+    this.sessionSeqs.set(sessionId, seq)
+    const now = new Date().toISOString()
+    const event: ChatEvent = { id: 0, sessionId, seq, type, payload, createdAt: now }
+    
+    this.eventQueue.push(event)
+    if (this.flushTimer === null) {
+      this.flushTimer = setTimeout(() => this.flushEvents(), 100)
+    }
+    return event
+  }
+
+  flushEvents (): void {
+    if (this.eventQueue.length === 0) return
+    const batch = this.eventQueue
+    this.eventQueue = []
+    if (this.flushTimer !== null) clearTimeout(this.flushTimer)
+    this.flushTimer = null
+
+    try {
+      this.db.exec('BEGIN IMMEDIATE')
+      const insert = this.db.prepare(`
+        INSERT INTO chat_events (session_id, seq, type, payload_json, created_at)
+        VALUES (?, ?, ?, ?, ?)
+      `)
+      const update = this.db.prepare('UPDATE chat_sessions SET updated_at = ? WHERE id = ?')
+      
+      for (const e of batch) {
+        const info = insert.run(e.sessionId, e.seq, e.type, e.payload === null ? null : JSON.stringify(e.payload), e.createdAt)
+        e.id = Number(info.lastInsertRowid)
+        update.run(e.createdAt, e.sessionId)
+      }
+      this.db.exec('COMMIT')
+    } catch (err) {
+      try { this.db.exec('ROLLBACK') } catch {}
+      if (err instanceof Error && err.message.includes('database is not open')) return
+      console.error('Failed to flush chat events batch:', err)
+    }
+  }
+
   private checkAutoCompaction (chatSessionId: string): void {
+    this.flushEvents()
     const events = readEventsSince(this.db, chatSessionId, 0)
 
     // Find the last reset point (compaction or session start)
@@ -232,6 +297,7 @@ export class AgentSessionService {
       return
     }
 
+    this.flushEvents()
     const events = readEventsSince(this.db, chatSessionId, 0)
     const promptEvent = events.find(e => e.type === 'user_message')
     const prompt = (promptEvent?.payload as { text?: string } | null)?.text ?? null
@@ -277,6 +343,8 @@ export class AgentSessionService {
   /** Stop bridging SDK events (call on app shutdown). */
   dispose (): void {
     this.unsubscribeRunner()
+    this.flushEvents()
+    if (this.flushTimer !== null) clearTimeout(this.flushTimer)
     this.subscribers.clear()
     // Fail any parked approvals closed rather than leaving turns hung.
     for (const { resolve } of this.pendingApprovals.values()) resolve({ approved: false, reason: 'server shutting down' })
@@ -356,7 +424,7 @@ export class AgentSessionService {
 
   /** Persist a chat event and fan it out to SSE clients. */
   private emitEvent (chatSessionId: string, type: string, payload: unknown): void {
-    this.fanOut(chatSessionId, appendEvent(this.db, chatSessionId, type, payload))
+    this.fanOut(chatSessionId, this.appendEventBatched(chatSessionId, type, payload))
   }
 
   /** Create a chat session and capture its provider config. Does not start the SDK yet. */
@@ -366,12 +434,13 @@ export class AgentSessionService {
       throw new Error('no enabled provider profile available; configure one in Provider settings first')
     }
     const session = createSession(this.db, { title: input.title, providerProfileId: snap.profileId, ...(input.approvalPreset ? { approvalPreset: input.approvalPreset } : {}) })
-    appendEvent(this.db, session.id, 'session_config', capturedFromSnapshot(snap))
+    this.appendEventBatched(session.id, 'session_config', capturedFromSnapshot(snap))
     return session
   }
 
   /** The config captured at create (non-secret), from the first session_config event. */
   private capturedConfig (chatSessionId: string): CapturedConfig {
+    this.flushEvents()
     const event = readEventsSince(this.db, chatSessionId, 0).find(e => e.type === 'session_config')
     if (event === undefined) throw new Error(`chat session ${chatSessionId} has no captured config`)
     return event.payload as CapturedConfig
@@ -424,20 +493,31 @@ export class AgentSessionService {
       toolPolicies: TOOL_POLICIES,
     }
     let sdkSessionId: string
-    if (session.sdkSessionId !== null) {
-      // Restart: rehydrate from the persisted SDK session's messages.
-      let initialMessages = await this.runner.readMessages(session.sdkSessionId)
-      if (session.compactionSummary !== null) {
-        initialMessages = [{ role: 'user', content: `SYSTEM: Resuming session from compacted context:\n\n<compaction_summary>\n${session.compactionSummary}\n</compaction_summary>` }]
+    this.pendingStartChatSessionId = chatSessionId
+    try {
+      if (session.sdkSessionId !== null) {
+        // Restart: rehydrate from the persisted SDK session's messages.
+        let initialMessages = await this.runner.readMessages(session.sdkSessionId)
+        if (session.compactionSummary !== null) {
+          initialMessages = [{ role: 'user', content: `SYSTEM: Resuming session from compacted context:\n\n<compaction_summary>\n${session.compactionSummary}\n</compaction_summary>` }]
+        }
+        const result = await this.runner.start({ config, initialMessages, ...approvalWiring, ...(prompt !== undefined ? { prompt } : {}) })
+        sdkSessionId = result.sessionId
+      } else {
+        const result = await this.runner.start({ config, ...approvalWiring, ...(prompt !== undefined ? { prompt } : {}) })
+        sdkSessionId = result.sessionId
       }
-      const result = await this.runner.start({ config, initialMessages, ...approvalWiring, ...(prompt !== undefined ? { prompt } : {}) })
-      sdkSessionId = result.sessionId
-    } else {
-      const result = await this.runner.start({ config, ...approvalWiring, ...(prompt !== undefined ? { prompt } : {}) })
-      sdkSessionId = result.sessionId
+    } finally {
+      if (this.pendingStartChatSessionId === chatSessionId) {
+        this.pendingStartChatSessionId = null
+      }
     }
-    setSdkSessionId(this.db, chatSessionId, sdkSessionId)
-    this.live.set(chatSessionId, sdkSessionId)
+    
+    // Bind it if the first event didn't already bind it.
+    if (!this.live.has(chatSessionId)) {
+      setSdkSessionId(this.db, chatSessionId, sdkSessionId)
+      this.live.set(chatSessionId, sdkSessionId)
+    }
 
     const buffered = this.earlyEvents.get(sdkSessionId)
     if (buffered !== undefined) {
@@ -451,24 +531,44 @@ export class AgentSessionService {
   }
 
   /** Send a user message, starting or rehydrating the SDK session if needed. */
-  async sendMessage (chatSessionId: string, text: string): Promise<{ sdkSessionId: string }> {
-    // emitEvent (not bare appendEvent) so connected SSE clients see the user's
+  async sendMessage (chatSessionId: string, text: string): Promise<{ accepted: true }> {
+    // emitEvent (not bare appendEventBatched) so connected SSE clients see the user's
     // own message live, not only on replay.
     this.emitEvent(chatSessionId, 'user_message', { text })
     const wasLive = this.live.has(chatSessionId)
-    const sdkSessionId = await this.ensureLive(chatSessionId, wasLive ? undefined : text)
-    if (wasLive) await this.runner.send(sdkSessionId, { type: 'user_message', text })
-    return { sdkSessionId }
+    
+    const work = async () => {
+      try {
+        const sdkSessionId = await this.ensureLive(chatSessionId, wasLive ? undefined : text)
+        if (wasLive) await this.runner.send(sdkSessionId, { type: 'user_message', text })
+      } catch (err) {
+        this.emitEvent(chatSessionId, 'status', { text: `Error: ${err instanceof Error ? err.message : String(err)}` })
+        this.emitEvent(chatSessionId, 'ended', null)
+      }
+    }
+    work().catch(() => {})
+    
+    return { accepted: true }
   }
 
   /** Instruct the agent to summarize context for manual compaction. */
-  async compactSession (chatSessionId: string): Promise<{ sdkSessionId: string }> {
+  async compactSession (chatSessionId: string): Promise<{ accepted: true }> {
     const text = 'SYSTEM: Please generate a concise summary of the current working context, preserving task state, unfiled facts, pending approvals, and any other critical details. Start your response with `<compaction_summary>` and end it with `</compaction_summary>`.'
-    appendEvent(this.db, chatSessionId, 'compaction_requested', null)
+    this.emitEvent(chatSessionId, 'compaction_requested', null)
     const wasLive = this.live.has(chatSessionId)
-    const sdkSessionId = await this.ensureLive(chatSessionId, wasLive ? undefined : text)
-    if (wasLive) await this.runner.send(sdkSessionId, { type: 'user_message', text })
-    return { sdkSessionId }
+    
+    const work = async () => {
+      try {
+        const sdkSessionId = await this.ensureLive(chatSessionId, wasLive ? undefined : text)
+        if (wasLive) await this.runner.send(sdkSessionId, { type: 'user_message', text })
+      } catch (err) {
+        this.emitEvent(chatSessionId, 'status', { text: `Error: ${err instanceof Error ? err.message : String(err)}` })
+        this.emitEvent(chatSessionId, 'ended', null)
+      }
+    }
+    work().catch(() => {})
+    
+    return { accepted: true }
   }
 
   /**

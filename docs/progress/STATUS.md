@@ -29,12 +29,12 @@ Updated: 2026-07-12 (no active milestone; milestone 39 complete)
 
 ## Active milestone
 
-milestone 40 (Stream chat replies live) is active. Checklist:
-`docs/progress/milestones/milestone-40-stream-chat.md`.
+milestone 40 (Stream chat replies live) is complete. Archived checklist:
+`docs/progress/milestones/archive/milestone-40-stream-chat.md`.
 
 ## Next step
 
-Execute m40-01.
+Await direction.
 
 ## Read before working
 
