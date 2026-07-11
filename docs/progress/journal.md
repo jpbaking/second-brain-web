@@ -844,3 +844,11 @@ Milestone 36 complete: keyless Claude Code profiles, inference-only SDK mapping,
 locked CLI in Docker, volume-persistent manual auth, helper command, truthful
 Provider Test, and operator docs. Regression evidence: lint/build, 322/322
 tests with two workers, clean-volume Docker smoke. Active none.
+
+## 2026-07-11 17:30 — session start
+Tree clean at c7c42b4. Active: milestone 37, next item: m37-01.
+- 17:31 STARTED m37-01: Add `report_provenance` table to core database migrations
+- 17:32 DONE m37-01: verified by `npm test --workspace server -- migrations.test.ts` → 3 tests green. Commit 7b5ab91.
+
+## 17:35 — session end
+Milestone 37 started, m37-01 complete (1/6). Next: m37-02.
