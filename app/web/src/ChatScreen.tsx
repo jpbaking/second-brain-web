@@ -305,6 +305,29 @@ export function ChatScreen ({ mode }: { mode: ChatMode }) {
     scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight })
   }, [events])
 
+  // Content keeps growing after that scroll: mermaid diagrams render
+  // asynchronously and push the transcript taller. Track whether the user is
+  // at the bottom, and re-pin whenever content height changes while they are.
+  const stickToBottom = useRef(true)
+  useEffect(() => {
+    const el = scrollRef.current
+    if (el === null) return
+    const onScroll = () => {
+      stickToBottom.current = el.scrollTop + el.clientHeight >= el.scrollHeight - 40
+    }
+    el.addEventListener('scroll', onScroll)
+    return () => el.removeEventListener('scroll', onScroll)
+  }, [])
+  useEffect(() => {
+    const el = scrollRef.current
+    if (el === null) return
+    const observer = new ResizeObserver(() => {
+      if (stickToBottom.current) el.scrollTo({ top: el.scrollHeight })
+    })
+    for (const child of Array.from(el.children)) observer.observe(child)
+    return () => observer.disconnect()
+  }, [events])
+
   useEffect(() => {
     let active = true
     const poll = async () => {
