@@ -69,7 +69,7 @@ export function Login () {
 
   return (
     <div className='app-page'>
-      <header className='app-hero'>
+      <header className='app-hero narrow'>
         <a className='app-brand' href='/' aria-label='Second Brain home'>
           <img src='/design/assets/logo-mark-invert.svg' alt='' />
           <span className='app-wordmark'>Second Brain</span>

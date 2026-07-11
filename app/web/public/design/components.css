@@ -1241,6 +1241,10 @@ button.tag.active { background: var(--brand-blue); border-color: var(--brand-blu
   color: var(--text-on-blue);
 }
 
+.app-hero.narrow {
+  width: min(100%, 460px);
+}
+
 /* White mesh behind the hero, on the blue band. */
 .app-hero::before {
   content: "";
