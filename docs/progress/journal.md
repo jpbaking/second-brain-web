@@ -877,3 +877,8 @@ Tree clean at 25100b1. Active: milestone 37, next item: m37-04.
 Tree clean at 89e4fab. Active: milestone 38, next item: m38-01.
 - 18:08 STARTED m38-01: Update `toTranscript` in `ChatScreen.tsx` to handle `status` events
 - 18:09 REPAIR: fix outdated schemaVersion assertion (12 -> 13) in test/status.test.ts
+- 18:10 DONE m38-01..m38-03: verified by `npm test --workspace server` and `npm run build --workspace web` → all green. Commit 67ce1bb.
+- 18:10 DONE milestone 38 (Processing Animation and Thinking Blocks).
+
+## 18:10 — session end
+Milestone 38 is complete. Ready for the next milestone.
