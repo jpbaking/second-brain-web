@@ -79,6 +79,12 @@ describe('evaluateTool — the guard decision', () => {
     expect(evaluateTool({ toolName: 'search', input: { query: 'x' } }).decision).toBe('allow')
   })
 
+  it('auto-approves the MCP web tools, including under read-only preset (m48)', () => {
+    expect(evaluateTool({ toolName: 'web__search', input: { query: 'x' } }).decision).toBe('allow')
+    expect(evaluateTool({ toolName: 'web__fetch', input: { url: 'https://x.example' } }).decision).toBe('allow')
+    expect(evaluateTool({ toolName: 'web__search', input: { query: 'x' } }, 'read-only').decision).toBe('allow')
+  })
+
   it('enforces read-only preset by denying mutating tools', () => {
     expect(evaluateTool({ toolName: 'editor', input: { path: 'reports/summary.md' } }, 'read-only').decision).toBe('deny')
     expect(evaluateTool({ toolName: 'bash', input: { command: 'ls' } }, 'read-only').decision).toBe('deny')

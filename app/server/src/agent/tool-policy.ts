@@ -25,8 +25,12 @@ export interface ToolApprovalRequest {
 
 /** File-mutating tools whose `path`/target is subject to the library rule. */
 const WRITE_TOOLS = new Set(['editor', 'write_file', 'write_to_file', 'new_file', 'apply_diff', 'replace_in_file'])
-/** Read-only tools that are safe to auto-approve. */
-const READ_TOOLS = new Set(['search', 'read', 'read_file', 'list_files', 'list_code_definition_names'])
+/**
+ * Read-only tools that are safe to auto-approve. `web__search` / `web__fetch`
+ * are the MCP web tools (m48): network reads against SearXNG / the open web,
+ * never the vault.
+ */
+const READ_TOOLS = new Set(['search', 'read', 'read_file', 'list_files', 'list_code_definition_names', 'web__search', 'web__fetch'])
 
 export function isMutatingTool (name: string): boolean {
   return WRITE_TOOLS.has(name) || name === 'bash' || name === 'execute_command'
@@ -143,5 +147,7 @@ export const TOOL_POLICIES = {
   execute_command: { autoApprove: false },
   search: { autoApprove: true },
   read_file: { autoApprove: true },
+  web__search: { autoApprove: true },
+  web__fetch: { autoApprove: true },
   fetch: { enabled: false },
 } as const

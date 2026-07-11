@@ -16,7 +16,7 @@ SDK auto-loads from `cline_mcp_settings.json`.
       (`<dataDir>/sessions/settings/cline_mcp_settings.json`) when
       `SECOND_BRAIN_WEB_SEARXNG_URL` is set; remove/disable when unset.
       Verify: unit test on the settings writer.
-- [ ] m48-04 Auto-approve the read-only `web__search` / `web__fetch` tools in
+- [x] m48-04 Auto-approve the read-only `web__search` / `web__fetch` tools in
       `tool-policy.ts`. Verify: policy unit tests.
-- [ ] m48-05 Full suite green: `npm run lint && npm run build && npm test`
+- [x] m48-05 Full suite green: `npm run lint && npm run build && npm test`
       from `app/`. Live check via `./compose-helper.sh up` (principal).
