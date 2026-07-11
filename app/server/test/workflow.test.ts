@@ -82,7 +82,7 @@ describe('workflow command route', () => {
     prepareDatabases(config.dataDir)
     seedWorkflows(vaultWorkspacePath(config.dataDir))
     const { password, state } = await generateOwnerAuth()
-    writeOwnerAuth(config.dataDir, state)
+    writeOwnerAuth(config.dataDir, state, { SECOND_BRAIN_WEB_SECRETS_KEY: config.secretsKey })
     const runner = new CapturingRunner()
     const app = buildApp(config, { agentRunner: runner })
     apps.push(app)

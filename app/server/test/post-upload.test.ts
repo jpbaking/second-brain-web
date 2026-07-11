@@ -44,7 +44,7 @@ async function authedApp (withWorkflow = true): Promise<{ app: FastifyInstance, 
     writeFileSync(path.join(workflows, 'inbox.md'), 'INBOX WORKFLOW MARKER')
   }
   const { password, state } = await generateOwnerAuth()
-  writeOwnerAuth(config.dataDir, state)
+  writeOwnerAuth(config.dataDir, state, { SECOND_BRAIN_WEB_SECRETS_KEY: config.secretsKey })
   const runner = new FakeRunner()
   const app = buildApp(config, { agentRunner: runner })
   apps.push(app)

@@ -100,9 +100,11 @@ TOTP setup URI it prints:
 docker exec -it second-brain-web node server/dist/cli/reset-auth.js /data
 ```
 
-This writes `auth/owner.json` (password hash + TOTP secret) into the data root.
-Add the TOTP secret to your authenticator, then sign in with the printed
-password and a current code. Re-running it rotates the credentials.
+This writes `auth/owner.json` (password hash + TOTP secret encrypted with
+`SECOND_BRAIN_WEB_SECRETS_KEY`) into the data root. The command refuses to
+write if the key is missing. Add the TOTP secret to your authenticator, then
+sign in with the printed password and a current code. Re-running it rotates
+the credentials.
 
 ## 5. Vault SSH deploy key
 

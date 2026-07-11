@@ -45,7 +45,7 @@ function cookieValue (header: string | string[] | undefined, name: string): stri
 async function authedApp (dir: string): Promise<{ app: FastifyInstance, cookie: string }> {
   const config = loadConfig({ SECOND_BRAIN_WEB_DATA_DIR: dir })
   const { password, state } = await generateOwnerAuth()
-  writeOwnerAuth(config.dataDir, state)
+  writeOwnerAuth(config.dataDir, state, { SECOND_BRAIN_WEB_SECRETS_KEY: config.secretsKey })
   const app = buildApp(config)
   apps.push(app)
   const pw = await app.inject({ method: 'POST', url: '/api/auth/password', payload: { password } })

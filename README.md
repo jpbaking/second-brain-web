@@ -97,9 +97,10 @@ SECOND_BRAIN_WEB_DATA_DIR=/data/second-brain-web app/scripts/reset-auth.sh
 ```
 
 It prints a one-time password and an `otpauth://` setup URI once — record the
-password and add the URI to your authenticator app. Only the Argon2id password
-hash and the TOTP secret are written, to `auth/owner.json` (mode 600). Re-running
-it replaces the credentials and invalidates the old ones.
+password and add the URI to your authenticator app. The Argon2id password hash
+and TOTP secret encrypted with `SECOND_BRAIN_WEB_SECRETS_KEY` are written to
+`auth/owner.json` (mode 600). The command refuses to write without that key.
+Re-running it replaces the credentials and invalidates the old ones.
 
 Vault SSH deploy key:
 

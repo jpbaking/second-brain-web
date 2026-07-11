@@ -49,7 +49,7 @@ async function fixture (): Promise<{ app: FastifyInstance, password: string, sec
   const config = loadConfig({ SECOND_BRAIN_WEB_DATA_DIR: path.join(root, 'data') })
   prepareDatabases(config.dataDir)
   const { password, state } = await generateOwnerAuth()
-  writeOwnerAuth(config.dataDir, state)
+  writeOwnerAuth(config.dataDir, state, { SECOND_BRAIN_WEB_SECRETS_KEY: config.secretsKey })
   const app = buildApp(config)
   apps.push(app)
   return { app, password, secret: state.totp.secretBase32, digits: state.totp.digits, period: state.totp.period }

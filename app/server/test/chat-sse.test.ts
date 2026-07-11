@@ -47,7 +47,7 @@ async function liveApp (): Promise<{ base: string, cookie: string, runner: Emitt
   const config = loadConfig({ SECOND_BRAIN_WEB_DATA_DIR: path.join(root, 'data'), SECOND_BRAIN_WEB_SECRETS_KEY: 'k' })
   prepareDatabases(config.dataDir)
   const { password, state } = await generateOwnerAuth()
-  writeOwnerAuth(config.dataDir, state)
+  writeOwnerAuth(config.dataDir, state, { SECOND_BRAIN_WEB_SECRETS_KEY: config.secretsKey })
   const runner = new EmittingRunner()
   const app = buildApp(config, { agentRunner: runner })
   apps.push(app)

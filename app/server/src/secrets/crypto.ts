@@ -24,7 +24,7 @@ function requireSecretKey (env: NodeJS.ProcessEnv): string {
   if (value === undefined || value.trim() === '') {
     throw new SecretsError(
       `${ENV_KEY} is not set. Set it to a strong random value to enable ` +
-      'encrypted provider-key storage, then try again.'
+      'encrypted secret storage, then try again.'
     )
   }
   return value

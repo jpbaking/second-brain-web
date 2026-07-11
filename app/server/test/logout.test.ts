@@ -34,7 +34,7 @@ async function loggedInApp (): Promise<{ app: FastifyInstance, token: string }> 
   const config = loadConfig({ SECOND_BRAIN_WEB_DATA_DIR: path.join(root, 'data') })
   prepareDatabases(config.dataDir)
   const { password, state } = await generateOwnerAuth()
-  writeOwnerAuth(config.dataDir, state)
+  writeOwnerAuth(config.dataDir, state, { SECOND_BRAIN_WEB_SECRETS_KEY: config.secretsKey })
   const app = buildApp(config)
   apps.push(app)
 

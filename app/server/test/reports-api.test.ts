@@ -35,7 +35,7 @@ async function fixture (): Promise<{ app: FastifyInstance, cookie: string, works
   symlinkSync(outside, path.join(reportDir, 'escape.pdf'))
 
   const { password, state } = await generateOwnerAuth()
-  writeOwnerAuth(config.dataDir, state)
+  writeOwnerAuth(config.dataDir, state, { SECOND_BRAIN_WEB_SECRETS_KEY: config.secretsKey })
   const app = buildApp(config)
   apps.push(app)
   const passwordResponse = await app.inject({ method: 'POST', url: '/api/auth/password', payload: { password } })

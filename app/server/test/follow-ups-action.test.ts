@@ -47,7 +47,7 @@ async function authedApp (): Promise<{ app: FastifyInstance, cookie: string, run
   writeFileSync(path.join(notes, 'reminders.md'), '## Open\n- [ ] 2026-07-15 due: Renew the domain\n')
   writeFileSync(path.join(notes, 'commitments.md'), '## I owe\n- [ ] 2026-07-11 due: Send the reply\n')
   const { password, state } = await generateOwnerAuth()
-  writeOwnerAuth(config.dataDir, state)
+  writeOwnerAuth(config.dataDir, state, { SECOND_BRAIN_WEB_SECRETS_KEY: config.secretsKey })
   const runner = new FakeRunner()
   const app = buildApp(config, { agentRunner: runner })
   apps.push(app)

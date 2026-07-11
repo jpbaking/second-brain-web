@@ -22,7 +22,7 @@ async function main (): Promise<void> {
   }
 
   const { password, otpauthUri, state } = await generateOwnerAuth()
-  const file = writeOwnerAuth(dataDir, state)
+  const file = writeOwnerAuth(dataDir, state, process.env)
   // Any previously issued sessions and pending challenges are now invalid.
   invalidateSessionsAndChallenges(dataDir)
 
@@ -33,7 +33,7 @@ async function main (): Promise<void> {
     `    ${otpauthUri}\n\n` +
     'The password is shown once — record it now. Any previous password, TOTP ' +
     'secret, and signed-in sessions are now invalid.\n' +
-    `Auth state written to ${file} (mode 600).\n`
+    `Encrypted auth state written to ${file} (mode 600).\n`
   )
 }
 

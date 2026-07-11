@@ -49,10 +49,10 @@ async function authedApp (): Promise<{ app: FastifyInstance, cookie: string, wor
   const root = mkdtempSync(path.join(tmpdir(), 'sbw-vaultstatus-'))
   scratch.push(root)
   const dataDir = path.join(root, 'data')
-  const config = loadConfig({ SECOND_BRAIN_WEB_DATA_DIR: dataDir })
+  const config = loadConfig({ SECOND_BRAIN_WEB_DATA_DIR: dataDir, SECOND_BRAIN_WEB_SECRETS_KEY: 'test-owner-key' })
   prepareDatabases(config.dataDir)
   const { password, state } = await generateOwnerAuth()
-  writeOwnerAuth(config.dataDir, state)
+  writeOwnerAuth(config.dataDir, state, { SECOND_BRAIN_WEB_SECRETS_KEY: config.secretsKey })
   const app = buildApp(config)
   apps.push(app)
 

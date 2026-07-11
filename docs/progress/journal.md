@@ -426,3 +426,5 @@ Tree clean at 98ac8de. Active: milestone 17, next item: m17-01.
 - 07:58 STARTED m17-01: define encrypted owner-state v2 persistence using only `SECOND_BRAIN_WEB_SECRETS_KEY`, with focused storage and key-failure tests.
 - 08:00 DONE m17-01: verified by `npm test --workspace server -- auth-bootstrap.test.ts` → 9 tests green. Commit 02e4646.
 - 08:00 STARTED m17-02: decrypt v2 owner state for login and safely migrate legacy v1 plaintext state without changing credentials.
+- 08:02 DONE m17-02: verified by `npm test --workspace server -- owner.test.ts auth-flow.test.ts` → 8 tests green. Commit f74c353.
+- 08:02 STARTED m17-03: update reset-auth, test/runtime call sites, and operator docs for mandatory encrypted owner persistence.

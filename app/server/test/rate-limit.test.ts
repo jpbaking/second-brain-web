@@ -75,7 +75,7 @@ describe('login rate limiting (endpoint)', () => {
     const config = loadConfig({ SECOND_BRAIN_WEB_DATA_DIR: path.join(root, 'data') })
     prepareDatabases(config.dataDir)
     const { state } = await generateOwnerAuth()
-    writeOwnerAuth(config.dataDir, state)
+    writeOwnerAuth(config.dataDir, state, { SECOND_BRAIN_WEB_SECRETS_KEY: config.secretsKey })
     const instance = buildApp(config)
     apps.push(instance)
     return instance

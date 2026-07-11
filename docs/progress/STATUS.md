@@ -32,7 +32,7 @@ directed the next recommended backlog item on 2026-07-11. Milestone 15
 
 ## Next step
 
-- **m17-03:** update reset-auth, fixtures, call sites, and operator docs.
+- **m17-04:** run the full gate and fresh CLI/login integration check.
 - Checklist: `docs/progress/milestones/milestone-17-encrypted-totp.md`.
 
 ## Read before working

@@ -42,7 +42,7 @@ async function fixture (): Promise<{ app: FastifyInstance, cookie: string, notes
   writeFileSync(path.join(notes, 'reminders.md'), `## Open\n- [ ] ${localDate(-1)} due: Late\n- [ ] ${localDate(0)} due: Today\n- [ ] ${localDate(5)} due: Soon\n- [ ] Undated\n## Done\n- [x] ${localDate(-9)} due: Finished\n`)
   writeFileSync(path.join(notes, 'commitments.md'), `## I owe\n- [ ] ${localDate(1)} due: Send reply\n## Waiting on\n- [ ] ${localDate(2)} due: Receive approval\n`)
   const { password, state } = await generateOwnerAuth()
-  writeOwnerAuth(config.dataDir, state)
+  writeOwnerAuth(config.dataDir, state, { SECOND_BRAIN_WEB_SECRETS_KEY: config.secretsKey })
   const app = buildApp(config)
   apps.push(app)
   const passwordResponse = await app.inject({ method: 'POST', url: '/api/auth/password', payload: { password } })

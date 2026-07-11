@@ -32,10 +32,10 @@ describe('reset invalidation', () => {
   it('a session valid before reset no longer authenticates afterwards', async () => {
     const root = mkdtempSync(path.join(tmpdir(), 'sbw-reset-'))
     scratch.push(root)
-    const config = loadConfig({ SECOND_BRAIN_WEB_DATA_DIR: path.join(root, 'data') })
+    const config = loadConfig({ SECOND_BRAIN_WEB_DATA_DIR: path.join(root, 'data'), SECOND_BRAIN_WEB_SECRETS_KEY: 'test-owner-key' })
     prepareDatabases(config.dataDir)
     const { password, state } = await generateOwnerAuth()
-    writeOwnerAuth(config.dataDir, state)
+    writeOwnerAuth(config.dataDir, state, { SECOND_BRAIN_WEB_SECRETS_KEY: config.secretsKey })
     const app = buildApp(config)
     apps.push(app)
 
