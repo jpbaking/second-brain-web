@@ -154,6 +154,7 @@ export function ChatScreen ({ mode }: { mode: ChatMode }) {
   const [pending, setPending] = useState(false)
   const [selectedProvider, setSelectedProvider] = useState('')
   const [selectedPreset, setSelectedPreset] = useState('normal')
+  const [slashIndex, setSlashIndex] = useState(0)
   const [lockState, setLockState] = useState<LockState | null>(null)
   const streamAbort = useRef<AbortController | null>(null)
   const scrollRef = useRef<HTMLDivElement | null>(null)
@@ -332,6 +333,14 @@ export function ChatScreen ({ mode }: { mode: ChatMode }) {
   // the live event stream (mounted into an in-progress turn).
   const showProcessing = (pending || isProcessing) && approvals.length === 0
   const newChatState = ready && activeId === null
+  const slashQuery = input.startsWith('/') && !input.includes(' ') ? input.slice(1).toLowerCase() : null
+  const slashMatches = slashQuery === null ? [] : workflows.filter(name => name.toLowerCase().includes(slashQuery))
+
+  function chooseSlash (name: string, run: boolean) {
+    setInput(run ? '' : `/${name}`)
+    setSlashIndex(0)
+    if (run) runWorkflow(name).catch(() => {})
+  }
 
   return (
     <div className='chat-pane' data-testid='chat-pane'>
@@ -401,13 +410,18 @@ export function ChatScreen ({ mode }: { mode: ChatMode }) {
             )}
           </div>
         )}
+        {slashMatches.length > 0 && (
+          <div className='chat-slash-menu' role='listbox' aria-label='Workflow commands'>
+            {slashMatches.map((name, index) => <button key={name} type='button' role='option' aria-selected={index === slashIndex} className={index === slashIndex ? 'is-active' : ''} onMouseDown={e => { e.preventDefault(); chooseSlash(name, false) }}>/{name}</button>)}
+          </div>
+        )}
         <form className='chat-composer' onSubmit={e => { e.preventDefault(); send().catch(() => {}) }} aria-label='Message composer'>
           <textarea
             className='chat-input' rows={2} value={input} data-testid='composer'
             placeholder='Message your secretary…' aria-label='Message'
-            onChange={e => setInput(e.target.value)}
+            onChange={e => { setInput(e.target.value); setSlashIndex(0) }}
             onKeyDown={e => {
-              if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); send().catch(() => {}) }
+              if (slashMatches.length > 0 && e.key === 'ArrowDown') { e.preventDefault(); setSlashIndex(i => (i + 1) % slashMatches.length) } else if (slashMatches.length > 0 && e.key === 'ArrowUp') { e.preventDefault(); setSlashIndex(i => (i - 1 + slashMatches.length) % slashMatches.length) } else if (slashMatches.length > 0 && e.key === 'Tab') { e.preventDefault(); chooseSlash(slashMatches[slashIndex]!, false) } else if (slashMatches.length > 0 && e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); chooseSlash(slashMatches[slashIndex]!, true) } else if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); send().catch(() => {}) }
             }}
           />
           {showProcessing
@@ -415,23 +429,23 @@ export function ChatScreen ({ mode }: { mode: ChatMode }) {
             : <button className='btn btn-primary chat-send' type='submit' disabled={input.trim() === ''}>Send</button>}
         </form>
         <div className='chat-composer-options'>
-            <label className='chat-composer-select'>
-              Provider
-              <select value={selectedProvider} onChange={e => { updateConfig(e.target.value, selectedPreset).catch(() => {}) }}>
-                <option value=''>Default provider</option>
-                {providers.filter(p => p.enabled).map(p => (
-                  <option key={p.id} value={p.id}>{p.displayName}{p.isDefault ? ' (default)' : ''}</option>
-                ))}
-              </select>
-            </label>
-            <label className='chat-composer-select'>
-              Approvals
-              <select value={selectedPreset} onChange={e => { updateConfig(selectedProvider || providers.find(p => p.isDefault)?.id || '', e.target.value).catch(() => {}) }}>
-                <option value='normal'>Normal</option>
-                <option value='read-only'>Read-only</option>
-                <option value='high-trust'>High-trust</option>
-              </select>
-            </label>
+          <label className='chat-composer-select'>
+            Provider
+            <select value={selectedProvider} onChange={e => { updateConfig(e.target.value, selectedPreset).catch(() => {}) }}>
+              <option value=''>Default provider</option>
+              {providers.filter(p => p.enabled).map(p => (
+                <option key={p.id} value={p.id}>{p.displayName}{p.isDefault ? ' (default)' : ''}</option>
+              ))}
+            </select>
+          </label>
+          <label className='chat-composer-select'>
+            Approvals
+            <select value={selectedPreset} onChange={e => { updateConfig(selectedProvider || providers.find(p => p.isDefault)?.id || '', e.target.value).catch(() => {}) }}>
+              <option value='normal'>Normal</option>
+              <option value='read-only'>Read-only</option>
+              <option value='high-trust'>High-trust</option>
+            </select>
+          </label>
         </div>
       </div>
     </div>

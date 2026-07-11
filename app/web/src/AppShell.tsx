@@ -188,10 +188,12 @@ export function AppShell ({ path: initialPath, children }: { path: string, child
                   ))}
                 </ul>
                 )}
-            {sessions.length > 0 && <div className='sidebar-chat-clear'>
-              <button type='button' onClick={() => { clearChats(true).catch(() => {}) }}>Clear unpinned</button>
-              <button type='button' onClick={() => { clearChats(false).catch(() => {}) }}>Clear all</button>
-            </div>}
+            {sessions.length > 0 && (
+              <div className='sidebar-chat-clear'>
+                <button type='button' onClick={() => { clearChats(true).catch(() => {}) }}>Clear unpinned</button>
+                <button type='button' onClick={() => { clearChats(false).catch(() => {}) }}>Clear all</button>
+              </div>
+            )}
           </nav>
         )}
 

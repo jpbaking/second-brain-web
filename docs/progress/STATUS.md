@@ -34,7 +34,7 @@ Milestone 41: Expanded chat controls. Checklist:
 
 ## Next step
 
-Implement m41-05: workflow-backed slash autocomplete.
+Implement m41-06: full regression and browser verification.
 
 ## Read before working
 

@@ -964,3 +964,5 @@ Tree clean at f0d9f4b. Principal directed expansion of chat controls: mutable pr
 - 02:54 DONE m41-03: schema v14 adds pinned state; active sessions list pinned-first then by activity; sidebar exposes pin/unpin stars. Verified by 16 focused tests and web build.
 - 02:54 STARTED m41-04: add destructive clear-history paths with a preserve-pinned option.
 - 02:55 DONE m41-04: bulk delete stops targeted live SDK turns and physically deletes sessions/events; sidebar offers confirmed Clear unpinned and Clear all actions. Verified by 13 focused tests and web build.
+- 02:55 STARTED m41-05: add keyboard-accessible workflow slash autocomplete to the composer.
+- 02:57 DONE m41-05: typing slash filters workflows; arrows navigate, Tab completes, Enter runs, and pointer selection completes. Verified by clean web lint and production build.
