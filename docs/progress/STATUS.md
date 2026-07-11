@@ -1,6 +1,6 @@
 # STATUS — single source of truth
 
-Updated: 2026-07-12 (no active milestone; milestone 39 complete)
+Updated: 2026-07-12 (no active milestone; milestone 40 complete)
 
 ## Where we are
 
@@ -49,9 +49,5 @@ Await direction.
 
 - Tracked in `docs/progress/BACKLOG.md` (Improvements section) — do not list
   them here twice.
-- **Chat replies do not stream and `/messages` blocks for the whole turn**
-  (candidate milestone 40, in BACKLOG Improvements). Behind a reverse proxy
-  this 504s on long turns. Mitigated for now by raised proxy read timeouts on
-  nginx-proxy-manager; the proper server-side fix is scoped in BACKLOG.
 - Live Claude Code routing is verified, but the current Pro allowance returned
   `You've hit your session limit · resets 9:50am (UTC)`; retry after reset.

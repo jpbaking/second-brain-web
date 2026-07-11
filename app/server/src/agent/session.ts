@@ -1,4 +1,4 @@
-import { appendEvent, createSession, getSession, getSessionBySdkId, readEventsSince, setSdkSessionId, saveCompaction } from './chat-store.js'
+import { createSession, getSession, getSessionBySdkId, readEventsSince, setSdkSessionId, saveCompaction } from './chat-store.js'
 import { toModelConfig } from './runner.js'
 import { TOOL_POLICIES, evaluateTool, isMutatingTool } from './tool-policy.js'
 import { acquireLock, heartbeatLock, releaseLock } from '../vault/lock.js'
@@ -101,6 +101,9 @@ export class AgentSessionService {
   private readonly locks = new Map<string, string>()
   /** chatSessionId awaiting its first event to bind its sdkSessionId. */
   private pendingStartChatSessionId: string | null = null
+  /** Starts whose SDK may emit `ended` before runner.start() resolves. */
+  private readonly starting = new Set<string>()
+  private readonly endedWhileStarting = new Set<string>()
   private readonly unsubscribeRunner: () => void
 
   private eventQueue: ChatEvent[] = []
@@ -149,6 +152,7 @@ export class AgentSessionService {
 
     if (translated.type === 'ended') {
       this.live.delete(session.id)
+      if (this.starting.has(session.id)) this.endedWhileStarting.add(session.id)
       this.checkCompaction(session.id)
       this.checkAutoCompaction(session.id)
       this.checkReportProvenance(session.id).catch(() => {})
@@ -209,7 +213,7 @@ export class AgentSessionService {
     this.sessionSeqs.set(sessionId, seq)
     const now = new Date().toISOString()
     const event: ChatEvent = { id: 0, sessionId, seq, type, payload, createdAt: now }
-    
+
     this.eventQueue.push(event)
     if (this.flushTimer === null) {
       this.flushTimer = setTimeout(() => this.flushEvents(), 100)
@@ -231,7 +235,7 @@ export class AgentSessionService {
         VALUES (?, ?, ?, ?, ?)
       `)
       const update = this.db.prepare('UPDATE chat_sessions SET updated_at = ? WHERE id = ?')
-      
+
       for (const e of batch) {
         const info = insert.run(e.sessionId, e.seq, e.type, e.payload === null ? null : JSON.stringify(e.payload), e.createdAt)
         e.id = Number(info.lastInsertRowid)
@@ -493,6 +497,7 @@ export class AgentSessionService {
       toolPolicies: TOOL_POLICIES,
     }
     let sdkSessionId: string
+    this.starting.add(chatSessionId)
     this.pendingStartChatSessionId = chatSessionId
     try {
       if (session.sdkSessionId !== null) {
@@ -508,13 +513,16 @@ export class AgentSessionService {
         sdkSessionId = result.sessionId
       }
     } finally {
+      this.starting.delete(chatSessionId)
       if (this.pendingStartChatSessionId === chatSessionId) {
         this.pendingStartChatSessionId = null
       }
     }
-    
-    // Bind it if the first event didn't already bind it.
-    if (!this.live.has(chatSessionId)) {
+
+    // Bind it if the first event did not already bind it. Some runners emit
+    // `ended` before start() resolves; never resurrect that completed session.
+    const alreadyEnded = this.endedWhileStarting.delete(chatSessionId)
+    if (!alreadyEnded && !this.live.has(chatSessionId)) {
       setSdkSessionId(this.db, chatSessionId, sdkSessionId)
       this.live.set(chatSessionId, sdkSessionId)
     }
@@ -536,7 +544,7 @@ export class AgentSessionService {
     // own message live, not only on replay.
     this.emitEvent(chatSessionId, 'user_message', { text })
     const wasLive = this.live.has(chatSessionId)
-    
+
     const work = async () => {
       try {
         const sdkSessionId = await this.ensureLive(chatSessionId, wasLive ? undefined : text)
@@ -547,7 +555,7 @@ export class AgentSessionService {
       }
     }
     work().catch(() => {})
-    
+
     return { accepted: true }
   }
 
@@ -556,7 +564,7 @@ export class AgentSessionService {
     const text = 'SYSTEM: Please generate a concise summary of the current working context, preserving task state, unfiled facts, pending approvals, and any other critical details. Start your response with `<compaction_summary>` and end it with `</compaction_summary>`.'
     this.emitEvent(chatSessionId, 'compaction_requested', null)
     const wasLive = this.live.has(chatSessionId)
-    
+
     const work = async () => {
       try {
         const sdkSessionId = await this.ensureLive(chatSessionId, wasLive ? undefined : text)
@@ -567,7 +575,7 @@ export class AgentSessionService {
       }
     }
     work().catch(() => {})
-    
+
     return { accepted: true }
   }
 

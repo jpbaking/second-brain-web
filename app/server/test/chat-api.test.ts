@@ -115,7 +115,7 @@ describe('chat API', () => {
     expect(sent.statusCode).toBe(202)
     expect(sent.json().accepted).toBe(true)
     // Wait for the async turn microtask to run.
-    await new Promise(r => setTimeout(r, 10))
+    await new Promise(resolve => setTimeout(resolve, 10))
     expect(runner.starts).toHaveLength(1)
     expect(runner.starts[0]?.prompt).toBe('hello')
   })
@@ -128,7 +128,7 @@ describe('chat API', () => {
     const res = await app.inject({ method: 'POST', url: `/api/chat/sessions/${id}/compact`, headers: { cookie } })
     expect(res.statusCode).toBe(202)
     // Wait for the async turn microtask to run.
-    await new Promise(r => setTimeout(r, 10))
+    await new Promise(resolve => setTimeout(resolve, 10))
     // Verify compaction intent was routed.
     expect(runner.starts).toHaveLength(1)
     expect(runner.starts[0]?.prompt).toContain('compaction_summary')

@@ -944,3 +944,11 @@ Milestone 39 complete: the claude-code agent now operates in the vault (chdir on
 Tree clean at 4a3691b. Active: milestone 40, next item: m40-01.
 - 02:28 STARTED m40-01: establish sdk-session binding early and batch DB inserts
 - 02:32 DONE m40: Stream chat replies live, async /messages, and batch DB writes.
+
+## 2026-07-12 02:38 — session start
+Tree clean at 27d9b9e. Principal reports a regression after milestone 40: the first message in a fresh session works, but succeeding messages are not processed.
+- 02:38 REPAIR STARTED: reproduce the multi-turn failure, correct the async session lifecycle, and add regression coverage.
+- 02:40 REPAIR DONE: `ended` can arrive before `runner.start()` resolves; milestone 40 then re-added the completed SDK session to `live`, so the next message was sent to a dead session. Track starts that end before resolution and never resurrect them; the next message now rehydrates into a fresh SDK session. Added a two-turn event-order regression. Verified by `npm run lint`, `npm test` → 332 green, and `npm run build`.
+
+## 02:40 — session end
+Multi-turn chat regression fixed and fully verified. No active milestone; awaiting direction.

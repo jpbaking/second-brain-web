@@ -92,7 +92,7 @@ describe('AgentSessionService', () => {
 
     const res = await svc.sendMessage(session.id, 'hello')
     expect(res.accepted).toBe(true)
-    await new Promise(r => setTimeout(r, 10))
+    await new Promise(resolve => setTimeout(resolve, 10))
     // First message starts the SDK session with the prompt (not send()).
     expect(runner.starts).toHaveLength(1)
     expect(runner.starts[0]?.prompt).toBe('hello')
@@ -113,6 +113,32 @@ describe('AgentSessionService', () => {
     await svc.sendMessage(session.id, 'second')
     expect(runner.starts).toHaveLength(1)
     expect(runner.sends).toEqual([{ sessionId: 'sdk-1', text: 'second' }])
+  })
+
+  it('rehydrates for the next message when ended arrives before start resolves', async () => {
+    class EndingRunner extends FakeRunner {
+      override async start (input: AgentStartInput): Promise<AgentStartResult> {
+        const result = await super.start(input)
+        this.emit({ type: 'status', sessionId: result.sessionId, payload: { text: 'Working' } })
+        this.emit({ type: 'ended', sessionId: result.sessionId, payload: null })
+        return result
+      }
+    }
+
+    const db = freshDb()
+    const runner = new EndingRunner()
+    const svc = new AgentSessionService(db, runner, { snapshotFor: () => snap({}), vaultCwd: '/vault' })
+    const session = svc.create({ title: 'C' })
+
+    await svc.sendMessage(session.id, 'first')
+    await new Promise(resolve => setTimeout(resolve, 10))
+    expect(svc.isLive(session.id)).toBe(false)
+
+    await svc.sendMessage(session.id, 'second')
+    await new Promise(resolve => setTimeout(resolve, 10))
+    expect(runner.starts).toHaveLength(2)
+    expect(runner.starts[1]?.prompt).toBe('second')
+    expect(runner.sends).toHaveLength(0)
   })
 
   it('rehydrates after a simulated restart via readMessages + initialMessages', async () => {
