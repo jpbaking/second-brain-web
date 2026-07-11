@@ -41,7 +41,7 @@ with the public key surfaced on the Vault page; bash `configure` only for now
       Verify: `cd app && npm run build` then Playwright/headless screenshot of
       `/vault` showing the public-key block.
 
-- [ ] **m31-04** Server: shared `listModels()` in `providers/models.ts`
+- [x] **m31-04** Server: shared `listModels()` in `providers/models.ts`
       (mirrors `test.ts` endpoints/headers, parses model ids per provider) plus
       a thin `cli/list-models.ts` printing ids newline-separated.
       Verify: `cd app && npm test --workspace server -- list-models.test.ts`

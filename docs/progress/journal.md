@@ -639,3 +639,5 @@ STATUS at it. Next item: m31-01.
 - 13:29 DONE m31-02: verified by `npm test --workspace server -- vault-public-key.test.ts` → 3 tests green; lint clean.
 - 13:31 STARTED m31-03: Vault page shows deploy public key with copy control + register guidance.
 - 13:36 DONE m31-03: Vault page shows deploy public key + copy control + guidance. Verified by `npx playwright test vault-deploy-key.spec.ts` (1 passed) and a full-page screenshot of /vault; web build clean.
+- 13:37 STARTED m31-04: add providers/models.ts listModels() + cli/list-models.ts (mirrors test.ts endpoints).
+- 13:41 DONE m31-04: listModels() + cli/list-models.js. Verified by `npm test --workspace server -- list-models.test.ts` → 6 green; server build+lint clean; CLI smoke against a stub returned model ids (exit 0).
