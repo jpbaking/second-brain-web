@@ -1,6 +1,6 @@
 # STATUS — single source of truth
 
-Updated: 2026-07-12 (milestone 42 active)
+Updated: 2026-07-12 (no active milestone; milestone 42 complete)
 
 ## Where we are
 
@@ -29,18 +29,17 @@ Updated: 2026-07-12 (milestone 42 active)
 
 ## Active milestone
 
-Milestone 42: Durable reasoning transcript. Checklist:
-`docs/progress/milestones/milestone-42-reasoning-transcript.md`.
+Milestone 42 (Durable reasoning transcript) is complete. Archived checklist:
+`docs/progress/milestones/archive/milestone-42-reasoning-transcript.md`.
 
 ## Next step
 
-Implement m42-03: full regression and browser verification.
+Await direction.
 
 ## Read before working
 
 - `AGENTS-PLAYBOOK.md` — always, top to bottom.
 - `docs/progress/BACKLOG.md` — the work queue.
-- `docs/progress/milestones/milestone-42-reasoning-transcript.md` — active checklist.
 
 ## Questions for the principal
 

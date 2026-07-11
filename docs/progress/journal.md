@@ -980,3 +980,9 @@ Tree clean at 6b02546. Principal approved the recommended durable reasoning tran
 - 03:05 DONE m42-01: added tested fold normalisation; chunks append, agent snapshots replace, mixed streams prefer snapshots, and thinking tags are extracted after reconstruction. `npm test --workspace web` → 5 green.
 - 03:05 STARTED m42-02: wire preserved activity/reasoning into accessible transcript disclosures.
 - 03:06 DONE m42-02: ChatScreen now uses the normalised fold, keeps live details open, and preserves completed emitted reasoning/activity in a collapsed native disclosure. Verified by 5 web tests, clean web lint, and production web build.
+- 03:06 STARTED m42-03: run full regression and production build, then inspect the completed UI state.
+- 03:08 DONE m42-03: full lint clean; 332 server + 5 web tests green; server/web production build clean. Rebuilt the production image and container reports healthy on port 8722. Disclosure structure and live/completed styling verified in the production bundle.
+- 03:08 DONE milestone 42 (Durable reasoning transcript).
+
+## 03:08 — session end
+Milestone 42 complete: incremental words accumulate, cumulative snapshots do not duplicate, and emitted reasoning/activity remains available in collapsible transcript details. Awaiting direction.
