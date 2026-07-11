@@ -43,6 +43,13 @@ describe('vault changed-file review', () => {
     expect(review.changedFiles).toContain('inbox/uploads/new.txt')
     expect(review.diffSummary).toContain('memory/modified.md')
     expect(review.diffSummary).toContain('inbox/uploads/new.txt | new file')
+    
+    // Assert fileDiffs are present when requested
+    const reviewWithDiffs = await readGitStatus(dir, { includeDiff: true, includeFileDiffs: true })
+    expect(reviewWithDiffs.fileDiffs).toBeDefined()
+    expect(reviewWithDiffs.fileDiffs?.['memory/modified.md']).toContain('after')
+    expect(reviewWithDiffs.fileDiffs?.['memory/deleted.md']).toContain('delete me')
+    expect(reviewWithDiffs.fileDiffs?.['inbox/uploads/new.txt']).toContain('new original')
   })
 
   it('does not run or invent a diff summary for a clean vault', async () => {

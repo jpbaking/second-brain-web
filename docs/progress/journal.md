@@ -578,3 +578,5 @@ Tree clean at 0b502b6. Active: milestone 27, next item: m27-01.
 ## 2026-07-11 11:04 — session start
 Tree clean at 0b8834e. Active: milestone 28, next item: m28-01.
 - 11:04 STARTED m28-01: update readGitStatus and /api/vault/review to return full diff contents
+- 11:05 DONE m28-01: verified by `npm test --workspace server -- vault-review.test.ts` → tests pass. fileDiffs populated via git diff logic. Committing.
+- 11:05 NOTE m28-01: commit is 3137d49.

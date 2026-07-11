@@ -33,7 +33,7 @@ Updated: 2026-07-11 (active: milestone 28)
 
 ## Next step
 
-m28-01: Add per-file diffs to review API
+m28-02: Support partial commits and reverts
 
 ## Read before working
 

@@ -14,6 +14,7 @@ export interface GitStatus {
   dirty: boolean
   changedFiles: string[]
   diffSummary: string | null
+  fileDiffs?: Record<string, string>
 }
 
 const NOT_A_REPO: GitStatus = {
@@ -33,6 +34,10 @@ export interface GitStatusOptions {
    * centre / status endpoints should not spawn an extra git process each poll.
    */
   includeDiff?: boolean
+  /**
+   * Also compute per-file unified diffs for all changed files.
+   */
+  includeFileDiffs?: boolean
 }
 
 export async function readGitStatus (workspacePath: string, options: GitStatusOptions = {}): Promise<GitStatus> {
@@ -68,6 +73,32 @@ export async function readGitStatus (workspacePath: string, options: GitStatusOp
     }
   }
 
+  let fileDiffs: Record<string, string> | undefined
+  if (options.includeFileDiffs === true && changedFiles.length > 0) {
+    fileDiffs = {}
+    const lines = status.stdout.split('\n').filter((l) => l.length > 3)
+    for (const line of lines) {
+      const code = line.slice(0, 2)
+      const pathPart = line.slice(3)
+      const isUntracked = code === '??'
+
+      if (isUntracked) {
+        const res = await runGit(['-C', workspacePath, 'diff', '--no-index', '/dev/null', pathPart])
+        fileDiffs[pathPart] = res.stdout.trim()
+      } else {
+        const parts = pathPart.split(' -> ')
+        const args = ['-C', workspacePath, 'diff', 'HEAD', '--']
+        if (parts.length === 2) {
+          args.push(parts[0], parts[1])
+        } else {
+          args.push(pathPart)
+        }
+        const res = await runGit(args)
+        fileDiffs[pathPart] = res.stdout.trim()
+      }
+    }
+  }
+
   return {
     isRepo: true,
     branch: branch.code === 0 ? branch.stdout.trim() : null,
@@ -76,5 +107,6 @@ export async function readGitStatus (workspacePath: string, options: GitStatusOp
     dirty: changedFiles.length > 0,
     changedFiles,
     diffSummary,
+    fileDiffs,
   }
 }

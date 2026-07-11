@@ -8,7 +8,7 @@
 
 ## Checklist
 
-- [ ] m28-01: **Add per-file diffs to review API.** Update `readGitStatus` to optionally return line-by-line unified diff content for each changed file, extending the `ReviewData` response from `/api/vault/review`.
+- [x] m28-01: **Add per-file diffs to review API.** Update `readGitStatus` to optionally return line-by-line unified diff content for each changed file, extending the `ReviewData` response from `/api/vault/review`.
   - *Verify:* `cd app && npm test --workspace server -- vault-review.test.ts`
 - [ ] m28-02: **Support partial commits and reverts.** Update the commit API endpoint to accept an array of specific file paths to commit, and add an endpoint to discard/checkout specific files.
   - *Verify:* `cd app && npm test --workspace server -- vault-review.test.ts` (or create appropriate new tests)
