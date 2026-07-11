@@ -1008,3 +1008,9 @@ Tree clean at 5970c5e. Principal directed timestamps for every reasoning block a
 - 03:22 STARTED milestone 43: carry persisted UTC event times through the fold and format them in-browser. Next: m43-01.
 - 03:22 STARTED m43-01: preserve message and per-reasoning-block event timestamps in the fold.
 - 03:23 DONE m43-01: transcript lines carry the initiating event time; every active/completed reasoning iteration carries its own start time. Added timestamp regressions; 9 web tests, lint, and build green.
+- 03:23 STARTED m43-02: render browser-local dates/times for messages, reasoning blocks, and activity entries; run full regression and production smoke.
+- 03:24 DONE m43-02: all transcript messages, reasoning iterations, and activity entries render semantic `<time>` metadata using browser locale/timezone; hover title includes the full local date/time. Full lint clean; 332 server + 9 web tests green; builds clean.
+- 03:24 DONE milestone 43 (Browser-local chat timestamps).
+
+## 03:24 — session end
+Milestone 43 complete; rebuilding the production container with browser-local timestamps for handoff.

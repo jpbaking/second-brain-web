@@ -29,6 +29,16 @@ async function sendJson (method: string, url: string, body?: unknown): Promise<R
   })
 }
 
+const localDateTime = new Intl.DateTimeFormat(undefined, { dateStyle: 'medium', timeStyle: 'short' })
+const localDateTimeFull = new Intl.DateTimeFormat(undefined, { dateStyle: 'full', timeStyle: 'long' })
+
+function messageTime (createdAt?: string) {
+  if (createdAt === undefined) return null
+  const date = new Date(createdAt)
+  if (Number.isNaN(date.getTime())) return null
+  return <time className='chat-time' dateTime={createdAt} title={localDateTimeFull.format(date)}>{localDateTime.format(date)}</time>
+}
+
 /** Derive a session title from the first message, ChatGPT-style. */
 function titleFrom (text: string): string {
   const firstLine = text.trim().split('\n')[0] ?? ''
@@ -266,12 +276,15 @@ export function ChatScreen ({ mode }: { mode: ChatMode }) {
                 ? <div key={l.key} className='chat-divider'><span>{l.text}</span></div>
                 : (
                   <div key={l.key} className={`chat-msg chat-msg-${l.role}`}>
-                    {l.role === 'assistant' && <span className='chat-msg-author'>Secretary</span>}
+                    <div className='chat-msg-meta'>
+                      {l.role === 'assistant' && <span className='chat-msg-author'>Secretary</span>}
+                      {messageTime(l.createdAt)}
+                    </div>
                     {l.role === 'assistant' && ((l.reasoning ?? '') !== '' || (l.activities?.length ?? 0) > 0) && (
                       <details className={`chat-reasoning${l.complete === false ? ' is-active' : ''}`} open={l.complete === false ? true : undefined}>
                         <summary>{l.complete === false ? 'Working…' : ((l.reasoning ?? '') !== '' ? 'Reasoning and activity' : 'Activity details')}</summary>
-                        {(l.activities?.length ?? 0) > 0 && <ul>{l.activities?.map((activity, index) => <li key={`${l.key}-activity-${index}`}>{activity}</li>)}</ul>}
-                        {(l.reasoning ?? '') !== '' && <div className='chat-reasoning-content'>{l.reasoning}</div>}
+                        {(l.activities?.length ?? 0) > 0 && <ul>{l.activities?.map((activity, index) => <li key={`${l.key}-activity-${index}`}><span>{activity.text}</span>{messageTime(activity.createdAt)}</li>)}</ul>}
+                        {(l.reasoningBlocks?.length ?? 0) > 0 && <div className='chat-reasoning-blocks'>{l.reasoningBlocks?.map((block, index) => <section key={`${l.key}-reasoning-${index}`} className='chat-reasoning-content'>{messageTime(block.createdAt)}<div>{block.text}</div></section>)}</div>}
                       </details>
                     )}
                     {l.text !== '' && <div className='chat-bubble'>{l.text}</div>}

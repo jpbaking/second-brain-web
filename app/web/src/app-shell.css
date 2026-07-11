@@ -260,6 +260,9 @@
   color: var(--muted);
 }
 
+.chat-msg-meta { display: flex; align-items: baseline; gap: .6rem; }
+.chat-time { color: var(--muted); font-family: var(--font-mono); font-size: var(--ui-small); font-weight: 400; }
+
 .chat-divider {
   display: flex;
   align-items: center;
@@ -1043,12 +1046,17 @@
   white-space: pre-wrap;
 }
 
+.chat-reasoning-content + .chat-reasoning-content { border-top: 1px solid var(--line); }
+.chat-reasoning-content .chat-time { display: block; margin-bottom: 4px; }
+
 .chat-reasoning ul {
   margin: 0;
   padding: 8px 10px 0 28px;
   color: var(--muted);
   font-size: .9em;
 }
+
+.chat-reasoning li .chat-time { margin-left: .5rem; }
 
 @keyframes pulse {
   0% { opacity: 0.6; }

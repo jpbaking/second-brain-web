@@ -12,7 +12,7 @@ See `docs/project-plan/phase-008-feature-backlog-and-design-hooks.md` for other 
 
 ## Improvements
 
-- **Browser-local chat timestamps** — in progress as milestone 43: show every
+- ~~**Browser-local chat timestamps**~~ — completed in milestone 43: show every
   message with browser-local date/time and timestamp each reasoning iteration.
 
 - ~~**Durable reasoning transcript**~~ — completed in milestone 42: correctly

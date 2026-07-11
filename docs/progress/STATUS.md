@@ -1,6 +1,6 @@
 # STATUS — single source of truth
 
-Updated: 2026-07-12 (milestone 43 active)
+Updated: 2026-07-12 (no active milestone; milestone 43 complete)
 
 ## Where we are
 
@@ -29,18 +29,17 @@ Updated: 2026-07-12 (milestone 43 active)
 
 ## Active milestone
 
-Milestone 43: Browser-local chat timestamps. Checklist:
-`docs/progress/milestones/milestone-43-chat-timestamps.md`.
+Milestone 43 (Browser-local chat timestamps) is complete. Archived checklist:
+`docs/progress/milestones/archive/milestone-43-chat-timestamps.md`.
 
 ## Next step
 
-Implement m43-02: browser-local timestamp UI and full verification.
+Await direction.
 
 ## Read before working
 
 - `AGENTS-PLAYBOOK.md` — always, top to bottom.
 - `docs/progress/BACKLOG.md` — the work queue.
-- `docs/progress/milestones/milestone-43-chat-timestamps.md` — active checklist.
 
 ## Questions for the principal
 

@@ -89,7 +89,7 @@ describe('foldTranscript', () => {
       { seq: 5, type: 'agent_event', payload: { text: 'Done.' } },
       { seq: 6, type: 'ended', payload: null },
     ], false)
-    expect(result.lines[1]).toMatchObject({ activities: ['Reading memory', 'Comparing notes'], complete: true })
+    expect(result.lines[1]).toMatchObject({ activities: [{ text: 'Reading memory' }, { text: 'Comparing notes' }], complete: true })
   })
 })
 

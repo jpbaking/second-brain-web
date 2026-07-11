@@ -1,6 +1,7 @@
 export interface ChatEvent { seq: number, type: string, payload: unknown, createdAt?: string }
 export interface PendingApproval { toolCallId: string, toolName: string }
 export interface ReasoningBlock { text: string, createdAt?: string }
+export interface ActivityEntry { text: string, createdAt?: string }
 export interface Line {
   key: string
   role: 'user' | 'assistant' | 'system'
@@ -8,7 +9,7 @@ export interface Line {
   createdAt?: string
   reasoning?: string
   reasoningBlocks?: ReasoningBlock[]
-  activities?: string[]
+  activities?: ActivityEntry[]
   complete?: boolean
 }
 
@@ -98,7 +99,7 @@ export function foldTranscript (events: ChatEvent[], isLive: boolean): { lines: 
         const line = ensureAssistant(e.seq)
         line.createdAt ??= e.createdAt
         const activities = line.activities ?? (line.activities = [])
-        if (activities.at(-1) !== status) activities.push(status)
+        if (activities.at(-1)?.text !== status) activities.push({ text: status, createdAt: e.createdAt })
       }
     } else if (e.type === 'chunk' || e.type === 'agent_event') {
       isProcessing = true
