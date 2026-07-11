@@ -645,3 +645,5 @@ STATUS at it. Next item: m31-01.
 - 13:47 DONE m31-05: rewrote configure (retry-in-place, provider+key-first model picker, generate keypair, .config/ output). Verified `bash -n configure` clean; two isolated scripted runs (symlinked app for dist): model-listing selection → encrypted providers.yaml + 600 .env + 644 key/pub; invalid provider + invalid selection + 'm' manual fallback all re-prompt without exiting. shellcheck not installed on host.
 - 13:48 STARTED m31-06: wire docker-compose (.config mounts + SSH_KEY_PATH) and gitignore .config/.
 - 13:50 DONE m31-06: docker-compose mounts .config/{providers.yaml,deploy_key,deploy_key.pub} + sets SECOND_BRAIN_WEB_SSH_KEY_PATH; .gitignore ignores .config/. Verified `git check-ignore` and `docker compose config` render (mounts + env present).
+- 13:51 STARTED m31-07: update README + STATUS quick-start to .config/ flow.
+- 13:53 DONE m31-07: README + STATUS quick-start updated to .config/ flow; ps1 port note in BACKLOG. Verified by grep.

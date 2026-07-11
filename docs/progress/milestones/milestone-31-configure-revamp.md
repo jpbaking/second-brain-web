@@ -60,6 +60,6 @@ with the public key surfaced on the Vault page; bash `configure` only for now
       Verify: `SECOND_BRAIN_WEB_SECRETS_KEY=x docker compose --env-file /dev/null config`
       shows both mounts + the env var; `git check-ignore .config/providers.yaml`.
 
-- [ ] **m31-07** Docs: update README + `STATUS.md` quick-start to the `.config/`
+- [x] **m31-07** Docs: update README + `STATUS.md` quick-start to the `.config/`
       flow; add a `BACKLOG.md` note to port `configure.ps1`.
       Verify: `grep -n '.config/' README.md docs/progress/STATUS.md`

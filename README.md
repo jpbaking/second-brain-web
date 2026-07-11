@@ -30,9 +30,15 @@ The primary way to build and run locally is
 ./compose-helper.sh up      # build the image, start it, follow logs
 ```
 
-`configure` generates `.env`, prompts silently for provider keys, and writes
-only encrypted keys to the gitignored `providers.yaml`. Re-run it and restart
-the app to change providers; the first enabled YAML entry is the default.
+`configure` writes everything the runtime needs into the gitignored `.config/`
+directory: the secrets key (`.config/.env`), provider profiles with only
+encrypted keys (`.config/providers.yaml`), and a generated vault SSH deploy key
+(`.config/deploy_key`). For each provider you pick the provider and enter its
+key first, then choose a model from the list it reports (invalid input
+re-prompts in place rather than aborting). The deploy key's public half is
+printed and also shown on the Vault page to register with your Git host. Re-run
+it and restart the app to change providers; the first enabled YAML entry is the
+default.
 
 Then create the owner credentials (password plus TOTP) and open
 `http://localhost:8722/`:
@@ -51,10 +57,12 @@ Day-to-day commands:
 ./compose-helper.sh down     # stop AND delete the data volume (clean slate)
 ```
 
-App data lives on the `sbw-data` named volume. Compose variables (bind address,
-port, secrets key) go in `.env`; provider profiles go in `providers.yaml`;
-settings for the helper itself go in
-`compose-helper.env`. Login works on `http://localhost` and behind HTTPS; on a
+App data lives on the `sbw-data` named volume. Runtime config (secrets key,
+provider profiles, vault deploy key) lives in the gitignored `.config/`
+directory that `configure` produces and compose bind-mounts; settings for the
+helper itself go in `compose-helper.env`. `configure` must run before the first
+`up`, or the bind mounts have no files to point at. Login works on
+`http://localhost` and behind HTTPS; on a
 plain-HTTP LAN address the `Secure` auth cookies are dropped by the browser, so
 front the app with a TLS-terminating proxy (e.g. nginx-proxy-manager) — see
 [docs/deploy/deployment.md](docs/deploy/deployment.md).

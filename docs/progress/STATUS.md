@@ -16,7 +16,7 @@ Updated: 2026-07-11 (active: milestone 31 — configure helper revamp)
   Per-milestone checklists with verification evidence:
   `docs/progress/milestones/archive/`. Full narrative: `journal.md`.
 - **The app is production-runnable.** Quick start from the repo root:
-  `./configure` (generates `.env` + `providers.yaml`) then
+  `./configure` (writes `.config/{.env,providers.yaml,deploy_key}`) then
   `./compose-helper.sh up`; owner setup via
   `docker exec -it <container> node server/dist/cli/reset-auth.js /data`.
   Bare metal: `cd app && npm install && npm run build`, then `npm start` with
