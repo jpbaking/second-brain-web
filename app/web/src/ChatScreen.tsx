@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState } from 'react'
+import { useCallback, useEffect, useRef, useState, type ReactNode } from 'react'
 import ReactMarkdown from 'react-markdown'
 import remarkGfm from 'remark-gfm'
 import mermaid from 'mermaid'
@@ -73,6 +73,19 @@ function Mermaid ({ chart }: { chart: string }) {
     return () => { active = false }
   }, [chart])
   return <div ref={containerRef} className='mermaid-diagram' style={{ overflowX: 'auto', background: 'var(--surface)', padding: 'var(--space-2)', borderRadius: 'var(--radius-md)' }} />
+}
+
+// Stable component map: an inline object would give `code` a new identity on
+// every render, making React remount each Mermaid diagram (visible flicker on
+// every lock-poll re-render).
+const markdownComponents = {
+  code ({ node, className, children, ...props }: { node?: unknown, className?: string, children?: ReactNode }) {
+    const match = /language-(\w+)/.exec(className ?? '')
+    if (match !== null && match[1] === 'mermaid') {
+      return <Mermaid chart={String(children).replace(/\n$/, '')} />
+    }
+    return <code className={className} {...props}>{children}</code>
+  }
 }
 
 export function ChatScreen ({ mode }: { mode: ChatMode }) {
@@ -319,18 +332,7 @@ export function ChatScreen ({ mode }: { mode: ChatMode }) {
                       <div className={`chat-bubble${l.role === 'assistant' ? ' prose' : ''}`}>
                         {l.role === 'assistant'
                           ? (
-                            <ReactMarkdown
-                              remarkPlugins={[remarkGfm]}
-                              components={{
-                                code ({ node, className, children, ...props }) {
-                                  const match = /language-(\w+)/.exec(className || '')
-                                  if (match && match[1] === 'mermaid') {
-                                    return <Mermaid chart={String(children).replace(/\n$/, '')} />
-                                  }
-                                  return <code className={className} {...props}>{children}</code>
-                                }
-                              }}
-                            >
+                            <ReactMarkdown remarkPlugins={[remarkGfm]} components={markdownComponents}>
                               {l.text}
                             </ReactMarkdown>
                             )

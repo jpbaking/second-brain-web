@@ -1078,3 +1078,7 @@ Mermaid support implemented in ChatScreen. Awaiting direction.
 Tree DIRTY (untracked). Principal requested reducing horizontal rule margins.
 - 03:59 REPAIR: decreased `margin-block` for `.prose hr` from `var(--space-6)` to `var(--space-4)` in `components.css`.
 - 03:59 DONE REPAIR: verified by `npm test` and `npm run build` locally.
+
+## 2026-07-12 04:05 — session start
+Tree clean at 6586dbf. No active milestone; principal reported mermaid diagrams flickering on every /api/vault/lock poll.
+- 04:05 REPAIR: mermaid flicker — inline `components` object passed to ReactMarkdown gave `code` a new component identity on every render, so the 2s lock-poll re-render remounted each Mermaid diagram. Hoisted the components map to module level. Verified by `npm run lint` + `npm run build` green.
