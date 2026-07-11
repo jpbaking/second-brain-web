@@ -1,10 +1,13 @@
-export interface ChatEvent { seq: number, type: string, payload: unknown }
+export interface ChatEvent { seq: number, type: string, payload: unknown, createdAt?: string }
 export interface PendingApproval { toolCallId: string, toolName: string }
+export interface ReasoningBlock { text: string, createdAt?: string }
 export interface Line {
   key: string
   role: 'user' | 'assistant' | 'system'
   text: string
+  createdAt?: string
   reasoning?: string
+  reasoningBlocks?: ReasoningBlock[]
   activities?: string[]
   complete?: boolean
 }
@@ -52,7 +55,8 @@ export function foldTranscript (events: ChatEvent[], isLive: boolean): { lines: 
   let chunkText = ''
   let snapshotText: string | undefined
   let activeReasoning = ''
-  let completedReasoning: string[] = []
+  let activeReasoningAt: string | undefined
+  let completedReasoning: ReasoningBlock[] = []
   let isProcessing = false
   let statusText: string | undefined
 
@@ -63,11 +67,16 @@ export function foldTranscript (events: ChatEvent[], isLive: boolean): { lines: 
     }
     return assistant
   }
-  const updateAssistant = (seq: number): void => {
+  const updateAssistant = (seq: number, createdAt?: string): void => {
     const line = ensureAssistant(seq)
+    line.createdAt ??= createdAt
     const parsed = splitThinking(snapshotText ?? chunkText)
     line.text = parsed.answer
-    line.reasoning = [...completedReasoning, activeReasoning, parsed.reasoning].filter(Boolean).join('\n\n')
+    const blocks = [...completedReasoning]
+    if (activeReasoning !== '') blocks.push({ text: activeReasoning, createdAt: activeReasoningAt })
+    if (parsed.reasoning !== '') blocks.push({ text: parsed.reasoning, createdAt })
+    line.reasoningBlocks = blocks
+    line.reasoning = blocks.map(block => block.text).join('\n\n')
   }
 
   for (const e of events) {
@@ -76,16 +85,18 @@ export function foldTranscript (events: ChatEvent[], isLive: boolean): { lines: 
       chunkText = ''
       snapshotText = undefined
       activeReasoning = ''
+      activeReasoningAt = undefined
       completedReasoning = []
       isProcessing = true
       statusText = undefined
-      lines.push({ key: `u-${e.seq}`, role: 'user', text: payloadText(e.payload) ?? '' })
+      lines.push({ key: `u-${e.seq}`, role: 'user', text: payloadText(e.payload) ?? '', createdAt: e.createdAt })
     } else if (e.type === 'status') {
       const p = e.payload as Record<string, unknown> | null
       const status = typeof p?.text === 'string' ? p.text : (typeof p?.state === 'string' ? p.state : undefined)
       if (status !== undefined && status !== '') {
         statusText = status
         const line = ensureAssistant(e.seq)
+        line.createdAt ??= e.createdAt
         const activities = line.activities ?? (line.activities = [])
         if (activities.at(-1) !== status) activities.push(status)
       }
@@ -94,12 +105,19 @@ export function foldTranscript (events: ChatEvent[], isLive: boolean): { lines: 
       if (e.type === 'agent_event') {
         const content = agentContent(e.payload)
         if (content.answer !== undefined) snapshotText = content.answer
-        if (content.reasoningSnapshot !== undefined) activeReasoning = content.reasoningSnapshot
-        if (content.reasoningDelta !== undefined) activeReasoning += content.reasoningDelta
+        if (content.reasoningSnapshot !== undefined) {
+          activeReasoningAt ??= e.createdAt
+          activeReasoning = content.reasoningSnapshot
+        }
+        if (content.reasoningDelta !== undefined) {
+          activeReasoningAt ??= e.createdAt
+          activeReasoning += content.reasoningDelta
+        }
         if (content.reasoningComplete !== undefined) {
           const complete = content.reasoningComplete.trim()
-          if (complete !== '' && completedReasoning.at(-1) !== complete) completedReasoning.push(complete)
+          if (complete !== '' && completedReasoning.at(-1)?.text !== complete) completedReasoning.push({ text: complete, createdAt: activeReasoningAt ?? e.createdAt })
           activeReasoning = ''
+          activeReasoningAt = undefined
         }
         if (content.answer === undefined && content.reasoningSnapshot === undefined && content.reasoningDelta === undefined && content.reasoningComplete === undefined) continue
       } else {
@@ -107,7 +125,7 @@ export function foldTranscript (events: ChatEvent[], isLive: boolean): { lines: 
         if (text === undefined || text === '') continue
         chunkText += text
       }
-      updateAssistant(e.seq)
+      updateAssistant(e.seq, e.createdAt)
     } else if (e.type === 'approval_request') {
       const p = e.payload as { toolCallId?: string, toolName?: string }
       if (typeof p?.toolCallId === 'string') approvals.set(p.toolCallId, { toolCallId: p.toolCallId, toolName: p.toolName ?? 'tool' })
@@ -118,7 +136,7 @@ export function foldTranscript (events: ChatEvent[], isLive: boolean): { lines: 
       isProcessing = true
     } else if (e.type === 'compaction') {
       assistant = null
-      lines.push({ key: `c-${e.seq}`, role: 'system', text: 'Context compacted' })
+      lines.push({ key: `c-${e.seq}`, role: 'system', text: 'Context compacted', createdAt: e.createdAt })
     } else if (e.type === 'ended') {
       const current = lines.at(-1)
       if (current?.role === 'assistant') current.complete = true

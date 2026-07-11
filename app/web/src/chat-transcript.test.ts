@@ -46,15 +46,27 @@ describe('foldTranscript', () => {
   it('builds delta-only reasoning and preserves every completed iteration', () => {
     const result = foldTranscript([
       { seq: 1, type: 'user_message', payload: { text: 'Question' } },
-      { seq: 2, type: 'agent_event', payload: { type: 'content_start', contentType: 'reasoning', reasoning: 'First' } },
+      { seq: 2, type: 'agent_event', createdAt: '2026-07-12T01:00:00.000Z', payload: { type: 'content_start', contentType: 'reasoning', reasoning: 'First' } },
       { seq: 3, type: 'agent_event', payload: { type: 'content_start', contentType: 'reasoning', reasoning: ' thought.' } },
       { seq: 4, type: 'agent_event', payload: { type: 'content_end', contentType: 'reasoning', reasoning: 'First thought.' } },
-      { seq: 5, type: 'agent_event', payload: { type: 'content_start', contentType: 'reasoning', reasoning: 'Second' } },
+      { seq: 5, type: 'agent_event', createdAt: '2026-07-12T01:01:00.000Z', payload: { type: 'content_start', contentType: 'reasoning', reasoning: 'Second' } },
       { seq: 6, type: 'agent_event', payload: { type: 'content_start', contentType: 'reasoning', reasoning: ' thought.' } },
       { seq: 7, type: 'agent_event', payload: { type: 'content_end', contentType: 'reasoning', reasoning: 'Second thought.' } },
       { seq: 8, type: 'agent_event', payload: { type: 'done', text: 'Answer.' } },
     ], true)
     expect(result.lines[1]).toMatchObject({ text: 'Answer.', reasoning: 'First thought.\n\nSecond thought.' })
+    expect(result.lines[1]?.reasoningBlocks).toEqual([
+      { text: 'First thought.', createdAt: '2026-07-12T01:00:00.000Z' },
+      { text: 'Second thought.', createdAt: '2026-07-12T01:01:00.000Z' },
+    ])
+  })
+
+  it('carries message timestamps from their first events', () => {
+    const result = foldTranscript([
+      { seq: 1, type: 'user_message', createdAt: '2026-07-12T01:00:00.000Z', payload: { text: 'Question' } },
+      { seq: 2, type: 'agent_event', createdAt: '2026-07-12T01:00:01.000Z', payload: { type: 'done', text: 'Answer' } },
+    ], true)
+    expect(result.lines.map(line => line.createdAt)).toEqual(['2026-07-12T01:00:00.000Z', '2026-07-12T01:00:01.000Z'])
   })
 
   it('uses snapshots as canonical when both stream forms are emitted', () => {

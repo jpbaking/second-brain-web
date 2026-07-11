@@ -34,7 +34,7 @@ Milestone 43: Browser-local chat timestamps. Checklist:
 
 ## Next step
 
-Implement m43-01: timestamped transcript and reasoning model.
+Implement m43-02: browser-local timestamp UI and full verification.
 
 ## Read before working
 
