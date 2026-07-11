@@ -1125,3 +1125,5 @@ Tree clean at 69d46a0 (HANDOFF.md untracked). No active milestone; ad-hoc repair
 Tree clean at 7df650b. Principal go: chat file upload backlog item → opened
 milestone 49 (chat-scoped attachments). Next item: m49-01.
 - 06:23 STARTED m49-01: chat-uploads subdir, attachment store module, upload/delete routes + tests
+- 06:26 DONE m49-01: chat-uploads store + POST/DELETE routes; verified by `npm test --workspace server -- chat-uploads.test.ts` → 9 tests green. Commit 737a1f8.
+- 06:26 STARTED m49-02: wire attachmentIds through message POST → AgentSessionService → AgentRunner (userImages/userFiles)
