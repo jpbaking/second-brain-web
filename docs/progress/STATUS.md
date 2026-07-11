@@ -1,6 +1,6 @@
 # STATUS — single source of truth
 
-Updated: 2026-07-11 (active: milestone 32 — port configure.ps1)
+Updated: 2026-07-11 (active: none — milestone 32 completed)
 
 ## Where we are
 
@@ -29,16 +29,15 @@ Updated: 2026-07-11 (active: milestone 32 — port configure.ps1)
 
 ## Active milestone
 
-Milestone 32 — port configure.ps1
-(`docs/progress/milestones/milestone-32-configure-ps1-port.md`)
-
-Bring `configure.ps1` to parity with the milestone-31 bash `configure`.
-No pwsh on this host: verified by structured parity review; the principal
-runs it on Windows to confirm execution.
+None
 
 ## Next step
 
-m32-01: rewrite `configure.ps1` to mirror `configure`.
+(Milestone 32 completed — `configure.ps1` ported to parity with the bash
+`configure`, plus a filter+pager model picker added to both. PowerShell
+execution smoke-test on Windows is outstanding for the principal — no pwsh on
+this Linux host, so the port was verified by structured parity review. Select a
+new milestone from the backlog.)
 
 ## Read before working
 

@@ -687,3 +687,12 @@ review; principal runs on Windows. Next: m32-01.
   the window; Select-Model mirrors filter/'f'/'m'/number logic. README notes the
   'f' filter. Paging itself only engages in a real terminal (principal to eyeball
   on a tall list).
+
+## 2026-07-11 14:10 — session end
+Milestone 32 (configure.ps1 port + long-list model picker) complete and
+archived. configure.ps1 now mirrors bash configure (.config/ output, retry-in-
+place, provider+key-first model picker, keypair gen, root-.env migration); both
+scripts gained a substring filter + pager for long model lists. Verified: bash
+`bash -n` + scripted stub runs (filter/number/manual paths); ps1 by parity
+review (no pwsh on host — Windows execution smoke-test outstanding for the
+principal). Tree clean. Active: none.

@@ -12,9 +12,10 @@ See `docs/project-plan/phase-008-feature-backlog-and-design-hooks.md` for other 
 
 ## Improvements
 
-- Port `configure.ps1` to match the milestone-31 bash `configure` revamp
-  (retry-in-place input, provider+key-first model picker, generate vault
-  keypair, `.config/` output). Deferred while the bash version is validated.
+- ~~Port `configure.ps1` to match the bash `configure` revamp~~ — completed in
+  milestone 32, together with a filter+pager model picker added to both scripts.
+  (PowerShell execution smoke-test on Windows is the principal's to run — no
+  pwsh on the Linux dev host; ported by structured parity review.)
 
 - ~~Onboarding / State checks on login:~~ (completed in milestone 30)
   - ~~If no providers have been configured, show an info/error page (only "Sign Out" allowed in navigation).~~
