@@ -10,7 +10,11 @@ and follow AGENTS-PLAYBOOK.md. Completed checklists move to
 
 See `docs/project-plan/phase-008-feature-backlog-and-design-hooks.md` for the
 view, semantic search (embeddings),
-voice capture, rich diff review.
+rich diff review.
+
+## Nice-to-have (do not pick up automatically)
+
+- Voice capture
 
 ## Dropped / resolved (kept for the record)
 
