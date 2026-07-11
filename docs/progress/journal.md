@@ -574,3 +574,7 @@ Tree clean at 0b502b6. Active: milestone 27, next item: m27-01.
 - 10:35 STARTED m27-04: Create app/web/src/ProfileScreen.tsx to view and edit preferences, add to /profile route and AppShell.tsx
 - 10:36 DONE m27-04: verified by `npm run lint && npm run build` -> green.
 - 10:39 DONE m27-04: verified by npm run lint and build -> green.
+
+## 2026-07-11 11:04 — session start
+Tree clean at 0b8834e. Active: milestone 28, next item: m28-01.
+- 11:04 STARTED m28-01: update readGitStatus and /api/vault/review to return full diff contents
