@@ -15,12 +15,6 @@ and follow AGENTS-PLAYBOOK.md. Completed checklists move to
   sole provider source; provider CRUD UI/API removed (read-only view + Test
   stays); interactive `configure` / `configure.ps1` scripts.
 
-## Improvements (small/medium, self-contained)
-
-- **Run the production app under a dedicated system user.** Global
-  `~/.cline/skills` and rules paths merge into agent sessions; a dedicated
-  user isolates them. (Container deployments already isolate this.)
-
 ## Larger features (from the phase-008 backlog — need principal scoping)
 
 See `docs/project-plan/phase-008-feature-backlog-and-design-hooks.md` for the
@@ -30,6 +24,9 @@ voice capture, rich diff review, backup/restore UI.
 
 ## Dropped / resolved (kept for the record)
 
+- ~~Run bare-metal production under a dedicated system user~~ — completed in
+  milestone 21 with a validated, home-isolated systemd unit and documented
+  install/bootstrap/upgrade flow. Containers remain isolated by `USER node`.
 - ~~Strip inline source-link Markdown from follow-up display text~~ — completed
   in milestone 20. Raw parser/API text remains canonical; the UI shows clean
   text and the resolved source separately.

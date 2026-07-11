@@ -33,6 +33,74 @@ The container runs as the unprivileged `node` user and stores everything under
 `/data`, which it requires to be private (`0700`). The image pre-creates the
 volume mount point with the correct owner and mode.
 
+### Bare-metal production with systemd
+
+Do not run a production checkout from your login account. Cline automatically
+loads global skills and rules from its process user's home; a dedicated system
+account prevents your interactive `~/.cline` configuration from silently
+joining agent sessions. The container already provides this boundary through
+its unprivileged `node` user. For a non-container Linux deployment, use the
+shipped [systemd service](second-brain-web.service):
+
+```bash
+# Create a non-login account. systemd creates and owns its state directory.
+sudo useradd --system --home-dir /var/lib/second-brain-web \
+  --no-create-home --shell /usr/sbin/nologin second-brain-web
+
+# Install/build the checkout as root (or deploy pre-built artefacts). The
+# service account needs read/execute access, but must not own application code.
+sudo install -d -o root -g root -m 0755 /opt/second-brain-web
+sudo cp -a . /opt/second-brain-web/
+cd /opt/second-brain-web/app
+sudo npm ci
+sudo npm run build
+
+# Store secrets outside the checkout, readable only by root. Quote the value.
+sudo install -d -o root -g root -m 0755 /etc/second-brain-web
+sudoedit /etc/second-brain-web/environment
+# Add: SECOND_BRAIN_WEB_SECRETS_KEY='your-generated-key'
+sudo chown root:root /etc/second-brain-web/environment
+sudo chmod 0600 /etc/second-brain-web/environment
+
+sudo install -o root -g root -m 0644 \
+  /opt/second-brain-web/docs/deploy/second-brain-web.service \
+  /etc/systemd/system/second-brain-web.service
+sudo systemctl daemon-reload
+sudo systemctl enable --now second-brain-web
+curl http://127.0.0.1:8722/api/health
+```
+
+The unit runs as `second-brain-web`, creates `/var/lib/second-brain-web` at
+`0700`, binds only to loopback, and uses `ProtectHome=true`. Application code
+and `/etc/second-brain-web/environment` remain root-owned. If Node is not on
+the service manager's standard `PATH`, replace `/usr/bin/env node` in the
+installed unit with the absolute path to the Node 22+ binary.
+
+Bootstrap owner credentials while the service is stopped. The root shell
+reads the protected environment file, then `runuser` drops privileges before
+the CLI touches application state:
+
+```bash
+sudo systemctl stop second-brain-web
+sudo sh -c 'set -a; . /etc/second-brain-web/environment; \
+  exec runuser -u second-brain-web -- \
+  env SECOND_BRAIN_WEB_DATA_DIR=/var/lib/second-brain-web \
+  /opt/second-brain-web/app/scripts/reset-auth.sh'
+sudo -u second-brain-web env \
+  SECOND_BRAIN_WEB_DATA_DIR=/var/lib/second-brain-web \
+  /opt/second-brain-web/app/scripts/generate-deploy-key.sh
+sudo systemctl start second-brain-web
+```
+
+Add the printed public deploy key to the vault host, then configure the remote
+in the app. Operate the service with `systemctl status|restart
+second-brain-web` and inspect logs with `journalctl -u second-brain-web`.
+
+For an upgrade, stop the service, replace the root-owned checkout, run
+`npm ci && npm run build` from `/opt/second-brain-web/app`, re-install the unit
+in case it changed, run `systemctl daemon-reload`, and start the service.
+Runtime data remains in `/var/lib/second-brain-web`; migrations run at startup.
+
 ## 2. Configuration (environment)
 
 | Variable | Required | Default (image) | Purpose |

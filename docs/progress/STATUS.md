@@ -1,6 +1,6 @@
 # STATUS — single source of truth
 
-Updated: 2026-07-11 (milestone 21 active)
+Updated: 2026-07-11 (milestone 21 complete)
 
 ## Where we are
 
@@ -26,13 +26,13 @@ Updated: 2026-07-11 (milestone 21 active)
 
 ## Current phase
 
-Backlog-driven. **Milestone 21 is active:** isolate bare-metal production under
-a dedicated system user so operator-global Cline skills/rules cannot merge in.
+Backlog-driven. **No milestone is active.** Milestone 21 added the isolated
+dedicated-user systemd path for bare-metal production.
 Milestone 15 (YAML-only provider provisioning) remains designed and gated.
 
 ## Next step
 
-- Complete m21-02: document and verify the dedicated-user operator flow.
+- None queued. Future work starts only when the principal says go.
 
 ## Read before working
 

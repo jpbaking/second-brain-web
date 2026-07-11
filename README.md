@@ -78,9 +78,10 @@ SECOND_BRAIN_WEB_DEV_ALLOWED_HOSTS=assistant.example.com \
 npm run dev
 ```
 
-For a production-style run without Docker: `npm run build`, then
-`SECOND_BRAIN_WEB_DATA_DIR=… npm start` (both from `app/`) and check
-`curl http://127.0.0.1:8722/api/status`.
+For a production run without Docker, do not launch the app from your login
+account: global Cline skills and rules from that account would merge into agent
+sessions. Follow the dedicated-user systemd procedure in
+[the deployment guide](docs/deploy/deployment.md#bare-metal-production-with-systemd).
 
 ## Host Bootstrap (without Docker)
 

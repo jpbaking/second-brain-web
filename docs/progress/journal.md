@@ -479,3 +479,8 @@ Follow-up rows and edit defaults now omit terminal inline source-link Markdown w
 Tree clean at c65653d. Principal directed the next recommended backlog item; selected dedicated-user isolation for bare-metal production. Active: milestone 21, next item: m21-01.
 - 08:32 STARTED m21-01: add a validated systemd service contract with a dedicated account, private state, root-owned environment input, loopback binding, and home isolation.
 - 08:34 DONE m21-01: `systemd-analyze verify` accepted the unit (only unrelated host xfs accounting notices); assertions confirmed dedicated user, 0700 StateDirectory, ProtectHome, root environment-file path, and loopback binding.
+- 08:34 STARTED m21-02: document installation, credential bootstrap, service operations, and upgrades for the dedicated-user deployment, then run contract assertions and the full application gate.
+- 08:35 DONE m21-02: deployment guide now covers account creation, root-owned code/secrets, 0700 state, privilege-dropped owner/deploy-key bootstrap, service operation, and upgrades; README no longer suggests production under a login account. Service/doc assertions passed; full gate green (lint exits 0 with one pre-existing comma-dangle warning, 60 files / 266 tests, both builds).
+
+## 2026-07-11 08:35 — session end (milestone 21 complete)
+Bare-metal production now has a validated dedicated-user systemd path that hides interactive homes from Cline; container isolation is unchanged. No milestone is active.
