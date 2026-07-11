@@ -7,6 +7,7 @@ import { openCoreDb } from '../db.js'
 import { vaultWorkspacePath } from '../vault/config.js'
 import type { AppConfig } from '../config.js'
 import type { FastifyInstance } from 'fastify'
+import type { AgentSessionService } from '../agent/session.js'
 
 const CONTENT_TYPES: Record<string, string | undefined> = {
   '.html': 'text/html; charset=utf-8',
@@ -14,7 +15,7 @@ const CONTENT_TYPES: Record<string, string | undefined> = {
   '.md': 'text/markdown; charset=utf-8',
 }
 
-export function registerReportRoutes (app: FastifyInstance, config: AppConfig): void {
+export function registerReportRoutes (app: FastifyInstance, config: AppConfig, agentService?: AgentSessionService): void {
   const workspace = vaultWorkspacePath(config.dataDir)
 
   app.get('/api/reports', async () => {
@@ -52,6 +53,44 @@ export function registerReportRoutes (app: FastifyInstance, config: AppConfig): 
       reply.header('content-disposition', `attachment; filename="${filename}"`)
     }
     return await reply.send(createReadStream(resolved))
+  })
+
+  app.post('/api/reports/regenerate/*', async (req, reply) => {
+    if (agentService === undefined) return reply.code(503).send({ error: 'Agent service not available' })
+    
+    const requested = (req.params as { '*': string })['*']
+    let resolved: string
+    try {
+      resolved = await resolveReportPath(workspace, requested)
+    } catch (error) {
+      const status = error instanceof ReportPathError ? error.status : 404
+      return await reply.code(status).send({ error: error instanceof Error ? error.message : 'Report not found.' })
+    }
+
+    const relative = path.relative(path.join(workspace, 'reports'), resolved).split(path.sep).join('/')
+    const db = openCoreDb(config.dataDir)
+    let prov
+    try {
+      prov = getReportProvenance(db, relative)
+    } finally {
+      db.close()
+    }
+
+    if (prov === undefined) {
+      return await reply.code(404).send({ error: 'Report provenance not found. Cannot regenerate.' })
+    }
+    if (prov.prompt === null) {
+      return await reply.code(400).send({ error: 'Provenance prompt is missing. Cannot regenerate.' })
+    }
+
+    const session = agentService.create({
+      title: `Regenerate: ${path.basename(resolved)}`,
+      providerProfileId: prov.providerProfileId ?? undefined
+    })
+    
+    agentService.sendMessage(session.id, prov.prompt).catch(() => {})
+
+    return await reply.send({ sessionId: session.id })
   })
 }
 

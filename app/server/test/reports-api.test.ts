@@ -12,7 +12,17 @@ import { vaultWorkspacePath } from '../src/vault/config.js'
 import { openCoreDb } from '../src/db.js'
 import { createSession } from '../src/agent/chat-store.js'
 import { saveReportProvenance } from '../src/reports/store.js'
+import { createProfile } from '../src/providers/store.js'
 import type { FastifyInstance } from 'fastify'
+import type { AgentRunner } from '../src/agent/runner.js'
+
+class FakeRunner implements AgentRunner {
+  async start () { return { sessionId: 'sdk-1' } }
+  async send () {}
+  subscribe () { return () => {} }
+  async readMessages () { return [] }
+  async stop () {}
+}
 
 const scratch: string[] = []
 const apps: FastifyInstance[] = []
@@ -39,18 +49,19 @@ async function fixture (): Promise<{ app: FastifyInstance, cookie: string, works
 
   const coreDb = openCoreDb(config.dataDir)
   const session = createSession(coreDb, { title: 'Test' })
+  const pId = createProfile(coreDb, { displayName: 'Test Profile', providerId: 'openai', modelId: 'gpt-4' })
   saveReportProvenance(coreDb, {
     reportPath: '2026/brief.html',
     sessionId: session.id,
     prompt: 'make brief',
-    providerProfileId: 'test-profile',
+    providerProfileId: pId,
     vaultCommit: '123commit'
   })
   coreDb.close()
 
   const { password, state } = await generateOwnerAuth()
   writeOwnerAuth(config.dataDir, state, { SECOND_BRAIN_WEB_SECRETS_KEY: config.secretsKey })
-  const app = buildApp(config)
+  const app = buildApp(config, { agentRunner: new FakeRunner() })
   apps.push(app)
   const passwordResponse = await app.inject({ method: 'POST', url: '/api/auth/password', payload: { password } })
   const challenge = cookieValue(passwordResponse.headers['set-cookie'], CHALLENGE_COOKIE)
@@ -83,7 +94,7 @@ describe('report API', () => {
     expect(brief.provenance).toBeDefined()
     expect(brief.provenance.sessionId).toBeDefined()
     expect(brief.provenance.prompt).toBe('make brief')
-    expect(brief.provenance.providerProfileId).toBe('test-profile')
+    expect(typeof brief.provenance.providerProfileId).toBe('string')
     expect(brief.provenance.vaultCommit).toBe('123commit')
 
     const notes = list.json().reports.find((r: any) => r.path === '2026/notes.md')
@@ -110,5 +121,19 @@ describe('report API', () => {
     expect((await get('/api/reports/content/2026')).statusCode).toBe(404)
     expect((await get('/api/reports/content/2026/missing.pdf')).statusCode).toBe(404)
     expect((await get('/api/reports/content/2026/data.txt')).statusCode).toBe(415)
+  })
+
+  it('allows regenerating a report with provenance', async () => {
+    const { app, cookie } = await fixture()
+    const res = await app.inject({ method: 'POST', url: '/api/reports/regenerate/2026/brief.html', headers: { cookie } })
+    expect(res.statusCode).toBe(200)
+    expect(res.json().sessionId).toBeDefined()
+  })
+
+  it('fails to regenerate a report without provenance', async () => {
+    const { app, cookie } = await fixture()
+    const res = await app.inject({ method: 'POST', url: '/api/reports/regenerate/2026/notes.md', headers: { cookie } })
+    expect(res.statusCode).toBe(404)
+    expect(res.json().error).toContain('Report provenance not found')
   })
 })

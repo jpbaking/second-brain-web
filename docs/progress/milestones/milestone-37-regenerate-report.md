@@ -11,7 +11,7 @@ Design hook: Store report provenance: originating session, prompt/workflow, prov
   `npm test --workspace server -- agent-session.test.ts`
 - [x] m37-04: Update `GET /api/reports` to merge provenance data into `ReportMetadata`
   `npm test --workspace server -- reports-api.test.ts`
-- [ ] m37-05: Add `POST /api/reports/content/*/regenerate` endpoint to kick off regeneration
+- [x] m37-05: Add `POST /api/reports/regenerate/*` endpoint to kick off regeneration
   `npm test --workspace server -- reports-api.test.ts`
 - [ ] m37-06: Add "Regenerate" UI button and wire up frontend API call
   `npm run build --workspace web`
