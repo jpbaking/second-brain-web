@@ -447,3 +447,4 @@ Tree clean at 4cf8ce8. Active: milestone 18, next item: m18-01.
 
 ## 2026-07-11 08:12 — session end (milestone 18 complete)
 Native Gemini support shipped across provider creation, SDK mapping, read-only connectivity testing via Google's documented `v1beta/models` + `x-goog-api-key`, and the settings selector. No milestone is active.
+- 08:13 CHECKPOINT: m18-03 and milestone archive committed as 41d2014; tree clean.
