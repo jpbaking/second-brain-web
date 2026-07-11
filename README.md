@@ -30,16 +30,24 @@ The primary way to build and run locally is
 ./compose-helper.sh up      # build the image, start it, follow logs
 ```
 
-`configure` writes everything the runtime needs into the gitignored `.config/`
-directory: the secrets key plus the compose settings — bind address, port, and
-environment (`.config/.env`), provider profiles with only
-encrypted keys (`.config/providers.yaml`), and a generated vault SSH deploy key
-(`.config/deploy_key`). For each provider you pick the provider and enter its
-key first, then choose a model from the list it reports (type `f` to filter a
-long list by substring; invalid input re-prompts in place rather than aborting). The deploy key's public half is
-printed and also shown on the Vault page to register with your Git host. Re-run
-it and restart the app to change providers; the first enabled YAML entry is the
-default.
+`configure` is an interactive menu-driven tool (a Node CLI shipped in the app;
+`./configure` runs it with local Node when the app is built, otherwise via the
+Docker image). It **loads and edits** your config in the gitignored `.config/`
+directory rather than overwriting it — nothing is clobbered:
+
+- `.config/.env` — the secrets key and compose settings (bind address, port,
+  environment). Unknown keys you added by hand are preserved.
+- `.config/providers.yaml` — provider profiles, API keys stored only as
+  ciphertext. Add a provider (pick provider → enter key → choose a model from
+  the list it reports, `f` to filter a long list), or per existing provider
+  **rename / change model / change key / delete**. Untouched providers keep
+  their existing key.
+- `.config/deploy_key` — a generated vault SSH deploy key (needs `ssh-keygen`);
+  its public half is printed and also shown on the Vault page to register with
+  your Git host.
+
+Choose **save** to write changes, or **quit** to discard them. Restart the app
+to apply; the first enabled provider entry is the default.
 
 Then create the owner credentials (password plus TOTP) and open
 `http://localhost:8722/`:

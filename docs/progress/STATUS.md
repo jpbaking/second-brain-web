@@ -1,6 +1,6 @@
 # STATUS — single source of truth
 
-Updated: 2026-07-11 (active: milestone 34 — rewrite configure as a Node CLI)
+Updated: 2026-07-11 (active: none — milestone 34 completed)
 
 ## Where we are
 
@@ -29,17 +29,17 @@ Updated: 2026-07-11 (active: milestone 34 — rewrite configure as a Node CLI)
 
 ## Active milestone
 
-Milestone 34 — rewrite configure as a Node in-app CLI
-(`docs/progress/milestones/milestone-34-configure-node-cli.md`)
-
-Stateful load-edit-save configurator: per-provider keep/rename/change-model/
-change-key/delete, preserve unknown .env keys + untouched providers. Root
-configure/configure.ps1 become thin node-or-docker launchers.
+None
 
 ## Next step
 
-m34-01: pure core module `cli/configure-lib.ts` (.env + YAML round-trip, slug,
-validation) with unit tests.
+(Milestone 34 completed — configure is now an interactive Node CLI
+(`app/server/src/cli/configure.ts`, launched by the thin `./configure` /
+`configure.ps1`). It loads .config, edits in place (per-provider keep/rename/
+change-model/change-key/delete, runtime settings, deploy key, secrets),
+preserves unknown .env keys + untouched providers, and saves on demand. Select a
+new milestone from the backlog. Outstanding: PowerShell launcher smoke-test on
+Windows.)
 
 ## Read before working
 

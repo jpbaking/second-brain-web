@@ -720,3 +720,19 @@ shell scripts become thin node-or-docker launchers. Created milestone 34.
 - 14:22 DONE m34-01: cli/configure-lib.ts (env parse/serialize preserving unknown keys + order; providers YAML round-trip via yaml; slug; validators; runtime defaults). Verified `npm test -- configure-lib.test.ts` → 11 green; lint clean.
 - 14:40 DONE m34-02: interactive cli/configure.ts (readline async-iterator input — robust for piped+TTY; muted output for hidden secrets). Main menu with per-provider keep/rename/display/change-model(manual or re-key+list)/change-key/delete, add-provider (model filter picker), runtime settings, deploy key (ssh-keygen, graceful skip), secrets rotate; save preserves unknown .env keys + untouched provider ciphertext. Verified by scripted-stdin runs (build first): edit-model+delete+preserve-unknown-key; add-with-filter (3/3 deterministic); deploy-key+runtime paths → correct files/modes (600 .env, 644 providers/key/pub); lint+build clean. Fixed a menu-dispatch bug where reading the final piped line also sets closed, which had masked a valid 's'/'q' as quit.
 - 14:42 DONE m34-03: retired the shell logic — configure (bash) and configure.ps1 are now ~30-line launchers (mkdir .config, one-time migrate root .env→.config/.env with a warning, then run node dist/cli/configure.js if Node+build present, else docker run -it the image). Verified `bash -n`; `printf 's' | ./configure` in an isolated ROOT dispatched to the built tool and wrote .config (.env 600, providers.yaml 644); migration branch seeded .config/.env from a legacy root .env (key+port preserved) with the warning. ps1 launcher mirrors it (parity review; Windows run outstanding).
+- 14:45 DONE m34-04: README + STATUS document the Node configurator (menu-driven
+  load-edit-save; runs via local Node or the Docker image). Verified by grep.
+  Extra e2e: a key encrypted by the tool decrypts back to plaintext with the
+  same secrets key (runtime compatibility), and provisioning tests still green.
+
+## 2026-07-11 14:46 — session end
+Milestone 34 complete and archived. `configure` is now an interactive Node CLI
+(app/server/src/cli/configure.ts + configure-lib.ts, 11 unit tests) that loads
+.config, edits providers/.env/deploy-key/secrets in place (per-provider keep/
+rename/change-model/change-key/delete), preserves unknown .env keys + untouched
+provider ciphertext, and saves on demand. Root configure/configure.ps1 are now
+thin node-or-docker launchers with a one-time root-.env migration. Verified by
+unit tests + scripted-stdin runs (add-with-filter deterministic, edit+delete+
+preserve, deploy-key/runtime paths, e2e encrypt→decrypt). ps1 launcher + tool
+run on Windows still outstanding for the principal (no pwsh here). Tree clean.
+Active: none.

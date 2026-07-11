@@ -53,7 +53,7 @@ node-or-docker launchers.
       Verify: `bash -n configure`; a launcher run dispatches to the built tool
       and writes `.config/`; ps1 parity review.
 
-- [ ] **m34-04** Docs: update README + `STATUS.md` for the Node configurator
+- [x] **m34-04** Docs: update README + `STATUS.md` for the Node configurator
       (still invoked as `./configure`); note ssh-keygen requirement for key
       generation.
       Verify: `grep -n 'configure' README.md`.
