@@ -582,3 +582,4 @@ Tree clean at 0b8834e. Active: milestone 28, next item: m28-01.
 - 11:05 NOTE m28-01: commit is 3137d49.
 - 11:08 DONE m28-02: verified by `npm test --workspace server` → all 293 tests pass. Committing.
 - 11:08 NOTE m28-02: commit is fa5dbe9.
+- 11:09 STARTED m28-03: update ReviewCommitModal.tsx to group changed files by semantic type
