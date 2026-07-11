@@ -12,7 +12,7 @@ Goal: a fresh chat can read the vault — asked to `ls` its working directory it
 lists the vault's top-level dirs (`inbox library memory reports scripts`), not
 `/app` (`node_modules server web`).
 
-- [ ] **m39-01 — Spike: find the cwd mechanism, decide the approach**
+- [x] **m39-01 — Spike: find the cwd mechanism, decide the approach**
   - Determine, from `@cline/core` / `@cline/llms`, exactly how the `claude-code`
     provider's tool/subprocess working directory is resolved, and what our
     `ClineAgentRunner.start()` path currently passes. Known so far: `config.cwd`
