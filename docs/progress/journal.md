@@ -914,3 +914,12 @@ Principal reported chat sticks on "Processing…" via the `assistant.int.bakings
 
 ## 19:10 — session end
 Streaming/blocking issue documented for a future milestone; proxy timeout mitigation in place. Awaiting principal's go to fix the server properly.
+
+## 2026-07-11 19:30 — session (cont.)
+Principal shared the real cause of slow turns: the agent reports zero vault access. Investigated.
+- 19:32 CONFIRMED via live `ls` probe through the agent: it lists `/app` dirs (`node_modules server web`), not the vault. The vault is present + healthy at `/data/workspaces/second-brain` (inbox/library/memory/reports/scripts + git history) — so it is NOT a missing mount; the agent's working directory is wrong.
+- 19:40 Attempted fix (map our `cwd` → SDK `workspaceRoot` in `cline-runner.ts`): no effect on the claude-code provider (still `/app`); removing `cwd` made `core.start()` throw (502 in ~30 ms), so `cwd` is required yet ineffective for the subprocess cwd. `ClineCoreOptions` has no cwd; `local` backend; the claude-code subprocess inherits the server cwd. Concluded this needs SDK-internals work, not a field rename.
+- 19:45 REVERTED all experimental changes (cline-runner mapping + a temporary route error-log); tree clean. DOCUMENTED the diagnosis + fix direction as the top BACKLOG Improvements item (above the streaming item) and in STATUS Known issues. No code shipped.
+
+## 19:45 — session end
+Root-caused the "agent can't see the vault" issue (wrong working dir for the claude-code provider, not a mount problem) and documented it for a future milestone. No code change. Awaiting principal direction.

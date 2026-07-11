@@ -12,6 +12,50 @@ See `docs/project-plan/phase-008-feature-backlog-and-design-hooks.md` for other 
 
 ## Improvements
 
+- **Agent runs in `/app`, not the vault — it cannot read/write the vault**
+  (candidate milestone; likely higher priority than the streaming fix — this is
+  why the secretary is slow/unhelpful on any vault question).
+  - **Symptom (principal-reported, 2026-07-11):** asked "who's my employer?",
+    the agent spends a long time then reports it has "zero read access to your
+    vault" and can only see the app's own source. Slow turns on vault questions
+    trace to this, not (only) the streaming issue.
+  - **Confirmed:** a fresh chat asked to `ls` its working directory replies
+    `node_modules / server / web` — i.e. **`/app`** (the server's cwd), not the
+    vault. The vault itself is present and healthy at
+    `<SECOND_BRAIN_WEB_DATA_DIR>/workspaces/second-brain` (full `inbox/`,
+    `library/`, `memory/`, `reports/`, `scripts/`, git history incl. the CV
+    ingest). So this is **not** a missing mount — the agent's working directory
+    is simply wrong. (The agent's own "should be mounted" guess is off: data is
+    there; cwd isn't pointed at it.)
+  - **Investigation (evidenced, then reverted — do not re-try blindly):**
+    - The app already sets `config.cwd = vaultWorkspacePath(dataDir)`
+      (`app/server/src/agent/session.ts:400`) and passes it through
+      `ClineAgentRunner.start()`. It has no effect on the `claude-code`
+      provider's working directory.
+    - The SDK's `CoreSessionConfig` (`@cline/core`) exposes `workspaceRoot`, not
+      `cwd`. Setting `config.workspaceRoot = vaultCwd` **also had no effect**
+      (agent still in `/app`). **Removing** `config.cwd` makes `core.start()`
+      throw → `POST /messages` 502s in ~30 ms. So `cwd` is required by the SDK
+      yet does not redirect the claude-code subprocess.
+    - `ClineCoreOptions` (passed to `ClineCore.create`, `cline-runner.ts:25`)
+      has no `cwd`; we use `backendMode: 'local'`. The claude-code subprocess
+      appears to inherit the server process cwd (`/app`, `PWD=/app`).
+  - **Fix direction / open questions (needs SDK-internals work before a
+    checklist):**
+    - Determine how `@cline/core` + `@cline/llms` set the **claude-code
+      provider subprocess cwd** in this version (candidates seen in the bundled
+      code: `this.options.cwd`, a `prepare(input)` hook on `ClineCoreOptions`,
+      or `hub?.cwd`). None is wired from our side today.
+    - Candidate fixes to try (verify each with the `ls` probe under an
+      auto-approve preset): supply cwd through a supported create/start channel;
+      use the `prepare()` hook to set workspace-scoped state; or launch the SDK
+      runtime with cwd = vault. Avoid `process.chdir()` in the server.
+    - Check whether non-`claude-code` providers (native `gemini`, etc.) honour
+      `config.cwd` — the tool sandbox / cwd handling may be provider-specific.
+  - **Verification:** a fresh chat asked to `ls` lists the vault's top-level
+    dirs (`inbox library memory reports scripts`), not `/app`
+    (`node_modules server web`); "who's my employer?" resolves from `memory/`.
+
 - **Stream chat replies live; stop blocking `/messages` on the whole turn**
   (candidate milestone 39). Today a chat turn does not stream and the POST
   hangs for the turn's full duration, which 504s behind any reverse proxy with
