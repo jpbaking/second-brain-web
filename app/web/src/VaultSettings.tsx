@@ -30,6 +30,8 @@ async function sendJson (method: string, url: string, body?: unknown): Promise<R
 
 export function VaultSettings () {
   const [status, setStatus] = useState<VaultStatus | null>(null)
+  const [publicKey, setPublicKey] = useState<string | null>(null)
+  const [copied, setCopied] = useState(false)
   const [remoteUrl, setRemoteUrl] = useState('')
   const [branch, setBranch] = useState('main')
   const [displayName, setDisplayName] = useState('')
@@ -53,6 +55,23 @@ export function VaultSettings () {
     setRemoteUrl(body.remoteUrl ?? '')
     setBranch(body.branch)
     setDisplayName(body.displayName ?? '')
+
+    const keyRes = await getJson('/api/vault/public-key')
+    if (keyRes.ok) {
+      const keyBody = await keyRes.json() as { publicKey: string | null }
+      setPublicKey(keyBody.publicKey)
+    }
+  }
+
+  async function copyKey () {
+    if (publicKey === null) return
+    try {
+      await navigator.clipboard.writeText(publicKey)
+      setCopied(true)
+      setTimeout(() => setCopied(false), 2000)
+    } catch {
+      setError('Could not copy to the clipboard — select and copy the key manually.')
+    }
   }
 
   useEffect(() => { load().catch(() => setError('Could not load vault status.')) }, [])
@@ -155,6 +174,30 @@ export function VaultSettings () {
             </button>
           </div>
         </form>
+
+        {publicKey !== null && (
+          <section className='stack-2' aria-label='Deploy key' data-testid='vault-deploy-key'>
+            <h2 className='card-title'>Deploy key</h2>
+            <div className='field'>
+              <label className='label' htmlFor='deploy-key'>Public key</label>
+              <input
+                id='deploy-key' className='input' type='text' readOnly
+                value={publicKey} data-testid='vault-public-key'
+                onFocus={(e) => e.target.select()}
+              />
+            </div>
+            <div className='form-actions'>
+              <button className='btn btn-secondary' type='button' onClick={() => { copyKey().catch(() => {}) }}>
+                {copied ? 'Copied' : 'Copy public key'}
+              </button>
+            </div>
+            <p className='field-hint'>
+              Add this as a deploy key on your vault's Git host with write access
+              so the console can clone, pull, and push. GitHub: repository →
+              Settings → Deploy keys → Add deploy key → tick "Allow write access".
+            </p>
+          </section>
+        )}
 
         {status !== null && (
           <section className='stack-2' aria-label='Vault status'>

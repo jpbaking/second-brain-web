@@ -637,3 +637,5 @@ STATUS at it. Next item: m31-01.
 - 13:25 DONE m31-01: verified by `npm test --workspace server -- ssh-key-import.test.ts` → 5 tests green; config.test.ts still green; lint clean. Commit dfc3f98.
 - 13:27 STARTED m31-02: add GET /api/vault/public-key returning the deploy public key (never the private key).
 - 13:29 DONE m31-02: verified by `npm test --workspace server -- vault-public-key.test.ts` → 3 tests green; lint clean.
+- 13:31 STARTED m31-03: Vault page shows deploy public key with copy control + register guidance.
+- 13:36 DONE m31-03: Vault page shows deploy public key + copy control + guidance. Verified by `npx playwright test vault-deploy-key.spec.ts` (1 passed) and a full-page screenshot of /vault; web build clean.

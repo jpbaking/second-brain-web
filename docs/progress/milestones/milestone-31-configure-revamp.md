@@ -36,7 +36,7 @@ with the public key surfaced on the Vault page; bash `configure` only for now
       (never the private key).
       Verify: `cd app && npm test --workspace server -- vault-public-key.test.ts`
 
-- [ ] **m31-03** Web: Vault page shows the deploy public key with a copy
+- [x] **m31-03** Web: Vault page shows the deploy public key with a copy
       control and register-with-Git-host guidance when one is present.
       Verify: `cd app && npm run build` then Playwright/headless screenshot of
       `/vault` showing the public-key block.
