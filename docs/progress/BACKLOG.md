@@ -12,9 +12,12 @@ See `docs/project-plan/phase-008-feature-backlog-and-design-hooks.md` for other 
 
 ## Improvements
 
-- **Agent runs in `/app`, not the vault — it cannot read/write the vault**
-  (IN PROGRESS — milestone 39, `milestones/milestone-39-vault-access.md`).
-  This is why the secretary is slow/unhelpful on any vault question.
+- ~~**Agent runs in `/app`, not the vault — it cannot read/write the vault**~~
+  — completed in milestone 39. The claude-code agent inherits `process.cwd()`
+  and the SDK exposes no reachable per-call cwd, so `enterVaultCwd()`
+  (`cline-runner.ts`) `process.chdir`s into the vault checkout on first agent
+  start. Live-verified: a fresh chat lists the vault folders and reads
+  `README.md`. Archived checklist: `milestones/archive/milestone-39-vault-access.md`.
   - **Symptom (principal-reported, 2026-07-11):** asked "who's my employer?",
     the agent spends a long time then reports it has "zero read access to your
     vault" and can only see the app's own source. Slow turns on vault questions

@@ -1,6 +1,6 @@
 # STATUS — single source of truth
 
-Updated: 2026-07-12 (active: milestone 39 — agent vault access)
+Updated: 2026-07-12 (no active milestone; milestone 39 complete)
 
 ## Where we are
 
@@ -29,14 +29,13 @@ Updated: 2026-07-12 (active: milestone 39 — agent vault access)
 
 ## Active milestone
 
-milestone 39 (Agent vault access — correct working directory). Checklist:
-`docs/progress/milestones/milestone-39-vault-access.md`.
+milestone 39 (Agent vault access) is complete. Archived checklist:
+`docs/progress/milestones/archive/milestone-39-vault-access.md`.
 
 ## Next step
 
-m39-01 — spike: find how the `claude-code` provider's working directory is set
-in `@cline/core`/`@cline/llms` and decide the fix. See the milestone-39 item's
-"known so far" notes and BACKLOG top item.
+Await direction, or pick up milestone 40 (stream chat replies / stop blocking
+`/messages`) from BACKLOG when the principal says go.
 
 ## Read before working
 

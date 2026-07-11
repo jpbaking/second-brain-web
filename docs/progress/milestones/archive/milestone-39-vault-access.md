@@ -42,6 +42,9 @@ lists the vault's top-level dirs (`inbox library memory reports scripts`), not
   - Verify: `cd .. && ./compose-helper.sh rebuild` then a documented chat probe
     (record the assistant's directory listing in the journal / a screenshot).
 
-- [ ] **m39-04 — Full regression, lint, docs**
-  - Whole suite green; resolve the item in BACKLOG and STATUS.
-  - Verify: `cd app && npm run lint && npm test && npm run build`
+- [x] **m39-04 — Full regression, lint, docs**
+  - Whole suite green; resolved the item in BACKLOG and STATUS. (A separate
+    `repair:` first cleared pre-existing m37/m38 lint debt so `npm run lint`
+    passes.)
+  - Verify: `cd app && npm run lint && npm test && npm run build` → lint clean,
+    331 tests green, build green.
