@@ -1,6 +1,6 @@
 # STATUS — single source of truth
 
-Updated: 2026-07-12 (milestone 41 active)
+Updated: 2026-07-12 (no active milestone; milestone 41 complete)
 
 ## Where we are
 
@@ -22,25 +22,24 @@ Updated: 2026-07-12 (milestone 41 active)
   Bare metal: `cd app && npm install && npm run build`, then `npm start` with
   `SECOND_BRAIN_WEB_DATA_DIR` at a private `0700` dir.
 - Key facts: all app source lives under `app/` (npm workspace root — run every
-  npm command from there). Core DB schema v10; sidecar (`indexes/vault.sqlite`)
-  v3. Server test suite: 277 tests, all green. UI routes: `/` = chat (last
+  npm command from there). Core DB schema v14; sidecar (`indexes/vault.sqlite`)
+  v3. Server test suite: 332 tests, all green. UI routes: `/` = chat (last
   active or new), `/command-centre`, `/capture`, `/follow-ups`, `/reports`,
   `/search`, `/explorer`, `/vault`, `/providers`, `/login`, `/setup`.
 
 ## Active milestone
 
-Milestone 41: Expanded chat controls. Checklist:
-`docs/progress/milestones/milestone-41-chat-controls.md`.
+Milestone 41 (Expanded chat controls) is complete. Archived checklist:
+`docs/progress/milestones/archive/milestone-41-chat-controls.md`.
 
 ## Next step
 
-Implement m41-06: full regression and browser verification.
+Await direction.
 
 ## Read before working
 
 - `AGENTS-PLAYBOOK.md` — always, top to bottom.
 - `docs/progress/BACKLOG.md` — the work queue.
-- `docs/progress/milestones/milestone-41-chat-controls.md` — active checklist.
 
 ## Questions for the principal
 

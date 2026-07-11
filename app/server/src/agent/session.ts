@@ -459,7 +459,6 @@ export class AgentSessionService {
       const sdkSessionId = this.live.get(chatSessionId)
       if (sdkSessionId !== undefined) await this.runner.stop(sdkSessionId)
       this.live.delete(chatSessionId)
-      setSdkSessionId(this.db, chatSessionId, null)
       this.emitEvent(chatSessionId, 'session_config', capturedFromSnapshot(snap))
     }
     updateSessionConfig(this.db, chatSessionId, snap.profileId, approvalPreset)

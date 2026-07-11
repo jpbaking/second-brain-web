@@ -12,5 +12,5 @@
   - Verify: `cd app && npm test --workspace server -- chat-store.test.ts chat-api.test.ts && npm run build --workspace web`
 - [x] m41-05: Add keyboard-accessible `/` autocomplete sourced from the existing workflow catalogue; selecting/submitting a match runs that workflow.
   - Verify: `cd app && npm run build --workspace web`
-- [ ] m41-06: Run full regression and visually verify the complete chat-control flow in the browser.
+- [x] m41-06: Run full regression and visually verify the complete chat-control flow in the browser.
   - Verify: `cd app && npm run lint && npm test && npm run build`

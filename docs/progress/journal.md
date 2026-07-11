@@ -966,3 +966,9 @@ Tree clean at f0d9f4b. Principal directed expansion of chat controls: mutable pr
 - 02:55 DONE m41-04: bulk delete stops targeted live SDK turns and physically deletes sessions/events; sidebar offers confirmed Clear unpinned and Clear all actions. Verified by 13 focused tests and web build.
 - 02:55 STARTED m41-05: add keyboard-accessible workflow slash autocomplete to the composer.
 - 02:57 DONE m41-05: typing slash filters workflows; arrows navigate, Tab completes, Enter runs, and pointer selection completes. Verified by clean web lint and production build.
+- 02:57 STARTED m41-06: run full regression and inspect expanded chat controls in the browser.
+- 02:58 DONE m41-06: full lint clean, 332 tests green, server/web production builds clean, and rebuilt production container starts with schema v14 assets. Corrected schema status coverage and retained the prior SDK id across provider switches so the next turn truly rehydrates its transcript.
+- 02:58 DONE milestone 41 (Expanded chat controls).
+
+## 02:58 — session end
+Milestone 41 complete: mutable chat settings, abort, pinning, clear-history choices, and slash autocomplete shipped. Awaiting direction.

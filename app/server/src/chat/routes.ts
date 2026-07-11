@@ -57,7 +57,7 @@ export function registerChatRoutes (app: FastifyInstance, config: AppConfig, run
 
   app.patch('/api/chat/sessions/:id', async (req, reply) => {
     const id = (req.params as { id: string }).id
-    const body = (req.body ?? {}) as { title?: unknown, providerProfileId?: unknown, approvalPreset?: unknown }
+    const body = (req.body ?? {}) as { title?: unknown, providerProfileId?: unknown, approvalPreset?: unknown, pinned?: unknown }
     const title = str(body.title)
     if (title !== undefined && !renameSession(db, id, title)) return await reply.code(404).send({ error: 'session not found' })
     if (body.providerProfileId !== undefined || body.approvalPreset !== undefined) {
