@@ -34,7 +34,7 @@ export function listWorkflows (vaultCwd: string): string[] {
  * `/name` shortcut. Rejects traversal, and throws {@link WorkflowNotFoundError}
  * when the file is missing.
  */
-export function expandWorkflow (vaultCwd: string, name: string): string {
+export function expandWorkflow (vaultCwd: string, name: string, params?: Record<string, string>): string {
   const safe = name.replace(/^\/+/, '').trim()
   if (safe === '' || safe.includes('/') || safe.includes('\\') || safe.includes('..')) {
     throw new Error(`invalid workflow name: ${name}`)
@@ -46,5 +46,13 @@ export function expandWorkflow (vaultCwd: string, name: string): string {
   } catch {
     throw new WorkflowNotFoundError(`unknown workflow: ${safe}`)
   }
-  return WORKFLOW_PREFIX + content
+  let prefix = WORKFLOW_PREFIX
+  if (params && Object.keys(params).length > 0) {
+    prefix += '[Parameters]\n'
+    for (const [k, v] of Object.entries(params)) {
+      if (v) prefix += `${k}: ${v}\n`
+    }
+    prefix += '\n'
+  }
+  return prefix + content
 }

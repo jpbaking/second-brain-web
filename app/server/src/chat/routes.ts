@@ -131,6 +131,34 @@ export function registerChatRoutes (app: FastifyInstance, config: AppConfig, run
     return { workflows: listWorkflows(vaultWorkspacePath(config.dataDir)) }
   })
 
+  app.post('/api/chat/workflows/prep', async (req, reply) => {
+    const body = (req.body ?? {}) as { title?: unknown, date?: unknown, attendees?: unknown, objective?: unknown }
+    const title = str(body.title)
+    if (title === undefined) return await reply.code(400).send({ error: 'title is required' })
+
+    const params: Record<string, string> = {}
+    if (body.title) params.Title = String(body.title)
+    if (body.date) params.Date = String(body.date)
+    if (body.attendees) params.Attendees = String(body.attendees)
+    if (body.objective) params.Objective = String(body.objective)
+
+    let message: string
+    try {
+      message = expandWorkflow(vaultWorkspacePath(config.dataDir), 'prep', params)
+    } catch (err) {
+      if (err instanceof WorkflowNotFoundError) return await reply.code(404).send({ error: 'prep workflow not found' })
+      return await reply.code(400).send({ error: err instanceof Error ? err.message : 'invalid workflow' })
+    }
+
+    try {
+      const session = service.create({ title: `Prep: ${title}` })
+      await service.sendMessage(session.id, message)
+      return await reply.code(201).send(session)
+    } catch (err) {
+      return await reply.code(502).send({ error: err instanceof Error ? err.message : 'agent send failed' })
+    }
+  })
+
   app.post('/api/chat/sessions/:id/commands', async (req, reply) => {
     const id = (req.params as { id: string }).id
     const command = str((req.body as { command?: unknown })?.command)

@@ -9,12 +9,12 @@ and follow AGENTS-PLAYBOOK.md. Completed checklists move to
 ## Larger features (from the phase-008 backlog — need principal scoping)
 
 See `docs/project-plan/phase-008-feature-backlog-and-design-hooks.md` for the
-full list. Highlights: source-coverage
-view, scheduled briefs, semantic search (embeddings), meeting-prep mode,
+view, scheduled briefs, semantic search (embeddings),
 voice capture, rich diff review, backup/restore UI.
 
 ## Dropped / resolved (kept for the record)
 
+- ~~Meeting Prep Mode~~ — completed in milestone 24. Added `/api/chat/workflows/prep` and a dedicated frontend screen to kick off parameterized workflow sessions.
 - ~~Automatic context compaction triggers~~ — completed in milestone 22. Triggers 
   compaction based on character count threshold at the end of agent turns.
 - ~~Declarative provider provisioning (YAML-only)~~ — completed in milestone 15.

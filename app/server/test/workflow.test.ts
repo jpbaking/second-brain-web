@@ -50,6 +50,10 @@ describe('workflow expansion (unit)', () => {
     expect(expanded).toContain('File everything under inbox/.')
     // A /name shortcut is accepted.
     expect(expandWorkflow(root, '/inbox')).toBe(expanded)
+    
+    // Parameters are interpolated.
+    const paramsExpanded = expandWorkflow(root, 'inbox', { Title: 'Sync meeting', Date: 'Today' })
+    expect(paramsExpanded).toContain('[Parameters]\nTitle: Sync meeting\nDate: Today\n\n# Inbox')
   })
 
   it('returns [] when there is no workflows dir', () => {
@@ -110,5 +114,44 @@ describe('workflow command route', () => {
 
     const missing = await app.inject({ method: 'POST', url: `/api/chat/sessions/${id}/commands`, headers: { cookie }, payload: { command: 'ghost' } })
     expect(missing.statusCode).toBe(404)
+  })
+
+  it('provides a dedicated prep workflow endpoint', async () => {
+    const root = mkdtempSync(path.join(tmpdir(), 'sbw-wfapi-prep-'))
+    scratch.push(root)
+    const config = loadConfig({ SECOND_BRAIN_WEB_DATA_DIR: path.join(root, 'data'), SECOND_BRAIN_WEB_SECRETS_KEY: 'k' })
+    prepareDatabases(config.dataDir)
+    seedWorkflows(vaultWorkspacePath(config.dataDir))
+    writeFileSync(path.join(workflowsDir(vaultWorkspacePath(config.dataDir)), 'prep.md'), '# Prep\nRun prep.\n')
+    
+    const { password, state } = await generateOwnerAuth()
+    writeOwnerAuth(config.dataDir, state, { SECOND_BRAIN_WEB_SECRETS_KEY: config.secretsKey })
+    const runner = new CapturingRunner()
+    const app = buildApp(config, { agentRunner: runner })
+    apps.push(app)
+
+    const pw = await app.inject({ method: 'POST', url: '/api/auth/password', payload: { password } })
+    const challenge = cookieValue(pw.headers['set-cookie'], CHALLENGE_COOKIE)
+    const code = totpCode(state.totp.secretBase32, { digits: state.totp.digits, period: state.totp.period })
+    const totp = await app.inject({ method: 'POST', url: '/api/auth/totp', headers: { cookie: `${CHALLENGE_COOKIE}=${challenge}` }, payload: { code } })
+    const cookie = `${SESSION_COOKIE}=${cookieValue(totp.headers['set-cookie'], SESSION_COOKIE)}`
+    seedDefaultProvider(config.dataDir)
+
+    const res = await app.inject({
+      method: 'POST',
+      url: '/api/chat/workflows/prep',
+      headers: { cookie },
+      payload: { title: 'Q3 Planning', date: 'Tomorrow', attendees: 'Alice, Bob', objective: 'Plan Q3' }
+    })
+    expect(res.statusCode).toBe(201)
+    
+    expect(runner.starts).toHaveLength(1)
+    const prompt = runner.starts[0]?.prompt ?? ''
+    expect(prompt).toContain('[Parameters]')
+    expect(prompt).toContain('Title: Q3 Planning')
+    expect(prompt).toContain('Date: Tomorrow')
+    expect(prompt).toContain('Attendees: Alice, Bob')
+    expect(prompt).toContain('Objective: Plan Q3')
+    expect(prompt).toContain('# Prep\nRun prep.')
   })
 })
