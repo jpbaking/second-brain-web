@@ -217,5 +217,13 @@ export function registerChatRoutes (app: FastifyInstance, config: AppConfig, run
     }
   })
 
+  app.post('/api/chat/sessions/:id/abort', async (req, reply) => {
+    const id = (req.params as { id: string }).id
+    if (getSession(db, id) === undefined) return await reply.code(404).send({ error: 'session not found' })
+    try { return { aborted: await service.abort(id) } } catch (err) {
+      return await reply.code(502).send({ error: err instanceof Error ? err.message : 'could not abort turn' })
+    }
+  })
+
   return service
 }

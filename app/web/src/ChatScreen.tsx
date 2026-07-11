@@ -321,6 +321,12 @@ export function ChatScreen ({ mode }: { mode: ChatMode }) {
     if (!res.ok) setError('Could not update chat settings.')
   }
 
+  async function abortTurn () {
+    if (activeId === null) return
+    const res = await sendJson('POST', `/api/chat/sessions/${activeId}/abort`)
+    if (res.ok) { setPending(false); setIsLive(false) } else setError('Could not abort the active turn.')
+  }
+
   const { lines, approvals, isProcessing, statusText } = toTranscript(events, isLive)
   // Show the indicator either from the optimistic local flag (just sent) or from
   // the live event stream (mounted into an in-progress turn).
@@ -404,7 +410,9 @@ export function ChatScreen ({ mode }: { mode: ChatMode }) {
               if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); send().catch(() => {}) }
             }}
           />
-          <button className='btn btn-primary chat-send' type='submit' disabled={input.trim() === ''}>Send</button>
+          {showProcessing
+            ? <button className='btn btn-danger chat-send' type='button' onClick={() => { abortTurn().catch(() => {}) }}>Abort</button>
+            : <button className='btn btn-primary chat-send' type='submit' disabled={input.trim() === ''}>Send</button>}
         </form>
         <div className='chat-composer-options'>
             <label className='chat-composer-select'>

@@ -958,3 +958,5 @@ Tree clean at f0d9f4b. Principal directed expansion of chat controls: mutable pr
 - 02:49 STARTED milestone 41: created a six-item checklist. Provider changes will stop the active SDK session and rehydrate the next turn with the selected provider; approval changes apply immediately. Slash autocomplete uses the existing vault workflow catalogue. Next: m41-01.
 - 02:50 STARTED m41-01: persist and expose mutable provider/approval settings and keep their controls visible in active chats.
 - 02:52 DONE m41-01: active chats retain provider/approval controls; PATCH updates both. Provider changes stop the current SDK binding, append a new captured config, and rehydrate the next turn under that provider. Verified by 25 focused tests and full server/web build.
+- 02:52 STARTED m41-02: add abort-turn service/API support and an Abort composer action while processing.
+- 02:53 DONE m41-02: wired runner stop through service and POST abort route; composer swaps Send for Abort during processing. Verified by 18 focused tests and web build.

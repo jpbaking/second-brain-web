@@ -34,7 +34,7 @@ Milestone 41: Expanded chat controls. Checklist:
 
 ## Next step
 
-Implement m41-02: abort active turns from the composer.
+Implement m41-03: persistent pinned chats and pinned-first ordering.
 
 ## Read before working
 

@@ -595,6 +595,16 @@ export class AgentSessionService {
     return { accepted: true }
   }
 
+  async abort (chatSessionId: string): Promise<boolean> {
+    const sdkSessionId = this.live.get(chatSessionId)
+    if (sdkSessionId === undefined) return false
+    await this.runner.stop(sdkSessionId)
+    this.live.delete(chatSessionId)
+    this.emitEvent(chatSessionId, 'status', { text: 'Aborted by user.' })
+    this.emitEvent(chatSessionId, 'ended', null)
+    return true
+  }
+
   /**
    * Explicitly rehydrate a persisted session into a fresh live SDK session
    * (e.g. on server restart) without sending a message. Returns the new SDK
