@@ -608,3 +608,7 @@ Tree clean at 9c69fa5. Active: milestone 29, next item: m29-01.
 Tree clean. Milestone 29 complete.
 ## 2026-07-11 12:31 — session start
 Tree clean. Active: milestone 30, next item: m30-01.
+- 12:31 STARTED m30-01: Add a dedicated UI state for when no providers are configured
+- 12:35 DONE m30-01 and m30-02: verified by npm run build. Commit pending.
+## 2026-07-11 12:35 — session end
+Tree clean. Milestone 30 completed and archived.

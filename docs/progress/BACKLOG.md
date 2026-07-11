@@ -12,9 +12,9 @@ See `docs/project-plan/phase-008-feature-backlog-and-design-hooks.md` for other 
 
 ## Improvements
 
-- Onboarding / State checks on login:
-  - If no providers have been configured, show an info/error page (only "Sign Out" allowed in navigation).
-  - If a provider is configured but there is no vault, land the user in vault config and restrict navigation to only that and "Sign Out".
+- ~~Onboarding / State checks on login:~~ (completed in milestone 30)
+  - ~~If no providers have been configured, show an info/error page (only "Sign Out" allowed in navigation).~~
+  - ~~If a provider is configured but there is no vault, land the user in vault config and restrict navigation to only that and "Sign Out".~~
 
 ## Nice-to-have (do not pick up automatically)
 

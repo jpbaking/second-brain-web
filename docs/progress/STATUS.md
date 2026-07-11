@@ -29,11 +29,11 @@ Updated: 2026-07-11 (active: milestone 28)
 
 ## Active milestone
 
-30: Onboarding / State checks on login (`docs/progress/milestones/milestone-30-onboarding-checks.md`)
+None
 
 ## Next step
 
-m30-01: Add a dedicated UI state for when no providers are configured.
+(Milestone 30 completed. Select a new milestone from the backlog.)
 
 ## Read before working
 
