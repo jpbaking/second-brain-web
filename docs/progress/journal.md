@@ -862,3 +862,13 @@ Tree clean at b8c100e. Active: milestone 37, next item: m37-02.
 
 ## 17:39 — session end
 Milestone 37 in progress (3/6). Next: m37-04.
+
+## 2026-07-11 17:40 — session start
+Tree clean at 25100b1. Active: milestone 37, next item: m37-04.
+- 17:41 STARTED m37-04: Update `GET /api/reports` to merge provenance data into `ReportMetadata`
+- 17:42 DONE m37-04: verified by `npm test --workspace server -- reports-api.test.ts` → 3 tests green. Commit cb853e0.
+- 17:42 STARTED m37-05: Add `POST /api/reports/content/*/regenerate` endpoint to kick off regeneration
+- 17:45 DONE m37-05: verified by `npm test --workspace server -- reports-api.test.ts` → 5 tests green. Commit 50f853b.
+- 17:46 STARTED m37-06: Add "Regenerate" UI button and wire up frontend API call
+- 17:46 DONE m37-06: verified by `npm run build --workspace web` → successful build. Commit 1a2fc5a.
+- 17:46 DONE milestone 37 (Regenerate Report).
