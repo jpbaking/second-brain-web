@@ -1,7 +1,7 @@
-import { existsSync } from 'node:fs'
+import { existsSync, readFileSync } from 'node:fs'
 import path from 'node:path'
 import { openCoreDb, openSidecarDb } from '../db.js'
-import { readVaultConfig, vaultWorkspacePath, writeVaultConfig } from './config.js'
+import { deployKeyPath, readVaultConfig, vaultWorkspacePath, writeVaultConfig } from './config.js'
 import { detectVault } from './detect.js'
 import { syncVault } from './sync.js'
 import { runHealthCheck } from './health.js'
@@ -75,6 +75,15 @@ export function registerVaultRoutes (app: FastifyInstance, config: AppConfig): v
     } finally {
       db.close()
     }
+  })
+
+  app.get('/api/vault/public-key', async () => {
+    // The public half of the deploy key is safe to display so the operator can
+    // register it with the Git host. The private key is never read or returned.
+    const pubPath = `${deployKeyPath(config.dataDir)}.pub`
+    if (!existsSync(pubPath)) return { publicKey: null }
+    const publicKey = readFileSync(pubPath, 'utf8').trim()
+    return { publicKey: publicKey === '' ? null : publicKey }
   })
 
   app.post('/api/vault/sync', async () => {

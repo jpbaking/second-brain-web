@@ -635,3 +635,5 @@ shown on the Vault page; bash only). Created milestone 31 checklist and pointed
 STATUS at it. Next item: m31-01.
 - 13:24 STARTED m31-01: server honours SECOND_BRAIN_WEB_SSH_KEY_PATH — copy mounted key to <dataDir>/ssh/deploy_key at 600 on boot.
 - 13:25 DONE m31-01: verified by `npm test --workspace server -- ssh-key-import.test.ts` → 5 tests green; config.test.ts still green; lint clean. Commit dfc3f98.
+- 13:27 STARTED m31-02: add GET /api/vault/public-key returning the deploy public key (never the private key).
+- 13:29 DONE m31-02: verified by `npm test --workspace server -- vault-public-key.test.ts` → 3 tests green; lint clean.

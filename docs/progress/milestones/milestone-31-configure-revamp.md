@@ -31,7 +31,7 @@ with the public key surfaced on the Vault page; bash `configure` only for now
       mount's owner/mode.
       Verify: `cd app && npm test --workspace server -- ssh-key-import.test.ts`
 
-- [ ] **m31-02** Server: `GET /api/vault/public-key` returns
+- [x] **m31-02** Server: `GET /api/vault/public-key` returns
       `{ publicKey: string | null }` read from `<dataDir>/ssh/deploy_key.pub`
       (never the private key).
       Verify: `cd app && npm test --workspace server -- vault-public-key.test.ts`
