@@ -136,6 +136,21 @@ choose_model() {
   done
 }
 
+# Read the value of KEY=... from a file (last occurrence), or empty.
+read_env_value() {
+  local key=$1 file=$2
+  [[ -n "$file" && -f "$file" ]] || return 0
+  sed -n "s/^$key=//p" "$file" | tail -n 1
+}
+
+# Yes/no with a default (y|n) applied on blank input; returns 0 for yes.
+confirm_default() {
+  local ans default=$2
+  ans=$(prompt "$1")
+  [[ -z "$ans" ]] && ans=$default
+  [[ "$ans" =~ ^[Yy]$ ]]
+}
+
 # ---- app CLI bridges (dist first, then the docker image) --------------------
 
 encrypt_secret() {
@@ -170,14 +185,12 @@ list_models() {
 
 # ---- secrets key ------------------------------------------------------------
 
-existing_key=''
-if [[ -f "$ENV_FILE" ]]; then
-  existing_key=$(sed -n 's/^SECOND_BRAIN_WEB_SECRETS_KEY=//p' "$ENV_FILE" | tail -n 1)
-elif [[ -f "$ROOT/.env" ]]; then
-  # Migration: pick up a key written by a previous root-level configure.
-  existing_key=$(sed -n 's/^SECOND_BRAIN_WEB_SECRETS_KEY=//p' "$ROOT/.env" | tail -n 1)
-fi
+# Prior values come from .config/.env, or a legacy root .env on first migration.
+src_env=''
+if [[ -f "$ENV_FILE" ]]; then src_env="$ENV_FILE"
+elif [[ -f "$ROOT/.env" ]]; then src_env="$ROOT/.env"; fi
 
+existing_key=$(read_env_value SECOND_BRAIN_WEB_SECRETS_KEY "$src_env")
 if [[ -n "$existing_key" ]]; then
   secrets_key=$existing_key
   if confirm 'Rotate the existing secrets key? (invalidates every stored provider key) [y/N] '; then
@@ -189,7 +202,37 @@ else
   printf '%s\n' 'Generated SECOND_BRAIN_WEB_SECRETS_KEY.' >&2
 fi
 
-printf 'SECOND_BRAIN_WEB_SECRETS_KEY=%s\n' "$secrets_key" > "$ENV_FILE"
+# ---- runtime settings (compose variable substitution) -----------------------
+
+default_bind=$(read_env_value SECOND_BRAIN_WEB_BIND "$src_env"); default_bind=${default_bind:-127.0.0.1}
+bind=$(prompt "Host publish address (BIND) [$default_bind]: ")
+[[ -z "$bind" ]] && bind=$default_bind
+
+default_port=$(read_env_value SECOND_BRAIN_WEB_PORT "$src_env"); default_port=${default_port:-8722}
+while true; do
+  port=$(prompt "Host port [$default_port]: ")
+  [[ -z "$port" ]] && port=$default_port
+  [[ "$port" =~ ^[0-9]+$ ]] && (( port >= 1 && port <= 65535 )) && break
+  printf 'Port must be a number between 1 and 65535.\n' >&2
+done
+
+# NODE_ENV: production unless the operator opts into development (which drops the
+# Secure cookie flag — plain-HTTP LAN only).
+dev_default='n'
+[[ "$(read_env_value SECOND_BRAIN_WEB_NODE_ENV "$src_env")" == development ]] && dev_default='y'
+dev_hint=$([[ $dev_default == y ]] && printf 'Y/n' || printf 'y/N')
+if confirm_default "Enable development mode? (disables Secure auth cookies — plain-HTTP LAN only) [$dev_hint] " "$dev_default"; then
+  node_env=development
+else
+  node_env=production
+fi
+
+{
+  printf 'SECOND_BRAIN_WEB_SECRETS_KEY=%s\n' "$secrets_key"
+  printf 'SECOND_BRAIN_WEB_BIND=%s\n' "$bind"
+  printf 'SECOND_BRAIN_WEB_PORT=%s\n' "$port"
+  printf 'SECOND_BRAIN_WEB_NODE_ENV=%s\n' "$node_env"
+} > "$ENV_FILE"
 chmod 600 "$ENV_FILE"
 
 # A root-level .env would shadow .config/.env (compose-helper prefers the root),

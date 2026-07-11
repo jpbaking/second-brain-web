@@ -19,7 +19,7 @@ Defaults / semantics (from `.env.example` + `docker-compose.yaml`):
 
 ## Checklist
 
-- [ ] **m33-01** bash `configure`: after the secrets key, prompt for bind, port
+- [x] **m33-01** bash `configure`: after the secrets key, prompt for bind, port
       (validated 1–65535, re-prompt in place), and a development-mode yes/no
       (maps to `SECOND_BRAIN_WEB_NODE_ENV`), each defaulting to the existing
       `.config/.env` value or the documented default. Write all four keys to
