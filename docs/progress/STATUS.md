@@ -34,7 +34,7 @@ Milestone 45: Weak-model system prompt. Checklist:
 
 ## Next step
 
-Implement m45-01: structured 64K-aware operating prompt and coverage.
+Implement m45-02: full regression, live prompt verification, and archive.
 
 ## Read before working
 

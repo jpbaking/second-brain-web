@@ -1,5 +1,6 @@
 import { createSession, deleteSessions, getSession, getSessionBySdkId, listSessions, readEventsSince, setSdkSessionId, saveCompaction, updateSessionConfig } from './chat-store.js'
 import { toModelConfig } from './runner.js'
+import { DEFAULT_SYSTEM_PROMPT } from './system-prompt.js'
 import { TOOL_POLICIES, evaluateTool, isMutatingTool } from './tool-policy.js'
 import { acquireLock, heartbeatLock, releaseLock } from '../vault/lock.js'
 import { readGitStatus } from '../vault/git-status.js'
@@ -486,7 +487,7 @@ export class AgentSessionService {
     return {
       ...model,
       cwd: this.opts.vaultCwd,
-      ...(this.opts.systemPrompt !== undefined ? { systemPrompt: this.opts.systemPrompt } : { systemPrompt: 'You are working in the principal\'s second-brain vault.' }),
+      systemPrompt: this.opts.systemPrompt ?? DEFAULT_SYSTEM_PROMPT,
       // The SDK requires all three runtime feature flags (config.enableTools →
       // enable_tools, etc.). Sub-agents and teams are off for the MVP.
       enableTools: this.opts.enableTools ?? true,

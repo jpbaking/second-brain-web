@@ -1037,3 +1037,5 @@ Agent workbench expanded and running; `find` was already present, and all newly 
 Tree clean at e6647bd. Principal directed improvement of the system prompt for weaker models, assuming at least 64K context.
 - 03:35 FINDING: runtime fallback is one sentence; detailed vault rules exist and are strong, but weak models should not be expected to discover/apply them without an explicit operating contract.
 - 03:35 STARTED milestone 45: add a compact role/workflow/evidence/safety/context prompt while keeping `.clinerules` authoritative. Next: m45-01.
+- 03:36 STARTED m45-01: implement and test the structured default prompt.
+- 03:37 DONE m45-01: replaced the one-line fallback with a compact operating contract covering role/rule authority, inspect-plan-act-verify workflow, evidence/uncertainty, command-failure handling, 64K context discipline, and communication. Detailed `.clinerules` remain authoritative. Verified by 12 focused tests, clean lint, and full build.

@@ -7,6 +7,7 @@ import { loadConfig } from '../src/config.js'
 import { openCoreDb } from '../src/db.js'
 import { prepareDatabases } from '../src/migrations.js'
 import { AgentSessionService } from '../src/agent/session.js'
+import { DEFAULT_SYSTEM_PROMPT } from '../src/agent/system-prompt.js'
 import { getSession, readEventsSince, saveCompaction } from '../src/agent/chat-store.js'
 import type { AgentRunner, AgentStartInput, AgentStartResult } from '../src/agent/runner.js'
 import type { ProviderSnapshot } from '../src/providers/snapshot.js'
@@ -97,6 +98,10 @@ describe('AgentSessionService', () => {
     expect(runner.starts).toHaveLength(1)
     expect(runner.starts[0]?.prompt).toBe('hello')
     expect(runner.starts[0]?.config).toMatchObject({ providerId: 'openai-compatible', modelId: 'model-a', apiKey: 'sk-secret', cwd: '/vault' })
+    expect(runner.starts[0]?.config.systemPrompt).toBe(DEFAULT_SYSTEM_PROMPT)
+    expect(DEFAULT_SYSTEM_PROMPT).toContain('.clinerules/00-role.md through .clinerules/40-reports.md')
+    expect(DEFAULT_SYSTEM_PROMPT).toContain('CONTEXT DISCIPLINE (64K OR MORE)')
+    expect(DEFAULT_SYSTEM_PROMPT).toContain('Do not claim success without evidence.')
     expect(runner.sends).toHaveLength(0)
     // Mapping + user_message event persisted.
     expect(getSession(db, session.id)?.sdkSessionId).toBe('sdk-1')
