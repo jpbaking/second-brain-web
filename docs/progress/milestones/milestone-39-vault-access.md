@@ -23,13 +23,16 @@ lists the vault's top-level dirs (`inbox library memory reports scripts`), not
   - Verify: findings + chosen approach appended to `journal.md` with concrete
     `file:line` evidence from `node_modules/@cline/*`; no product code yet.
 
-- [ ] **m39-02 — Implement the fix + unit coverage**
-  - Point the claude-code agent's working directory at
-    `vaultWorkspacePath(dataDir)` via the mechanism found in m39-01, without
-    changing the server process cwd (no `process.chdir`).
-  - Add/extend a server unit test proving the vault working directory reaches
-    the SDK start path (spy on the fake runner / `core.start` input).
-  - Verify: `cd app && npm run build && npm test --workspace server -- agent-runner.test.ts agent-session.test.ts`
+- [x] **m39-02 — Implement the fix + unit coverage**
+  - m39-01 found the only reachable lever is `process.cwd()` (the claude-code
+    subprocess inherits it; the SDK exposes no per-call cwd we can set). So
+    `enterVaultCwd(dataDir)` `process.chdir`s into the vault on the first agent
+    start (`cline-runner.ts` `ensureCore`) — relaxing this item's original
+    "no chdir" note. Safe: the server addresses everything else by absolute
+    path, and the chdir runs only once the vault exists.
+  - Unit test `test/cline-runner-cwd.test.ts` proves it chdirs when the vault
+    exists and is a no-op otherwise.
+  - Verify: `cd app && npm run build && npm test --workspace server -- agent-runner.test.ts agent-session.test.ts cline-runner-cwd.test.ts` → 25 green.
 
 - [ ] **m39-03 — Live end-to-end on a rebuilt container**
   - Rebuild the stack and drive a real chat: ask the agent to `ls` its working
