@@ -1,5 +1,6 @@
-import { mkdirSync, statSync } from 'node:fs'
+import { chmodSync, copyFileSync, existsSync, mkdirSync, statSync } from 'node:fs'
 import path from 'node:path'
+import { deployKeyPath } from './vault/config.js'
 
 /** Subdirectories of the data root (master plan: Default Runtime Layout). */
 export const DATA_SUBDIRS = [
@@ -47,6 +48,8 @@ export function loadConfig (env: NodeJS.ProcessEnv = process.env): AppConfig {
     mkdirSync(path.join(resolved, sub), { recursive: true, mode: 0o700 })
   }
 
+  importDeployKey(resolved, env)
+
   const port = Number(env.SECOND_BRAIN_WEB_PORT ?? 8722)
   if (!Number.isInteger(port) || port < 1 || port > 65535) {
     throw new ConfigError(`SECOND_BRAIN_WEB_PORT is not a valid port: ${env.SECOND_BRAIN_WEB_PORT}`)
@@ -64,6 +67,37 @@ export function loadConfig (env: NodeJS.ProcessEnv = process.env): AppConfig {
     dataDir: resolved,
     secretsKey: env.SECOND_BRAIN_WEB_SECRETS_KEY,
     uploadMaxBytes,
+  }
+}
+
+/**
+ * Import a mounted SSH deploy key into the data root. When
+ * SECOND_BRAIN_WEB_SSH_KEY_PATH points at a readable key file (typically a
+ * read-only bind mount whose owner/mode need not satisfy ssh's strict checks),
+ * copy it to the canonical `<dataDir>/ssh/deploy_key` at mode 600 — and its
+ * `.pub` sibling at 644 if present — so every vault git operation keeps using
+ * the derived path regardless of how the source was mounted. A missing or
+ * unset path is a no-op (the key may instead be generated in place).
+ */
+export function importDeployKey (dataDir: string, env: NodeJS.ProcessEnv): void {
+  const src = env.SECOND_BRAIN_WEB_SSH_KEY_PATH
+  if (src === undefined || src.trim() === '') return
+  const source = path.resolve(src.trim())
+  if (!existsSync(source)) return
+
+  const dest = deployKeyPath(dataDir)
+  if (path.resolve(source) !== path.resolve(dest)) {
+    copyFileSync(source, dest)
+  }
+  chmodSync(dest, 0o600)
+
+  const srcPub = `${source}.pub`
+  if (existsSync(srcPub)) {
+    const destPub = `${dest}.pub`
+    if (path.resolve(srcPub) !== path.resolve(destPub)) {
+      copyFileSync(srcPub, destPub)
+    }
+    chmodSync(destPub, 0o644)
   }
 }
 

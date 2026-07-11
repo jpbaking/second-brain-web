@@ -24,7 +24,7 @@ with the public key surfaced on the Vault page; bash `configure` only for now
 
 ## Checklist
 
-- [ ] **m31-01** Server: honour `SECOND_BRAIN_WEB_SSH_KEY_PATH`. When set and
+- [x] **m31-01** Server: honour `SECOND_BRAIN_WEB_SSH_KEY_PATH`. When set and
       the file exists, copy it (and a `.pub` sibling if present) into
       `<dataDir>/ssh/deploy_key` at mode `600` (pub `644`) during data-root
       prep, so the canonical derived path keeps working regardless of the
