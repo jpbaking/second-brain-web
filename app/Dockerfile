@@ -33,8 +33,7 @@ WORKDIR /app
 # Production dependencies only (the server's runtime deps; web is static output).
 COPY package.json package-lock.json ./
 COPY server/package.json ./server/
-COPY web/package.json ./web/
-RUN npm ci --omit=dev && npm cache clean --force
+RUN npm ci --omit=dev --workspace server --include-workspace-root=false && npm cache clean --force
 
 # Built artifacts from the build stage.
 COPY --from=build /app/server/dist ./server/dist

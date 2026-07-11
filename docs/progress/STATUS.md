@@ -32,7 +32,7 @@ provider provisioning) remains designed and gated.
 
 ## Next step
 
-- **m19-01:** scope runtime dependencies to the server workspace and measure.
+- **m19-02:** smoke-test the slim image with fresh persistent data.
 - Checklist: `docs/progress/milestones/milestone-19-slim-docker-image.md`.
 
 ## Read before working
