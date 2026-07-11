@@ -487,3 +487,7 @@ Bare-metal production now has a validated dedicated-user systemd path that hides
 
 ## 2026-07-11 08:36 — milestone 15 activation
 Principal directed the recommended next backlog item; selected declarative provider provisioning because its revision-3 design and verification checklist are complete. Active: milestone 15, next item: m15-01.
+
+## 2026-07-11 08:37 — session start
+Tree clean at bfd9592. Active: milestone 15, next item: m15-01.
+- 08:37 STARTED m15-01: add the stdin-only `encrypt-secret` CLI, cover its success and failure contracts, and verify a decrypt round-trip.

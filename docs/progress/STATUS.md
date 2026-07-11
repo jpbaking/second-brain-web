@@ -31,7 +31,8 @@ The principal authorised the recommended next backlog item on 2026-07-11.
 
 ## Next step
 
-- Complete `m15-01`: add and verify the stdin-only `encrypt-secret` CLI.
+- Complete `m15-02`: load and validate ordered provider YAML at boot, rebuilding
+  the provider cache with the first enabled entry as default.
 - Checklist: `docs/progress/milestones/milestone-15-provider-provisioning.md`.
 
 ## Read before working
