@@ -16,11 +16,17 @@ export interface AgentModelConfig {
   apiKey?: string
   baseUrl?: string
   headers?: Record<string, string>
+  claudeCode?: {
+    /** Keep Claude Code as inference only; Cline owns tools and approvals. */
+    tools: string[]
+    settingSources: string[]
+  }
 }
 
 /**
  * Map a m05 provider id to the SDK provider id.
  * - `anthropic`         → `anthropic`      (official Anthropic API)
+ * - `claude-code`       → `claude-code`    (local Claude CLI subscription)
  * - `gemini`            → `gemini`         (official Gemini API)
  * - `openai`            → `openai-native`  (official OpenAI API)
  * - `openai-compatible` → `openai-compatible` (LM Studio and other gateways)
@@ -28,6 +34,7 @@ export interface AgentModelConfig {
  */
 const PROVIDER_ID_MAP: Record<string, string> = {
   anthropic: 'anthropic',
+  'claude-code': 'claude-code',
   gemini: 'gemini',
   openai: 'openai-native',
   'openai-compatible': 'openai-compatible',
@@ -68,6 +75,12 @@ export function toModelConfig (snapshot: ProviderSnapshot): AgentModelConfig {
   }
   if (snapshot.apiKey !== null) config.apiKey = snapshot.apiKey
   else if (snapshot.providerId === 'openai-compatible') config.apiKey = OPENAI_COMPATIBLE_PLACEHOLDER_KEY
+  if (snapshot.providerId === 'claude-code') {
+    // The nested Claude Agent SDK must not load CLAUDE.md/settings or expose
+    // its own filesystem/shell tools. Cline's catalog, approval resolver and
+    // vault write guard remain the only authority for actions.
+    config.claudeCode = { tools: [], settingSources: [] }
+  }
   if (snapshot.baseUrl !== null) {
     config.baseUrl = snapshot.providerId === 'openai-compatible'
       ? normaliseOpenAiBaseUrl(snapshot.baseUrl)

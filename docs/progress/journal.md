@@ -809,3 +809,8 @@ after configure. Created milestone 36; next m36-01.
   rejects ciphertext; configure adds it without asking for an API key, labels
   CLI auth in menus, and prints `./compose-helper.sh claude-auth` after save.
   Verified 24 targeted tests, server build, and scripted configure output.
+- 17:09 STARTED m36-02: map `claude-code` into Cline SDK and lock its nested
+  Agent SDK tool/settings surface so web Cline remains the sole tool executor.
+- 17:09 DONE m36-02: SDK mapping emits provider `claude-code` with nested
+  Claude tools and filesystem setting sources empty, leaving Cline's existing
+  policies/approvals authoritative. Verified 22 targeted tests, build, lint.

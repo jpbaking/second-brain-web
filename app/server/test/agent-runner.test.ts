@@ -19,6 +19,7 @@ function snap (over: Partial<ProviderSnapshot>): ProviderSnapshot {
 describe('sdkProviderId', () => {
   it('maps m05 provider ids to SDK provider ids', () => {
     expect(sdkProviderId('anthropic')).toBe('anthropic')
+    expect(sdkProviderId('claude-code')).toBe('claude-code')
     expect(sdkProviderId('gemini')).toBe('gemini')
     expect(sdkProviderId('openai')).toBe('openai-native')
     expect(sdkProviderId('openai-compatible')).toBe('openai-compatible')
@@ -55,6 +56,15 @@ describe('toModelConfig', () => {
   it('maps an official Gemini snapshot to the native gemini provider', () => {
     const cfg = toModelConfig(snap({ providerId: 'gemini', modelId: 'gemini-2.5-pro', apiKey: 'google-key' }))
     expect(cfg).toEqual({ providerId: 'gemini', modelId: 'gemini-2.5-pro', apiKey: 'google-key' })
+  })
+
+  it('maps Claude Code as inference-only with no nested tools or settings', () => {
+    const cfg = toModelConfig(snap({ providerId: 'claude-code', modelId: 'sonnet', apiKey: null }))
+    expect(cfg).toEqual({
+      providerId: 'claude-code',
+      modelId: 'sonnet',
+      claudeCode: { tools: [], settingSources: [] }
+    })
   })
 
   it('normalises a bare openai-compatible base URL and passes the key + headers', () => {

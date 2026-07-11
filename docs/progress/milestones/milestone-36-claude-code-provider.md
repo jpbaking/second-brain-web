@@ -9,7 +9,7 @@ allowance instead of an Anthropic API key.
   - Configure it with a manual model and print the post-save auth reminder.
   - Verify: `cd app && npm test --workspace server -- configure-lib.test.ts provider-provisioning.test.ts`
 
-- [ ] **m36-02 — Cline SDK model mapping**
+- [x] **m36-02 — Cline SDK model mapping**
   - Map provisioned `claude-code` profiles to the SDK provider and keep the
     app's own tool/approval policy authoritative.
   - Verify: `cd app && npm test --workspace server -- agent-runner.test.ts agent-session.test.ts`
