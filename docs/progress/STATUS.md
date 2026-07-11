@@ -33,7 +33,7 @@ Updated: 2026-07-11 (active: milestone 28)
 
 ## Next step
 
-m29-02: Configure `app/test/e2e/global-setup.ts` to boot the server and web application with a fake agent runner for testing.
+m29-03: Write an initial login integration test covering the password and TOTP flow.
 
 ## Read before working
 
