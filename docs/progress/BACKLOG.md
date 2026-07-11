@@ -12,6 +12,10 @@ See `docs/project-plan/phase-008-feature-backlog-and-design-hooks.md` for other 
 
 ## Improvements
 
+- **Weak-model system prompt** — in progress as milestone 45: replace the
+  one-line fallback with a compact, explicit operating contract for models
+  with at least 64K context.
+
 - ~~**General-purpose agent container toolkit**~~ — completed in milestone 44:
   expand the runtime image and smoke-check common work commands.
 

@@ -1,6 +1,6 @@
 # STATUS — single source of truth
 
-Updated: 2026-07-12 (no active milestone; milestone 44 complete)
+Updated: 2026-07-12 (milestone 45 active)
 
 ## Where we are
 
@@ -29,17 +29,18 @@ Updated: 2026-07-12 (no active milestone; milestone 44 complete)
 
 ## Active milestone
 
-Milestone 44 (General-purpose agent container toolkit) is complete. Archived:
-`docs/progress/milestones/archive/milestone-44-agent-toolkit.md`.
+Milestone 45: Weak-model system prompt. Checklist:
+`docs/progress/milestones/milestone-45-weak-model-prompt.md`.
 
 ## Next step
 
-Await direction.
+Implement m45-01: structured 64K-aware operating prompt and coverage.
 
 ## Read before working
 
 - `AGENTS-PLAYBOOK.md` — always, top to bottom.
 - `docs/progress/BACKLOG.md` — the work queue.
+- `docs/progress/milestones/milestone-45-weak-model-prompt.md` — active checklist.
 
 ## Questions for the principal
 

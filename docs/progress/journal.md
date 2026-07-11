@@ -1032,3 +1032,8 @@ Tree clean at 2d54474. Principal asked whether an agent-reported `find` failure 
 
 ## 03:32 — session end
 Agent workbench expanded and running; `find` was already present, and all newly required commands are verified. Awaiting direction.
+
+## 2026-07-12 03:35 — session start
+Tree clean at e6647bd. Principal directed improvement of the system prompt for weaker models, assuming at least 64K context.
+- 03:35 FINDING: runtime fallback is one sentence; detailed vault rules exist and are strong, but weak models should not be expected to discover/apply them without an explicit operating contract.
+- 03:35 STARTED milestone 45: add a compact role/workflow/evidence/safety/context prompt while keeping `.clinerules` authoritative. Next: m45-01.
