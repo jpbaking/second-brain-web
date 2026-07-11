@@ -83,6 +83,9 @@ function capturedFromSnapshot (snap: ProviderSnapshot): CapturedConfig {
 }
 
 export class AgentSessionService {
+  /** Rough threshold for auto-compaction (approx 8k-10k tokens) */
+  static readonly AUTO_COMPACTION_CHAR_THRESHOLD = 30000
+
   /** chatSessionId → live SDK session id (this process only). */
   private readonly live = new Map<string, string>()
   /** chatSessionId → SSE listeners for live events. */
@@ -127,6 +130,7 @@ export class AgentSessionService {
     if (translated.type === 'ended') {
       this.live.delete(session.id)
       this.checkCompaction(session.id)
+      this.checkAutoCompaction(session.id)
       const lockId = this.locks.get(session.id)
       if (lockId !== undefined) {
         releaseLock(this.db, lockId)
@@ -170,6 +174,46 @@ export class AgentSessionService {
           this.emitEvent(chatSessionId, 'compaction', { summary })
         }
       }
+    }
+  }
+
+  private checkAutoCompaction (chatSessionId: string): void {
+    const events = readEventsSince(this.db, chatSessionId, 0)
+
+    // Find the last reset point (compaction or session start)
+    let lastResetIndex = -1
+    for (let i = events.length - 1; i >= 0; i--) {
+      const ev = events[i]
+      if (!ev) continue
+      if (ev.type === 'compaction' || ev.type === 'session_config') {
+        lastResetIndex = i
+        break
+      }
+    }
+
+    let charCount = 0
+    let currentlyCompacting = false
+
+    for (let i = lastResetIndex + 1; i < events.length; i++) {
+      const e = events[i]
+      if (!e) continue
+      if (e.type === 'compaction_requested') {
+        currentlyCompacting = true
+      }
+      if (e.type === 'user_message') {
+        currentlyCompacting = false
+        const payload = e.payload as { text?: string } | null
+        if (typeof payload?.text === 'string') charCount += payload.text.length
+      }
+      if (e.type === 'chunk' || e.type === 'agent_event') {
+        const payload = e.payload as { text?: string, event?: { text?: string } } | null
+        if (typeof payload?.text === 'string') charCount += payload.text.length
+        else if (typeof payload?.event?.text === 'string') charCount += payload.event.text.length
+      }
+    }
+
+    if (!currentlyCompacting && charCount > AgentSessionService.AUTO_COMPACTION_CHAR_THRESHOLD) {
+      this.compactSession(chatSessionId).catch(() => {})
     }
   }
 

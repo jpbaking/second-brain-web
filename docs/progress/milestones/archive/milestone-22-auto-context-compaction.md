@@ -11,9 +11,9 @@ Verification command for backend changes:
 
 ## Checklist
 
-- [ ] m22-01: Define transcript size threshold and calculate size in `session.ts`.
+- [x] m22-01: Define transcript size threshold and calculate size in `session.ts`.
       Run: `npm test --workspace server -- session.test.ts`
-- [ ] m22-02: Add automatic trigger logic when a turn ends to call `compactSession` if the threshold is exceeded.
+- [x] m22-02: Add automatic trigger logic when a turn ends to call `compactSession` if the threshold is exceeded.
       Run: `npm test --workspace server -- session.test.ts`
-- [ ] m22-03: Write tests for automatic compaction triggers in `session.test.ts`.
+- [x] m22-03: Write tests for automatic compaction triggers in `session.test.ts`.
       Run: `npm test --workspace server -- session.test.ts`

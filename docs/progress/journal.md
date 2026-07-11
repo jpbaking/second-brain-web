@@ -518,3 +518,10 @@ Declarative provider provisioning shipped: YAML-only source, encrypted keys, con
 Tree clean at 7d17d8b. Active: milestone 22, next item: m22-01.
 
 - 10:11 STARTED m22-01: Define transcript size threshold and calculate size in `session.ts`.
+- 10:12 DONE m22-01: Added AUTO_COMPACTION_CHAR_THRESHOLD and checkAutoCompaction. Verified by `npm test`.
+- 10:12 DONE m22-02: Auto-trigger logic bound in `handleSdkEvent` when a turn ends.
+- 10:12 DONE m22-03: Added tests for trigger threshold and duplicate protection in `agent-session.test.ts`. Verified by `npm test`.
+- 10:13 DONE m22: Milestone 22 complete (3/3). All tests and builds pass.
+
+## 2026-07-11 10:13 — session end (milestone 22 complete)
+Automatic context compaction shipped. Reverting to no active milestone. Awaiting principal direction.

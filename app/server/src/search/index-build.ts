@@ -20,7 +20,7 @@ export function buildSearchIndex (db: DatabaseSync, records: SearchRecord[]): nu
     }
     db.prepare(
       `INSERT INTO vault_index_metadata (key, value, updated_at) VALUES (?, ?, ?)
-       ON CONFLICT (key) DO UPDATE SET value = excluded.value, updated_at = excluded.updated_at`,
+       ON CONFLICT (key) DO UPDATE SET value = excluded.value, updated_at = excluded.updated_at`
     ).run('search_record_count', String(records.length), new Date().toISOString())
     db.exec('COMMIT')
   } catch (err) {

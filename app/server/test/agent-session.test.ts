@@ -200,4 +200,87 @@ describe('AgentSessionService', () => {
     expect(updated?.compactedAt).toBeDefined()
     expect(emittedCompaction).toEqual({ summary: 'Task state: completed\n      Vault status: clean' })
   })
+
+  it('automatically triggers compaction when char threshold is exceeded', async () => {
+    const originalThreshold = (AgentSessionService as any).AUTO_COMPACTION_CHAR_THRESHOLD
+    ;(AgentSessionService as any).AUTO_COMPACTION_CHAR_THRESHOLD = 50
+    try {
+      const db = freshDb()
+      const runner = new FakeRunner()
+      const svc = new AgentSessionService(db, runner, { snapshotFor: () => snap({}), vaultCwd: '/vault' })
+      const s = svc.create({ title: 'AutoCompact', providerProfileId: 'p-1' })
+      await svc.sendMessage(s.id, 'x'.repeat(60)) // > 50 chars
+
+      const sdkId = getSession(db, s.id)!.sdkSessionId!
+      // Turn ends
+      runner.emit({ type: 'ended', sessionId: sdkId, payload: null })
+
+      // Let microtasks clear for the async compactSession start
+      await new Promise(resolve => setTimeout(resolve, 10))
+
+      // Auto-compaction should trigger and append 'compaction_requested'
+      const events = readEventsSince(db, s.id, 0)
+      const requested = events.some(e => e.type === 'compaction_requested')
+      expect(requested).toBe(true)
+
+      // The runner should have been started a second time (for the compaction request)
+      expect(runner.starts.length).toBe(2)
+      expect(runner.starts[1]?.prompt).toContain('Please generate a concise summary')
+    } finally {
+      ;(AgentSessionService as any).AUTO_COMPACTION_CHAR_THRESHOLD = originalThreshold
+    }
+  })
+
+  it('does not trigger auto-compaction if under threshold', async () => {
+    const originalThreshold = (AgentSessionService as any).AUTO_COMPACTION_CHAR_THRESHOLD
+    ;(AgentSessionService as any).AUTO_COMPACTION_CHAR_THRESHOLD = 50
+    try {
+      const db = freshDb()
+      const runner = new FakeRunner()
+      const svc = new AgentSessionService(db, runner, { snapshotFor: () => snap({}), vaultCwd: '/vault' })
+      const s = svc.create({ title: 'NoCompact', providerProfileId: 'p-1' })
+      await svc.sendMessage(s.id, 'short') // < 50 chars
+
+      const sdkId = getSession(db, s.id)!.sdkSessionId!
+      runner.emit({ type: 'ended', sessionId: sdkId, payload: null })
+
+      await new Promise(resolve => setTimeout(resolve, 10))
+
+      const events = readEventsSince(db, s.id, 0)
+      const requested = events.some(e => e.type === 'compaction_requested')
+      expect(requested).toBe(false)
+    } finally {
+      ;(AgentSessionService as any).AUTO_COMPACTION_CHAR_THRESHOLD = originalThreshold
+    }
+  })
+
+  it('does not trigger auto-compaction while already compacting', async () => {
+    const originalThreshold = (AgentSessionService as any).AUTO_COMPACTION_CHAR_THRESHOLD
+    ;(AgentSessionService as any).AUTO_COMPACTION_CHAR_THRESHOLD = 50
+    try {
+      const db = freshDb()
+      const runner = new FakeRunner()
+      const svc = new AgentSessionService(db, runner, { snapshotFor: () => snap({}), vaultCwd: '/vault' })
+      const s = svc.create({ title: 'AlreadyCompacting', providerProfileId: 'p-1' })
+      await svc.sendMessage(s.id, 'x'.repeat(60)) // > 50 chars
+
+      const sdkId = getSession(db, s.id)!.sdkSessionId!
+      runner.emit({ type: 'ended', sessionId: sdkId, payload: null })
+
+      await new Promise(resolve => setTimeout(resolve, 10))
+      const events1 = readEventsSince(db, s.id, 0)
+      expect(events1.filter(e => e.type === 'compaction_requested').length).toBe(1)
+
+      // Simulate another ended event (e.g. agent produced no summary)
+      const newSdkId = getSession(db, s.id)!.sdkSessionId!
+      runner.emit({ type: 'ended', sessionId: newSdkId, payload: null })
+
+      await new Promise(resolve => setTimeout(resolve, 10))
+      const events2 = readEventsSince(db, s.id, 0)
+      // Should STILL be 1, because currentlyCompacting was true
+      expect(events2.filter(e => e.type === 'compaction_requested').length).toBe(1)
+    } finally {
+      ;(AgentSessionService as any).AUTO_COMPACTION_CHAR_THRESHOLD = originalThreshold
+    }
+  })
 })
