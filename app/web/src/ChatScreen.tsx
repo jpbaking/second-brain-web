@@ -104,7 +104,7 @@ function toTranscript (events: ChatEvent[], isLive: boolean): { lines: Line[], a
       isProcessing = true
       const text = payloadText(e.payload)
       if (text === undefined || text === '') continue
-      if (assistant === null) { assistant = { key: `a-${e.seq}`, role: 'assistant', text }; lines.push(assistant) } else { assistant.text += text }
+      if (assistant === null) { assistant = { key: `a-${e.seq}`, role: 'assistant', text }; lines.push(assistant) } else { assistant.text = text }
     } else if (e.type === 'approval_request') {
       const p = e.payload as { toolCallId?: string, toolName?: string }
       if (typeof p?.toolCallId === 'string') approvals.set(p.toolCallId, { toolCallId: p.toolCallId, toolName: p.toolName ?? 'tool' })

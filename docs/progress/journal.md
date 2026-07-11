@@ -883,3 +883,15 @@ Tree clean at 89e4fab. Active: milestone 38, next item: m38-01.
 ## 2026-07-11 18:13 — session start
 Tree clean at 66855cb. No active milestone.
 - 18:13 REPAIR: fix stale "Processing..." state in `ChatScreen.tsx` when server restarts (by syncing `live` state on SSE connect)
+- 18:14 DONE REPAIR: verified by `npm test` and `npm run build` → all green. Commit for fix.
+
+## 18:14 — session end
+Repair complete. Awaiting next step.
+
+## 2026-07-11 18:21 — session start
+Tree clean at 9a55e12 (bar uncommitted journal lines from prior session). Principal reports chat was "messed up" by the milestone-38 progress-indicator work.
+- 18:21 REPAIR: milestone 38 (67ce1bb) incidentally changed assistant-line folding in `toTranscript` from `assistant.text = text` to `assistant.text += text`. Agent `chunk`/`agent_event` payloads are CUMULATIVE (documented at `agent/session.ts:53-54`, findings m00-10 #9), so `+=` re-appended every snapshot → duplicated/garbled assistant messages. Reverted to `= text`; thinking blocks + processing indicator kept intact.
+- 18:22 DONE REPAIR: verified by `cd app && npm run build` (server tsc + web vite clean) and `npm test --workspace server` → 329 tests green. Commit to follow.
+
+## 18:22 — session end
+Chat regression fixed. Awaiting next step.
