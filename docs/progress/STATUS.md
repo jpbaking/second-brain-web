@@ -1,6 +1,6 @@
 # STATUS — single source of truth
 
-Updated: 2026-07-12 (no active milestone; milestone 42 complete)
+Updated: 2026-07-12 (milestone 43 active)
 
 ## Where we are
 
@@ -29,17 +29,18 @@ Updated: 2026-07-12 (no active milestone; milestone 42 complete)
 
 ## Active milestone
 
-Milestone 42 (Durable reasoning transcript) is complete. Archived checklist:
-`docs/progress/milestones/archive/milestone-42-reasoning-transcript.md`.
+Milestone 43: Browser-local chat timestamps. Checklist:
+`docs/progress/milestones/milestone-43-chat-timestamps.md`.
 
 ## Next step
 
-Await direction.
+Implement m43-01: timestamped transcript and reasoning model.
 
 ## Read before working
 
 - `AGENTS-PLAYBOOK.md` — always, top to bottom.
 - `docs/progress/BACKLOG.md` — the work queue.
+- `docs/progress/milestones/milestone-43-chat-timestamps.md` — active checklist.
 
 ## Questions for the principal
 

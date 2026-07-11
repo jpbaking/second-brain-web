@@ -1002,3 +1002,7 @@ Tree clean at c668e2c. Principal reports the live Working disclosure still flash
 
 ## 03:19 — session end
 Working disclosure now builds reasoning sentences and the completed disclosure retains every reasoning iteration. Rebuilding the running container for handoff.
+
+## 2026-07-12 03:22 — session start
+Tree clean at 5970c5e. Principal directed timestamps for every reasoning block and all chat messages, formatted in the browser timezone.
+- 03:22 STARTED milestone 43: carry persisted UTC event times through the fold and format them in-browser. Next: m43-01.
