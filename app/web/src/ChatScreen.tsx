@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 import ReactMarkdown from 'react-markdown'
+import remarkGfm from 'remark-gfm'
 import { foldTranscript } from './chat-transcript.js'
 import type { ChatEvent } from './chat-transcript.js'
 
@@ -290,7 +291,7 @@ export function ChatScreen ({ mode }: { mode: ChatMode }) {
                     )}
                     {l.text !== '' && (
                       <div className={`chat-bubble${l.role === 'assistant' ? ' prose' : ''}`}>
-                        {l.role === 'assistant' ? <ReactMarkdown>{l.text}</ReactMarkdown> : l.text}
+                        {l.role === 'assistant' ? <ReactMarkdown remarkPlugins={[remarkGfm]}>{l.text}</ReactMarkdown> : l.text}
                       </div>
                     )}
                   </div>

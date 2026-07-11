@@ -1056,3 +1056,8 @@ Tree clean at 1733fbe. Active: milestone 46, next item: m46-01.
 
 ## 2026-07-12 03:53 — session end
 Markdown rendering for agent messages using react-markdown is implemented and verified. Awaiting direction.
+
+## 2026-07-12 03:55 — session start (recovery)
+Tree DIRTY (untracked). Principal reported a bug with markdown tables and code blocks.
+- 03:56 REPAIR: added `remark-gfm` to fix table parsing in `react-markdown` and updated `components.css` to prevent `overflow-wrap: anywhere` from breaking `.prose pre` formatting.
+- 03:57 DONE REPAIR: verified by `npm test` and `npm run build` locally.
