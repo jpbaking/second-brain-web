@@ -1,6 +1,6 @@
 # STATUS — single source of truth
 
-Updated: 2026-07-12 (no active milestone; milestone 45 complete)
+Updated: 2026-07-12 (active: milestone 48 — web search tools)
 
 ## Where we are
 
@@ -29,7 +29,11 @@ Updated: 2026-07-12 (no active milestone; milestone 45 complete)
 
 ## Active milestone
 
-Milestone 47 (Mermaid Support) is complete. Archived checklist:
+Milestone 48 (Web Search Tools — SearXNG): checklist at
+`docs/progress/milestones/milestone-48-web-search.md`. Principal go given
+2026-07-12 ("can you implement this?").
+
+Archived: Milestone 47 (Mermaid Support) is complete. Archived checklist:
 `docs/progress/milestones/archive/milestone-47-mermaid-support.md`.
 
 Archived: Milestone 46 (Markdown messages) is complete. Archived checklist:
