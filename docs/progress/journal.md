@@ -566,3 +566,5 @@ Scheduled briefs mode shipped. Reverting to no active milestone. Awaiting princi
 Tree clean at 0b502b6. Active: milestone 27, next item: m27-01.
 - 10:31 STARTED m27-01: Create migration 12 in app/server/src/migrations.ts for principal_profile table
 - 10:32 DONE m27-01: verified by `npm test --workspace server -- migrations.test.ts` -> 3 tests green.
+- 10:32 STARTED m27-02: Add app/server/src/profile/store.ts with getProfile and updateProfile functions
+- 10:32 DONE m27-02: verified by `npm test --workspace server -- profile-store.test.ts` -> 4 tests green.

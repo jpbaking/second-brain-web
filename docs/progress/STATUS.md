@@ -33,7 +33,7 @@ Milestone 27 (Principal Profile) is active.
 
 ## Next step
 
-- m27-02: Add `app/server/src/profile/store.ts` with `getProfile` and `updateProfile` functions.
+- m27-03: Add `/api/profile` GET and PUT routes in `app/server/src/profile/routes.ts` (and register in `app.ts`).
 
 ## Read before working
 
