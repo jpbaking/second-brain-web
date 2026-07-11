@@ -1,9 +1,36 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
+# configure — interactive setup for second-brain-web's runtime config.
+#
+# Writes everything the compose runtime needs into a gitignored .config/ dir:
+#   .config/.env            SECOND_BRAIN_WEB_SECRETS_KEY (mode 600)
+#   .config/providers.yaml  provider profiles, API keys pre-encrypted (mode 644)
+#   .config/deploy_key(.pub) vault SSH deploy key (mode 644 — see note below)
+#
+# Design notes:
+#   * Invalid input re-prompts in place; the script never aborts on a typo.
+#   * Provider + key are entered first, then the model is chosen from the list
+#     the provider reports (falling back to manual entry if the query fails).
+#   * The deploy key is generated here; its public half is also shown on the
+#     Vault page so you can register it with your Git host.
+#   * providers.yaml and deploy_key are mode 644 so the unprivileged container
+#     user can read the read-only bind mounts. They hold, respectively, only
+#     ciphertext and a key whose private half the app copies to a 600 file in
+#     the data volume before use. The .config/ directory itself is 700, so
+#     nothing here is exposed to other users on the host.
+
 ROOT=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)
-ENV_FILE="$ROOT/.env"
-PROVIDERS_FILE="$ROOT/providers.yaml"
+CONFIG_DIR="$ROOT/.config"
+ENV_FILE="$CONFIG_DIR/.env"
+PROVIDERS_FILE="$CONFIG_DIR/providers.yaml"
+KEY_FILE="$CONFIG_DIR/deploy_key"
+
+umask 077
+mkdir -p "$CONFIG_DIR"
+chmod 700 "$CONFIG_DIR"
+
+# ---- prompt helpers ---------------------------------------------------------
 
 prompt() {
   local label=$1 value
@@ -19,31 +46,46 @@ secret_prompt() {
   printf '%s' "$value"
 }
 
+# Re-prompt until a value is given.
+prompt_required() {
+  local label=$1 value
+  while true; do
+    value=$(prompt "$label")
+    [[ -n "$value" ]] && { printf '%s' "$value"; return; }
+    printf '%s\n' 'A value is required — please try again.' >&2
+  done
+}
+
+# Re-prompt until the value matches a regex.
+prompt_match() {
+  local label=$1 regex=$2 err=$3 value
+  while true; do
+    value=$(prompt "$label")
+    [[ "$value" =~ $regex ]] && { printf '%s' "$value"; return; }
+    printf '%s\n' "$err" >&2
+  done
+}
+
+# Yes/no; returns 0 for yes.
+confirm() {
+  local ans
+  ans=$(prompt "$1")
+  [[ "$ans" =~ ^[Yy]$ ]]
+}
+
 yaml_quote() {
   local value=${1//\'/\'\'}
   printf "'%s'" "$value"
 }
 
-existing_key=''
-if [[ -f "$ENV_FILE" ]]; then
-  existing_key=$(sed -n 's/^SECOND_BRAIN_WEB_SECRETS_KEY=//p' "$ENV_FILE" | tail -n 1)
-fi
+# Lowercase, hyphenate, and trim a string into a valid config key.
+slugify() {
+  printf '%s' "$1" \
+    | tr '[:upper:]' '[:lower:]' \
+    | sed 's/[^a-z0-9-]/-/g; s/-\{2,\}/-/g; s/^-*//; s/-*$//'
+}
 
-if [[ -n "$existing_key" ]]; then
-  secrets_key=$existing_key
-  rotate=$(prompt 'Reuse the existing secrets key? [Y/n] ')
-  if [[ "$rotate" =~ ^[Nn]$ ]]; then
-    printf '%s\n' 'Warning: rotation invalidates every existing provider ciphertext; re-enter all provider keys.' >&2
-    secrets_key=$(openssl rand -base64 32)
-  fi
-else
-  secrets_key=$(openssl rand -base64 32)
-  printf '%s\n' 'Generated SECOND_BRAIN_WEB_SECRETS_KEY.' >&2
-fi
-
-umask 077
-printf 'SECOND_BRAIN_WEB_SECRETS_KEY=%s\n' "$secrets_key" > "$ENV_FILE"
-chmod 600 "$ENV_FILE"
+# ---- app CLI bridges (dist first, then the docker image) --------------------
 
 encrypt_secret() {
   if [[ -f "$ROOT/app/server/dist/cli/encrypt-secret.js" ]]; then
@@ -58,37 +100,159 @@ encrypt_secret() {
   exit 1
 }
 
+# Print the provider's model ids (one per line) or return non-zero. The API key
+# is read from stdin so it never lands in the process arguments.
+list_models() {
+  local provider=$1 base_url=$2
+  if [[ -f "$ROOT/app/server/dist/cli/list-models.js" ]]; then
+    SBW_LIST_PROVIDER="$provider" SBW_LIST_BASE_URL="$base_url" \
+      node "$ROOT/app/server/dist/cli/list-models.js"
+    return
+  fi
+  if docker image inspect second-brain-web >/dev/null 2>&1; then
+    docker run --rm -i -e SBW_LIST_PROVIDER="$provider" -e SBW_LIST_BASE_URL="$base_url" \
+      second-brain-web node server/dist/cli/list-models.js
+    return
+  fi
+  return 1
+}
+
+# ---- secrets key ------------------------------------------------------------
+
+existing_key=''
+if [[ -f "$ENV_FILE" ]]; then
+  existing_key=$(sed -n 's/^SECOND_BRAIN_WEB_SECRETS_KEY=//p' "$ENV_FILE" | tail -n 1)
+elif [[ -f "$ROOT/.env" ]]; then
+  # Migration: pick up a key written by a previous root-level configure.
+  existing_key=$(sed -n 's/^SECOND_BRAIN_WEB_SECRETS_KEY=//p' "$ROOT/.env" | tail -n 1)
+fi
+
+if [[ -n "$existing_key" ]]; then
+  secrets_key=$existing_key
+  if confirm 'Rotate the existing secrets key? (invalidates every stored provider key) [y/N] '; then
+    secrets_key=$(openssl rand -base64 32)
+    printf '%s\n' 'Rotated the secrets key — re-enter every provider key below.' >&2
+  fi
+else
+  secrets_key=$(openssl rand -base64 32)
+  printf '%s\n' 'Generated SECOND_BRAIN_WEB_SECRETS_KEY.' >&2
+fi
+
+printf 'SECOND_BRAIN_WEB_SECRETS_KEY=%s\n' "$secrets_key" > "$ENV_FILE"
+chmod 600 "$ENV_FILE"
+
+# A root-level .env would shadow .config/.env (compose-helper prefers the root),
+# leaving the real secrets key unused. Offer to remove the stale copy.
+if [[ -f "$ROOT/.env" ]]; then
+  printf '%s\n' 'A legacy .env at the repo root will take precedence over .config/.env.' >&2
+  if confirm 'Remove the legacy repo-root .env? [y/N] '; then
+    rm -f "$ROOT/.env"
+    printf 'Removed %s.\n' "$ROOT/.env" >&2
+  fi
+fi
+
+# ---- providers --------------------------------------------------------------
+
 printf 'providers:\n' > "$PROVIDERS_FILE"
 count=0
-while true; do
-  add=$(prompt "$([[ $count -eq 0 ]] && printf 'Add a provider? [y/N] ' || printf 'Add another provider? [y/N] ')")
-  [[ "$add" =~ ^[Yy]$ ]] || break
-  id=$(prompt '  Config key (lowercase letters, digits, hyphens): ')
-  [[ "$id" =~ ^[a-z][a-z0-9-]*$ ]] || { printf '%s\n' 'Invalid config key.' >&2; exit 1; }
-  display_name=$(prompt '  Display name: ')
-  provider=$(prompt '  Provider (anthropic|gemini|openai|openai-compatible): ')
-  [[ "$provider" =~ ^(anthropic|gemini|openai|openai-compatible)$ ]] || { printf '%s\n' 'Invalid provider.' >&2; exit 1; }
-  model=$(prompt '  Model: ')
-  [[ -n "$model" ]] || { printf '%s\n' 'Model is required.' >&2; exit 1; }
+while confirm "$([[ $count -eq 0 ]] && printf '\nAdd a provider? [y/N] ' || printf '\nAdd another provider? [y/N] ')"; do
+  provider=$(prompt_match '  Provider (anthropic|gemini|openai|openai-compatible): ' \
+    '^(anthropic|gemini|openai|openai-compatible)$' \
+    '  Invalid provider — choose anthropic, gemini, openai, or openai-compatible.')
+
   base_url=''
-  if [[ "$provider" == openai-compatible ]]; then base_url=$(prompt '  Base URL: '); fi
+  if [[ "$provider" == openai-compatible ]]; then
+    base_url=$(prompt_required '  Base URL: ')
+  fi
+
   api_key=$(secret_prompt '  API key (blank for none): ')
+
+  # Query the provider for its model list; fall back to manual entry.
+  model=''
+  if [[ -n "$api_key" ]]; then
+    printf '  Querying available models…\n' >&2
+    if models_raw=$(printf '%s' "$api_key" | list_models "$provider" "$base_url" 2>/dev/null) \
+        && [[ -n "$models_raw" ]]; then
+      mapfile -t models <<< "$models_raw"
+      local_n=${#models[@]}
+      for i in "${!models[@]}"; do printf '    %3d) %s\n' "$((i + 1))" "${models[$i]}" >&2; done
+      while true; do
+        choice=$(prompt "  Select a model [1-$local_n], or 'm' to type one: ")
+        if [[ "$choice" == m ]]; then
+          model=$(prompt_required '  Model: ')
+          break
+        elif [[ "$choice" =~ ^[0-9]+$ ]] && (( choice >= 1 && choice <= local_n )); then
+          model=${models[$((choice - 1))]}
+          break
+        fi
+        printf '  Enter a number between 1 and %d, or '\''m'\''.\n' "$local_n" >&2
+      done
+    else
+      printf '  Could not list models automatically — enter one manually.\n' >&2
+      model=$(prompt_required '  Model: ')
+    fi
+  else
+    model=$(prompt_required '  Model: ')
+  fi
+
+  default_id=$(slugify "$provider-$model")
+  id=''
+  while true; do
+    id=$(prompt "  Config key [$default_id]: ")
+    [[ -z "$id" ]] && id=$default_id
+    [[ "$id" =~ ^[a-z][a-z0-9-]*$ ]] && break
+    printf '  Config key must be lowercase letters, digits, and hyphens (start with a letter).\n' >&2
+  done
+
+  display_name=$(prompt "  Display name [$model]: ")
+  [[ -z "$display_name" ]] && display_name=$model
+
   ciphertext=''
   if [[ -n "$api_key" ]]; then ciphertext=$(encrypt_secret "$api_key"); fi
   unset api_key
 
   {
     printf '  %s:\n' "$id"
-    [[ -n "$display_name" ]] && printf '    display_name: %s\n' "$(yaml_quote "$display_name")"
+    printf '    display_name: %s\n' "$(yaml_quote "$display_name")"
     printf '    provider: %s\n' "$provider"
     printf '    model: %s\n' "$(yaml_quote "$model")"
     [[ -n "$base_url" ]] && printf '    base_url: %s\n' "$(yaml_quote "$base_url")"
     [[ -n "$ciphertext" ]] && printf '    key: %s\n' "$(yaml_quote "$ciphertext")"
   } >> "$PROVIDERS_FILE"
   count=$((count + 1))
+  printf '  Added provider "%s".\n' "$id" >&2
 done
 if [[ $count -eq 0 ]]; then printf '  {}\n' >> "$PROVIDERS_FILE"; fi
-# The unprivileged container user must be able to read this bind mount. It
-# contains ciphertext only; the decryption key remains in mode-600 .env.
 chmod 644 "$PROVIDERS_FILE"
-printf 'Configured %d provider(s). Next: ./compose-helper.sh up\n' "$count"
+
+# ---- vault deploy key -------------------------------------------------------
+
+generate_key() {
+  if ! command -v ssh-keygen >/dev/null; then
+    printf '\nconfigure: ssh-keygen not found — skipping vault key generation. Install OpenSSH and re-run to add one.\n' >&2
+    return
+  fi
+  ssh-keygen -t ed25519 -N '' -C 'second-brain-web deploy key' -f "$KEY_FILE" >/dev/null
+  # World-readable so the container user can read the read-only bind mount; the
+  # app copies the private half to a 600 file in the data volume before use.
+  chmod 644 "$KEY_FILE" "$KEY_FILE.pub"
+  printf '\nGenerated a vault SSH deploy key. Add this PUBLIC key to your Git host\n' >&2
+  printf '(with write access) — it is also shown on the Vault page:\n\n' >&2
+  cat "$KEY_FILE.pub" >&2
+  printf '\n  GitHub: repository → Settings → Deploy keys → Add deploy key → tick "Allow write access".\n' >&2
+}
+
+if [[ -f "$KEY_FILE" ]]; then
+  if confirm $'\nA vault deploy key already exists. Rotate it? (invalidates the old one) [y/N] '; then
+    rm -f "$KEY_FILE" "$KEY_FILE.pub"
+    generate_key
+  else
+    printf 'Keeping the existing vault deploy key.\n' >&2
+  fi
+else
+  generate_key
+fi
+
+# ---- done -------------------------------------------------------------------
+
+printf '\nConfigured %d provider(s) into %s.\nNext: ./compose-helper.sh up\n' "$count" "$CONFIG_DIR"

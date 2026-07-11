@@ -641,3 +641,5 @@ STATUS at it. Next item: m31-01.
 - 13:36 DONE m31-03: Vault page shows deploy public key + copy control + guidance. Verified by `npx playwright test vault-deploy-key.spec.ts` (1 passed) and a full-page screenshot of /vault; web build clean.
 - 13:37 STARTED m31-04: add providers/models.ts listModels() + cli/list-models.ts (mirrors test.ts endpoints).
 - 13:41 DONE m31-04: listModels() + cli/list-models.js. Verified by `npm test --workspace server -- list-models.test.ts` → 6 green; server build+lint clean; CLI smoke against a stub returned model ids (exit 0).
+- 13:43 STARTED m31-05: rewrite configure — retry-in-place, provider+key-first model picker, generate keypair, .config/ output.
+- 13:47 DONE m31-05: rewrote configure (retry-in-place, provider+key-first model picker, generate keypair, .config/ output). Verified `bash -n configure` clean; two isolated scripted runs (symlinked app for dist): model-listing selection → encrypted providers.yaml + 600 .env + 644 key/pub; invalid provider + invalid selection + 'm' manual fallback all re-prompt without exiting. shellcheck not installed on host.

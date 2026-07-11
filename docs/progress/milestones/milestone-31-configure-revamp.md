@@ -46,7 +46,7 @@ with the public key surfaced on the Vault page; bash `configure` only for now
       a thin `cli/list-models.ts` printing ids newline-separated.
       Verify: `cd app && npm test --workspace server -- list-models.test.ts`
 
-- [ ] **m31-05** Rewrite `configure`: retry-in-place validation; provider +
+- [x] **m31-05** Rewrite `configure`: retry-in-place validation; provider +
       key first; query models via the `list-models` CLI and pick from the list
       (manual fallback on failure); generate the vault keypair; write `.env`,
       `providers.yaml`, and `deploy_key`(+`.pub`) into `.config/`.
