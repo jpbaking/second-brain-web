@@ -164,6 +164,21 @@ describe('testProvider (unit)', () => {
     expect(result).toMatchObject({ ok: false, status: 403 })
     expect(result.message).not.toContain(badKey)
   })
+
+  it('does not route Claude Code through an HTTP model-list endpoint', async () => {
+    const originalPath = process.env.PATH
+    process.env.PATH = ''
+    try {
+      const result = await testProvider({ providerId: 'claude-code', baseUrl: null, modelId: 'sonnet' })
+      expect(result).toEqual({
+        ok: false,
+        status: null,
+        message: 'Claude Code authentication could not be verified. Run ./compose-helper.sh claude-auth.'
+      })
+    } finally {
+      process.env.PATH = originalPath
+    }
+  })
 })
 
 describe('POST /api/providers/:id/test', () => {

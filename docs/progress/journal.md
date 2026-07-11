@@ -820,3 +820,10 @@ after configure. Created milestone 36; next m36-01.
   dependency, `/usr/local/bin/claude`, `/data/claude-code` config persistence,
   and interactive `compose-helper.sh claude-auth` (`claude auth login`).
   Verified helper syntax, 7 config tests, Docker build, CLI version, node UID.
+- 17:13 STARTED m36-04: document the operator flow, make Provider Test inspect
+  Claude CLI auth rather than OpenAI `/models`, then run all regressions.
+- 17:19 DONE m36-04: README documents subscription billing, volume-local auth,
+  and inference-only isolation; Provider Test now runs `claude auth status`
+  without exposing account details. Lint/build green. Full suite green at
+  322/322 with `--maxWorkers=2`; two unrestricted parallel runs each had a
+  different pre-existing 5-second timing flake, both passed alone/limited.

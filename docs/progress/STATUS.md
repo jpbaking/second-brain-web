@@ -31,11 +31,11 @@ Updated: 2026-07-11 (active: milestone 36)
 
 Milestone 36 — Claude Code subscription provider.
 Checklist: `docs/progress/milestones/milestone-36-claude-code-provider.md`.
-Next: m36-04 operator documentation and regression suite.
+Next: m36-05 clean-volume live smoke test.
 
 ## Next step
 
-Complete m36-04. Outstanding unrelated item: PowerShell launcher smoke-test on Windows.
+Complete m36-05. Outstanding unrelated item: PowerShell launcher smoke-test on Windows.
 
 ## Read before working
 

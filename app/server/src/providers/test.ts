@@ -1,3 +1,6 @@
+import { execFile } from 'node:child_process'
+import { promisify } from 'node:util'
+
 /**
  * Provider connectivity test (phase-004 Provider Settings UX). Sends a minimal,
  * read-only request to the configured endpoint to confirm the key and base URL
@@ -17,11 +20,34 @@ export interface ProviderTestResult {
   message: string
 }
 
+const execFileAsync = promisify(execFile)
+
+interface ClaudeAuthStatus { loggedIn?: unknown, authMethod?: unknown, subscriptionType?: unknown }
+
+async function testClaudeCodeAuth (timeoutMs: number): Promise<ProviderTestResult> {
+  try {
+    const { stdout } = await execFileAsync('claude', ['auth', 'status', '--json'], {
+      timeout: timeoutMs,
+      maxBuffer: 64 * 1024,
+    })
+    const status = JSON.parse(stdout) as ClaudeAuthStatus
+    if (status.loggedIn === true) {
+      const plan = typeof status.subscriptionType === 'string' ? ` (${status.subscriptionType})` : ''
+      return { ok: true, status: null, message: `Claude Code is authenticated${plan}.` }
+    }
+    return { ok: false, status: null, message: 'Claude Code is not authenticated. Run ./compose-helper.sh claude-auth.' }
+  } catch {
+    return { ok: false, status: null, message: 'Claude Code authentication could not be verified. Run ./compose-helper.sh claude-auth.' }
+  }
+}
+
 function stripSlash (url: string): string {
   return url.replace(/\/+$/, '')
 }
 
 export async function testProvider (input: ProviderTestInput, timeoutMs = 10_000): Promise<ProviderTestResult> {
+  if (input.providerId === 'claude-code') return await testClaudeCodeAuth(timeoutMs)
+
   let url: string
   const headers: Record<string, string> = {}
 

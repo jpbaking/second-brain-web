@@ -42,6 +42,8 @@ directory rather than overwriting it — nothing is clobbered:
   the list it reports, `f` to filter a long list), or per existing provider
   **rename / change model / change key / delete**. Untouched providers keep
   their existing key.
+  `claude-code` is the subscription-backed exception: choose it, enter a model
+  such as `sonnet`, and no API key is stored.
 - `.config/deploy_key` — a generated vault SSH deploy key (needs `ssh-keygen`);
   its public half is printed and also shown on the Vault page to register with
   your Git host.
@@ -56,11 +58,26 @@ Then create the owner credentials (password plus TOTP) and open
 ./compose-helper.sh reset-auth
 ```
 
+If a `claude-code` provider is configured, authenticate the CLI inside the
+running container once as well:
+
+```sh
+./compose-helper.sh claude-auth
+```
+
+Follow the interactive Claude login. Its credentials live only in the private
+`sbw-data` volume under `/data/claude-code`; deleting the volume requires
+logging in again. This uses the Claude Pro/Max subscription allowance shared
+with Claude/Claude Code, not Anthropic API Console credits. The embedded Claude
+process is inference-only: Second Brain Web's Cline runtime remains responsible
+for tools, approvals, and the vault write policy.
+
 Day-to-day commands:
 
 ```sh
 ./compose-helper.sh stop     # stop — the data volume is kept
 ./compose-helper.sh rebuild  # rebuild the image and start again
+./compose-helper.sh claude-auth # authenticate Claude Code when configured
 ./compose-helper.sh logs     # follow logs
 ./compose-helper.sh down     # stop AND delete the data volume (clean slate)
 ```

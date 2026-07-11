@@ -20,7 +20,7 @@ allowance instead of an Anthropic API key.
     command that runs interactive login as the runtime user.
   - Verify: `bash -n compose-helper.sh && docker build -t second-brain-web app && docker run --rm second-brain-web claude --version`
 
-- [ ] **m36-04 — Operator documentation and regression suite**
+- [x] **m36-04 — Operator documentation and regression suite**
   - Document configure → rebuild/start → `claude-auth`, including subscription
     versus API billing and the container-local credential boundary.
   - Verify: `cd app && npm run lint && npm test && npm run build`
