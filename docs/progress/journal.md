@@ -1103,3 +1103,5 @@ Tree clean at 69d46a0 (HANDOFF.md untracked). No active milestone; ad-hoc repair
 - 05:09 DONE: autosize effect also sets an is-multiline class (scrollHeight vs computed one-line height); .chat-composer aligns center by default, flex-end when multi-line. Lint, build, web tests (9) green.
 - 05:12 STARTED: zoom modal vertical gap larger than horizontal (prose block margins on pre / mermaid stacked on modal-body padding).
 - 05:13 DONE: margin-block 0 on pre and mermaid inside .chat-zoom-body; modal-body padding alone frames the content. Verified by harness screenshot; lint+build green.
+- 05:16 STARTED: wheel-zoom + drag-pan for mermaid diagrams in the zoom modal.
+- 05:18 DONE: Mermaid gains a pannable mode (modal only) — native non-passive wheel listener zooms around the cursor (0.25x–8x), pointer capture drags to pan, overflow hidden viewport replaces scrolling. Lint, build, web tests (9) green.

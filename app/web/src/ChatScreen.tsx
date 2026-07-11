@@ -130,9 +130,35 @@ function CodeBlock ({ code, lang, zoomable = false }: { code: string, lang: stri
   )
 }
 
-function Mermaid ({ chart, zoomable = false }: { chart: string, zoomable?: boolean }) {
+// zoomable: clicking opens the zoom modal (transcript). pannable: scroll
+// wheel zooms and dragging pans, instead of scrolling (inside the modal).
+function Mermaid ({ chart, zoomable = false, pannable = false }: { chart: string, zoomable?: boolean, pannable?: boolean }) {
   const containerRef = useRef<HTMLDivElement>(null)
+  const viewportRef = useRef<HTMLDivElement>(null)
   const streaming = useContext(StreamingContext)
+  const [view, setView] = useState({ x: 0, y: 0, scale: 1 })
+  const drag = useRef<{ startX: number, startY: number, x: number, y: number } | null>(null)
+  // Native listener: React registers wheel handlers passively, so an onWheel
+  // prop could not preventDefault (the modal body would scroll instead).
+  useEffect(() => {
+    if (!pannable) return
+    const el = viewportRef.current
+    if (el === null) return
+    const onWheel = (e: WheelEvent) => {
+      e.preventDefault()
+      setView(v => {
+        const scale = Math.min(8, Math.max(0.25, v.scale * (e.deltaY < 0 ? 1.2 : 1 / 1.2)))
+        const rect = el.getBoundingClientRect()
+        const cx = e.clientX - rect.left
+        const cy = e.clientY - rect.top
+        const k = scale / v.scale
+        // Keep the point under the cursor fixed while zooming.
+        return { scale, x: cx - k * (cx - v.x), y: cy - k * (cy - v.y) }
+      })
+    }
+    el.addEventListener('wheel', onWheel, { passive: false })
+    return () => el.removeEventListener('wheel', onWheel)
+  }, [pannable])
   useEffect(() => {
     let active = true
     const renderChart = async () => {
@@ -165,7 +191,26 @@ function Mermaid ({ chart, zoomable = false }: { chart: string, zoomable?: boole
       onClick={zoomable ? () => openZoom({ kind: 'mermaid', chart }) : undefined}
     >
       <CopyButton text={chart} />
-      <div ref={containerRef} style={{ overflowX: 'auto' }} />
+      {pannable
+        ? (
+          <div
+            ref={viewportRef}
+            style={{ overflow: 'hidden', cursor: drag.current !== null ? 'grabbing' : 'grab', touchAction: 'none' }}
+            onPointerDown={e => {
+              drag.current = { startX: e.clientX, startY: e.clientY, x: view.x, y: view.y }
+              e.currentTarget.setPointerCapture(e.pointerId)
+            }}
+            onPointerMove={e => {
+              const d = drag.current
+              if (d === null) return
+              setView(v => ({ ...v, x: d.x + e.clientX - d.startX, y: d.y + e.clientY - d.startY }))
+            }}
+            onPointerUp={e => { drag.current = null; e.currentTarget.releasePointerCapture(e.pointerId) }}
+          >
+            <div ref={containerRef} style={{ transform: `translate(${view.x}px, ${view.y}px) scale(${view.scale})`, transformOrigin: '0 0' }} />
+          </div>
+          )
+        : <div ref={containerRef} style={{ overflowX: 'auto' }} />}
     </div>
   )
 }
@@ -459,7 +504,7 @@ export function ChatScreen ({ mode }: { mode: ChatMode }) {
           </div>
           <div className={`modal-body chat-zoom-body${zoom.kind === 'code' ? ' prose' : ''}`}>
             {zoom.kind === 'mermaid'
-              ? <Mermaid chart={zoom.chart} />
+              ? <Mermaid chart={zoom.chart} pannable />
               : <CodeBlock code={zoom.code} lang={zoom.lang} />}
           </div>
         </dialog>
