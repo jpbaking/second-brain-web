@@ -880,5 +880,6 @@ Tree clean at 89e4fab. Active: milestone 38, next item: m38-01.
 - 18:10 DONE m38-01..m38-03: verified by `npm test --workspace server` and `npm run build --workspace web` → all green. Commit 67ce1bb.
 - 18:10 DONE milestone 38 (Processing Animation and Thinking Blocks).
 
-## 18:10 — session end
-Milestone 38 is complete. Ready for the next milestone.
+## 2026-07-11 18:13 — session start
+Tree clean at 66855cb. No active milestone.
+- 18:13 REPAIR: fix stale "Processing..." state in `ChatScreen.tsx` when server restarts (by syncing `live` state on SSE connect)

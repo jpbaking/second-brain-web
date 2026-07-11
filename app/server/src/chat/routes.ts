@@ -93,6 +93,8 @@ export function registerChatRoutes (app: FastifyInstance, config: AppConfig, run
       lastWritten = event.seq
     }
 
+    raw.write(`event: sync\ndata: ${JSON.stringify({ live: service.isLive(id) })}\n\n`)
+
     // Subscribe BEFORE replay so nothing is missed; buffer live events until
     // the replay finishes, then drain only those newer than what we replayed.
     let replaying = true

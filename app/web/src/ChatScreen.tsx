@@ -81,7 +81,7 @@ function renderMessageText(text: string) {
 }
 
 /** Fold the event log into transcript lines. Assistant text is cumulative. */
-function toTranscript (events: ChatEvent[]): { lines: Line[], approvals: PendingApproval[], isProcessing: boolean, statusText?: string } {
+function toTranscript (events: ChatEvent[], isLive: boolean): { lines: Line[], approvals: PendingApproval[], isProcessing: boolean, statusText?: string } {
   const lines: Line[] = []
   const approvals = new Map<string, PendingApproval>()
   let assistant: Line | null = null
@@ -122,6 +122,11 @@ function toTranscript (events: ChatEvent[]): { lines: Line[], approvals: Pending
       statusText = undefined
     }
   }
+  
+  if (!isLive) {
+    isProcessing = false
+  }
+  
   return { lines, approvals: [...approvals.values()], isProcessing, statusText }
 }
 
@@ -141,6 +146,7 @@ export function ChatScreen ({ mode }: { mode: ChatMode }) {
   const [events, setEvents] = useState<ChatEvent[]>([])
   const [input, setInput] = useState('')
   const [error, setError] = useState<string | null>(null)
+  const [isLive, setIsLive] = useState(false)
   const [selectedProvider, setSelectedProvider] = useState('')
   const [selectedPreset, setSelectedPreset] = useState('normal')
   const [lockState, setLockState] = useState<LockState | null>(null)
@@ -168,10 +174,17 @@ export function ChatScreen ({ mode }: { mode: ChatMode }) {
           const frames = buf.split('\n\n')
           buf = frames.pop() ?? ''
           for (const frame of frames) {
+            const isSync = frame.split('\n').some(l => l.startsWith('event: sync'))
             const dataLine = frame.split('\n').find(l => l.startsWith('data:'))
             if (dataLine === undefined) continue
             try {
+              if (isSync) {
+                const syncData = JSON.parse(dataLine.slice(5).trim()) as { live?: boolean }
+                if (typeof syncData.live === 'boolean') setIsLive(syncData.live)
+                continue
+              }
               const event = JSON.parse(dataLine.slice(5).trim()) as ChatEvent
+              if (event.type === 'ended') setIsLive(false)
               setEvents(prev => [...prev, event])
             } catch { /* ignore heartbeats / partial frames */ }
           }
@@ -235,6 +248,7 @@ export function ChatScreen ({ mode }: { mode: ChatMode }) {
     if (text === '') return
     setInput('')
     setError(null)
+    setIsLive(true)
 
     let id = activeId
     if (id === null) {
@@ -261,22 +275,25 @@ export function ChatScreen ({ mode }: { mode: ChatMode }) {
 
   async function runWorkflow (name: string) {
     if (activeId === null) { setError('Send a message to start this chat first.'); return }
+    setIsLive(true)
     const res = await sendJson('POST', `/api/chat/sessions/${activeId}/commands`, { command: name })
     if (!res.ok) setError(`Could not run the "${name}" workflow.`)
   }
 
   async function resolveApproval (toolCallId: string, approved: boolean) {
     if (activeId === null) return
+    setIsLive(true)
     await sendJson('POST', `/api/chat/sessions/${activeId}/approvals/${toolCallId}`, { approved })
   }
 
   async function compactContext () {
     if (activeId === null) return
+    setIsLive(true)
     const res = await sendJson('POST', `/api/chat/sessions/${activeId}/compact`)
     if (!res.ok) setError('Could not request context compaction.')
   }
 
-  const { lines, approvals, isProcessing, statusText } = toTranscript(events)
+  const { lines, approvals, isProcessing, statusText } = toTranscript(events, isLive)
   const newChatState = ready && activeId === null
 
   return (
