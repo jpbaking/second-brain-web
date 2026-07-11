@@ -117,6 +117,13 @@ export function setSessionPinned (db: DatabaseSync, id: string, pinned: boolean)
   return db.prepare('UPDATE chat_sessions SET pinned = ? WHERE id = ?').run(pinned ? 1 : 0, id).changes > 0
 }
 
+export function deleteSessions (db: DatabaseSync, preservePinned: boolean): number {
+  const result = preservePinned
+    ? db.prepare('DELETE FROM chat_sessions WHERE pinned = 0').run()
+    : db.prepare('DELETE FROM chat_sessions').run()
+  return Number(result.changes)
+}
+
 export function getSession (db: DatabaseSync, id: string): ChatSession | undefined {
   const row = sessionRow(db, id)
   return row === undefined ? undefined : toSession(row)

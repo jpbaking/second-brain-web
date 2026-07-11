@@ -1,4 +1,4 @@
-import { createSession, getSession, getSessionBySdkId, readEventsSince, setSdkSessionId, saveCompaction, updateSessionConfig } from './chat-store.js'
+import { createSession, deleteSessions, getSession, getSessionBySdkId, listSessions, readEventsSince, setSdkSessionId, saveCompaction, updateSessionConfig } from './chat-store.js'
 import { toModelConfig } from './runner.js'
 import { TOOL_POLICIES, evaluateTool, isMutatingTool } from './tool-policy.js'
 import { acquireLock, heartbeatLock, releaseLock } from '../vault/lock.js'
@@ -603,6 +603,17 @@ export class AgentSessionService {
     this.emitEvent(chatSessionId, 'status', { text: 'Aborted by user.' })
     this.emitEvent(chatSessionId, 'ended', null)
     return true
+  }
+
+  async clearSessions (preservePinned: boolean): Promise<number> {
+    const targets = listSessions(this.db).filter(session => !preservePinned || !session.pinned)
+    await Promise.all(targets.map(async session => {
+      const sdkSessionId = this.live.get(session.id)
+      if (sdkSessionId !== undefined) await this.runner.stop(sdkSessionId)
+      this.live.delete(session.id)
+    }))
+    this.flushEvents()
+    return deleteSessions(this.db, preservePinned)
   }
 
   /**

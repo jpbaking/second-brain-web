@@ -84,6 +84,11 @@ export function registerChatRoutes (app: FastifyInstance, config: AppConfig, run
     return { ok: true }
   })
 
+  app.delete('/api/chat/sessions', async (req) => {
+    const preservePinned = (req.query as { preservePinned?: string }).preservePinned === 'true'
+    return { deleted: await service.clearSessions(preservePinned) }
+  })
+
   app.get('/api/chat/sessions/:id/events', async (req, reply) => {
     const id = (req.params as { id: string }).id
     if (getSession(db, id) === undefined) return await reply.code(404).send({ error: 'session not found' })

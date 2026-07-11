@@ -114,6 +114,8 @@
   position: absolute; right: .25rem; top: .2rem; border: 0; background: transparent;
   color: var(--text-muted); cursor: pointer; padding: .25rem;
 }
+.sidebar-chat-clear { display: flex; gap: .5rem; padding: .5rem; }
+.sidebar-chat-clear button { border: 0; background: transparent; color: var(--text-muted); cursor: pointer; font-size: .75rem; }
 
 .sidebar-nav {
   display: flex;

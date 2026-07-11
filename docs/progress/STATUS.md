@@ -34,7 +34,7 @@ Milestone 41: Expanded chat controls. Checklist:
 
 ## Next step
 
-Implement m41-04: clear-history choices, optionally preserving pinned chats.
+Implement m41-05: workflow-backed slash autocomplete.
 
 ## Read before working
 

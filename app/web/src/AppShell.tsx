@@ -108,6 +108,13 @@ export function AppShell ({ path: initialPath, children }: { path: string, child
     if (res.ok) await loadSessions()
   }
 
+  const clearChats = async (preservePinned: boolean) => {
+    const message = preservePinned ? 'Delete every unpinned chat?' : 'Delete all chats, including pinned chats?'
+    if (!window.confirm(message)) return
+    const res = await fetch(`/api/chat/sessions?preservePinned=${preservePinned}`, { method: 'DELETE', credentials: 'same-origin' })
+    if (res.ok) window.location.assign('/chat/new')
+  }
+
   if (onboarding === null) return null
 
   let navItems = NAV_ITEMS
@@ -181,6 +188,10 @@ export function AppShell ({ path: initialPath, children }: { path: string, child
                   ))}
                 </ul>
                 )}
+            {sessions.length > 0 && <div className='sidebar-chat-clear'>
+              <button type='button' onClick={() => { clearChats(true).catch(() => {}) }}>Clear unpinned</button>
+              <button type='button' onClick={() => { clearChats(false).catch(() => {}) }}>Clear all</button>
+            </div>}
           </nav>
         )}
 
