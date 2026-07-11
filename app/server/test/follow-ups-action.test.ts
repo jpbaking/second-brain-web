@@ -12,6 +12,7 @@ import { vaultWorkspacePath } from '../src/vault/config.js'
 import type { AgentRunner, AgentStartInput, AgentStartResult } from '../src/agent/runner.js'
 import type { FollowUpItem } from '../src/follow-ups/parse.js'
 import type { FastifyInstance } from 'fastify'
+import { seedDefaultProvider } from './helpers/seed-provider.js'
 
 const scratch: string[] = []
 const apps: FastifyInstance[] = []
@@ -56,16 +57,7 @@ async function authedApp (): Promise<{ app: FastifyInstance, cookie: string, run
   const challenge = cookieValue(pw.headers['set-cookie'], CHALLENGE_COOKIE)
   const code = totpCode(state.totp.secretBase32, { digits: state.totp.digits, period: state.totp.period })
   const totp = await app.inject({ method: 'POST', url: '/api/auth/totp', headers: { cookie: `${CHALLENGE_COOKIE}=${challenge}` }, payload: { code } })
-  return { app, cookie: `${SESSION_COOKIE}=${cookieValue(totp.headers['set-cookie'], SESSION_COOKIE)}`, runner }
-}
-
-async function seedDefaultProfile (app: FastifyInstance, cookie: string): Promise<void> {
-  await app.inject({
-    method: 'POST',
-    url: '/api/providers',
-    headers: { cookie },
-    payload: { displayName: 'Local', providerId: 'openai-compatible', modelId: 'm', baseUrl: 'http://127.0.0.1:1234/v1', isDefault: true },
-  })
+  return { app, cookie: `${SESSION_COOKIE}=${cookieValue(totp.headers['set-cookie'], SESSION_COOKIE)}`, runner, dataDir: config.dataDir }
 }
 
 async function itemByText (app: FastifyInstance, cookie: string, needle: string): Promise<FollowUpItem> {
@@ -88,8 +80,8 @@ describe('follow-up actions', () => {
   })
 
   it('returns 404 for an unknown follow-up id', async () => {
-    const { app, cookie } = await authedApp()
-    await seedDefaultProfile(app, cookie)
+    const { app, cookie, dataDir } = await authedApp()
+    seedDefaultProvider(dataDir)
     const res = await app.inject({ method: 'POST', url: '/api/follow-ups/deadbeef/complete', headers: { cookie } })
     expect(res.statusCode).toBe(404)
   })
@@ -103,8 +95,8 @@ describe('follow-up actions', () => {
   })
 
   it('routes completion through the agent instead of writing the vault directly', async () => {
-    const { app, cookie, runner } = await authedApp()
-    await seedDefaultProfile(app, cookie)
+    const { app, cookie, runner, dataDir } = await authedApp()
+    seedDefaultProvider(dataDir)
     const item = await itemByText(app, cookie, 'Renew the domain')
 
     const res = await app.inject({ method: 'POST', url: `/api/follow-ups/${item.id}/complete`, headers: { cookie } })
@@ -125,8 +117,8 @@ describe('follow-up actions', () => {
   })
 
   it('routes an edit through the agent with the new text', async () => {
-    const { app, cookie, runner } = await authedApp()
-    await seedDefaultProfile(app, cookie)
+    const { app, cookie, runner, dataDir } = await authedApp()
+    seedDefaultProvider(dataDir)
     const item = await itemByText(app, cookie, 'Send the reply')
 
     const empty = await app.inject({ method: 'POST', url: `/api/follow-ups/${item.id}/edit`, headers: { cookie }, payload: { text: '   ' } })

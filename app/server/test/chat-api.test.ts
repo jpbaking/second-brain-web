@@ -10,6 +10,7 @@ import { totpCode } from '../src/auth/totp.js'
 import { CHALLENGE_COOKIE, SESSION_COOKIE } from '../src/auth/cookies.js'
 import type { AgentRunner, AgentStartInput, AgentStartResult } from '../src/agent/runner.js'
 import type { FastifyInstance } from 'fastify'
+import { seedDefaultProvider } from './helpers/seed-provider.js'
 
 const scratch: string[] = []
 const apps: FastifyInstance[] = []
@@ -59,18 +60,10 @@ async function authedApp (): Promise<{ app: FastifyInstance, cookie: string, run
     headers: { cookie: `${CHALLENGE_COOKIE}=${challenge}` },
     payload: { code },
   })
-  return { app, cookie: `${SESSION_COOKIE}=${cookieValue(totp.headers['set-cookie'], SESSION_COOKIE)}`, runner }
+  return { app, cookie: `${SESSION_COOKIE}=${cookieValue(totp.headers['set-cookie'], SESSION_COOKIE)}`, runner, dataDir: config.dataDir }
 }
 
 /** Create an enabled default provider profile so session creation resolves a snapshot. */
-async function seedDefaultProfile (app: FastifyInstance, cookie: string): Promise<void> {
-  await app.inject({
-    method: 'POST',
-    url: '/api/providers',
-    headers: { cookie },
-    payload: { displayName: 'Local', providerId: 'openai-compatible', modelId: 'local-model', baseUrl: 'http://127.0.0.1:1234/v1', isDefault: true },
-  })
-}
 
 afterEach(async () => {
   for (const app of apps.splice(0)) await app.close()
@@ -91,8 +84,8 @@ describe('chat API', () => {
   })
 
   it('creates, lists, gets, renames, and closes a session', async () => {
-    const { app, cookie } = await authedApp()
-    await seedDefaultProfile(app, cookie)
+    const { app, cookie, dataDir } = await authedApp()
+    seedDefaultProvider(dataDir)
 
     const created = await app.inject({ method: 'POST', url: '/api/chat/sessions', headers: { cookie }, payload: { title: 'First' } })
     expect(created.statusCode).toBe(201)
@@ -114,8 +107,8 @@ describe('chat API', () => {
   })
 
   it('posts a message which starts the SDK session via the runner', async () => {
-    const { app, cookie, runner } = await authedApp()
-    await seedDefaultProfile(app, cookie)
+    const { app, cookie, runner, dataDir } = await authedApp()
+    seedDefaultProvider(dataDir)
     const id = (await app.inject({ method: 'POST', url: '/api/chat/sessions', headers: { cookie }, payload: { title: 'C' } })).json().id
 
     const sent = await app.inject({ method: 'POST', url: `/api/chat/sessions/${id}/messages`, headers: { cookie }, payload: { text: 'hello' } })
@@ -126,8 +119,8 @@ describe('chat API', () => {
   })
 
   it('accepts a bodyless compaction POST (no empty-body 400)', async () => {
-    const { app, cookie, runner } = await authedApp()
-    await seedDefaultProfile(app, cookie)
+    const { app, cookie, runner, dataDir } = await authedApp()
+    seedDefaultProvider(dataDir)
     const id = (await app.inject({ method: 'POST', url: '/api/chat/sessions', headers: { cookie }, payload: { title: 'C' } })).json().id
     // No content-type, no body — must not 400 (the m05-07 lesson).
     const res = await app.inject({ method: 'POST', url: `/api/chat/sessions/${id}/compact`, headers: { cookie } })

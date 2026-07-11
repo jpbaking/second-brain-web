@@ -31,8 +31,8 @@ The principal authorised the recommended next backlog item on 2026-07-11.
 
 ## Next step
 
-- Complete `m15-03`: remove provider mutation routes and forms, retaining the
-  read-only provider list and connectivity Test action.
+- Complete `m15-04`: add interactive Bash and PowerShell configure scripts
+  that generate deployment files without persisting plaintext provider keys.
 - Checklist: `docs/progress/milestones/milestone-15-provider-provisioning.md`.
 
 ## Read before working

@@ -15,6 +15,7 @@ import type { AgentRunner, AgentStartInput, AgentStartResult } from '../src/agen
 import type { ProviderSnapshot } from '../src/providers/snapshot.js'
 import type { DatabaseSync } from 'node:sqlite'
 import type { FastifyInstance } from 'fastify'
+import { seedDefaultProvider } from './helpers/seed-provider.js'
 
 const scratch: string[] = []
 const dbs: DatabaseSync[] = []
@@ -184,7 +185,7 @@ describe('approval route', () => {
     const totp = await app.inject({ method: 'POST', url: '/api/auth/totp', headers: { cookie: `${CHALLENGE_COOKIE}=${challenge}` }, payload: { code } })
     const cookie = `${SESSION_COOKIE}=${cookieValue(totp.headers['set-cookie'], SESSION_COOKIE)}`
 
-    await app.inject({ method: 'POST', url: '/api/providers', headers: { cookie }, payload: { displayName: 'L', providerId: 'openai-compatible', modelId: 'm', baseUrl: 'http://127.0.0.1:1234/v1', isDefault: true } })
+    seedDefaultProvider(config.dataDir)
     const id = (await app.inject({ method: 'POST', url: '/api/chat/sessions', headers: { cookie }, payload: { title: 'C' } })).json().id
     await app.inject({ method: 'POST', url: `/api/chat/sessions/${id}/messages`, headers: { cookie }, payload: { text: 'hi' } })
 

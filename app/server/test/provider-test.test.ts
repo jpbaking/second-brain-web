@@ -10,6 +10,9 @@ import { generateOwnerAuth, writeOwnerAuth } from '../src/auth/bootstrap.js'
 import { totpCode } from '../src/auth/totp.js'
 import { CHALLENGE_COOKIE, SESSION_COOKIE } from '../src/auth/cookies.js'
 import { testProvider } from '../src/providers/test.js'
+import { openCoreDb } from '../src/db.js'
+import { createProfile as createStoredProfile } from '../src/providers/store.js'
+import { encryptSecret } from '../src/secrets/crypto.js'
 import type { AddressInfo } from 'node:net'
 import type { Server } from 'node:http'
 import type { FastifyInstance } from 'fastify'
@@ -66,7 +69,7 @@ async function stubGeminiProvider (validKey: string): Promise<string> {
   return `http://127.0.0.1:${port}`
 }
 
-async function authedApp (secretsKey: string): Promise<{ app: FastifyInstance, cookie: string }> {
+async function authedApp (secretsKey: string): Promise<{ app: FastifyInstance, cookie: string, dataDir: string }> {
   const root = mkdtempSync(path.join(tmpdir(), 'sbw-provtest-'))
   scratch.push(root)
   const env: NodeJS.ProcessEnv = {
@@ -89,16 +92,27 @@ async function authedApp (secretsKey: string): Promise<{ app: FastifyInstance, c
     headers: { cookie: `${CHALLENGE_COOKIE}=${challenge}` },
     payload: { code },
   })
-  return { app, cookie: `${SESSION_COOKIE}=${cookieValue(totp.headers['set-cookie'], SESSION_COOKIE)}` }
+  return { app, cookie: `${SESSION_COOKIE}=${cookieValue(totp.headers['set-cookie'], SESSION_COOKIE)}`, dataDir: config.dataDir }
 }
 
-async function createProfile (
-  app: FastifyInstance,
-  cookie: string,
+function createProfile (
+  dataDir: string,
+  secretsKey: string,
   payload: Record<string, unknown>
-): Promise<string> {
-  const res = await app.inject({ method: 'POST', url: '/api/providers', headers: { cookie }, payload })
-  return res.json().id
+): string {
+  const db = openCoreDb(dataDir)
+  try {
+    const apiKey = payload.apiKey as string | undefined
+    return createStoredProfile(db, {
+      displayName: payload.displayName as string,
+      providerId: payload.providerId as string,
+      modelId: payload.modelId as string,
+      baseUrl: payload.baseUrl as string | undefined,
+      ...(apiKey !== undefined ? { keyCiphertext: encryptSecret(apiKey, { SECOND_BRAIN_WEB_SECRETS_KEY: secretsKey }) } : {})
+    })
+  } finally {
+    db.close()
+  }
 }
 
 afterEach(async () => {
@@ -166,10 +180,10 @@ describe('POST /api/providers/:id/test', () => {
   })
 
   it('tests a stored profile with its decrypted key and never echoes the key', async () => {
-    const { app, cookie } = await authedApp('secret-key')
+    const { app, cookie, dataDir } = await authedApp('secret-key')
     const key = 'sk-live-3333'
     const base = await stubProvider(key)
-    const id = await createProfile(app, cookie, {
+    const id = createProfile(dataDir, 'secret-key', {
       displayName: 'Local', providerId: 'openai-compatible', modelId: 'm', baseUrl: base, apiKey: key,
     })
 
@@ -180,9 +194,9 @@ describe('POST /api/providers/:id/test', () => {
   })
 
   it('reports a clear failure for a bad stored key', async () => {
-    const { app, cookie } = await authedApp('secret-key')
+    const { app, cookie, dataDir } = await authedApp('secret-key')
     const base = await stubProvider('sk-the-real-one')
-    const id = await createProfile(app, cookie, {
+    const id = createProfile(dataDir, 'secret-key', {
       displayName: 'Local', providerId: 'openai-compatible', modelId: 'm', baseUrl: base, apiKey: 'sk-wrong-one',
     })
 

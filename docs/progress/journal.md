@@ -493,3 +493,5 @@ Tree clean at bfd9592. Active: milestone 15, next item: m15-01.
 - 08:37 STARTED m15-01: add the stdin-only `encrypt-secret` CLI, cover its success and failure contracts, and verify a decrypt round-trip.
 - 08:38 DONE m15-01: verified by `npm test --workspace server -- encrypt-secret.test.ts` → 2 tests green, including CLI ciphertext decrypted by `decryptSecret`. Commit 2384e5a.
 - 08:38 STARTED m15-02: add strict ordered YAML loading at boot and rebuild the provider-profile cache with the first enabled entry as default.
+- 08:41 DONE m15-02: focused provisioning suite 11 tests green; full suite 62 files / 279 tests green; lint (one pre-existing warning) and both builds passed. Commit 543d7b0.
+- 08:41 STARTED m15-03: remove provider mutation HTTP routes and web forms, expose key status only, and retain the authenticated read/Test surface.

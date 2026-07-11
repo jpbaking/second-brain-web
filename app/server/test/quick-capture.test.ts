@@ -10,6 +10,7 @@ import { totpCode } from '../src/auth/totp.js'
 import { CHALLENGE_COOKIE, SESSION_COOKIE } from '../src/auth/cookies.js'
 import type { AgentRunner, AgentStartInput, AgentStartResult } from '../src/agent/runner.js'
 import type { FastifyInstance } from 'fastify'
+import { seedDefaultProvider } from './helpers/seed-provider.js'
 
 const scratch: string[] = []
 const apps: FastifyInstance[] = []
@@ -55,16 +56,7 @@ async function authedApp (): Promise<{ app: FastifyInstance, cookie: string, run
     headers: { cookie: `${CHALLENGE_COOKIE}=${challenge}` },
     payload: { code },
   })
-  return { app, cookie: `${SESSION_COOKIE}=${cookieValue(totp.headers['set-cookie'], SESSION_COOKIE)}`, runner }
-}
-
-async function seedDefaultProfile (app: FastifyInstance, cookie: string): Promise<void> {
-  await app.inject({
-    method: 'POST',
-    url: '/api/providers',
-    headers: { cookie },
-    payload: { displayName: 'Local', providerId: 'openai-compatible', modelId: 'm', baseUrl: 'http://127.0.0.1:1234/v1', isDefault: true },
-  })
+  return { app, cookie: `${SESSION_COOKIE}=${cookieValue(totp.headers['set-cookie'], SESSION_COOKIE)}`, runner, dataDir: config.dataDir }
 }
 
 afterEach(async () => {
@@ -80,8 +72,8 @@ describe('quick capture', () => {
   })
 
   it('rejects empty content', async () => {
-    const { app, cookie } = await authedApp()
-    await seedDefaultProfile(app, cookie)
+    const { app, cookie, dataDir } = await authedApp()
+    seedDefaultProvider(dataDir)
     const res = await app.inject({ method: 'POST', url: '/api/capture', headers: { cookie }, payload: { content: '   ' } })
     expect(res.statusCode).toBe(400)
     expect(res.json().error).toMatch(/content/i)
@@ -95,8 +87,8 @@ describe('quick capture', () => {
   })
 
   it('routes the note through the agent and creates a filing session', async () => {
-    const { app, cookie, runner } = await authedApp()
-    await seedDefaultProfile(app, cookie)
+    const { app, cookie, runner, dataDir } = await authedApp()
+    seedDefaultProvider(dataDir)
 
     const note = 'Remember: call the dentist on Friday about the crown.'
     const res = await app.inject({ method: 'POST', url: '/api/capture', headers: { cookie }, payload: { content: note } })

@@ -11,6 +11,7 @@ import { CHALLENGE_COOKIE, SESSION_COOKIE } from '../src/auth/cookies.js'
 import { vaultWorkspacePath } from '../src/vault/config.js'
 import type { AgentRunner, AgentStartInput, AgentStartResult } from '../src/agent/runner.js'
 import type { FastifyInstance } from 'fastify'
+import { seedDefaultProvider } from './helpers/seed-provider.js'
 
 const scratch: string[] = []
 const apps: FastifyInstance[] = []
@@ -58,12 +59,7 @@ async function authedApp (withWorkflow = true): Promise<{ app: FastifyInstance, 
     payload: { code },
   })
   const cookie = `${SESSION_COOKIE}=${cookieValue(totp.headers['set-cookie'], SESSION_COOKIE)}`
-  await app.inject({
-    method: 'POST',
-    url: '/api/providers',
-    headers: { cookie },
-    payload: { displayName: 'Local', providerId: 'openai-compatible', modelId: 'm', baseUrl: 'http://127.0.0.1:1234/v1', isDefault: true },
-  })
+  seedDefaultProvider(config.dataDir)
   return { app, cookie, runner }
 }
 

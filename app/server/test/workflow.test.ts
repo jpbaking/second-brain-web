@@ -12,6 +12,7 @@ import { vaultWorkspacePath } from '../src/vault/config.js'
 import { WorkflowNotFoundError, expandWorkflow, listWorkflows, workflowsDir } from '../src/agent/workflows.js'
 import type { AgentRunner, AgentStartInput, AgentStartResult } from '../src/agent/runner.js'
 import type { FastifyInstance } from 'fastify'
+import { seedDefaultProvider } from './helpers/seed-provider.js'
 
 const scratch: string[] = []
 const apps: FastifyInstance[] = []
@@ -97,7 +98,7 @@ describe('workflow command route', () => {
     const wf = await app.inject({ method: 'GET', url: '/api/chat/workflows', headers: { cookie } })
     expect(wf.json().workflows).toEqual(['inbox', 'report'])
 
-    await app.inject({ method: 'POST', url: '/api/providers', headers: { cookie }, payload: { displayName: 'L', providerId: 'openai-compatible', modelId: 'm', baseUrl: 'http://127.0.0.1:1234/v1', isDefault: true } })
+    seedDefaultProvider(config.dataDir)
     const id = (await app.inject({ method: 'POST', url: '/api/chat/sessions', headers: { cookie }, payload: { title: 'C' } })).json().id
 
     const run = await app.inject({ method: 'POST', url: `/api/chat/sessions/${id}/commands`, headers: { cookie }, payload: { command: 'inbox' } })

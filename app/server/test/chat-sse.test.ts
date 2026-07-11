@@ -11,6 +11,7 @@ import { CHALLENGE_COOKIE, SESSION_COOKIE } from '../src/auth/cookies.js'
 import { translateSdkEvent } from '../src/agent/session.js'
 import type { AgentRunner, AgentStartInput, AgentStartResult } from '../src/agent/runner.js'
 import type { FastifyInstance } from 'fastify'
+import { seedDefaultProvider } from './helpers/seed-provider.js'
 
 const scratch: string[] = []
 const apps: FastifyInstance[] = []
@@ -41,7 +42,7 @@ function cookieValue (h: string | string[] | undefined, name: string): string | 
   return m && m[1] !== '' ? decodeURIComponent(m[1]) : undefined
 }
 
-async function liveApp (): Promise<{ base: string, cookie: string, runner: EmittingRunner, app: FastifyInstance }> {
+async function liveApp (): Promise<{ base: string, cookie: string, runner: EmittingRunner, app: FastifyInstance, dataDir: string }> {
   const root = mkdtempSync(path.join(tmpdir(), 'sbw-sse-'))
   scratch.push(root)
   const config = loadConfig({ SECOND_BRAIN_WEB_DATA_DIR: path.join(root, 'data'), SECOND_BRAIN_WEB_SECRETS_KEY: 'k' })
@@ -63,7 +64,7 @@ async function liveApp (): Promise<{ base: string, cookie: string, runner: Emitt
     headers: { cookie: `${CHALLENGE_COOKIE}=${challenge}` },
     payload: { code },
   })
-  return { base, cookie: `${SESSION_COOKIE}=${cookieValue(totp.headers['set-cookie'], SESSION_COOKIE)}`, runner, app }
+  return { base, cookie: `${SESSION_COOKIE}=${cookieValue(totp.headers['set-cookie'], SESSION_COOKIE)}`, runner, app, dataDir: config.dataDir }
 }
 
 /** A single-reader SSE consumer: `until()` accumulates frames across calls. */
@@ -104,13 +105,9 @@ describe('translateSdkEvent', () => {
 
 describe('chat SSE stream', () => {
   it('replays persisted events then delivers a live event', async () => {
-    const { base, cookie, runner } = await liveApp()
+    const { base, cookie, runner, dataDir } = await liveApp()
     // Seed a default profile + a started session (creates session_config + user_message events).
-    await fetch(`${base}/api/providers`, {
-      method: 'POST',
-      headers: { 'content-type': 'application/json', cookie },
-      body: JSON.stringify({ displayName: 'L', providerId: 'openai-compatible', modelId: 'm', baseUrl: 'http://127.0.0.1:1234/v1', isDefault: true }),
-    })
+    seedDefaultProvider(dataDir)
     const created = await (await fetch(`${base}/api/chat/sessions`, {
       method: 'POST', headers: { 'content-type': 'application/json', cookie }, body: JSON.stringify({ title: 'C' }),
     })).json() as { id: string }
@@ -137,12 +134,8 @@ describe('chat SSE stream', () => {
   })
 
   it('replays only newer events when reconnecting with Last-Event-ID', async () => {
-    const { base, cookie } = await liveApp()
-    await fetch(`${base}/api/providers`, {
-      method: 'POST',
-      headers: { 'content-type': 'application/json', cookie },
-      body: JSON.stringify({ displayName: 'L', providerId: 'openai-compatible', modelId: 'm', baseUrl: 'http://127.0.0.1:1234/v1', isDefault: true }),
-    })
+    const { base, cookie, dataDir } = await liveApp()
+    seedDefaultProvider(dataDir)
     const created = await (await fetch(`${base}/api/chat/sessions`, {
       method: 'POST', headers: { 'content-type': 'application/json', cookie }, body: JSON.stringify({ title: 'C' }),
     })).json() as { id: string }
