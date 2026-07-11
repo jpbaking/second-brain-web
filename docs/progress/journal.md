@@ -452,3 +452,5 @@ Native Gemini support shipped across provider creation, SDK mapping, read-only c
 ## 2026-07-11 08:14 — session start
 Tree clean at 2723e68. Active: milestone 19, next item: m19-01.
 - 08:14 STARTED m19-01: scope the runtime npm install to the server workspace, then inspect required/excluded modules and measure the image against the 1.28 GB baseline.
+- 08:16 DONE m19-01: `second-brain-web:m19` built successfully; required server modules are present and React/ReactDOM are absent. Runtime `node_modules` fell 714 MiB → 706 MiB; Docker display 1.28 GB → 1.27 GB; compressed inspect size 283,660,007 → 282,335,443 bytes. Commit ce4e8b3.
+- 08:16 STARTED m19-02: smoke-test the slim image with fresh persistent `/data`, real reset-auth/login, guarded API access, and restart persistence.

@@ -32,7 +32,7 @@ provider provisioning) remains designed and gated.
 
 ## Next step
 
-- **m19-02:** smoke-test the slim image with fresh persistent data.
+- **m19-03:** run the full source gate and final size comparison.
 - Checklist: `docs/progress/milestones/milestone-19-slim-docker-image.md`.
 
 ## Read before working
