@@ -10,6 +10,7 @@ interface ReviewData {
     dirty: boolean
     changedFiles: string[]
     diffSummary: string | null
+    fileDiffs?: Record<string, string>
   }
   health: {
     available: boolean
@@ -35,6 +36,8 @@ export function ReviewCommitModal ({ onClose, onSuccess }: ReviewCommitModalProp
   const [review, setReview] = useState<ReviewData | null>(null)
   const [error, setError] = useState<string | null>(null)
   const [committing, setCommitting] = useState(false)
+  const [selectedFiles, setSelectedFiles] = useState<Set<string>>(new Set())
+  const [expandedFiles, setExpandedFiles] = useState<Set<string>>(new Set())
 
   useEffect(() => {
     fetch('/api/vault/review', { credentials: 'same-origin' })
@@ -42,7 +45,10 @@ export function ReviewCommitModal ({ onClose, onSuccess }: ReviewCommitModalProp
         if (!r.ok) throw new Error('Failed to load review')
         return await r.json() as ReviewData
       })
-      .then(setReview)
+      .then(data => {
+        setReview(data)
+        setSelectedFiles(new Set(data.git.changedFiles))
+      })
       .catch(e => setError(e.message))
   }, [])
 
@@ -51,6 +57,8 @@ export function ReviewCommitModal ({ onClose, onSuccess }: ReviewCommitModalProp
     try {
       const res = await fetch('/api/vault/commit', {
         method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ files: Array.from(selectedFiles) }),
         credentials: 'same-origin'
       })
       const body = await res.json().catch(() => ({})) as { message?: string, error?: string, stage?: string }
@@ -65,8 +73,43 @@ export function ReviewCommitModal ({ onClose, onSuccess }: ReviewCommitModalProp
     }
   }
 
+  async function handleDiscard () {
+    const files = Array.from(selectedFiles)
+    if (files.length === 0) return
+    if (!window.confirm(`Are you sure you want to discard changes in ${files.length} file(s)?`)) return
+    setCommitting(true)
+    try {
+      const res = await fetch('/api/vault/discard', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ files }),
+        credentials: 'same-origin'
+      })
+      const body = await res.json().catch(() => ({})) as { message?: string, error?: string }
+      if (!res.ok) throw new Error(body.message ?? body.error ?? 'Discard failed.')
+      onSuccess()
+    } catch (e: unknown) {
+      setError(e instanceof Error ? e.message : 'Discard failed.')
+      setCommitting(false)
+    }
+  }
+
+  function toggleSelect (f: string) {
+    const next = new Set(selectedFiles)
+    if (next.has(f)) next.delete(f)
+    else next.add(f)
+    setSelectedFiles(next)
+  }
+
+  function toggleExpand (f: string) {
+    const next = new Set(expandedFiles)
+    if (next.has(f)) next.delete(f)
+    else next.add(f)
+    setExpandedFiles(next)
+  }
+
   const healthPasses = review?.health.available === true && review.health.issueCount === 0
-  const canSubmit = review !== null && (!review.git.dirty || healthPasses)
+  const canSubmit = review !== null && (!review.git.dirty || healthPasses) && selectedFiles.size > 0
 
   const groups: Record<string, string[]> = {}
   if (review) {
@@ -99,8 +142,23 @@ export function ReviewCommitModal ({ onClose, onSuccess }: ReviewCommitModalProp
                   {Object.entries(groups).map(([group, files]) => (
                     <div key={group} style={{ marginBottom: '0.5rem' }}>
                       <strong style={{ display: 'block', marginBottom: '0.25rem' }}>{group}</strong>
-                      <ul style={{ margin: 0, paddingLeft: '1.5rem' }}>
-                        {files.map(f => <li key={f}><code>{f}</code></li>)}
+                      <ul style={{ margin: 0, paddingLeft: '0', listStyle: 'none' }}>
+                        {files.map(f => (
+                          <li key={f} style={{ display: 'flex', flexDirection: 'column', marginBottom: '0.25rem' }}>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                              <input type='checkbox' checked={selectedFiles.has(f)} onChange={() => toggleSelect(f)} disabled={committing} />
+                              <code>{f}</code>
+                              <button type='button' className='btn' style={{ padding: '0.1rem 0.4rem', fontSize: '0.75rem' }} onClick={() => toggleExpand(f)}>
+                                {expandedFiles.has(f) ? 'Hide diff' : 'Show diff'}
+                              </button>
+                            </div>
+                            {expandedFiles.has(f) && review?.git.fileDiffs?.[f] && (
+                              <pre className='review-output' style={{ marginTop: '0.25rem', fontSize: '0.85em', padding: '0.5rem', backgroundColor: 'var(--bg-card)' }}>
+                                {review.git.fileDiffs[f]}
+                              </pre>
+                            )}
+                          </li>
+                        ))}
                       </ul>
                     </div>
                   ))}
@@ -142,7 +200,14 @@ export function ReviewCommitModal ({ onClose, onSuccess }: ReviewCommitModalProp
             onClick={handleCommit}
             disabled={!canSubmit || committing}
           >
-            {committing ? 'Committing…' : review?.git.dirty === false ? 'Retry push' : 'Commit and push'}
+            {committing ? 'Committing…' : review?.git.dirty === false ? 'Retry push' : `Commit ${selectedFiles.size} file(s)`}
+          </button>
+          <button
+            className='btn btn-danger'
+            onClick={handleDiscard}
+            disabled={selectedFiles.size === 0 || committing}
+          >
+            Discard selected
           </button>
           <button
             className='btn btn-secondary'

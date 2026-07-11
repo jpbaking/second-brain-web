@@ -33,7 +33,7 @@ Updated: 2026-07-11 (active: milestone 28)
 
 ## Next step
 
-m28-04: Interactive selection and diffs
+m28-05: Render previews for logs and reports
 
 ## Read before working
 
