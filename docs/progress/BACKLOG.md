@@ -12,6 +12,13 @@ See `docs/project-plan/phase-008-feature-backlog-and-design-hooks.md` for other 
 
 ## Improvements
 
+- ~~Fix layout and theme compliance issues across feature screens~~ — picked up in milestone 35.
+  - ~~`ProfileScreen.tsx`: Needs complete rewrite. It uses Tailwind-style utility classes instead of the required `app-page`/`app-hero`/`action-card` pattern, lacks the standard `alert` classes, and does not properly use form elements.~~
+  - ~~`SchedulesScreen.tsx`: Uses incorrect form classes (`form-group`, `text-input`, `select-input`), references non-existent CSS variables (`--surface-sunken`, `--text-muted`), and uses heavy inline styles.~~
+  - ~~`MeetingPrepScreen.tsx`: Form fields incorrectly use `form-group`/`form-label`/`form-input` instead of the kit's `field`/`label`/`input` pattern.~~
+  - ~~`FollowUpsScreen.tsx`: Uses custom tab classes instead of the kit's `.tab-list`/`.tab`/`.tab.active` pattern, and uses an undefined `.btn-ghost` class (should be `.btn-quiet`).~~
+  - ~~`ExplorerScreen.tsx`: Uses undefined `.btn-ghost` class (should be `.btn-quiet`).~~
+
 - ~~Port `configure.ps1` to match the bash `configure` revamp~~ — completed in
   milestone 32, together with a filter+pager model picker added to both scripts.
   (PowerShell execution smoke-test on Windows is the principal's to run — no

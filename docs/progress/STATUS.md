@@ -29,11 +29,11 @@ Updated: 2026-07-11 (active: none — milestone 34 completed)
 
 ## Active milestone
 
-None
+Milestone 35: Layout & Theme UI Fixes (docs/progress/milestones/milestone-35-layout-theme-fixes.md)
 
 ## Next step
 
-(Out-of-band repairs applied: Dockerfile git tools installed, README auth setup corrected, vault config save combined with sync, and UI redirect to chat on successful sync added. Select a new milestone from the backlog. Outstanding: PowerShell launcher smoke-test on Windows.)
+Next: m35-01 (ProfileScreen.tsx rewrite)
 
 ## Read before working
 

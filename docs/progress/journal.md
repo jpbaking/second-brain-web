@@ -747,3 +747,6 @@ Tree was dirty from out-of-band repairs.
 - 15:18 REPAIR: updated web UI to redirect user to chat (`/`) on successful vault save/sync.
 
 ## 15:18 — session end
+
+## 2026-07-11 15:56 — session start
+Tree clean at 4cebaa1. Active: milestone 35, next item: m35-01.
