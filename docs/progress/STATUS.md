@@ -1,6 +1,6 @@
 # STATUS — single source of truth
 
-Updated: 2026-07-11 (no active milestone)
+Updated: 2026-07-11 (active: milestone 28)
 
 ## Where we are
 
@@ -29,11 +29,11 @@ Updated: 2026-07-11 (no active milestone)
 
 ## Active milestone
 
-None
+28: Rich Diff Review (`docs/progress/milestones/milestone-28-rich-diff-review.md`)
 
 ## Next step
 
-None
+m28-01: Add per-file diffs to review API
 
 ## Read before working
 
