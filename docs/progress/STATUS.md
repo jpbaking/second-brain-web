@@ -31,8 +31,8 @@ The principal authorised the recommended next backlog item on 2026-07-11.
 
 ## Next step
 
-- Complete `m15-02`: load and validate ordered provider YAML at boot, rebuilding
-  the provider cache with the first enabled entry as default.
+- Complete `m15-03`: remove provider mutation routes and forms, retaining the
+  read-only provider list and connectivity Test action.
 - Checklist: `docs/progress/milestones/milestone-15-provider-provisioning.md`.
 
 ## Read before working
