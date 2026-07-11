@@ -1,6 +1,6 @@
 # STATUS — single source of truth
 
-Updated: 2026-07-12 (no active milestone; milestone 43 complete)
+Updated: 2026-07-12 (milestone 44 active)
 
 ## Where we are
 
@@ -29,17 +29,18 @@ Updated: 2026-07-12 (no active milestone; milestone 43 complete)
 
 ## Active milestone
 
-Milestone 43 (Browser-local chat timestamps) is complete. Archived checklist:
-`docs/progress/milestones/archive/milestone-43-chat-timestamps.md`.
+Milestone 44: General-purpose agent container toolkit. Checklist:
+`docs/progress/milestones/milestone-44-agent-toolkit.md`.
 
 ## Next step
 
-Await direction.
+Implement m44-01 and verify every installed command in the rebuilt container.
 
 ## Read before working
 
 - `AGENTS-PLAYBOOK.md` — always, top to bottom.
 - `docs/progress/BACKLOG.md` — the work queue.
+- `docs/progress/milestones/milestone-44-agent-toolkit.md` — active checklist.
 
 ## Questions for the principal
 

@@ -12,6 +12,9 @@ See `docs/project-plan/phase-008-feature-backlog-and-design-hooks.md` for other 
 
 ## Improvements
 
+- **General-purpose agent container toolkit** — in progress as milestone 44:
+  expand the runtime image and smoke-check common work commands.
+
 - ~~**Browser-local chat timestamps**~~ — completed in milestone 43: show every
   message with browser-local date/time and timestamp each reasoning iteration.
 

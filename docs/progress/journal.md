@@ -1022,3 +1022,8 @@ Tree clean at 186a810. Principal requested visible chat timestamps include secon
 
 ## 03:26 — session end
 Second-precision timestamps shipped; rebuilding the running container for handoff.
+
+## 2026-07-12 03:30 — session start
+Tree clean at 2d54474. Principal asked whether an agent-reported `find` failure means it is absent and directed installation of typical work tools.
+- 03:30 DIAGNOSIS: `find` is present at `/usr/bin/find`; the message was not caused by a missing executable. Inventory found missing `fd` compatibility name, yq, zip/unzip, file, build tools, Python, SQLite CLI, rsync, and common process/network diagnostics.
+- 03:30 STARTED milestone 44: install a broad general-purpose agent toolkit and enforce command availability during the image build. Next: m44-01.
