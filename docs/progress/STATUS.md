@@ -1,6 +1,6 @@
 # STATUS — single source of truth
 
-Updated: 2026-07-11 (milestone 18 complete)
+Updated: 2026-07-11 (milestone 19 activated)
 
 ## Where we are
 
@@ -26,19 +26,21 @@ Updated: 2026-07-11 (milestone 18 complete)
 
 ## Current phase
 
-Backlog-driven. **No milestone is active.** Milestone 18 exposed the native
-Gemini provider across the SDK, API, connectivity test, and settings UI.
-Milestone 15 (YAML-only provider provisioning) remains designed and gated.
+**Milestone 19 — slim Docker runtime image is active.** The principal directed
+the next recommended backlog item on 2026-07-11. Milestone 15 (YAML-only
+provider provisioning) remains designed and gated.
 
 ## Next step
 
-- None queued. Future work starts only when the principal says go.
+- **m19-01:** scope runtime dependencies to the server workspace and measure.
+- Checklist: `docs/progress/milestones/milestone-19-slim-docker-image.md`.
 
 ## Read before working
 
 - `AGENTS-PLAYBOOK.md` — always, top to bottom.
-- `docs/progress/BACKLOG.md` — the work queue.
-- The design and project-plan documents relevant to the selected item.
+- `docs/progress/milestones/milestone-19-slim-docker-image.md`.
+- `app/Dockerfile`, root/server/web package manifests, and lockfile.
+- `docs/deploy/deployment.md` if operator-facing assumptions change.
 
 ## Questions for the principal
 
