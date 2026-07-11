@@ -27,9 +27,9 @@ Updated: 2026-07-11 (no active milestone)
   active or new), `/command-centre`, `/capture`, `/follow-ups`, `/reports`,
   `/search`, `/explorer`, `/vault`, `/providers`, `/login`, `/setup`.
 
-## Current phase
+## Active milestone
 
-Milestone 27 (Principal Profile) is active.
+None
 
 ## Next step
 
@@ -39,7 +39,6 @@ None
 
 - `AGENTS-PLAYBOOK.md` — always, top to bottom.
 - `docs/progress/BACKLOG.md` — the work queue.
-- `docs/progress/milestones/milestone-27-principal-profile.md` — current milestone.
 
 ## Questions for the principal
 

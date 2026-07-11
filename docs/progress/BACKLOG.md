@@ -14,6 +14,7 @@ voice capture, rich diff review.
 
 ## Dropped / resolved (kept for the record)
 
+- ~~Principal Profile~~ — completed in milestone 27. Added persistent settings area for principal-directed preferences like report styles, timezone, and work week configuration.
 - ~~Scheduled Briefs~~ — completed in milestone 26. Added background `SchedulerService`, `scheduled_jobs` SQLite table, `/api/schedules` CRUD endpoint, and `SchedulesScreen` UI.
 - ~~Backup/Restore UI~~ — completed in milestone 25. Added `/api/backup/core` and `/api/backup/sidecar` to serve database snapshots, and created a dedicated `BackupScreen` in the UI to download them safely.
 - ~~Meeting Prep Mode~~ — completed in milestone 24. Added `/api/chat/workflows/prep` and a dedicated frontend screen to kick off parameterized workflow sessions.
