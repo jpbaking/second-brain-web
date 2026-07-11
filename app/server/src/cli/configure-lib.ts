@@ -91,6 +91,7 @@ export function parseEnv (text: string): EnvEntry[] {
     const m = /^([A-Za-z_][A-Za-z0-9_]*)=(.*)$/.exec(line)
     if (m === null) continue
     const [, key, value] = m
+    if (key === undefined || value === undefined) continue
     if (!values.has(key)) order.push(key)
     values.set(key, value)
   }

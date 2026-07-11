@@ -36,7 +36,7 @@ node-or-docker launchers.
       defaults. Unit-tested.
       Verify: `cd app && npm test --workspace server -- configure-lib.test.ts`
 
-- [ ] **m34-02** Interactive `app/server/src/cli/configure.ts` (Node
+- [x] **m34-02** Interactive `app/server/src/cli/configure.ts` (Node
       `readline/promises`): load → main menu → provider add/edit/delete/keep,
       runtime settings, deploy key (ssh-keygen, graceful skip if absent),
       secrets key → save. Config dir from `SBW_CONFIG_DIR`. Imports
