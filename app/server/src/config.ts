@@ -12,6 +12,7 @@ export const DATA_SUBDIRS = [
   'indexes',
   'logs',
   'sessions',
+  'claude-code',
 ] as const
 
 export interface AppConfig {

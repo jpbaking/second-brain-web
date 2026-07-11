@@ -89,6 +89,7 @@ Commands:
   down       Stop with ${DCH_STOP_TIMEOUT}s timeout, remove orphans and volumes
   logs       Follow logs from last ${DCH_LOGS_TAIL} lines
   reset-auth Reset owner authentication (password + TOTP) in the running container
+  claude-auth Authenticate Claude Code in the running container (interactive)
   <other>    Pass-through to docker compose
 
 Note: passing 2 or more arguments always bypasses named commands and routes
@@ -149,6 +150,9 @@ case "${1:-}" in
         ;;
     reset-auth)
         run_dc exec second-brain-web node server/dist/cli/reset-auth.js /data
+        ;;
+    claude-auth)
+        run_dc exec second-brain-web claude auth login
         ;;
     *)
         run_dc "$@"

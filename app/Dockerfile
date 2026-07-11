@@ -39,6 +39,11 @@ COPY package.json package-lock.json ./
 COPY server/package.json ./server/
 RUN npm ci --omit=dev --workspace server --include-workspace-root=false && npm cache clean --force
 
+# The Cline SDK can use Claude Code as a subscription-backed inference
+# provider. Expose the locked workspace dependency as a normal runtime command
+# for `compose-helper.sh claude-auth` and SDK subprocess discovery.
+RUN ln -s /app/node_modules/.bin/claude /usr/local/bin/claude
+
 # Built artifacts from the build stage.
 COPY --from=build /app/server/dist ./server/dist
 COPY --from=build /app/web/dist ./web/dist
@@ -48,7 +53,8 @@ COPY --from=build /app/web/dist ./web/dist
 # create it that way so a fresh named volume inherits the mode and ownership.
 ENV SECOND_BRAIN_WEB_DATA_DIR=/data \
     SECOND_BRAIN_WEB_HOST=0.0.0.0 \
-    SECOND_BRAIN_WEB_PORT=8722
+    SECOND_BRAIN_WEB_PORT=8722 \
+    CLAUDE_CONFIG_DIR=/data/claude-code
 RUN mkdir -p /data && chown -R node:node /data && chmod 700 /data
 VOLUME ["/data"]
 EXPOSE 8722

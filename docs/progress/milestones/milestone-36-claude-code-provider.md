@@ -14,7 +14,7 @@ allowance instead of an Anthropic API key.
     app's own tool/approval policy authoritative.
   - Verify: `cd app && npm test --workspace server -- agent-runner.test.ts agent-session.test.ts`
 
-- [ ] **m36-03 — Runtime CLI and persistent authentication**
+- [x] **m36-03 — Runtime CLI and persistent authentication**
   - Install Claude Code in the image, persist its user configuration in the
     data volume, and add a single-argument `compose-helper.sh claude-auth`
     command that runs interactive login as the runtime user.

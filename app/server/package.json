@@ -15,6 +15,7 @@
     "test": "vitest run"
   },
   "dependencies": {
+    "@anthropic-ai/claude-code": "^2.1.207",
     "@cline/core": "^0.0.58",
     "@cline/llms": "^0.0.58",
     "@cline/shared": "^0.0.58",

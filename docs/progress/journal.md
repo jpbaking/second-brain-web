@@ -814,3 +814,9 @@ after configure. Created milestone 36; next m36-01.
 - 17:09 DONE m36-02: SDK mapping emits provider `claude-code` with nested
   Claude tools and filesystem setting sources empty, leaving Cline's existing
   policies/approvals authoritative. Verified 22 targeted tests, build, lint.
+- 17:10 STARTED m36-03: install the locked Claude Code CLI in the runtime,
+  persist `CLAUDE_CONFIG_DIR` in the data volume, and add `claude-auth`.
+- 17:12 DONE m36-03: added locked `@anthropic-ai/claude-code` 2.1.207 runtime
+  dependency, `/usr/local/bin/claude`, `/data/claude-code` config persistence,
+  and interactive `compose-helper.sh claude-auth` (`claude auth login`).
+  Verified helper syntax, 7 config tests, Docker build, CLI version, node UID.
