@@ -34,7 +34,7 @@ lists the vault's top-level dirs (`inbox library memory reports scripts`), not
     exists and is a no-op otherwise.
   - Verify: `cd app && npm run build && npm test --workspace server -- agent-runner.test.ts agent-session.test.ts cline-runner-cwd.test.ts` → 25 green.
 
-- [ ] **m39-03 — Live end-to-end on a rebuilt container**
+- [x] **m39-03 — Live end-to-end on a rebuilt container**
   - Rebuild the stack and drive a real chat: ask the agent to `ls` its working
     directory and confirm it lists the vault dirs (`inbox library memory
     reports scripts`), not `/app`; then confirm a vault question resolves from
