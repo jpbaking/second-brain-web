@@ -220,11 +220,17 @@ export function ChatScreen ({ mode }: { mode: ChatMode }) {
   // Auto-grow the composer with its content: one line when empty, up to the
   // CSS max-height (near half the screen), after which it scrolls. Keyed on
   // the value so clearing on send collapses it back to one line.
+  const [multiline, setMultiline] = useState(false)
   useEffect(() => {
     const el = inputRef.current
     if (el === null) return
     el.style.height = 'auto'
     el.style.height = `${el.scrollHeight + 2}px` // +2 for the borders (border-box)
+    // One-line content centres the send button beside it; taller content
+    // pins the button to the bottom (see .chat-composer.is-multiline).
+    const cs = getComputedStyle(el)
+    const oneLine = (parseFloat(cs.lineHeight) || 24) + parseFloat(cs.paddingTop) + parseFloat(cs.paddingBottom)
+    setMultiline(el.scrollHeight > oneLine + 4)
   }, [input])
   const zoomRef = useRef<HTMLDialogElement | null>(null)
 
@@ -552,7 +558,7 @@ export function ChatScreen ({ mode }: { mode: ChatMode }) {
               {slashMatches.map((name, index) => <button key={name} type='button' role='option' aria-selected={index === slashIndex} className={index === slashIndex ? 'is-active' : ''} onMouseDown={e => { e.preventDefault(); chooseSlash(name, false) }}>/{name}</button>)}
             </div>
           )}
-          <form className='chat-composer' onSubmit={e => { e.preventDefault(); send().catch(() => {}) }} aria-label='Message composer'>
+          <form className={`chat-composer${multiline ? ' is-multiline' : ''}`} onSubmit={e => { e.preventDefault(); send().catch(() => {}) }} aria-label='Message composer'>
             <textarea
               ref={inputRef}
               className='chat-input' rows={1} value={input} data-testid='composer'

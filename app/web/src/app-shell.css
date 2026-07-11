@@ -374,8 +374,14 @@
 
 .chat-composer {
   display: flex;
-  align-items: flex-end;
+  /* Send/Abort sits centred beside a one-line input… */
+  align-items: center;
   gap: var(--space-2);
+}
+
+/* …and drops to the bottom once the input grows past one line. */
+.chat-composer.is-multiline {
+  align-items: flex-end;
 }
 
 .chat-composer-options {
