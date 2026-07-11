@@ -18,6 +18,19 @@ interface ReviewData {
   }
 }
 
+function getNewPath (fileStr: string): string {
+  const parts = fileStr.split(' -> ')
+  return parts.length === 2 ? (parts[1] as string) : (parts[0] as string)
+}
+
+function getSemanticGroup (path: string): string {
+  if (path.startsWith('memory/')) return 'Memory Logs'
+  if (path.startsWith('inbox/')) return 'Inbox'
+  if (path.startsWith('reports/')) return 'Reports'
+  if (path.startsWith('docs/')) return 'Documentation'
+  return 'Other'
+}
+
 export function ReviewCommitModal ({ onClose, onSuccess }: ReviewCommitModalProps) {
   const [review, setReview] = useState<ReviewData | null>(null)
   const [error, setError] = useState<string | null>(null)
@@ -55,6 +68,16 @@ export function ReviewCommitModal ({ onClose, onSuccess }: ReviewCommitModalProp
   const healthPasses = review?.health.available === true && review.health.issueCount === 0
   const canSubmit = review !== null && (!review.git.dirty || healthPasses)
 
+  const groups: Record<string, string[]> = {}
+  if (review) {
+    for (const file of review.git.changedFiles) {
+      const newPath = getNewPath(file)
+      const group = getSemanticGroup(newPath)
+      if (!groups[group]) groups[group] = []
+      groups[group].push(file)
+    }
+  }
+
   return (
     <div className='review-backdrop' role='dialog' aria-modal='true' aria-labelledby='review-title'>
       <div className='action-card review-dialog'>
@@ -72,9 +95,17 @@ export function ReviewCommitModal ({ onClose, onSuccess }: ReviewCommitModalProp
             <div className='stack-2'>
               <div>
                 <strong>Changed files ({review.git.changedFiles.length})</strong>
-                <pre className='review-output'>
-                  {review.git.changedFiles.join('\n')}
-                </pre>
+                <div className='review-output' style={{ padding: '0.5rem', backgroundColor: 'var(--bg-inset)', borderRadius: '4px' }}>
+                  {Object.entries(groups).map(([group, files]) => (
+                    <div key={group} style={{ marginBottom: '0.5rem' }}>
+                      <strong style={{ display: 'block', marginBottom: '0.25rem' }}>{group}</strong>
+                      <ul style={{ margin: 0, paddingLeft: '1.5rem' }}>
+                        {files.map(f => <li key={f}><code>{f}</code></li>)}
+                      </ul>
+                    </div>
+                  ))}
+                  {Object.keys(groups).length === 0 && <p style={{ margin: 0 }}>No files changed.</p>}
+                </div>
               </div>
 
               {review.git.diffSummary && (

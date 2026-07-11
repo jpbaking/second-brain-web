@@ -12,7 +12,7 @@
   - *Verify:* `cd app && npm test --workspace server -- vault-review.test.ts`
 - [x] m28-02: **Support partial commits and reverts.** Update the commit API endpoint to accept an array of specific file paths to commit, and add an endpoint to discard/checkout specific files.
   - *Verify:* `cd app && npm test --workspace server -- vault-review.test.ts` (or create appropriate new tests)
-- [ ] m28-03: **Semantic grouping in UI.** Update `ReviewCommitModal.tsx` (or extract into a larger `RichReviewModal.tsx`) to group changed files by semantic type (e.g., Memory Logs, Reports, Inbox) instead of a flat list.
+- [x] m28-03: **Semantic grouping in UI.** Update `ReviewCommitModal.tsx` (or extract into a larger `RichReviewModal.tsx`) to group changed files by semantic type (e.g., Memory Logs, Reports, Inbox) instead of a flat list.
   - *Verify:* `cd app && npm run lint` and `npm run build`
 - [ ] m28-04: **Per-file accept/discard UI.** Add controls in the review UI to select specific files for commit or to discard unwanted changes, wired to the new API capabilities.
   - *Verify:* `cd app && npm run build`

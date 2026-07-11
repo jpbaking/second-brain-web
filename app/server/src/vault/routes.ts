@@ -160,7 +160,8 @@ export function registerVaultRoutes (app: FastifyInstance, config: AppConfig): v
     const db = openCoreDb(config.dataDir)
     const body = (req.body ?? {}) as { files?: string[] }
     try {
-      const result = await commitVault(db, config.dataDir, { files: body.files })
+      const options = body.files ? { files: body.files } : {}
+      const result = await commitVault(db, config.dataDir, options)
       if (!result.success) return await reply.code(400).send(result)
       // The vault content just changed on disk — refresh the search cache.
       reindexAfterVaultChange(config.dataDir, app.log)
@@ -177,7 +178,7 @@ export function registerVaultRoutes (app: FastifyInstance, config: AppConfig): v
     }
     const result = await discardVaultFiles(config.dataDir, body.files)
     if (!result.success) return await reply.code(400).send(result)
-    
+
     // The vault content just changed on disk — refresh the search cache.
     reindexAfterVaultChange(config.dataDir, app.log)
     return result

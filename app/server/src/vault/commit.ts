@@ -123,10 +123,10 @@ export async function discardVaultFiles (dataDir: string, files: string[]): Prom
   if (!files || files.length === 0) return { success: false, message: 'No files specified.' }
 
   const pathsToDiscard = files.flatMap(f => f.split(' -> '))
-  
+
   // Checkout tracked files
   const checkout = await runGit(['-C', workspace, 'checkout', 'HEAD', '--', ...pathsToDiscard])
-  
+
   // Clean untracked files (if they were new)
   // git clean -f -- <paths>
   const clean = await runGit(['-C', workspace, 'clean', '-f', '--', ...pathsToDiscard])

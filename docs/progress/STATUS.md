@@ -33,7 +33,7 @@ Updated: 2026-07-11 (active: milestone 28)
 
 ## Next step
 
-m28-03: Semantic grouping in UI
+m28-04: Interactive selection and diffs
 
 ## Read before working
 

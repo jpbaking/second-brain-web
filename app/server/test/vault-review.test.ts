@@ -43,7 +43,7 @@ describe('vault changed-file review', () => {
     expect(review.changedFiles).toContain('inbox/uploads/new.txt')
     expect(review.diffSummary).toContain('memory/modified.md')
     expect(review.diffSummary).toContain('inbox/uploads/new.txt | new file')
-    
+
     // Assert fileDiffs are present when requested
     const reviewWithDiffs = await readGitStatus(dir, { includeDiff: true, includeFileDiffs: true })
     expect(reviewWithDiffs.fileDiffs).toBeDefined()

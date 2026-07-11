@@ -89,7 +89,7 @@ export async function readGitStatus (workspacePath: string, options: GitStatusOp
         const parts = pathPart.split(' -> ')
         const args = ['-C', workspacePath, 'diff', 'HEAD', '--']
         if (parts.length === 2) {
-          args.push(parts[0], parts[1])
+          args.push(parts[0] as string, parts[1] as string)
         } else {
           args.push(pathPart)
         }
@@ -99,7 +99,7 @@ export async function readGitStatus (workspacePath: string, options: GitStatusOp
     }
   }
 
-  return {
+  const result: GitStatus = {
     isRepo: true,
     branch: branch.code === 0 ? branch.stdout.trim() : null,
     commit: commit.code === 0 ? commit.stdout.trim() : null,
@@ -107,6 +107,7 @@ export async function readGitStatus (workspacePath: string, options: GitStatusOp
     dirty: changedFiles.length > 0,
     changedFiles,
     diffSummary,
-    fileDiffs,
   }
+  if (fileDiffs) result.fileDiffs = fileDiffs
+  return result
 }
