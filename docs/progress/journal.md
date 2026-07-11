@@ -852,3 +852,13 @@ Tree clean at c7c42b4. Active: milestone 37, next item: m37-01.
 
 ## 17:35 — session end
 Milestone 37 started, m37-01 complete (1/6). Next: m37-02.
+
+## 2026-07-11 17:33 — session start
+Tree clean at b8c100e. Active: milestone 37, next item: m37-02.
+- 17:34 STARTED m37-02: Add `app/server/src/reports/store.ts` for provenance CRUD operations
+- 17:35 DONE m37-02: verified by `npm test --workspace server -- reports-store.test.ts` → 4 tests green. Commit 379f742.
+- 17:35 STARTED m37-03: Update agent session completion to save provenance for newly generated reports
+- 17:39 DONE m37-03: verified by `npm test --workspace server -- agent-session.test.ts` → 11 tests green. Commit 1fa14a2.
+
+## 17:39 — session end
+Milestone 37 in progress (3/6). Next: m37-04.
