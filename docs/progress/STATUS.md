@@ -1,6 +1,6 @@
 # STATUS — single source of truth
 
-Updated: 2026-07-11 (active: none — milestone 33 completed)
+Updated: 2026-07-11 (active: milestone 34 — rewrite configure as a Node CLI)
 
 ## Where we are
 
@@ -29,14 +29,17 @@ Updated: 2026-07-11 (active: none — milestone 33 completed)
 
 ## Active milestone
 
-None
+Milestone 34 — rewrite configure as a Node in-app CLI
+(`docs/progress/milestones/milestone-34-configure-node-cli.md`)
+
+Stateful load-edit-save configurator: per-provider keep/rename/change-model/
+change-key/delete, preserve unknown .env keys + untouched providers. Root
+configure/configure.ps1 become thin node-or-docker launchers.
 
 ## Next step
 
-(Milestone 33 completed — configure/configure.ps1 now prompt for BIND, PORT, and
-NODE_ENV/dev-mode alongside the secrets key, writing all four to `.config/.env`
-with existing-value prefill on re-run. Select a new milestone from the backlog.
-Outstanding: PowerShell smoke-test of configure.ps1 on Windows.)
+m34-01: pure core module `cli/configure-lib.ts` (.env + YAML round-trip, slug,
+validation) with unit tests.
 
 ## Read before working
 

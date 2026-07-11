@@ -711,3 +711,9 @@ defaulting to existing .config/.env values or the documented defaults, and write
 all four keys. bash verified by scripted runs; ps1 by parity review (no pwsh —
 Windows smoke-test outstanding). Also fixed a latent docker-boolean bug in the
 ps1 Get-ProviderModels. README updated. Tree clean. Active: none.
+
+## 2026-07-11 14:19 — milestone 34 start
+Principal confirmed (AskUserQuestion): rewrite configure as a Node in-app CLI
+(reuse yaml/encryptSecret/listModels), preserve keys+values not comments. The
+shell scripts become thin node-or-docker launchers. Created milestone 34.
+- 14:20 STARTED m34-01: pure core module cli/configure-lib.ts + tests.
