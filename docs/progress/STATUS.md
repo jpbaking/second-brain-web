@@ -1,6 +1,6 @@
 # STATUS — single source of truth
 
-Updated: 2026-07-11 (active: none — milestone 36 completed)
+Updated: 2026-07-11 (active: milestone 37)
 
 ## Where we are
 
@@ -29,11 +29,11 @@ Updated: 2026-07-11 (active: none — milestone 36 completed)
 
 ## Active milestone
 
-None
+milestone 37 (Regenerate Report), next item: m37-01
 
 ## Next step
 
-Select a new milestone from the backlog. Outstanding: PowerShell launcher smoke-test on Windows.
+Execute m37-01: Add `report_provenance` table to core database migrations.
 
 ## Read before working
 
