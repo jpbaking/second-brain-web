@@ -571,6 +571,13 @@
   position: relative;
 }
 
+/* Centre transcript diagrams narrower than the bubble; wider ones keep their
+   left edge reachable via the scroll (auto margins collapse to 0 then). */
+.prose .mermaid-diagram svg {
+  display: block;
+  margin-inline: auto;
+}
+
 /* Copy-source button pinned to a block's upper-right corner. */
 .chat-codeblock {
   position: relative;
