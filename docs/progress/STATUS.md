@@ -33,7 +33,7 @@ Milestone 27 (Principal Profile) is active.
 
 ## Next step
 
-- m27-03: Add `/api/profile` GET and PUT routes in `app/server/src/profile/routes.ts` (and register in `app.ts`).
+- m27-04: Create `app/web/src/ProfileScreen.tsx` to view and edit preferences (Default report style, Timezone, Work week). Add to `/profile` route and `AppShell.tsx` navigation.
 
 ## Read before working
 

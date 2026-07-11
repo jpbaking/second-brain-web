@@ -21,6 +21,7 @@ import { registerFollowUpRoutes, registerFollowUpActionRoutes } from './follow-u
 import { registerSearchRoutes } from './search/routes.js'
 import { registerExplorerRoutes } from './explorer/routes.js'
 import { registerSystemRoutes } from './system/routes.js'
+import { registerProfileRoutes } from './profile/routes.js'
 import { ClineAgentRunner } from './agent/cline-runner.js'
 import type { AgentRunner } from './agent/runner.js'
 
@@ -73,6 +74,7 @@ export function buildApp (config?: AppConfig, deps?: AppDeps): FastifyInstance {
     registerSearchRoutes(app, config)
     registerExplorerRoutes(app, config)
     registerSystemRoutes(app, config)
+    registerProfileRoutes(app, config)
     const agentService = registerChatRoutes(app, config, deps?.agentRunner ?? new ClineAgentRunner(config.dataDir))
     registerScheduleRoutes(app, config)
     const scheduler = new SchedulerService(config, agentService)
