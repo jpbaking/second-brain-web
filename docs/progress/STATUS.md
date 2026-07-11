@@ -33,7 +33,7 @@ Updated: 2026-07-11 (active: milestone 28)
 
 ## Next step
 
-m28-02: Support partial commits and reverts
+m28-03: Semantic grouping in UI
 
 ## Read before working
 

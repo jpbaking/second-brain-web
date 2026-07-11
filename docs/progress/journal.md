@@ -580,3 +580,5 @@ Tree clean at 0b8834e. Active: milestone 28, next item: m28-01.
 - 11:04 STARTED m28-01: update readGitStatus and /api/vault/review to return full diff contents
 - 11:05 DONE m28-01: verified by `npm test --workspace server -- vault-review.test.ts` → tests pass. fileDiffs populated via git diff logic. Committing.
 - 11:05 NOTE m28-01: commit is 3137d49.
+- 11:08 DONE m28-02: verified by `npm test --workspace server` → all 293 tests pass. Committing.
+- 11:08 NOTE m28-02: commit is fa5dbe9.

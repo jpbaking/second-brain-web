@@ -63,7 +63,7 @@ describe('commit, health, push loop', () => {
     writeFileSync(path.join(workspace, 'memory.md'), 'healthy change\n')
     const now = new Date('2026-07-10T09:20:00.000Z')
     const db = openCoreDb(dataDir)
-    const result = await commitVault(db, dataDir, now)
+    const result = await commitVault(db, dataDir, {}, now)
     db.close()
 
     expect(result.success).toBe(true)

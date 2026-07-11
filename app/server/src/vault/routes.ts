@@ -8,7 +8,7 @@ import { runHealthCheck } from './health.js'
 import { readGitStatus } from './git-status.js'
 import { readCommandCenter } from './command-center.js'
 import { readLock } from './lock.js'
-import { commitVault } from './commit.js'
+import { commitVault, discardVaultFiles } from './commit.js'
 import { reindexAfterVaultChange } from '../search/reindex.js'
 import type { AppConfig } from '../config.js'
 import type { VaultConfigPatch } from './config.js'
@@ -158,8 +158,9 @@ export function registerVaultRoutes (app: FastifyInstance, config: AppConfig): v
 
   app.post('/api/vault/commit', async (req, reply) => {
     const db = openCoreDb(config.dataDir)
+    const body = (req.body ?? {}) as { files?: string[] }
     try {
-      const result = await commitVault(db, config.dataDir)
+      const result = await commitVault(db, config.dataDir, { files: body.files })
       if (!result.success) return await reply.code(400).send(result)
       // The vault content just changed on disk — refresh the search cache.
       reindexAfterVaultChange(config.dataDir, app.log)
@@ -167,5 +168,18 @@ export function registerVaultRoutes (app: FastifyInstance, config: AppConfig): v
     } finally {
       db.close()
     }
+  })
+
+  app.post('/api/vault/discard', async (req, reply) => {
+    const body = (req.body ?? {}) as { files?: string[] }
+    if (!Array.isArray(body.files) || body.files.length === 0) {
+      return await reply.code(400).send({ error: 'files array is required' })
+    }
+    const result = await discardVaultFiles(config.dataDir, body.files)
+    if (!result.success) return await reply.code(400).send(result)
+    
+    // The vault content just changed on disk — refresh the search cache.
+    reindexAfterVaultChange(config.dataDir, app.log)
+    return result
   })
 }

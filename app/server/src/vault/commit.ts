@@ -14,7 +14,11 @@ export interface VaultCommitResult {
   stage?: 'preflight' | 'lock' | 'health' | 'stage' | 'commit' | 'push' | 'complete'
 }
 
-export async function commitVault (db: DatabaseSync, dataDir: string, now: Date = new Date()): Promise<VaultCommitResult> {
+export interface CommitOptions {
+  files?: string[]
+}
+
+export async function commitVault (db: DatabaseSync, dataDir: string, options: CommitOptions = {}, now: Date = new Date()): Promise<VaultCommitResult> {
   const cfg = readVaultConfig(db, dataDir)
   const workspace = vaultWorkspacePath(dataDir)
   const keyPath = cfg.sshKeyPath
@@ -59,14 +63,26 @@ export async function commitVault (db: DatabaseSync, dataDir: string, now: Date 
       return { success: false, commit: status.commit, message: `Commit blocked: ${reason}`, health, stage: 'health' }
     }
 
-    // Stage all changes
-    const add = await runGit(['-C', workspace, 'add', '.'])
-    if (add.code !== 0) {
-      return { success: false, commit: status.commit, message: add.stderr.trim() || 'git add failed.', stage: 'stage' }
+    // Stage requested or all changes
+    let actualFiles = status.changedFiles
+    if (options.files && options.files.length > 0) {
+      await runGit(['-C', workspace, 'reset', 'HEAD']) // clear any existing staging
+      const pathsToAdd = options.files.flatMap(f => f.split(' -> '))
+      const addArgs = ['-C', workspace, 'add', '--', ...pathsToAdd]
+      const add = await runGit(addArgs)
+      if (add.code !== 0) {
+        return { success: false, commit: status.commit, message: add.stderr.trim() || 'git add failed.', stage: 'stage' }
+      }
+      actualFiles = options.files
+    } else {
+      const add = await runGit(['-C', workspace, 'add', '.'])
+      if (add.code !== 0) {
+        return { success: false, commit: status.commit, message: add.stderr.trim() || 'git add failed.', stage: 'stage' }
+      }
     }
 
     // Commit
-    const commitMsg = buildCommitMessage(status.changedFiles, now)
+    const commitMsg = buildCommitMessage(actualFiles, now)
     const commitResult = await runGit([
       '-C', workspace,
       '-c', 'user.name=Second Brain Web',
@@ -100,4 +116,24 @@ export function buildCommitMessage (changedFiles: string[], now: Date): string {
   const count = changedFiles.length
   const paths = changedFiles.map(file => `- ${file}`).join('\n')
   return `vault: update ${count} file${count === 1 ? '' : 's'} via web\n\nOperation: ${now.toISOString()}\n\nReviewed paths:\n${paths}`
+}
+
+export async function discardVaultFiles (dataDir: string, files: string[]): Promise<{ success: boolean, message?: string }> {
+  const workspace = vaultWorkspacePath(dataDir)
+  if (!files || files.length === 0) return { success: false, message: 'No files specified.' }
+
+  const pathsToDiscard = files.flatMap(f => f.split(' -> '))
+  
+  // Checkout tracked files
+  const checkout = await runGit(['-C', workspace, 'checkout', 'HEAD', '--', ...pathsToDiscard])
+  
+  // Clean untracked files (if they were new)
+  // git clean -f -- <paths>
+  const clean = await runGit(['-C', workspace, 'clean', '-f', '--', ...pathsToDiscard])
+
+  if (checkout.code !== 0 && clean.code !== 0) {
+    return { success: false, message: checkout.stderr.trim() || clean.stderr.trim() || 'Failed to discard files.' }
+  }
+
+  return { success: true }
 }
