@@ -469,3 +469,8 @@ Docker runtime installation is scoped to server production dependencies. The sli
 Tree clean at 8380b1c. Principal directed the next recommended backlog item; selected the self-contained follow-up display cleanup. Active: milestone 20, next item: m20-01.
 - 08:27 STARTED m20-01: add a presentation-only formatter and use it for follow-up display and edit defaults while leaving parser/API text untouched.
 - 08:28 DONE m20-01: verified by `npm run lint --workspace web && npm run build --workspace web` → lint clean and production web build passed.
+- 08:28 STARTED m20-02: run parser regressions and the full gate, then verify clean text and the separate resolved source in a real browser.
+- 08:29 DONE m20-02: focused parser/API suite 6 tests green; full gate green (lint exits 0 with one pre-existing comma-dangle warning, 60 files / 266 tests, both builds). Real headless Chrome showed `Renew the domain registration` without inline Markdown, the separate resolved source remained visible, edit/action flow worked, and desktop overflow was absent. Milestone 20 complete.
+
+## 2026-07-11 08:29 — session end (milestone 20 complete)
+Follow-up rows and edit defaults now omit terminal inline source-link Markdown while parser/API text stays canonical for source resolution and agent-routed actions. No milestone is active.

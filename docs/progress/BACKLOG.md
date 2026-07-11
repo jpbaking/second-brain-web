@@ -17,9 +17,6 @@ and follow AGENTS-PLAYBOOK.md. Completed checklists move to
 
 ## Improvements (small/medium, self-contained)
 
-- **Strip inline `— source: [label](path)` markdown from follow-up display
-  text.** Cosmetic; the parser deliberately preserves raw text and the
-  resolved link is already shown separately as `→ linkedSource`.
 - **Run the production app under a dedicated system user.** Global
   `~/.cline/skills` and rules paths merge into agent sessions; a dedicated
   user isolates them. (Container deployments already isolate this.)
@@ -33,6 +30,9 @@ voice capture, rich diff review, backup/restore UI.
 
 ## Dropped / resolved (kept for the record)
 
+- ~~Strip inline source-link Markdown from follow-up display text~~ — completed
+  in milestone 20. Raw parser/API text remains canonical; the UI shows clean
+  text and the resolved source separately.
 - ~~Slim the Docker image by excluding web runtime dependencies~~ — completed
   in milestone 19. The server-scoped install excludes React/ReactDOM and saves
   8 MiB uncompressed (Docker display 1.28 GB → 1.27 GB; compressed image size

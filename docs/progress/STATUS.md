@@ -1,6 +1,6 @@
 # STATUS — single source of truth
 
-Updated: 2026-07-11 (milestone 20 active)
+Updated: 2026-07-11 (milestone 20 complete)
 
 ## Where we are
 
@@ -26,13 +26,13 @@ Updated: 2026-07-11 (milestone 20 active)
 
 ## Current phase
 
-Backlog-driven. **Milestone 20 is active:** clean source-attribution Markdown
-from follow-up presentation while preserving canonical parser/API text.
+Backlog-driven. **No milestone is active.** Milestone 20 cleaned inline source
+attribution from follow-up presentation while preserving canonical API text.
 Milestone 15 (YAML-only provider provisioning) remains designed and gated.
 
 ## Next step
 
-- Complete m20-02: run parser/full gates and visually verify the deliverable.
+- None queued. Future work starts only when the principal says go.
 
 ## Read before working
 
