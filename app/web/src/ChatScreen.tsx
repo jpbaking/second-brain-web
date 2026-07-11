@@ -1,4 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
+import { foldTranscript } from './chat-transcript.js'
+import type { ChatEvent } from './chat-transcript.js'
 
 /**
  * Chat-first conversation surface (milestone 16). The sidebar (AppShell) owns
@@ -11,10 +13,7 @@ import { useCallback, useEffect, useRef, useState } from 'react'
  */
 
 interface ChatSession { id: string, title: string, status: string, providerProfileId: string | null }
-interface ChatEvent { seq: number, type: string, payload: unknown }
 interface ProviderProfile { id: string, displayName: string, isDefault: boolean, enabled: boolean }
-
-interface PendingApproval { toolCallId: string, toolName: string }
 
 export type ChatMode = { kind: 'auto' } | { kind: 'new' } | { kind: 'session', id: string }
 
@@ -28,106 +27,6 @@ async function sendJson (method: string, url: string, body?: unknown): Promise<R
     credentials: 'same-origin',
     body: body === undefined ? undefined : JSON.stringify(body),
   })
-}
-
-/** A transcript line derived from the raw event stream. */
-interface Line { key: string, role: 'user' | 'assistant' | 'system', text: string }
-
-function payloadText (payload: unknown): string | undefined {
-  if (payload === null || typeof payload !== 'object') return undefined
-  const p = payload as Record<string, unknown>
-  if (typeof p.text === 'string') return p.text
-  const event = p.event as Record<string, unknown> | undefined
-  if (event !== undefined && typeof event.text === 'string') return event.text
-  return undefined
-}
-
-function renderMessageText (text: string) {
-  const parts = []
-  let currentIdx = 0
-  let key = 0
-
-  while (currentIdx < text.length) {
-    const startIdx = text.indexOf('<thinking>', currentIdx)
-    if (startIdx === -1) {
-      parts.push(<span key={key++}>{text.slice(currentIdx)}</span>)
-      break
-    }
-
-    if (startIdx > currentIdx) {
-      parts.push(<span key={key++}>{text.slice(currentIdx, startIdx)}</span>)
-    }
-
-    const endIdx = text.indexOf('</thinking>', startIdx + 10)
-    if (endIdx === -1) {
-      parts.push(
-        <div key={key++} className='chat-thinking is-active'>
-          <div className='chat-thinking-header'>Thinking…</div>
-          <div className='chat-thinking-content'>{text.slice(startIdx + 10)}</div>
-        </div>
-      )
-      break
-    } else {
-      parts.push(
-        <div key={key++} className='chat-thinking'>
-          <div className='chat-thinking-header'>Thinking</div>
-          <div className='chat-thinking-content'>{text.slice(startIdx + 10, endIdx)}</div>
-        </div>
-      )
-      currentIdx = endIdx + 11
-    }
-  }
-  return parts.length > 0 ? parts : text
-}
-
-/** Fold the event log into transcript lines. Assistant text is cumulative. */
-function toTranscript (events: ChatEvent[], isLive: boolean): { lines: Line[], approvals: PendingApproval[], isProcessing: boolean, statusText?: string } {
-  const lines: Line[] = []
-  const approvals = new Map<string, PendingApproval>()
-  let assistant: Line | null = null
-  let isProcessing = false
-  let statusText: string | undefined
-
-  for (const e of events) {
-    if (e.type === 'user_message') {
-      assistant = null
-      isProcessing = true
-      statusText = undefined
-      lines.push({ key: `u-${e.seq}`, role: 'user', text: payloadText(e.payload) ?? '' })
-    } else if (e.type === 'status') {
-      const p = e.payload as Record<string, unknown> | null
-      if (p !== null) {
-        if (typeof p.text === 'string') statusText = p.text
-        else if (typeof p.state === 'string') statusText = p.state
-      }
-    } else if (e.type === 'chunk' || e.type === 'agent_event') {
-      isProcessing = true
-      const text = payloadText(e.payload)
-      if (text === undefined || text === '') continue
-      if (assistant === null) { assistant = { key: `a-${e.seq}`, role: 'assistant', text }; lines.push(assistant) } else { assistant.text = text }
-    } else if (e.type === 'approval_request') {
-      const p = e.payload as { toolCallId?: string, toolName?: string }
-      if (typeof p?.toolCallId === 'string') approvals.set(p.toolCallId, { toolCallId: p.toolCallId, toolName: p.toolName ?? 'tool' })
-      isProcessing = false
-    } else if (e.type === 'approval_resolved' || e.type === 'approval_auto_denied') {
-      const p = e.payload as { toolCallId?: string }
-      if (typeof p?.toolCallId === 'string') approvals.delete(p.toolCallId)
-      isProcessing = true
-    } else if (e.type === 'compaction') {
-      assistant = null
-      lines.push({ key: `c-${e.seq}`, role: 'system', text: 'Context compacted' })
-    } else if (e.type === 'ended') {
-      assistant = null
-      isProcessing = false
-      statusText = undefined
-    }
-  }
-
-  if (!isLive) {
-    isProcessing = false
-  }
-
-  return { lines, approvals: [...approvals.values()], isProcessing, statusText }
 }
 
 /** Derive a session title from the first message, ChatGPT-style. */
@@ -328,7 +227,7 @@ export function ChatScreen ({ mode }: { mode: ChatMode }) {
     if (res.ok) { setPending(false); setIsLive(false) } else setError('Could not abort the active turn.')
   }
 
-  const { lines, approvals, isProcessing, statusText } = toTranscript(events, isLive)
+  const { lines, approvals, isProcessing, statusText } = foldTranscript(events, isLive)
   // Show the indicator either from the optimistic local flag (just sent) or from
   // the live event stream (mounted into an in-progress turn).
   const showProcessing = (pending || isProcessing) && approvals.length === 0
@@ -368,7 +267,14 @@ export function ChatScreen ({ mode }: { mode: ChatMode }) {
                 : (
                   <div key={l.key} className={`chat-msg chat-msg-${l.role}`}>
                     {l.role === 'assistant' && <span className='chat-msg-author'>Secretary</span>}
-                    <div className='chat-bubble'>{l.role === 'assistant' ? renderMessageText(l.text) : l.text}</div>
+                    {l.role === 'assistant' && ((l.reasoning ?? '') !== '' || (l.activities?.length ?? 0) > 0) && (
+                      <details className={`chat-reasoning${l.complete === false ? ' is-active' : ''}`} open={l.complete === false ? true : undefined}>
+                        <summary>{l.complete === false ? 'Working…' : ((l.reasoning ?? '') !== '' ? 'Reasoning and activity' : 'Activity details')}</summary>
+                        {(l.activities?.length ?? 0) > 0 && <ul>{l.activities?.map((activity, index) => <li key={`${l.key}-activity-${index}`}>{activity}</li>)}</ul>}
+                        {(l.reasoning ?? '') !== '' && <div className='chat-reasoning-content'>{l.reasoning}</div>}
+                      </details>
+                    )}
+                    {l.text !== '' && <div className='chat-bubble'>{l.text}</div>}
                   </div>
                   )
             ))}

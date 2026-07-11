@@ -979,3 +979,4 @@ Tree clean at 6b02546. Principal approved the recommended durable reasoning tran
 - 03:03 STARTED m42-01: extract a pure transcript fold with delta/snapshot/thinking regression coverage.
 - 03:05 DONE m42-01: added tested fold normalisation; chunks append, agent snapshots replace, mixed streams prefer snapshots, and thinking tags are extracted after reconstruction. `npm test --workspace web` → 5 green.
 - 03:05 STARTED m42-02: wire preserved activity/reasoning into accessible transcript disclosures.
+- 03:06 DONE m42-02: ChatScreen now uses the normalised fold, keeps live details open, and preserves completed emitted reasoning/activity in a collapsed native disclosure. Verified by 5 web tests, clean web lint, and production web build.

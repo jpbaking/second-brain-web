@@ -34,7 +34,7 @@ Milestone 42: Durable reasoning transcript. Checklist:
 
 ## Next step
 
-Implement m42-02: durable expandable reasoning/activity disclosures.
+Implement m42-03: full regression and browser verification.
 
 ## Read before working
 

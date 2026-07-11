@@ -1012,7 +1012,7 @@
 }
 
 /* --- Processing Animation & Thinking Blocks --- */
-.chat-thinking {
+.chat-reasoning {
   margin-block: 8px;
   background: var(--surface);
   border: 1px solid var(--line);
@@ -1020,7 +1020,7 @@
   overflow: hidden;
 }
 
-.chat-thinking-header {
+.chat-reasoning summary {
   font-family: var(--font-mono);
   font-size: var(--ui-small);
   color: var(--muted);
@@ -1031,16 +1031,23 @@
   letter-spacing: 0.05em;
 }
 
-.chat-thinking.is-active .chat-thinking-header {
+.chat-reasoning.is-active summary {
   color: var(--accent-amber-deep);
   animation: pulse 2s infinite;
 }
 
-.chat-thinking-content {
+.chat-reasoning-content {
   padding: 8px 10px;
   font-size: 0.9em;
   color: var(--muted);
   white-space: pre-wrap;
+}
+
+.chat-reasoning ul {
+  margin: 0;
+  padding: 8px 10px 0 28px;
+  color: var(--muted);
+  font-size: .9em;
 }
 
 @keyframes pulse {
