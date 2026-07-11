@@ -166,6 +166,19 @@ const coreMigrations: Migration[] = [
       )
     `,
   },
+  {
+    version: 13,
+    sql: `
+      CREATE TABLE report_provenance (
+        report_path TEXT PRIMARY KEY,
+        session_id TEXT NOT NULL REFERENCES chat_sessions (id) ON DELETE CASCADE,
+        prompt TEXT,
+        provider_profile_id TEXT,
+        vault_commit TEXT,
+        created_at TEXT NOT NULL
+      )
+    `,
+  },
 ]
 
 const sidecarMigrations: Migration[] = [

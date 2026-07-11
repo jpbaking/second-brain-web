@@ -29,11 +29,11 @@ Updated: 2026-07-11 (active: milestone 37)
 
 ## Active milestone
 
-milestone 37 (Regenerate Report), next item: m37-01
+milestone 37 (Regenerate Report), next item: m37-02
 
 ## Next step
 
-Execute m37-01: Add `report_provenance` table to core database migrations.
+Execute m37-02: Add `app/server/src/reports/store.ts` for provenance CRUD operations.
 
 ## Read before working
 
