@@ -2,6 +2,8 @@ import { createReadStream } from 'node:fs'
 import { realpath, stat } from 'node:fs/promises'
 import path from 'node:path'
 import { scanReports } from './scan.js'
+import { getReportProvenance } from './store.js'
+import { openCoreDb } from '../db.js'
 import { vaultWorkspacePath } from '../vault/config.js'
 import type { AppConfig } from '../config.js'
 import type { FastifyInstance } from 'fastify'
@@ -15,7 +17,22 @@ const CONTENT_TYPES: Record<string, string | undefined> = {
 export function registerReportRoutes (app: FastifyInstance, config: AppConfig): void {
   const workspace = vaultWorkspacePath(config.dataDir)
 
-  app.get('/api/reports', async () => ({ reports: scanReports(workspace) }))
+  app.get('/api/reports', async () => {
+    const reports = scanReports(workspace)
+    const db = openCoreDb(config.dataDir)
+    try {
+      for (const r of reports) {
+        const prov = getReportProvenance(db, r.path)
+        if (prov !== undefined) {
+          const { reportPath, ...rest } = prov
+          r.provenance = rest
+        }
+      }
+      return { reports }
+    } finally {
+      db.close()
+    }
+  })
 
   app.get('/api/reports/content/*', async (req, reply) => {
     const requested = (req.params as { '*': string })['*']

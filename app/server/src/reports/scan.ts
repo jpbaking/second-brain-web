@@ -11,6 +11,13 @@ export interface ReportMetadata {
   date: string
   mtime: string
   bytes: number
+  provenance?: {
+    sessionId: string
+    prompt: string | null
+    providerProfileId: string | null
+    vaultCommit: string | null
+    createdAt: string
+  }
 }
 
 const TYPES: Record<string, ReportType | undefined> = {

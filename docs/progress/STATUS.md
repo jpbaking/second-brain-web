@@ -29,11 +29,11 @@ Updated: 2026-07-11 (active: milestone 37)
 
 ## Active milestone
 
-milestone 37 (Regenerate Report), next item: m37-04
+milestone 37 (Regenerate Report), next item: m37-05
 
 ## Next step
 
-Execute m37-04: Update `GET /api/reports` to merge provenance data into `ReportMetadata`.
+Execute m37-05: Add `POST /api/reports/content/*/regenerate` endpoint to kick off regeneration.
 
 ## Read before working
 

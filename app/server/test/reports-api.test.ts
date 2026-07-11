@@ -9,6 +9,9 @@ import { generateOwnerAuth, writeOwnerAuth } from '../src/auth/bootstrap.js'
 import { totpCode } from '../src/auth/totp.js'
 import { CHALLENGE_COOKIE, SESSION_COOKIE } from '../src/auth/cookies.js'
 import { vaultWorkspacePath } from '../src/vault/config.js'
+import { openCoreDb } from '../src/db.js'
+import { createSession } from '../src/agent/chat-store.js'
+import { saveReportProvenance } from '../src/reports/store.js'
 import type { FastifyInstance } from 'fastify'
 
 const scratch: string[] = []
@@ -33,6 +36,17 @@ async function fixture (): Promise<{ app: FastifyInstance, cookie: string, works
   const outside = path.join(workspace, 'outside.pdf')
   writeFileSync(outside, 'outside')
   symlinkSync(outside, path.join(reportDir, 'escape.pdf'))
+
+  const coreDb = openCoreDb(config.dataDir)
+  const session = createSession(coreDb, { title: 'Test' })
+  saveReportProvenance(coreDb, {
+    reportPath: '2026/brief.html',
+    sessionId: session.id,
+    prompt: 'make brief',
+    providerProfileId: 'test-profile',
+    vaultCommit: '123commit'
+  })
+  coreDb.close()
 
   const { password, state } = await generateOwnerAuth()
   writeOwnerAuth(config.dataDir, state, { SECOND_BRAIN_WEB_SECRETS_KEY: config.secretsKey })
@@ -64,6 +78,16 @@ describe('report API', () => {
     const list = await app.inject({ method: 'GET', url: '/api/reports', headers: { cookie } })
     expect(list.statusCode).toBe(200)
     expect(list.json().reports.map((report: { path: string }) => report.path).sort()).toEqual(['2026/brief.html', '2026/notes.md'])
+
+    const brief = list.json().reports.find((r: any) => r.path === '2026/brief.html')
+    expect(brief.provenance).toBeDefined()
+    expect(brief.provenance.sessionId).toBeDefined()
+    expect(brief.provenance.prompt).toBe('make brief')
+    expect(brief.provenance.providerProfileId).toBe('test-profile')
+    expect(brief.provenance.vaultCommit).toBe('123commit')
+
+    const notes = list.json().reports.find((r: any) => r.path === '2026/notes.md')
+    expect(notes.provenance).toBeUndefined()
 
     const html = await app.inject({ method: 'GET', url: '/api/reports/content/2026/brief.html', headers: { cookie } })
     expect(html.statusCode).toBe(200)
