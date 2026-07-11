@@ -895,3 +895,13 @@ Tree clean at 9a55e12 (bar uncommitted journal lines from prior session). Princi
 
 ## 18:22 — session end
 Chat regression fixed. Awaiting next step.
+
+## 2026-07-11 18:30 — session (cont.)
+Principal asked for a Playwright visual test of the chat fix (container volume intact → Claude still authed; free to reset creds).
+- 18:35 Brought up the container (`./compose-helper.sh rebuild`), `reset-auth` for fresh owner creds, drove login (password→TOTP via `auth/totp.js`) + a real chat turn with a throwaway container-targeted spec.
+- 18:40 VISUAL CONFIRMED (no duplication): both a one-line reply and a 150-word streamed reply render cleanly, key token exactly once. The `+=` regression is fixed end-to-end against the live agent.
+- 18:45 REPAIR: found the milestone-38 processing indicator never showed on a freshly-sent message. Root cause: it was derived purely from event-replay + the restart-fix `!isLive` guard, so whether it ever painted depended on races between `core.start()`, stream-open ordering, and React batching (fast/blocking replies dumped `user_message…ended` in one commit → `isProcessing` already false). Fix: added an optimistic `pending` flag in `ChatScreen.tsx` set on send/workflow/approval/compact and cleared on `ended`/`approval_request` from the stream; indicator now `pending || isProcessing`. Reverted the interim stream-reorder (original ordering shows the user message promptly); kept the `isLive` path for mounting into an in-progress turn and the stale-processing fix.
+- 18:48 DONE REPAIR: verified live — Playwright spec PASSED; `chat-processing.png` shows the spinner during work, `chat-reply.png` shows the finished multi-paragraph reply with the indicator gone and the end token exactly once. `npm test --workspace server` → 329 green; `npm run build` clean. Throwaway live spec/config removed. Note: `test/e2e/login.spec.ts` fails pre-existing (onboarding gate, no seeded provider) — logged in BACKLOG with a deterministic-e2e follow-up. Commit to follow.
+
+## 18:48 — session end
+Chat duplication + processing-indicator both fixed and visually verified against the live container. Awaiting next step.

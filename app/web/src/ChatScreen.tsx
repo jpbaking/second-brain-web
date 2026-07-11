@@ -147,6 +147,11 @@ export function ChatScreen ({ mode }: { mode: ChatMode }) {
   const [input, setInput] = useState('')
   const [error, setError] = useState<string | null>(null)
   const [isLive, setIsLive] = useState(false)
+  // Optimistic "the agent is working on my request" flag. Set the instant the
+  // user triggers agent work (send / workflow / approval / compact), cleared
+  // when the turn ends or pauses for approval. Drives the processing indicator
+  // independently of event-replay timing, so it always shows on send.
+  const [pending, setPending] = useState(false)
   const [selectedProvider, setSelectedProvider] = useState('')
   const [selectedPreset, setSelectedPreset] = useState('normal')
   const [lockState, setLockState] = useState<LockState | null>(null)
@@ -184,7 +189,8 @@ export function ChatScreen ({ mode }: { mode: ChatMode }) {
                 continue
               }
               const event = JSON.parse(dataLine.slice(5).trim()) as ChatEvent
-              if (event.type === 'ended') setIsLive(false)
+              if (event.type === 'ended') { setIsLive(false); setPending(false) }
+              else if (event.type === 'approval_request') setPending(false)
               setEvents(prev => [...prev, event])
             } catch { /* ignore heartbeats / partial frames */ }
           }
@@ -249,6 +255,7 @@ export function ChatScreen ({ mode }: { mode: ChatMode }) {
     setInput('')
     setError(null)
     setIsLive(true)
+    setPending(true)
 
     let id = activeId
     if (id === null) {
@@ -258,6 +265,7 @@ export function ChatScreen ({ mode }: { mode: ChatMode }) {
       if (res.status === 401) { window.location.assign('/login'); return }
       if (!res.ok) {
         setInput(text)
+        setPending(false)
         setError((await res.json().catch(() => ({})) as { error?: string }).error ?? 'Could not start a chat.')
         return
       }
@@ -270,30 +278,36 @@ export function ChatScreen ({ mode }: { mode: ChatMode }) {
     }
 
     const res = await sendJson('POST', `/api/chat/sessions/${id}/messages`, { text })
-    if (!res.ok) setError('Message could not be sent.')
+    if (!res.ok) { setPending(false); setError('Message could not be sent.') }
   }
 
   async function runWorkflow (name: string) {
     if (activeId === null) { setError('Send a message to start this chat first.'); return }
     setIsLive(true)
+    setPending(true)
     const res = await sendJson('POST', `/api/chat/sessions/${activeId}/commands`, { command: name })
-    if (!res.ok) setError(`Could not run the "${name}" workflow.`)
+    if (!res.ok) { setPending(false); setError(`Could not run the "${name}" workflow.`) }
   }
 
   async function resolveApproval (toolCallId: string, approved: boolean) {
     if (activeId === null) return
     setIsLive(true)
+    setPending(true)
     await sendJson('POST', `/api/chat/sessions/${activeId}/approvals/${toolCallId}`, { approved })
   }
 
   async function compactContext () {
     if (activeId === null) return
     setIsLive(true)
+    setPending(true)
     const res = await sendJson('POST', `/api/chat/sessions/${activeId}/compact`)
-    if (!res.ok) setError('Could not request context compaction.')
+    if (!res.ok) { setPending(false); setError('Could not request context compaction.') }
   }
 
   const { lines, approvals, isProcessing, statusText } = toTranscript(events, isLive)
+  // Show the indicator either from the optimistic local flag (just sent) or from
+  // the live event stream (mounted into an in-progress turn).
+  const showProcessing = (pending || isProcessing) && approvals.length === 0
   const newChatState = ready && activeId === null
 
   return (
@@ -326,7 +340,7 @@ export function ChatScreen ({ mode }: { mode: ChatMode }) {
                   </div>
                   )
             ))}
-            {isProcessing && (
+            {showProcessing && (
               <div className='chat-msg chat-msg-assistant'>
                 <span className='chat-msg-author'>Secretary</span>
                 <div className='chat-processing'>
@@ -335,7 +349,7 @@ export function ChatScreen ({ mode }: { mode: ChatMode }) {
                 </div>
               </div>
             )}
-            {lines.length === 0 && !isProcessing && ready && <p className='chat-empty'>No messages yet. Say hello.</p>}
+            {lines.length === 0 && !showProcessing && ready && <p className='chat-empty'>No messages yet. Say hello.</p>}
           </div>
         )}
 

@@ -12,6 +12,15 @@ See `docs/project-plan/phase-008-feature-backlog-and-design-hooks.md` for other 
 
 ## Improvements
 
+- Deterministic e2e for the chat processing indicator. The current e2e login
+  spec (`test/e2e/login.spec.ts`) fails against the fresh in-process harness
+  because the onboarding gate ("No providers configured") intercepts the chat
+  welcome — it predates the gate and does not stub `/api/providers` (the vault
+  spec does). Seed a provider in `global-setup.ts` (or stub it) and add a
+  scripted-runner spec that drives send → asserts `.chat-processing` shows,
+  then a scripted `ended` hides it and folds cumulative chunks without
+  duplication. Verified live for now via a throwaway container-driven spec.
+
 - ~~Claude Code subscription provider~~ — completed in milestone 36: Cline SDK
   `claude-code` inference, container-local manual auth, configurator reminder.
 
