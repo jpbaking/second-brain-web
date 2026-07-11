@@ -2,6 +2,7 @@
   "name": "second-brain-web",
   "version": "0.0.1",
   "private": true,
+  "type": "module",
   "description": "Self-hosted single-user web console for a second-brain vault",
   "license": "0BSD",
   "engines": {

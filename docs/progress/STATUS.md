@@ -33,7 +33,7 @@ Updated: 2026-07-11 (active: milestone 28)
 
 ## Next step
 
-m29-03: Write an initial login integration test covering the password and TOTP flow.
+m29-04: Ensure Docker build excludes Playwright binaries to keep the production image slim.
 
 ## Read before working
 
