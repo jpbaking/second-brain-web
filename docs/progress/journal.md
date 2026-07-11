@@ -662,3 +662,18 @@ Principal directed the queued configure.ps1 port. Created milestone 32, pointed
 STATUS at it. No pwsh on this Linux host — verification is a structured parity
 review; principal runs on Windows. Next: m32-01.
 - 13:57 STARTED m32-01: rewrite configure.ps1 to mirror the bash configure.
+- 14:02 DONE m32-01: ported configure.ps1 to match bash configure. No pwsh on
+  host — verified by parity review. Mapping (bash -> ps1): .config paths ✓;
+  prompt/secret_prompt -> Read-Host/Read-PlainSecret ✓; prompt_required ->
+  Read-Required ✓; prompt_match -> Read-Matching ✓; confirm -> Confirm-Yes ✓;
+  yaml_quote -> Quote-Yaml ✓; slugify -> Get-Slug ✓; encrypt_secret(dist+docker)
+  -> Encrypt-ProviderKey+Test-DockerImage ✓; list_models(dist+docker) ->
+  Get-ProviderModels ✓; secrets-key read(.config then root .env)/rotate/generate
+  ✓; .env 600 + legacy root .env removal prompt ✓; provider loop retry + model
+  picker + manual fallback + default id/display ✓; providers.yaml 644 ✓; keypair
+  gen/rotate/print-pub -> New-DeployKey ✓; final summary ✓. Divergence: file
+  modes applied via chmod when present (no-op on Windows; Docker Desktop governs
+  the mount, and the app copies the key to a 600 file in the volume). Windows
+  execution smoke-test is the principal's to run. Fixed one bug pre-commit:
+  extracted Test-DockerImage so `docker image inspect` stdout can't leak into
+  the availability boolean.

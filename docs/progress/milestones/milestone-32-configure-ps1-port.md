@@ -23,7 +23,7 @@ parity review against `configure` (the bash reference).
 
 ## Checklist
 
-- [ ] **m32-01** Rewrite `configure.ps1` to mirror `configure`: `.config/`
+- [x] **m32-01** Rewrite `configure.ps1` to mirror `configure`: `.config/`
       output (`.env` 600 intent, providers/key world-readable for the container
       mount), retry-in-place prompts, provider+key-first model picker via the
       `list-models` CLI with manual fallback, ed25519 keypair generation with
@@ -32,3 +32,10 @@ parity review against `configure` (the bash reference).
       file, and CLI bridge in `configure` has a matching construct in
       `configure.ps1` (table the mapping in the journal). Principal runs the
       script on Windows to confirm execution.
+
+- [ ] **m32-02** Long model lists: add a filter + pager to the picker in BOTH
+      `configure` and `configure.ps1` — type a substring to narrow, page lists
+      taller than the terminal, plus keep 'm' for manual entry.
+      Verify (bash): scripted run against the stub with a filter narrowing a
+      seeded multi-model list, then selecting; `bash -n configure`. (ps1): parity
+      review — the filter/pager constructs match the bash version.
