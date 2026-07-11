@@ -1,6 +1,6 @@
 # STATUS — single source of truth
 
-Updated: 2026-07-11 (milestone 19 activated)
+Updated: 2026-07-11 (milestone 19 complete)
 
 ## Where we are
 
@@ -26,21 +26,19 @@ Updated: 2026-07-11 (milestone 19 activated)
 
 ## Current phase
 
-**Milestone 19 — slim Docker runtime image is active.** The principal directed
-the next recommended backlog item on 2026-07-11. Milestone 15 (YAML-only
-provider provisioning) remains designed and gated.
+Backlog-driven. **No milestone is active.** Milestone 19 scoped the Docker
+runtime install to server production dependencies, excluding React/ReactDOM.
+Milestone 15 (YAML-only provider provisioning) remains designed and gated.
 
 ## Next step
 
-- **m19-03:** run the full source gate and final size comparison.
-- Checklist: `docs/progress/milestones/milestone-19-slim-docker-image.md`.
+- None queued. Future work starts only when the principal says go.
 
 ## Read before working
 
 - `AGENTS-PLAYBOOK.md` — always, top to bottom.
-- `docs/progress/milestones/milestone-19-slim-docker-image.md`.
-- `app/Dockerfile`, root/server/web package manifests, and lockfile.
-- `docs/deploy/deployment.md` if operator-facing assumptions change.
+- `docs/progress/BACKLOG.md` — the work queue.
+- The design and project-plan documents relevant to the selected item.
 
 ## Questions for the principal
 

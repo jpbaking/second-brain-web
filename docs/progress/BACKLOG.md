@@ -17,9 +17,6 @@ and follow AGENTS-PLAYBOOK.md. Completed checklists move to
 
 ## Improvements (small/medium, self-contained)
 
-- **Slim the Docker image (~1.28GB).** The runtime `npm ci --omit=dev`
-  installs the web workspace's deps (react etc.) that are dead weight at
-  runtime. Install only the server workspace's prod deps instead.
 - **Strip inline `— source: [label](path)` markdown from follow-up display
   text.** Cosmetic; the parser deliberately preserves raw text and the
   resolved link is already shown separately as `→ linkedSource`.
@@ -36,6 +33,10 @@ voice capture, rich diff review, backup/restore UI.
 
 ## Dropped / resolved (kept for the record)
 
+- ~~Slim the Docker image by excluding web runtime dependencies~~ — completed
+  in milestone 19. The server-scoped install excludes React/ReactDOM and saves
+  8 MiB uncompressed (Docker display 1.28 GB → 1.27 GB; compressed image size
+  283,660,007 → 282,335,443 bytes). Cline's production tree remains dominant.
 - ~~Expose the native `gemini` provider~~ — completed in milestone 18: SDK
   mapping, provider API, connectivity Test action, and settings selector.
 - ~~Encrypt the TOTP secret at rest~~ — completed in milestone 17. New owner

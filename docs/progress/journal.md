@@ -454,3 +454,9 @@ Tree clean at 2723e68. Active: milestone 19, next item: m19-01.
 - 08:14 STARTED m19-01: scope the runtime npm install to the server workspace, then inspect required/excluded modules and measure the image against the 1.28 GB baseline.
 - 08:16 DONE m19-01: `second-brain-web:m19` built successfully; required server modules are present and React/ReactDOM are absent. Runtime `node_modules` fell 714 MiB → 706 MiB; Docker display 1.28 GB → 1.27 GB; compressed inspect size 283,660,007 → 282,335,443 bytes. Commit ce4e8b3.
 - 08:16 STARTED m19-02: smoke-test the slim image with fresh persistent `/data`, real reset-auth/login, guarded API access, and restart persistence.
+- 08:19 DONE m19-02: real `second-brain-web:m19` container passed health + static login page, reset-auth, password/TOTP login, guarded `/api/vault/config` 200, `/data` 0700 + owner state 0600 as node, and health after restart on the same named volume. Commit 8811b71.
+- 08:19 STARTED m19-03: run the full lint/test/build gate and final exact image-size/dependency comparison.
+- 08:19 DONE m19-03: full gate green — lint exits 0 (one pre-existing comma-dangle warning), 60 files / 266 tests passed, server + web builds passed. Final image excludes React/ReactDOM, retains Fastify/Cline, and is 282,335,443 bytes versus 283,660,007 baseline (Docker display 1.27 GB vs 1.28 GB). No operator workflow changed. Milestone 19 complete.
+
+## 2026-07-11 08:19 — session end (milestone 19 complete)
+Docker runtime installation is scoped to server production dependencies. The slim image passed real reset/login/restart persistence and the full source gate; measured savings are modest because Cline's production tree dominates. No milestone is active.
