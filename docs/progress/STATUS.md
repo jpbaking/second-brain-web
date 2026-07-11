@@ -29,11 +29,11 @@ Updated: 2026-07-11 (active: milestone 37)
 
 ## Active milestone
 
-milestone 37 (Regenerate Report), next item: m37-02
+milestone 37 (Regenerate Report), next item: m37-03
 
 ## Next step
 
-Execute m37-02: Add `app/server/src/reports/store.ts` for provenance CRUD operations.
+Execute m37-03: Update agent session completion to save provenance for newly generated reports.
 
 ## Read before working
 

@@ -5,7 +5,7 @@ Design hook: Store report provenance: originating session, prompt/workflow, prov
 
 - [x] m37-01: Add `report_provenance` table to core database migrations
   `npm test --workspace server -- migrations.test.ts`
-- [ ] m37-02: Add `app/server/src/reports/store.ts` for provenance CRUD operations
+- [x] m37-02: Add `app/server/src/reports/store.ts` for provenance CRUD operations
   `npm test --workspace server -- reports-store.test.ts`
 - [ ] m37-03: Update agent session completion to save provenance for newly generated reports
   `npm test --workspace server -- agent-session.test.ts`
