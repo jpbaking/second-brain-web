@@ -247,9 +247,12 @@
 }
 
 .chat-msg-assistant .chat-bubble {
-  white-space: pre-wrap;
   overflow-wrap: anywhere;
   color: var(--ink);
+}
+
+.chat-msg-assistant .chat-bubble:not(.prose) {
+  white-space: pre-wrap;
 }
 
 .chat-msg-author {

@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
+import ReactMarkdown from 'react-markdown'
 import { foldTranscript } from './chat-transcript.js'
 import type { ChatEvent } from './chat-transcript.js'
 
@@ -287,7 +288,11 @@ export function ChatScreen ({ mode }: { mode: ChatMode }) {
                         {(l.reasoningBlocks?.length ?? 0) > 0 && <div className='chat-reasoning-blocks'>{l.reasoningBlocks?.map((block, index) => <section key={`${l.key}-reasoning-${index}`} className='chat-reasoning-content'>{messageTime(block.createdAt)}<div>{block.text}</div></section>)}</div>}
                       </details>
                     )}
-                    {l.text !== '' && <div className='chat-bubble'>{l.text}</div>}
+                    {l.text !== '' && (
+                      <div className={`chat-bubble${l.role === 'assistant' ? ' prose' : ''}`}>
+                        {l.role === 'assistant' ? <ReactMarkdown>{l.text}</ReactMarkdown> : l.text}
+                      </div>
+                    )}
                   </div>
                   )
             ))}

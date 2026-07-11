@@ -29,7 +29,10 @@ Updated: 2026-07-12 (no active milestone; milestone 45 complete)
 
 ## Active milestone
 
-Milestone 45 (Weak-model system prompt) is complete. Archived checklist:
+Milestone 46 (Markdown messages) is complete. Archived checklist:
+`docs/progress/milestones/archive/milestone-46-markdown-messages.md`.
+
+Archived: Milestone 45 (Weak-model system prompt) is complete. Archived checklist:
 `docs/progress/milestones/archive/milestone-45-weak-model-prompt.md`.
 
 ## Next step

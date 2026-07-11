@@ -1045,3 +1045,14 @@ Tree clean at e6647bd. Principal directed improvement of the system prompt for w
 
 ## 03:38 — session end
 Structured weak-model prompt deployed and verified. Awaiting direction.
+
+## 2026-07-12 03:51 — session start
+Tree clean at 1733fbe. Active: milestone 46, next item: m46-01.
+- 03:51 STARTED m46-01: Add `react-markdown` to the `web` workspace.
+- 03:51 DONE m46-01: added `react-markdown` (already completed in background).
+- 03:52 STARTED m46-02: render `ChatScreen` messages with `ReactMarkdown`.
+- 03:53 DONE m46-02: verified by `npm test` and `npm run build` → 332 server tests + 9 web tests passed, build successful.
+- 03:53 DONE milestone 46 (Markdown rendering).
+
+## 2026-07-12 03:53 — session end
+Markdown rendering for agent messages using react-markdown is implemented and verified. Awaiting direction.
