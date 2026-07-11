@@ -585,3 +585,4 @@ Tree clean at 0b8834e. Active: milestone 28, next item: m28-01.
 - 11:09 STARTED m28-03: update ReviewCommitModal.tsx to group changed files by semantic type
 - 11:11 DONE m28-03: verified by `npm run build` → built successfully. Semantic UI grouping applied. Committing.
 - 11:11 NOTE m28-03: commit is f59d2ae.
+- 11:11 STARTED m28-04: update ReviewCommitModal.tsx to add interactive checkboxes and diff viewer
