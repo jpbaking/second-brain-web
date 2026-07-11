@@ -29,11 +29,11 @@ Updated: 2026-07-11 (active: milestone 28)
 
 ## Active milestone
 
-29: Playwright Integration Testing (`docs/progress/milestones/milestone-29-playwright-e2e.md`)
+30: Onboarding / State checks on login (`docs/progress/milestones/milestone-30-onboarding-checks.md`)
 
 ## Next step
 
-(Milestone 29 completed. Select a new milestone from the backlog.)
+m30-01: Add a dedicated UI state for when no providers are configured.
 
 ## Read before working
 

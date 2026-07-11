@@ -595,3 +595,16 @@ Tree clean at 0b8834e. Active: milestone 28, next item: m28-01.
 
 ## 2026-07-11 11:59 — session start
 Tree clean at 9c69fa5. Active: milestone 29, next item: m29-01.
+- 12:00 STARTED m29-01: Scaffold Playwright configuration in app/test/e2e with dependencies installed as devDependencies
+- 12:01 DONE m29-01: verified by npm list -> 1.61.1. Commit 284de99.
+- 12:01 STARTED m29-02: Configure app/test/e2e/global-setup.ts to boot the server and web application
+- 12:02 DONE m29-02: verified by npx playwright test --list. Commit e4e27cb.
+- 12:02 STARTED m29-03: Write an initial login integration test covering the password and TOTP flow
+- 12:05 DONE m29-03: verified by npx playwright test. Commit 14fad03.
+- 12:05 STARTED m29-04: Ensure Docker build excludes Playwright binaries
+- 12:05 DONE m29-04: verified Dockerfile uses --omit=dev in runtime stage. Commit 15c55d2.
+
+## 2026-07-11 12:05 — session end
+Tree clean. Milestone 29 complete.
+## 2026-07-11 12:31 — session start
+Tree clean. Active: milestone 30, next item: m30-01.
