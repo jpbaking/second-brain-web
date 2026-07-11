@@ -12,7 +12,7 @@ See `docs/project-plan/phase-008-feature-backlog-and-design-hooks.md` for other 
 
 ## Improvements
 
-- Claude Code subscription provider — picked up in milestone 36: Cline SDK
+- ~~Claude Code subscription provider~~ — completed in milestone 36: Cline SDK
   `claude-code` inference, container-local manual auth, configurator reminder.
 
 - ~~Fix layout and theme compliance issues across feature screens~~ — picked up in milestone 35.

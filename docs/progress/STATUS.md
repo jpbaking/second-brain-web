@@ -1,6 +1,6 @@
 # STATUS — single source of truth
 
-Updated: 2026-07-11 (active: milestone 36)
+Updated: 2026-07-11 (active: none — milestone 36 completed)
 
 ## Where we are
 
@@ -29,13 +29,11 @@ Updated: 2026-07-11 (active: milestone 36)
 
 ## Active milestone
 
-Milestone 36 — Claude Code subscription provider.
-Checklist: `docs/progress/milestones/milestone-36-claude-code-provider.md`.
-Next: principal runs `./compose-helper.sh claude-auth`; then finish m36-05 live chat.
+None
 
 ## Next step
 
-After Claude login, complete m36-05. Outstanding unrelated item: PowerShell launcher smoke-test on Windows.
+Select a new milestone from the backlog. Outstanding: PowerShell launcher smoke-test on Windows.
 
 ## Read before working
 
@@ -44,10 +42,11 @@ After Claude login, complete m36-05. Outstanding unrelated item: PowerShell laun
 
 ## Questions for the principal
 
-- Run `./compose-helper.sh claude-auth` and complete the interactive Claude
-  subscription login, then tell the agent it is done.
+- None currently.
 
 ## Known issues / parked TODOs
 
 - Tracked in `docs/progress/BACKLOG.md` (Improvements section) — do not list
   them here twice.
+- Live Claude Code routing is verified, but the current Pro allowance returned
+  `You've hit your session limit · resets 9:50am (UTC)`; retry after reset.

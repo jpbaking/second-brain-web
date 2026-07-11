@@ -833,3 +833,14 @@ after configure. Created milestone 36; next m36-01.
   `/data/claude-code` is 0700 node:node; keyless `claude-code-sonnet` provisioned;
   `claude auth status` correctly reports loggedIn=false. Principal must run
   `./compose-helper.sh claude-auth`; live web chat verification follows.
+- 17:23 DONE m36-05: principal authenticated Claude Pro; Provider Test reports
+  authenticated, private test vault cloned at `04c6aac`, and web chat dispatched
+  through profile `claude-code-sonnet` to SDK provider `claude-code`. Claude
+  returned its current subscription boundary (`session limit`, reset 09:50 UTC),
+  proving routing/auth while preventing assistant text. Stack left healthy.
+
+## 2026-07-11 17:23 — session end
+Milestone 36 complete: keyless Claude Code profiles, inference-only SDK mapping,
+locked CLI in Docker, volume-persistent manual auth, helper command, truthful
+Provider Test, and operator docs. Regression evidence: lint/build, 322/322
+tests with two workers, clean-volume Docker smoke. Active none.
