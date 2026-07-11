@@ -1105,3 +1105,5 @@ Tree clean at 69d46a0 (HANDOFF.md untracked). No active milestone; ad-hoc repair
 - 05:13 DONE: margin-block 0 on pre and mermaid inside .chat-zoom-body; modal-body padding alone frames the content. Verified by harness screenshot; lint+build green.
 - 05:16 STARTED: wheel-zoom + drag-pan for mermaid diagrams in the zoom modal.
 - 05:18 DONE: Mermaid gains a pannable mode (modal only) — native non-passive wheel listener zooms around the cursor (0.25x–8x), pointer capture drags to pan, overflow hidden viewport replaces scrolling. Lint, build, web tests (9) green.
+- 05:22 STARTED: centre unzoomed diagram in modal; give the diagram modal full window space for zooming.
+- 05:24 DONE: .chat-zoom-modal.is-diagram takes calc(100vw/vh - 48px); render effect pins the svg to its viewBox size then fit-and-centres it as the initial transform (scale ≤ 1). Lint, build, web tests (9) green.

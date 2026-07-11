@@ -678,10 +678,19 @@
   margin-block: 0;
 }
 
-.chat-zoom-modal .mermaid-diagram svg {
-  width: 100%;
-  height: auto;
-  max-width: none;
+/* Diagram preview: take all the window space up front so wheel-zooming has
+   room to grow into; the svg is sized and centred by the pan/zoom logic. */
+.chat-zoom-modal.is-diagram {
+  width: calc(100vw - 48px);
+  height: calc(100vh - 48px);
+}
+
+.chat-zoom-modal.is-diagram .chat-zoom-body {
+  overflow: hidden;
+}
+
+.chat-zoom-modal.is-diagram .mermaid-diagram {
+  height: 100%;
 }
 
 .report-toolbar {

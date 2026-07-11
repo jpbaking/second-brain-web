@@ -167,6 +167,20 @@ function Mermaid ({ chart, zoomable = false, pannable = false }: { chart: string
         const { svg } = await mermaid.render(id, chart)
         if (active && containerRef.current) {
           containerRef.current.innerHTML = svg
+          // Pannable view: pin the svg to its natural size (mermaid emits
+          // width:100%), then fit-and-centre it in the viewport as the
+          // starting transform. Wheel/drag take it from there.
+          const svgEl = containerRef.current.querySelector('svg')
+          const vp = viewportRef.current
+          if (pannable && svgEl !== null && vp !== null) {
+            const vb = svgEl.viewBox.baseVal
+            const w = vb.width > 0 ? vb.width : svgEl.getBoundingClientRect().width
+            const h = vb.height > 0 ? vb.height : svgEl.getBoundingClientRect().height
+            svgEl.style.width = `${w}px`
+            svgEl.style.maxWidth = 'none'
+            const scale = Math.min(1, vp.clientWidth / w, vp.clientHeight / h)
+            setView({ scale, x: (vp.clientWidth - w * scale) / 2, y: Math.max(0, (vp.clientHeight - h * scale) / 2) })
+          }
         }
       } catch (err) {
         if (!active || containerRef.current === null) return
@@ -181,7 +195,7 @@ function Mermaid ({ chart, zoomable = false, pannable = false }: { chart: string
     }
     renderChart().catch(() => {})
     return () => { active = false }
-  }, [chart, streaming])
+  }, [chart, streaming, pannable])
   const openZoom = useContext(ZoomContext)
   return (
     <div
@@ -195,7 +209,7 @@ function Mermaid ({ chart, zoomable = false, pannable = false }: { chart: string
         ? (
           <div
             ref={viewportRef}
-            style={{ overflow: 'hidden', cursor: drag.current !== null ? 'grabbing' : 'grab', touchAction: 'none' }}
+            style={{ overflow: 'hidden', width: '100%', height: '100%', cursor: drag.current !== null ? 'grabbing' : 'grab', touchAction: 'none' }}
             onPointerDown={e => {
               drag.current = { startX: e.clientX, startY: e.clientY, x: view.x, y: view.y }
               e.currentTarget.setPointerCapture(e.pointerId)
@@ -494,7 +508,7 @@ export function ChatScreen ({ mode }: { mode: ChatMode }) {
       {zoom !== null && (
         <dialog
           ref={zoomRef}
-          className='modal chat-zoom-modal'
+          className={`modal chat-zoom-modal${zoom.kind === 'mermaid' ? ' is-diagram' : ''}`}
           onClose={() => setZoom(null)}
           onClick={e => { if (e.target === e.currentTarget) zoomRef.current?.close() }}
         >
