@@ -72,7 +72,7 @@ export function registerVaultRoutes (app: FastifyInstance, config: AppConfig): v
     try {
       const oldConfig = readVaultConfig(db, config.dataDir)
       writeVaultConfig(db, patch)
-      
+
       const result = await syncVault(db, config.dataDir)
       if (result.state === 'error' || result.state === 'remote-mismatch') {
         writeVaultConfig(db, {

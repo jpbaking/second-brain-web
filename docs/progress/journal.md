@@ -750,3 +750,5 @@ Tree was dirty from out-of-band repairs.
 
 ## 2026-07-11 15:56 — session start
 Tree clean at 4cebaa1. Active: milestone 35, next item: m35-01.
+- 15:56 STARTED m35-01: Rewrite ProfileScreen.tsx to use lazyway design kit
+- 15:59 DONE m35-01: verified by `npm run lint && npm run build` -> successful. Commit pending.

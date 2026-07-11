@@ -38,8 +38,6 @@ export function VaultSettings () {
   const [error, setError] = useState<string | null>(null)
   const [notice, setNotice] = useState<string | null>(null)
   const [busy, setBusy] = useState(false)
-  const [syncing, setSyncing] = useState(false)
-
   async function load () {
     const res = await getJson('/api/vault/status')
     if (res.status === 401) {
@@ -98,27 +96,6 @@ export function VaultSettings () {
     }
   }
 
-  async function sync () {
-    setSyncing(true)
-    setError(null)
-    setNotice(null)
-    try {
-      const res = await sendJson('POST', '/api/vault/sync')
-      if (res.status === 401) {
-        window.location.assign('/login')
-        return
-      }
-      const body = await res.json().catch(() => ({})) as { state?: string, message?: string }
-      if (res.ok && body.state === 'ready') setNotice(body.message ?? 'Vault synced.')
-      else setError(body.message ?? 'Sync failed.')
-      await load()
-    } catch {
-      setError('Could not reach the server.')
-    } finally {
-      setSyncing(false)
-    }
-  }
-
   return (
     <div className='app-page'>
       <header className='app-hero'>
@@ -165,7 +142,7 @@ export function VaultSettings () {
             </div>
           </div>
           <div className='form-actions'>
-            <button className='btn btn-primary' type='submit' disabled={busy || syncing}>
+            <button className='btn btn-primary' type='submit' disabled={busy}>
               {busy ? 'Saving and syncing…' : 'Save and sync'}
             </button>
           </div>

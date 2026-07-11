@@ -5,11 +5,11 @@ This milestone addresses glaring layout and theme compliance issues identified a
 ## Checklist
 
 ### ProfileScreen.tsx Rewrite
-- [ ] Refactor the root container to use the `app-page` class instead of Tailwind-like utilities (`layout-stack-l`, `p-4`, etc.).
-- [ ] Rebuild the header using the standard `app-hero`, `app-title`, and `app-tagline` classes.
-- [ ] Update alert components to use the standard `.alert` classes (e.g. `alert-danger` / `alert-success`) instead of custom ones.
-- [ ] Refactor form fields to correctly use the kit's `field`, `label`, and `input` class structure.
-- [ ] Wrap the main content form in an `action-card`.
+- [x] Refactor the root container to use the `app-page` class instead of Tailwind-like utilities (`layout-stack-l`, `p-4`, etc.).
+- [x] Rebuild the header using the standard `app-hero`, `app-title`, and `app-tagline` classes.
+- [x] Update alert components to use the standard `.alert` classes (e.g. `alert-danger` / `alert-success`) instead of custom ones.
+- [x] Refactor form fields to correctly use the kit's `field`, `label`, and `input` class structure.
+- [x] Wrap the main content form in an `action-card`.
 
 ### SchedulesScreen.tsx Fixes
 - [ ] Update the `main` container to be wrapped in an `action-card` if appropriate, or ensure `stack-3` is correctly applied.
