@@ -1101,3 +1101,5 @@ Tree clean at 69d46a0 (HANDOFF.md untracked). No active milestone; ad-hoc repair
 - 05:05 DONE: rows=1 + auto-grow effect (height = scrollHeight, keyed on value so send-clear collapses it); CSS max-height 45vh with overflow-y auto. Lint, build, web tests (9) green.
 - 05:08 STARTED: centre Send/Abort beside a one-line composer; keep bottom-pinned when multi-line.
 - 05:09 DONE: autosize effect also sets an is-multiline class (scrollHeight vs computed one-line height); .chat-composer aligns center by default, flex-end when multi-line. Lint, build, web tests (9) green.
+- 05:12 STARTED: zoom modal vertical gap larger than horizontal (prose block margins on pre / mermaid stacked on modal-body padding).
+- 05:13 DONE: margin-block 0 on pre and mermaid inside .chat-zoom-body; modal-body padding alone frames the content. Verified by harness screenshot; lint+build green.
