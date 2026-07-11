@@ -513,3 +513,8 @@ Tree dirty at 6567dd3 (previous agent's m15-06 WIP: configure chmod 600→644 fi
 
 ## 2026-07-11 09:57 — session end (milestone 15 complete)
 Declarative provider provisioning shipped: YAML-only source, encrypted keys, configure scripts, compose bind-mount, read-only UI. No milestone is active; awaiting principal direction.
+
+## 2026-07-11 10:10 — session start
+Tree clean at 7d17d8b. Active: milestone 22, next item: m22-01.
+
+- 10:11 STARTED m22-01: Define transcript size threshold and calculate size in `session.ts`.
