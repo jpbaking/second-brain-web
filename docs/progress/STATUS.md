@@ -1,6 +1,6 @@
 # STATUS — single source of truth
 
-Updated: 2026-07-12 (no active milestone; milestone 40 complete)
+Updated: 2026-07-12 (milestone 41 active)
 
 ## Where we are
 
@@ -29,17 +29,18 @@ Updated: 2026-07-12 (no active milestone; milestone 40 complete)
 
 ## Active milestone
 
-milestone 40 (Stream chat replies live) is complete. Archived checklist:
-`docs/progress/milestones/archive/milestone-40-stream-chat.md`.
+Milestone 41: Expanded chat controls. Checklist:
+`docs/progress/milestones/milestone-41-chat-controls.md`.
 
 ## Next step
 
-Await direction.
+Implement m41-01: mutable per-chat provider and approval settings.
 
 ## Read before working
 
 - `AGENTS-PLAYBOOK.md` — always, top to bottom.
 - `docs/progress/BACKLOG.md` — the work queue.
+- `docs/progress/milestones/milestone-41-chat-controls.md` — active checklist.
 
 ## Questions for the principal
 

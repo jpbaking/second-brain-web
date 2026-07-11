@@ -12,6 +12,10 @@ See `docs/project-plan/phase-008-feature-backlog-and-design-hooks.md` for other 
 
 ## Improvements
 
+- **Expanded chat controls** — in progress as milestone 41: mutable provider
+  and approval settings, abort turn, pinned chats, clear-history choices, and
+  workflow-backed slash autocomplete.
+
 - ~~**Agent runs in `/app`, not the vault — it cannot read/write the vault**~~
   — completed in milestone 39. The claude-code agent inherits `process.cwd()`
   and the SDK exposes no reachable per-call cwd, so `enterVaultCwd()`
