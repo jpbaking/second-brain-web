@@ -92,6 +92,21 @@ describe('provider YAML provisioning', () => {
     rebuilt.close()
   })
 
+  it('provisions Claude Code without API key material', () => {
+    const { dataDir, file } = fixture()
+    provision(dataDir, file, `providers:
+  claude-subscription:
+    display_name: Claude subscription
+    provider: claude-code
+    model: sonnet
+`)
+    const db = openCoreDb(dataDir)
+    expect(listProfiles(db)[0]).toMatchObject({
+      id: 'claude-subscription', providerId: 'claude-code', modelId: 'sonnet', hasKey: false
+    })
+    db.close()
+  })
+
   it('treats unset, missing, empty, and directory paths as zero providers', () => {
     const { dataDir, file } = fixture()
     provisionProviderProfiles(dataDir, {})
@@ -115,6 +130,7 @@ describe('provider YAML provisioning', () => {
     ['missing model', 'providers:\n  profile:\n    provider: openai\n', 'model must be'],
     ['missing compatible URL', 'providers:\n  profile:\n    provider: openai-compatible\n    model: m\n', 'needs base_url'],
     ['plaintext key', 'providers:\n  profile:\n    provider: openai\n    model: m\n    key: plaintext\n', 'run ./configure'],
+    ['Claude Code key', 'providers:\n  profile:\n    provider: claude-code\n    model: sonnet\n    key: v1:ciphertext\n', 'must not contain a key'],
     ['non-boolean enabled', 'providers:\n  profile:\n    provider: openai\n    model: m\n    enabled: yes\n', 'enabled must be a boolean'],
     ['unknown field', 'providers:\n  profile:\n    provider: openai\n    model: m\n    default: true\n', 'unknown field']
   ])('rejects %s', (_label, source, message) => {

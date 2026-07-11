@@ -4,7 +4,7 @@ import { openCoreDb } from '../db.js'
 import { secretsKeyConfigured } from '../secrets/crypto.js'
 
 const PROFILE_ID = /^[a-z][a-z0-9-]*$/
-const KNOWN_PROVIDERS = new Set(['anthropic', 'gemini', 'openai', 'openai-compatible'])
+const KNOWN_PROVIDERS = new Set(['anthropic', 'claude-code', 'gemini', 'openai', 'openai-compatible'])
 const PROFILE_FIELDS = new Set(['display_name', 'provider', 'model', 'base_url', 'key', 'enabled'])
 
 interface ProvisionedProfile {
@@ -76,6 +76,9 @@ function parseProfiles (source: string): ProvisionedProfile[] {
       throw new ProviderProvisioningError(`provider "${id}" needs base_url for openai-compatible.`)
     }
     const key = optionalString(entry.key, `provider "${id}" key`)
+    if (providerId === 'claude-code' && key !== undefined) {
+      throw new ProviderProvisioningError(`provider "${id}" uses container CLI authentication and must not contain a key.`)
+    }
     if (key !== undefined && !key.startsWith('v1:')) {
       throw new ProviderProvisioningError(
         `provider "${id}" key must be v1: ciphertext; run ./configure to encrypt it.`

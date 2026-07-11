@@ -9,7 +9,7 @@ import { parse, stringify } from 'yaml'
 
 // ---- providers --------------------------------------------------------------
 
-export const KNOWN_PROVIDERS = ['anthropic', 'gemini', 'openai', 'openai-compatible'] as const
+export const KNOWN_PROVIDERS = ['anthropic', 'claude-code', 'gemini', 'openai', 'openai-compatible'] as const
 
 /** One provider profile, mirroring the fields provisioning.ts accepts. */
 export interface ProviderEntry {

@@ -31,11 +31,11 @@ Updated: 2026-07-11 (active: milestone 36)
 
 Milestone 36 — Claude Code subscription provider.
 Checklist: `docs/progress/milestones/milestone-36-claude-code-provider.md`.
-Next: m36-01 declarative provider/configurator support.
+Next: m36-02 Cline SDK model mapping.
 
 ## Next step
 
-Complete m36-01. Outstanding unrelated item: PowerShell launcher smoke-test on Windows.
+Complete m36-02. Outstanding unrelated item: PowerShell launcher smoke-test on Windows.
 
 ## Read before working
 

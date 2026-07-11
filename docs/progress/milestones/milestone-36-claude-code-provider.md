@@ -4,7 +4,7 @@ Principal direction: expose Cline SDK's built-in `claude-code` provider so the
 web app can use a manually authenticated Claude Code CLI and its Pro/Max usage
 allowance instead of an Anthropic API key.
 
-- [ ] **m36-01 — Declarative provider/configurator support**
+- [x] **m36-01 — Declarative provider/configurator support**
   - Accept `claude-code` in `providers.yaml` without a key or base URL.
   - Configure it with a manual model and print the post-save auth reminder.
   - Verify: `cd app && npm test --workspace server -- configure-lib.test.ts provider-provisioning.test.ts`

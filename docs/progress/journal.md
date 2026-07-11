@@ -803,3 +803,9 @@ is rejected for insufficient quota. Tree clean after repair commit; active none.
 Principal directed: add Cline SDK's Claude Code CLI provider, expose manual
 container auth through compose-helper, and remind Claude Code users to run it
 after configure. Created milestone 36; next m36-01.
+- 17:08 STARTED m36-01: accept keyless `claude-code` profiles and make the
+  configurator collect only a manual model plus post-save auth reminder.
+- 17:08 DONE m36-01: provisioning accepts keyless Claude Code profiles and
+  rejects ciphertext; configure adds it without asking for an API key, labels
+  CLI auth in menus, and prints `./compose-helper.sh claude-auth` after save.
+  Verified 24 targeted tests, server build, and scripted configure output.

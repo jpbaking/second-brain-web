@@ -162,10 +162,13 @@ async function addProvider (state: State): Promise<void> {
     say(`  Invalid provider — choose ${KNOWN_PROVIDERS.join(', ')}.`)
   }
   const baseUrl = provider === 'openai-compatible' ? await askRequired('  Base URL: ') : ''
-  const apiKey = await askSecret('  API key (blank for none): ')
+  const apiKey = provider === 'claude-code' ? '' : await askSecret('  API key (blank for none): ')
 
   let model: string
-  if (apiKey !== '') model = await pickModel(provider, baseUrl, apiKey)
+  if (provider === 'claude-code') {
+    say('  Claude Code uses the subscription authenticated inside the running container.')
+    model = await askDefault('  Model', 'sonnet')
+  } else if (apiKey !== '') model = await pickModel(provider, baseUrl, apiKey)
   else model = await askRequired('  Model: ')
 
   let id = ''
@@ -190,8 +193,9 @@ async function editProvider (state: State, id: string): Promise<void> {
     const entry = state.providers[id]
     if (entry === undefined) return
     say('')
-    say(`  Editing ${providerSummary(id, entry)}${entry.key !== undefined ? '  [key set]' : '  [no key]'}`)
-    const action = await ask('    n) rename  d) display name  m) change model  a) change API key  x) delete  b) back: ')
+    const usesCli = entry.provider === 'claude-code'
+    say(`  Editing ${providerSummary(id, entry)}${usesCli ? '  [CLI auth]' : entry.key !== undefined ? '  [key set]' : '  [no key]'}`)
+    const action = await ask(`    n) rename  d) display name  m) change model${usesCli ? '' : '  a) change API key'}  x) delete  b) back: `)
     if (action === 'b' || action === '' || closed) return
     if (action === 'x') {
       if (await confirm(`    Delete provider "${id}"?`, 'n')) { delete state.providers[id]; say(`    Deleted "${id}".`); return }
@@ -208,14 +212,14 @@ async function editProvider (state: State, id: string): Promise<void> {
     } else if (action === 'd') {
       entry.display_name = await askDefault('    Display name', entry.display_name ?? id)
     } else if (action === 'm') {
-      const listed = await confirm('    List models from the provider? (re-enter the API key)', 'n')
+      const listed = !usesCli && await confirm('    List models from the provider? (re-enter the API key)', 'n')
       if (listed) {
         const key = await askSecret('    API key: ')
         entry.model = key === '' ? await askDefault('    Model', entry.model) : await pickModel(entry.provider, entry.base_url ?? '', key, entry.model)
       } else {
         entry.model = await askDefault('    Model', entry.model)
       }
-    } else if (action === 'a') {
+    } else if (action === 'a' && !usesCli) {
       const key = await askSecret('    New API key (blank to remove): ')
       if (key === '') { delete entry.key; say('    Removed the stored key.') } else {
         entry.key = encryptSecret(key, { SECOND_BRAIN_WEB_SECRETS_KEY: state.secretsKey })
@@ -292,7 +296,7 @@ function renderMenu (state: State): string[] {
     ids.forEach((id, i) => {
       const e = state.providers[id]
       if (e === undefined) return
-      lines.push(`  ${i + 1}) ${providerSummary(id, e)}${e.key !== undefined ? '  [key set]' : '  [no key]'}`)
+      lines.push(`  ${i + 1}) ${providerSummary(id, e)}${e.provider === 'claude-code' ? '  [CLI auth]' : e.key !== undefined ? '  [key set]' : '  [no key]'}`)
     })
   }
   lines.push('')
@@ -310,7 +314,14 @@ async function main (): Promise<void> {
     const choice = await ask('> ')
     // Check the choice before EOF: reading the final piped line also closes the
     // stream, and a valid 's'/'q' must still take effect.
-    if (choice === 's') { save(state); say(`Saved to ${configDir}. Next: ./compose-helper.sh up`); break }
+    if (choice === 's') {
+      save(state)
+      say(`Saved to ${configDir}. Next: ./compose-helper.sh up`)
+      if (Object.values(state.providers).some(entry => entry.provider === 'claude-code')) {
+        say('Claude Code selected: after the container starts, run ./compose-helper.sh claude-auth')
+      }
+      break
+    }
     if (choice === 'q' || (choice === '' && closed)) { say('Quit without saving.'); break }
     if (choice === 'a') { await addProvider(state) } else if (choice === 'r') { await editRuntime(state) } else if (choice === 'k') { await manageDeployKey() } else if (choice === 'x') { await editSecretsKey(state) } else if (/^\d+$/.test(choice)) {
       const ids = Object.keys(state.providers)
