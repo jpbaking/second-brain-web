@@ -12,6 +12,52 @@ See `docs/project-plan/phase-008-feature-backlog-and-design-hooks.md` for other 
 
 ## Improvements
 
+- **Stream chat replies live; stop blocking `/messages` on the whole turn**
+  (candidate milestone 39). Today a chat turn does not stream and the POST
+  hangs for the turn's full duration, which 504s behind any reverse proxy with
+  a normal read timeout.
+  - **Symptom (principal-reported, 2026-07-11):** chatting via the
+    `assistant.int.bakings.net` proxy sticks on "Processing…"; the `/messages`
+    POST stays pending and eventually 504s; no events arrive.
+  - **Root cause (two server-side facts, evidenced):**
+    1. `POST /api/chat/sessions/:id/messages` does `await sendMessage()` →
+       `await ensureLive()` → `await runner.start()`, and `@cline/core`
+       `core.start()` only resolves when the *turn completes*. Measured: one
+       POST returned `202` after `10,878 ms` for a ~10 s reply.
+    2. In `ensureLive` (`app/server/src/agent/session.ts:427-448`) the
+       sdk-session→chat-session mapping (`setSdkSessionId` / `live.set`) is only
+       set *after* `start()` resolves. While the turn runs, every SDK event has
+       an unmapped sdkSessionId, so `handleSdkEvent` buffers it in
+       `earlyEvents` and fans out **nothing** to `/events` until the turn ends.
+       Confirmed from `chat_events` timestamps: `user_message` at `:47.314`,
+       then a 10 s gap, then all `agent_event`/`chunk` rows appended in one
+       ~0.4 s burst at `:57.756`.
+  - **Impact:** turns under the proxy read timeout "work" but arrive batched at
+    the end (never token-by-token); turns over it 504 and the client is stuck
+    on "Processing…". True SSE streaming has effectively never worked end to
+    end — the proxy cannot stream what the server withholds until turn end.
+  - **Interim mitigation (already applied by principal):** raised
+    nginx-proxy-manager `proxy_read_timeout`/`proxy_send_timeout` and set
+    `proxy_buffering off` on the host's Advanced config. This stops the 504 and
+    lets the (still batched) reply land; it does not make replies stream.
+  - **Proper fix — direction (needs investigation before checklisting):**
+    - Establish the sdk-session→chat-session binding *before* the turn finishes
+      so events fan out live. Open question: can `core.start()` surface the
+      session id early (callback / returned handle), or must we bind on the
+      first inbound event for a "just-started" chat session? Single-user app,
+      so a one-at-a-time "pending start" association is likely acceptable but
+      must be race-safe.
+    - Make the `/messages` handler return `202` as soon as the turn is kicked
+      off (don't `await` the whole turn); keep all output on `/events`.
+    - Re-verify the dependent flows that ride the same path: tool-approval
+      round-trips (`requestToolApproval`), manual/auto compaction detection
+      (which re-reads `chat_events`), and the `pending`/`isLive` processing
+      indicator added on 2026-07-11.
+  - **Verification:** a long (>60 s) turn no longer 504s; `/messages` returns
+    <1 s; `/events` delivers `chunk`s incrementally over the turn (assert via
+    timestamp spread through the proxy, not just final text); existing server
+    suite + a scripted-runner e2e stay green.
+
 - Deterministic e2e for the chat processing indicator. The current e2e login
   spec (`test/e2e/login.spec.ts`) fails against the fresh in-process harness
   because the onboarding gate ("No providers configured") intercepts the chat

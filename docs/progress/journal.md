@@ -905,3 +905,12 @@ Principal asked for a Playwright visual test of the chat fix (container volume i
 
 ## 18:48 — session end
 Chat duplication + processing-indicator both fixed and visually verified against the live container. Awaiting next step.
+
+## 2026-07-11 19:05 — session (cont.)
+Principal reported chat sticks on "Processing…" via the `assistant.int.bakings.net` proxy: `/messages` pending → 504, nothing on `/events`. Asked if extra nginx-proxy-manager SSE config is needed.
+- 19:05 DIAGNOSED (not a pure proxy issue): `/messages` blocks for the whole turn (`await runner.start()` resolves only at turn end — measured a `202` after 10,878 ms) and events are buffered in `earlyEvents` until the sdk→chat mapping is set post-`start()` (`session.ts:427-448`), so `/events` streams nothing until the turn finishes. Evidence: `chat_events` timestamps show `user_message` then a 10 s gap then all chunks in one burst. Long turns exceed the proxy read timeout → 504.
+- 19:06 Advised nginx-proxy-manager Advanced config (`proxy_read_timeout`/`proxy_send_timeout` high, `proxy_buffering off`); principal applied it (stops the 504; replies still batched, not streamed).
+- 19:10 DOCS: captured the proper server-side fix as candidate milestone 39 at the top of BACKLOG Improvements (root cause + evidence + fix direction + open questions + verification), and surfaced it in STATUS Known issues. Also corrected the stale STATUS header (was "active: milestone 37" → no active milestone, 38 complete). No code change. `progress:` commit to follow.
+
+## 19:10 — session end
+Streaming/blocking issue documented for a future milestone; proxy timeout mitigation in place. Awaiting principal's go to fix the server properly.
