@@ -98,7 +98,7 @@ export function ExplorerScreen () {
                       <span className='explorer-detail-title'>{detail.title}</span>
                       <span className='explorer-path'>{detail.path}</span>
                     </div>
-                    <button type='button' className='btn btn-ghost btn-sm' onClick={() => setSelected(null)}>Close</button>
+                    <button type='button' className='btn btn-quiet btn-sm' onClick={() => setSelected(null)}>Close</button>
                   </div>
                   {!detail.exists && <p className='explorer-missing'>This page is linked but does not exist yet.</p>}
                   {detail.preview !== '' && <p className='explorer-detail-preview'>{detail.preview}</p>}

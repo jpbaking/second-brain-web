@@ -758,3 +758,5 @@ Tree clean at 4cebaa1. Active: milestone 35, next item: m35-01.
 - 16:01 DONE m35-03: verified by `npm run lint && npm run build` -> successful. Commit pending.
 - 16:01 STARTED m35-04: Fix tab list classes and button classes in FollowUpsScreen.tsx
 - 16:02 DONE m35-04: verified by `npm run lint && npm run build` -> successful. Commit pending.
+- 16:02 STARTED m35-05: Fix button classes in ExplorerScreen.tsx
+- 16:02 DONE m35-05: verified by `npm run lint && npm run build` -> successful. Commit pending.

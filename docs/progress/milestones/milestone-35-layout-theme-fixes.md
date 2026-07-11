@@ -25,7 +25,7 @@ This milestone addresses glaring layout and theme compliance issues identified a
 - [x] Replace references to the undefined `.btn-ghost` class with `.btn-quiet`.
 
 ### ExplorerScreen.tsx Fixes
-- [ ] Replace references to the undefined `.btn-ghost` class with `.btn-quiet`.
+- [x] Replace references to the undefined `.btn-ghost` class with `.btn-quiet`.
 
 ## Wrap-up
 - [ ] Verify the fixes visually by checking the local dev server.
