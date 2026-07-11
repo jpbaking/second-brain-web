@@ -8,7 +8,7 @@ SDK auto-loads from `cline_mcp_settings.json`.
       JSON format enabled via mounted `settings.yml`) and point the app at it
       with `SECOND_BRAIN_WEB_SEARXNG_URL`. Verify: compose config parses
       (`docker compose config`).
-- [ ] m48-02 Implement `server/src/agent/web-tools-mcp.ts` — a stdio MCP
+- [x] m48-02 Implement `server/src/agent/web-tools-mcp.ts` — a stdio MCP
       server exposing `search` (SearXNG JSON query) and `fetch` (HTTP GET +
       HTML→text extraction, size/time caps). Verify: unit tests for result
       formatting and HTML extraction pass.
