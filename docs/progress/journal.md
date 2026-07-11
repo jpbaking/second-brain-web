@@ -461,3 +461,6 @@ Tree clean at 2723e68. Active: milestone 19, next item: m19-01.
 ## 2026-07-11 08:19 — session end (milestone 19 complete)
 Docker runtime installation is scoped to server production dependencies. The slim image passed real reset/login/restart persistence and the full source gate; measured savings are modest because Cline's production tree dominates. No milestone is active.
 - 08:20 CHECKPOINT: m19-03 and milestone archive committed as 115a85f; tree clean.
+
+## 2026-07-11 08:25 — playbook notification update (principal-directed)
+- 08:25 DONE progress: added the `agent-bell` audible notification protocol for completed turns and waits requiring principal action; verified `/home/j.baking/.local/bin/agent-bell` is available on PATH.
