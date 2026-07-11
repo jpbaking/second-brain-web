@@ -84,11 +84,11 @@ export function SchedulesScreen () {
         <section className='action-card'>
           <h2 className='card-title'>Create Schedule</h2>
           <form className='stack-2' onSubmit={(e) => { handleCreate(e).catch(console.error) }}>
-            <div className='form-group'>
-              <label htmlFor='sched-name'>Name</label>
+            <div className='field'>
+              <label htmlFor='sched-name' className='label'>Name</label>
               <input
                 id='sched-name'
-                className='text-input'
+                className='input'
                 value={name}
                 onChange={e => setName(e.target.value)}
                 required
@@ -96,11 +96,11 @@ export function SchedulesScreen () {
               />
             </div>
 
-            <div className='form-group'>
-              <label htmlFor='sched-workflow'>Workflow File</label>
+            <div className='field'>
+              <label htmlFor='sched-workflow' className='label'>Workflow File</label>
               <input
                 id='sched-workflow'
-                className='text-input'
+                className='input'
                 value={workflow}
                 onChange={e => setWorkflow(e.target.value)}
                 required
@@ -108,11 +108,11 @@ export function SchedulesScreen () {
               />
             </div>
 
-            <div className='form-group'>
-              <label htmlFor='sched-frequency'>Frequency</label>
+            <div className='field'>
+              <label htmlFor='sched-frequency' className='label'>Frequency</label>
               <select
                 id='sched-frequency'
-                className='select-input'
+                className='select'
                 value={frequency}
                 onChange={e => setFrequency(e.target.value)}
               >
@@ -130,25 +130,25 @@ export function SchedulesScreen () {
           </form>
         </section>
 
-        <section>
-          <h2 className='card-title' style={{ marginBottom: '1rem' }}>Active Schedules</h2>
+        <section className='action-card'>
+          <h2 className='card-title'>Active Schedules</h2>
           {schedules.length === 0
             ? (
-              <p className='empty-state' style={{ textAlign: 'left', padding: '1rem', background: 'var(--surface-sunken)', borderRadius: '4px' }}>
+              <p className='empty-state'>
                 No schedules configured.
               </p>
               )
             : (
-              <ul className='stack-1' style={{ listStyle: 'none', padding: 0, margin: 0 }}>
+              <ul className='stack-2' style={{ listStyle: 'none', padding: 0 }}>
                 {schedules.map(job => (
-                  <li key={job.id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '1rem', background: 'var(--surface-raised)', borderRadius: '4px' }}>
-                    <div>
-                      <h3 style={{ margin: '0 0 0.25rem 0', fontSize: '1.1rem' }}>{job.name}</h3>
-                      <p style={{ margin: 0, fontSize: '0.9rem', color: 'var(--text-muted)' }}>
+                  <li key={job.id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <div className='stack-1'>
+                      <h3>{job.name}</h3>
+                      <p className='text-secondary'>
                         Workflow: <strong>{job.workflow}</strong> &bull; Frequency: <strong>{job.frequency}</strong>
                       </p>
                       {job.last_run_at !== null && (
-                        <p style={{ margin: '0.25rem 0 0 0', fontSize: '0.8rem', color: 'var(--text-muted)' }}>
+                        <p className='text-secondary' style={{ fontSize: '0.9em' }}>
                           Last run: {new Date(job.last_run_at).toLocaleString()}
                         </p>
                       )}

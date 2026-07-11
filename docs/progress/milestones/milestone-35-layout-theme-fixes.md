@@ -12,10 +12,10 @@ This milestone addresses glaring layout and theme compliance issues identified a
 - [x] Wrap the main content form in an `action-card`.
 
 ### SchedulesScreen.tsx Fixes
-- [ ] Update the `main` container to be wrapped in an `action-card` if appropriate, or ensure `stack-3` is correctly applied.
-- [ ] Refactor form elements to use `field`, `input`, and `select` classes instead of `form-group`, `text-input`, and `select-input`.
-- [ ] Replace non-existent CSS variables (`--surface-sunken`, `--text-muted`) with valid kit tokens (e.g., `--surface`, `--muted`).
-- [ ] Remove heavy inline styles (`style={{...}}`) and replace them with standard utility classes.
+- [x] Update the `main` container to be wrapped in an `action-card` if appropriate, or ensure `stack-3` is correctly applied.
+- [x] Refactor form elements to use `field`, `input`, and `select` classes instead of `form-group`, `text-input`, and `select-input`.
+- [x] Replace non-existent CSS variables (`--surface-sunken`, `--text-muted`) with valid kit tokens (e.g., `--surface`, `--muted`).
+- [x] Remove heavy inline styles (`style={{...}}`) and replace them with standard utility classes.
 
 ### MeetingPrepScreen.tsx Fixes
 - [ ] Replace incorrect form classes (`form-group`, `form-label`, `form-input`) with the standard kit classes (`field`, `label`, `input`/`textarea`).
