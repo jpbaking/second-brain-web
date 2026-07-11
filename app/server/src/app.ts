@@ -13,6 +13,8 @@ import { registerVaultRoutes } from './vault/routes.js'
 import { registerProviderRoutes } from './providers/routes.js'
 import { registerChatRoutes } from './chat/routes.js'
 import { registerCaptureRoutes } from './chat/capture.js'
+import { registerScheduleRoutes } from './agent/schedule-routes.js'
+import { SchedulerService } from './agent/scheduler.js'
 import { registerUploadRoutes } from './vault/upload.js'
 import { registerReportRoutes } from './reports/routes.js'
 import { registerFollowUpRoutes, registerFollowUpActionRoutes } from './follow-ups/routes.js'
@@ -72,6 +74,11 @@ export function buildApp (config?: AppConfig, deps?: AppDeps): FastifyInstance {
     registerExplorerRoutes(app, config)
     registerSystemRoutes(app, config)
     const agentService = registerChatRoutes(app, config, deps?.agentRunner ?? new ClineAgentRunner(config.dataDir))
+    registerScheduleRoutes(app, config)
+    const scheduler = new SchedulerService(config, agentService)
+    scheduler.start()
+    app.addHook('onClose', () => { scheduler.stop() })
+
     registerCaptureRoutes(app, agentService)
     registerUploadRoutes(app, config, agentService)
     registerFollowUpActionRoutes(app, config, agentService)

@@ -143,6 +143,19 @@ const coreMigrations: Migration[] = [
       ALTER TABLE chat_sessions ADD COLUMN approval_preset TEXT NOT NULL DEFAULT 'normal';
     `,
   },
+  {
+    version: 11,
+    sql: `
+      CREATE TABLE scheduled_jobs (
+        id TEXT PRIMARY KEY,
+        name TEXT NOT NULL,
+        workflow TEXT NOT NULL,
+        frequency TEXT NOT NULL,
+        last_run_at TEXT,
+        created_at TEXT NOT NULL
+      )
+    `,
+  },
 ]
 
 const sidecarMigrations: Migration[] = [

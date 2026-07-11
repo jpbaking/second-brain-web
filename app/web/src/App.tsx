@@ -11,6 +11,7 @@ import { SearchScreen } from './SearchScreen.js'
 import { ExplorerScreen } from './ExplorerScreen.js'
 import { MeetingPrepScreen } from './MeetingPrepScreen.js'
 import { BackupScreen } from './BackupScreen.js'
+import { SchedulesScreen } from './SchedulesScreen.js'
 import { AppShell } from './AppShell.js'
 
 interface SystemStatus {
@@ -59,6 +60,7 @@ function routedScreen (path: string) {
     case '/providers': return <ProviderSettings />
     case '/command-centre': return <CommandCenter />
     case '/prep': return <MeetingPrepScreen />
+    case '/schedules': return <SchedulesScreen />
     case '/backup': return <BackupScreen />
     case '/capture': return <QuickCapture />
     case '/follow-ups':

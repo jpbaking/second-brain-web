@@ -552,4 +552,12 @@ Contradiction and staleness radar shipped. Reverting to no active milestone. Awa
 - 10:23 DONE m25: Milestone 25 complete (3/3). Tests and builds pass.
 
 ## 2026-07-11 10:23 — session end (milestone 25 complete)
-System backup UI shipped. Reverting to no active milestone. Awaiting principal direction.
+- 10:24 STARTED m26: Scheduled Briefs.
+- 10:24 DONE m26-01: Added migration 11 to create `scheduled_jobs` in core database.
+- 10:25 DONE m26-02: Added `GET`, `POST`, `DELETE` routes under `/api/schedules` for schedule CRUD.
+- 10:26 DONE m26-03: Created `SchedulerService` that polls every minute and kicks off agent workflows that are due based on frequency, passing workflow arguments correctly.
+- 10:27 DONE m26-04: Built `SchedulesScreen.tsx` for viewing and adding schedules.
+- 10:27 DONE m26: Milestone 26 complete (4/4). Tests and builds pass.
+
+## 2026-07-11 10:27 — session end (milestone 26 complete)
+Scheduled briefs mode shipped. Reverting to no active milestone. Awaiting principal direction.

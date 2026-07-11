@@ -9,11 +9,12 @@ and follow AGENTS-PLAYBOOK.md. Completed checklists move to
 ## Larger features (from the phase-008 backlog — need principal scoping)
 
 See `docs/project-plan/phase-008-feature-backlog-and-design-hooks.md` for the
-view, scheduled briefs, semantic search (embeddings),
+view, semantic search (embeddings),
 voice capture, rich diff review.
 
 ## Dropped / resolved (kept for the record)
 
+- ~~Scheduled Briefs~~ — completed in milestone 26. Added background `SchedulerService`, `scheduled_jobs` SQLite table, `/api/schedules` CRUD endpoint, and `SchedulesScreen` UI.
 - ~~Backup/Restore UI~~ — completed in milestone 25. Added `/api/backup/core` and `/api/backup/sidecar` to serve database snapshots, and created a dedicated `BackupScreen` in the UI to download them safely.
 - ~~Meeting Prep Mode~~ — completed in milestone 24. Added `/api/chat/workflows/prep` and a dedicated frontend screen to kick off parameterized workflow sessions.
 - ~~Automatic context compaction triggers~~ — completed in milestone 22. Triggers 
