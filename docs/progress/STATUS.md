@@ -31,8 +31,8 @@ The principal authorised the recommended next backlog item on 2026-07-11.
 
 ## Next step
 
-- Complete `m15-05`: wire provider YAML into compose and update the examples,
-  quick start, deployment, and backup documentation.
+- Complete `m15-06`: run the full source gate and real compose deliverable
+  check, including provider list/Test and keyed chat snapshot decryption.
 - Checklist: `docs/progress/milestones/milestone-15-provider-provisioning.md`.
 
 ## Read before working

@@ -24,12 +24,14 @@ services:
       - '${SECOND_BRAIN_WEB_BIND:-127.0.0.1}:${SECOND_BRAIN_WEB_PORT:-8722}:8722'
     environment:
       SECOND_BRAIN_WEB_SECRETS_KEY: '${SECOND_BRAIN_WEB_SECRETS_KEY:-}'
+      SECOND_BRAIN_WEB_PROVIDERS_FILE: /config/providers.yaml
       # production (image default) marks auth cookies Secure: login then works
       # on http://localhost and behind HTTPS, but NOT over plain http on a LAN
       # IP. Only relax this for LAN-without-TLS experiments.
       NODE_ENV: '${SECOND_BRAIN_WEB_NODE_ENV:-production}'
     volumes:
       - sbw-data:/data
+      - ./providers.yaml:/config/providers.yaml:ro
     healthcheck:
       test: ['CMD', 'node', '-e', "fetch('http://127.0.0.1:8722/api/health').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"]
       interval: 30s

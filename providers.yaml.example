@@ -1,0 +1,14 @@
+# Copy to providers.yaml or run ./configure. Document order is display order;
+# the first enabled profile is the default. Keys, when present, must be v1:
+# ciphertext produced by the configure script — never paste plaintext here.
+providers:
+  local:
+    display_name: Local model
+    provider: openai-compatible
+    model: local-model
+    base_url: http://host.docker.internal:1234/v1
+  # claude:
+  #   display_name: Claude
+  #   provider: anthropic
+  #   model: claude-haiku-4-5
+  #   key: v1:...generated-by-configure...

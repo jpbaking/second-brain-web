@@ -497,3 +497,5 @@ Tree clean at bfd9592. Active: milestone 15, next item: m15-01.
 - 08:41 STARTED m15-03: remove provider mutation HTTP routes and web forms, expose key status only, and retain the authenticated read/Test surface.
 - 08:47 DONE m15-03: mutation routes return 404; focused provider/API tests 12 green; full suite 62 files / 277 tests, both lints, and both builds passed. Headless Chrome at 1440 px confirmed the read-only page and configure hint render cleanly. Commit b2bd498.
 - 08:47 STARTED m15-04: add Bash and PowerShell configure flows with key reuse/rotation, silent provider-key intake, and encrypted deployment-file output.
+- 08:48 DONE m15-04: scripted Bash configuration produced mode-600 files, ciphertext decrypted to the supplied key, and plaintext was absent from disk; Bash and PowerShell parser checks passed. Commit 2ba6418.
+- 08:48 STARTED m15-05: mount provider YAML read-only in compose, add safe examples/ignores, and update quick-start, deployment, and backup guidance.

@@ -26,9 +26,13 @@ The primary way to build and run locally is
 `docker compose` wrapper that is committed to this repo. With Docker installed:
 
 ```sh
-cp .env.example .env        # set SECOND_BRAIN_WEB_SECRETS_KEY inside
+./configure                 # PowerShell: ./configure.ps1
 ./compose-helper.sh up      # build the image, start it, follow logs
 ```
+
+`configure` generates `.env`, prompts silently for provider keys, and writes
+only encrypted keys to the gitignored `providers.yaml`. Re-run it and restart
+the app to change providers; the first enabled YAML entry is the default.
 
 Then create the owner credentials (password plus TOTP) and open
 `http://localhost:8722/`:
@@ -48,7 +52,8 @@ Day-to-day commands:
 ```
 
 App data lives on the `sbw-data` named volume. Compose variables (bind address,
-port, secrets key) go in `.env`; settings for the helper itself go in
+port, secrets key) go in `.env`; provider profiles go in `providers.yaml`;
+settings for the helper itself go in
 `compose-helper.env`. Login works on `http://localhost` and behind HTTPS; on a
 plain-HTTP LAN address the `Secure` auth cookies are dropped by the browser, so
 front the app with a TLS-terminating proxy (e.g. nginx-proxy-manager) — see

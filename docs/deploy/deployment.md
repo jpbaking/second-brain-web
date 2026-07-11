@@ -8,8 +8,8 @@ only unauthenticated routes are login, the setup status page, and static assets.
 ## 1. Build and run the container
 
 For a local run, the repo ships a `docker-compose.yaml` plus
-[compose-helper](https://github.com/jpbaking/compose-helper) — `cp .env.example
-.env` then `./compose-helper.sh up` builds and starts the same image with the
+[compose-helper](https://github.com/jpbaking/compose-helper) — `./configure`
+then `./compose-helper.sh up` builds and starts the same image with the
 data root on the `sbw-data` volume (see the README quick start). The rest of
 this section shows the equivalent plain-`docker` commands for a hardened
 deployment.
@@ -22,7 +22,9 @@ docker build -t second-brain-web ./app
 docker run -d --name second-brain-web \
   -p 127.0.0.1:8722:8722 \
   -v sbw-data:/data \
+  -v /path/to/providers.yaml:/config/providers.yaml:ro \
   -e SECOND_BRAIN_WEB_SECRETS_KEY="$(cat /path/to/secrets.key)" \
+  -e SECOND_BRAIN_WEB_PROVIDERS_FILE=/config/providers.yaml \
   second-brain-web
 ```
 
@@ -58,9 +60,14 @@ sudo npm run build
 # Store secrets outside the checkout, readable only by root. Quote the value.
 sudo install -d -o root -g root -m 0755 /etc/second-brain-web
 sudoedit /etc/second-brain-web/environment
-# Add: SECOND_BRAIN_WEB_SECRETS_KEY='your-generated-key'
+# Add SECOND_BRAIN_WEB_SECRETS_KEY and:
+# SECOND_BRAIN_WEB_PROVIDERS_FILE=/etc/second-brain-web/providers.yaml
 sudo chown root:root /etc/second-brain-web/environment
 sudo chmod 0600 /etc/second-brain-web/environment
+
+# Generate providers.yaml in a protected checkout, then install it read-only.
+sudo install -o root -g second-brain-web -m 0640 \
+  /opt/second-brain-web/providers.yaml /etc/second-brain-web/providers.yaml
 
 sudo install -o root -g root -m 0644 \
   /opt/second-brain-web/docs/deploy/second-brain-web.service \
@@ -107,6 +114,7 @@ Runtime data remains in `/var/lib/second-brain-web`; migrations run at startup.
 |---|---|---|---|
 | `SECOND_BRAIN_WEB_DATA_DIR` | yes | `/data` | Private data root (db, indexes, ssh, auth, workspaces). Must be `0700`. |
 | `SECOND_BRAIN_WEB_SECRETS_KEY` | for provider keys | — | AES-256-GCM key that encrypts stored provider API keys. Without it you cannot save a keyed provider profile. Keep it out of the image and out of version control. |
+| `SECOND_BRAIN_WEB_PROVIDERS_FILE` | no | — | Read-only `providers.yaml` path. Profiles are full-replaced at startup in document order; the first enabled entry is the default. |
 | `SECOND_BRAIN_WEB_HOST` | no | `0.0.0.0` | Bind address inside the container. |
 | `SECOND_BRAIN_WEB_PORT` | no | `8722` | Listen port. |
 | `SECOND_BRAIN_WEB_UPLOAD_MAX_BYTES` | no | `52428800` (50 MiB) | Max upload size. |
@@ -212,4 +220,9 @@ docker run -d --name second-brain-web -p 127.0.0.1:8722:8722 \
 
 Database migrations run automatically at start-up. For backing up and restoring
 the data volume, see [backup-restore.md](backup-restore.md).
+
+Provider configuration is deployment state outside the volume. Use
+`./configure` to create `.env` and `providers.yaml`; never place plaintext keys
+in YAML. Ciphertext is bound to the exact secrets key, so rotating that key
+requires re-entering and re-encrypting every provider key.
 ```
