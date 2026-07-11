@@ -16,5 +16,5 @@
   - *Verify:* `cd app && npm run lint` and `npm run build`
 - [x] m28-04: **Per-file accept/discard UI.** Add controls in the review UI to select specific files for commit or to discard unwanted changes, wired to the new API capabilities.
   - *Verify:* `cd app && npm run build`
-- [ ] m28-05: **Render previews for logs and reports.** Add a preview mode/toggle in the diff UI that renders the full markdown content of the file (Memory log preview / Report preview) alongside the raw diff.
+- [x] m28-05: **Render previews for logs and reports.** Add a preview mode/toggle in the diff UI that renders the full markdown content of the file (Memory log preview / Report preview) alongside the raw diff.
   - *Verify:* `cd app && npm run build`

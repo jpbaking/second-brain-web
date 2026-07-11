@@ -8,8 +8,7 @@ and follow AGENTS-PLAYBOOK.md. Completed checklists move to
 
 ## Larger features (from the phase-008 backlog — need principal scoping)
 
-See `docs/project-plan/phase-008-feature-backlog-and-design-hooks.md` for the
-view and rich diff review.
+See `docs/project-plan/phase-008-feature-backlog-and-design-hooks.md` for other larger features.
 
 ## Nice-to-have (do not pick up automatically)
 
@@ -18,6 +17,7 @@ view and rich diff review.
 
 ## Dropped / resolved (kept for the record)
 
+- ~~Rich diff review~~ — completed in milestone 28. Added partial commit endpoints and an interactive Review Commit Modal with semantic grouping and previews.
 - ~~Principal Profile~~ — completed in milestone 27. Added persistent settings area for principal-directed preferences like report styles, timezone, and work week configuration.
 - ~~Scheduled Briefs~~ — completed in milestone 26. Added background `SchedulerService`, `scheduled_jobs` SQLite table, `/api/schedules` CRUD endpoint, and `SchedulesScreen` UI.
 - ~~Backup/Restore UI~~ — completed in milestone 25. Added `/api/backup/core` and `/api/backup/sidecar` to serve database snapshots, and created a dedicated `BackupScreen` in the UI to download them safely.

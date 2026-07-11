@@ -33,7 +33,7 @@ Updated: 2026-07-11 (active: milestone 28)
 
 ## Next step
 
-m28-05: Render previews for logs and reports
+Wait for principal to pick the next milestone.
 
 ## Read before working
 

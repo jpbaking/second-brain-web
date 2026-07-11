@@ -1,4 +1,6 @@
 import { runGit } from './git.js'
+import { readFileSync, existsSync, lstatSync } from 'node:fs'
+import path from 'node:path'
 
 /**
  * Read the working-tree status of the vault checkout (phase-003 / roadmap M4):
@@ -15,6 +17,7 @@ export interface GitStatus {
   changedFiles: string[]
   diffSummary: string | null
   fileDiffs?: Record<string, string>
+  fileContents?: Record<string, string>
 }
 
 const NOT_A_REPO: GitStatus = {
@@ -38,6 +41,10 @@ export interface GitStatusOptions {
    * Also compute per-file unified diffs for all changed files.
    */
   includeFileDiffs?: boolean
+  /**
+   * Also load the full text content of changed files.
+   */
+  includeFileContents?: boolean
 }
 
 export async function readGitStatus (workspacePath: string, options: GitStatusOptions = {}): Promise<GitStatus> {
@@ -99,6 +106,19 @@ export async function readGitStatus (workspacePath: string, options: GitStatusOp
     }
   }
 
+  let fileContents: Record<string, string> | undefined
+  if (options.includeFileContents === true && changedFiles.length > 0) {
+    fileContents = {}
+    for (const cf of changedFiles) {
+      const parts = cf.split(' -> ')
+      const newPath = parts.length === 2 ? (parts[1] as string) : (parts[0] as string)
+      const fullPath = path.join(workspacePath, newPath)
+      if (existsSync(fullPath) && lstatSync(fullPath).isFile()) {
+        fileContents[cf] = readFileSync(fullPath, 'utf8')
+      }
+    }
+  }
+
   const result: GitStatus = {
     isRepo: true,
     branch: branch.code === 0 ? branch.stdout.trim() : null,
@@ -109,5 +129,6 @@ export async function readGitStatus (workspacePath: string, options: GitStatusOp
     diffSummary,
   }
   if (fileDiffs) result.fileDiffs = fileDiffs
+  if (fileContents) result.fileContents = fileContents
   return result
 }

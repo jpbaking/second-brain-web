@@ -11,6 +11,7 @@ interface ReviewData {
     changedFiles: string[]
     diffSummary: string | null
     fileDiffs?: Record<string, string>
+    fileContents?: Record<string, string>
   }
   health: {
     available: boolean
@@ -38,6 +39,7 @@ export function ReviewCommitModal ({ onClose, onSuccess }: ReviewCommitModalProp
   const [committing, setCommitting] = useState(false)
   const [selectedFiles, setSelectedFiles] = useState<Set<string>>(new Set())
   const [expandedFiles, setExpandedFiles] = useState<Set<string>>(new Set())
+  const [previewMode, setPreviewMode] = useState<Set<string>>(new Set())
 
   useEffect(() => {
     fetch('/api/vault/review', { credentials: 'same-origin' })
@@ -108,6 +110,13 @@ export function ReviewCommitModal ({ onClose, onSuccess }: ReviewCommitModalProp
     setExpandedFiles(next)
   }
 
+  function togglePreviewMode (f: string) {
+    const next = new Set(previewMode)
+    if (next.has(f)) next.delete(f)
+    else next.add(f)
+    setPreviewMode(next)
+  }
+
   const healthPasses = review?.health.available === true && review.health.issueCount === 0
   const canSubmit = review !== null && (!review.git.dirty || healthPasses) && selectedFiles.size > 0
 
@@ -151,11 +160,24 @@ export function ReviewCommitModal ({ onClose, onSuccess }: ReviewCommitModalProp
                               <button type='button' className='btn' style={{ padding: '0.1rem 0.4rem', fontSize: '0.75rem' }} onClick={() => toggleExpand(f)}>
                                 {expandedFiles.has(f) ? 'Hide diff' : 'Show diff'}
                               </button>
+                              {expandedFiles.has(f) && review?.git.fileContents?.[f] !== undefined && (
+                                <button type='button' className='btn' style={{ padding: '0.1rem 0.4rem', fontSize: '0.75rem' }} onClick={() => togglePreviewMode(f)}>
+                                  {previewMode.has(f) ? 'View diff' : 'Preview file'}
+                                </button>
+                              )}
                             </div>
-                            {expandedFiles.has(f) && review?.git.fileDiffs?.[f] && (
-                              <pre className='review-output' style={{ marginTop: '0.25rem', fontSize: '0.85em', padding: '0.5rem', backgroundColor: 'var(--bg-card)' }}>
-                                {review.git.fileDiffs[f]}
-                              </pre>
+                            {expandedFiles.has(f) && (
+                              previewMode.has(f) && review?.git.fileContents?.[f] !== undefined
+                                ? (
+                                  <pre className='review-output' style={{ marginTop: '0.25rem', fontSize: '0.85em', padding: '0.5rem', backgroundColor: 'var(--bg-card)', whiteSpace: 'pre-wrap' }}>
+                                    {review.git.fileContents[f]}
+                                  </pre>
+                                  )
+                                : review?.git.fileDiffs?.[f] && (
+                                  <pre className='review-output' style={{ marginTop: '0.25rem', fontSize: '0.85em', padding: '0.5rem', backgroundColor: 'var(--bg-card)' }}>
+                                    {review.git.fileDiffs[f]}
+                                  </pre>
+                                )
                             )}
                           </li>
                         ))}
