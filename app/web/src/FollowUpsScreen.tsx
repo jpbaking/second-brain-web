@@ -103,18 +103,18 @@ export function FollowUpsScreen () {
       </header>
 
       <main className='action-card stack-3'>
-        <div className='followup-tabs' role='tablist' aria-label='Follow-up filters'>
+        <div className='tab-list' role='tablist' aria-label='Follow-up filters'>
           {TABS.map(tab => (
             <button
               key={tab.id}
               type='button'
               role='tab'
               aria-selected={filter === tab.id}
-              className={`followup-tab${filter === tab.id ? ' is-active' : ''}`}
+              className={`tab${filter === tab.id ? ' active' : ''}`}
               onClick={() => setFilter(tab.id)}
             >
               <span>{tab.label}</span>
-              {counts !== null && <span className='followup-tab-count'>{counts[tab.id]}</span>}
+              {counts !== null && <span className='badge'>{counts[tab.id]}</span>}
             </button>
           ))}
         </div>
@@ -150,7 +150,7 @@ export function FollowUpsScreen () {
                         />
                         <div className='followup-edit-actions'>
                           <button type='submit' className='btn btn-primary btn-sm' disabled={busyId === item.id || editing.text.trim() === ''}>Save</button>
-                          <button type='button' className='btn btn-ghost btn-sm' onClick={() => setEditing(null)}>Cancel</button>
+                          <button type='button' className='btn btn-quiet btn-sm' onClick={() => setEditing(null)}>Cancel</button>
                         </div>
                       </form>
                     )}

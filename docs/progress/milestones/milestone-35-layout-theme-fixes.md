@@ -21,8 +21,8 @@ This milestone addresses glaring layout and theme compliance issues identified a
 - [x] Replace incorrect form classes (`form-group`, `form-label`, `form-input`) with the standard kit classes (`field`, `label`, `input`/`textarea`).
 
 ### FollowUpsScreen.tsx Fixes
-- [ ] Replace the custom `followup-tabs` implementation with the kit's standard `.tab-list`, `.tab`, and `.tab.active` classes.
-- [ ] Replace references to the undefined `.btn-ghost` class with `.btn-quiet`.
+- [x] Replace the custom `followup-tabs` implementation with the kit's standard `.tab-list`, `.tab`, and `.tab.active` classes.
+- [x] Replace references to the undefined `.btn-ghost` class with `.btn-quiet`.
 
 ### ExplorerScreen.tsx Fixes
 - [ ] Replace references to the undefined `.btn-ghost` class with `.btn-quiet`.
