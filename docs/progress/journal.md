@@ -441,3 +441,9 @@ Tree clean at 4cf8ce8. Active: milestone 18, next item: m18-01.
 - 08:09 STARTED m18-01: add Gemini to the native SDK mapping and provider API allow-list with focused regressions.
 - 08:11 DONE m18-01: verified by `npm test --workspace server -- agent-runner.test.ts provider-api.test.ts` → 16 tests green. Commit e89532c.
 - 08:11 STARTED m18-02: add a Gemini-specific read-only connectivity probe using the official models endpoint and API-key header.
+- 08:12 DONE m18-02: verified by `npm test --workspace server -- provider-test.test.ts` → 9 tests green. Commit 43886ef.
+- 08:12 STARTED m18-03: add Gemini to the provider settings selector and run the full lint/test/build deliverable gate.
+- 08:12 DONE m18-03: full gate green — lint exits 0 (one pre-existing comma-dangle warning), 60 files / 266 tests passed, and server + web builds passed. Gemini is selectable in provider settings. Milestone 18 complete.
+
+## 2026-07-11 08:12 — session end (milestone 18 complete)
+Native Gemini support shipped across provider creation, SDK mapping, read-only connectivity testing via Google's documented `v1beta/models` + `x-goog-api-key`, and the settings selector. No milestone is active.

@@ -17,11 +17,6 @@ and follow AGENTS-PLAYBOOK.md. Completed checklists move to
 
 ## Improvements (small/medium, self-contained)
 
-- **Expose the native `gemini` provider.** `@cline/llms` 0.0.58 ships a
-  `gemini` provider id; adding it is a mapping entry in
-  `app/server/src/agent/runner.ts` + the known-providers set (+ a YAML
-  `provider:` value if milestone 15 has landed). No Antigravity support exists
-  in the SDK (verified 2026-07-11).
 - **Slim the Docker image (~1.28GB).** The runtime `npm ci --omit=dev`
   installs the web workspace's deps (react etc.) that are dead weight at
   runtime. Install only the server workspace's prod deps instead.
@@ -41,6 +36,8 @@ voice capture, rich diff review, backup/restore UI.
 
 ## Dropped / resolved (kept for the record)
 
+- ~~Expose the native `gemini` provider~~ — completed in milestone 18: SDK
+  mapping, provider API, connectivity Test action, and settings selector.
 - ~~Encrypt the TOTP secret at rest~~ — completed in milestone 17. New owner
   state is encrypted with `SECOND_BRAIN_WEB_SECRETS_KEY`; legacy plaintext
   state migrates safely on first authenticated read.

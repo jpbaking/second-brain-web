@@ -17,6 +17,7 @@ interface TestResult { ok: boolean, status: number | null, message: string }
 
 const PROVIDER_TYPES = [
   { id: 'anthropic', label: 'Anthropic' },
+  { id: 'gemini', label: 'Google Gemini' },
   { id: 'openai', label: 'OpenAI' },
   { id: 'openai-compatible', label: 'OpenAI-compatible (e.g. LM Studio)' },
 ]

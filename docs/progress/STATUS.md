@@ -1,6 +1,6 @@
 # STATUS — single source of truth
 
-Updated: 2026-07-11 (milestone 18 activated)
+Updated: 2026-07-11 (milestone 18 complete)
 
 ## Where we are
 
@@ -20,26 +20,25 @@ Updated: 2026-07-11 (milestone 18 activated)
   `SECOND_BRAIN_WEB_DATA_DIR` at a private `0700` dir.
 - Key facts: all app source lives under `app/` (npm workspace root — run every
   npm command from there). Core DB schema v10; sidecar (`indexes/vault.sqlite`)
-  v3. Server test suite: 260 tests, all green. UI routes: `/` = chat (last
+  v3. Server test suite: 266 tests, all green. UI routes: `/` = chat (last
   active or new), `/command-centre`, `/capture`, `/follow-ups`, `/reports`,
   `/search`, `/explorer`, `/vault`, `/providers`, `/login`, `/setup`.
 
 ## Current phase
 
-**Milestone 18 — native Gemini provider is active.** The principal directed
-the next recommended backlog item on 2026-07-11. Milestone 15 (YAML-only
-provider provisioning) remains fully designed and gated.
+Backlog-driven. **No milestone is active.** Milestone 18 exposed the native
+Gemini provider across the SDK, API, connectivity test, and settings UI.
+Milestone 15 (YAML-only provider provisioning) remains designed and gated.
 
 ## Next step
 
-- **m18-03:** add Gemini to provider settings and run the full gate.
-- Checklist: `docs/progress/milestones/milestone-18-gemini-provider.md`.
+- None queued. Future work starts only when the principal says go.
 
 ## Read before working
 
 - `AGENTS-PLAYBOOK.md` — always, top to bottom.
-- `docs/progress/milestones/milestone-18-gemini-provider.md`.
-- `docs/project-plan/master-plan.md` — provider-key security rules.
+- `docs/progress/BACKLOG.md` — the work queue.
+- The design and project-plan documents relevant to the selected item.
 
 ## Questions for the principal
 
