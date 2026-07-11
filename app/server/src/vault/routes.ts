@@ -70,8 +70,22 @@ export function registerVaultRoutes (app: FastifyInstance, config: AppConfig): v
 
     const db = openCoreDb(config.dataDir)
     try {
+      const oldConfig = readVaultConfig(db, config.dataDir)
       writeVaultConfig(db, patch)
-      return readVaultConfig(db, config.dataDir)
+      
+      const result = await syncVault(db, config.dataDir)
+      if (result.state === 'error' || result.state === 'remote-mismatch') {
+        writeVaultConfig(db, {
+          remoteUrl: oldConfig.remoteUrl,
+          branch: oldConfig.branch,
+          displayName: oldConfig.displayName
+        })
+        return await reply.code(400).send({ error: result.message || 'Sync failed.' })
+      }
+
+      const detection = detectVault(vaultWorkspacePath(config.dataDir))
+      reindexAfterVaultChange(config.dataDir, app.log)
+      return { ...readVaultConfig(db, config.dataDir), detection }
     } finally {
       db.close()
     }

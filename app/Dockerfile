@@ -30,6 +30,10 @@ FROM node:24-slim AS runtime
 ENV NODE_ENV=production
 WORKDIR /app
 
+RUN apt-get update && apt-get install -y \
+    git openssh-client ripgrep tree fd-find jq curl wget \
+    && rm -rf /var/lib/apt/lists/*
+
 # Production dependencies only (the server's runtime deps; web is static output).
 COPY package.json package-lock.json ./
 COPY server/package.json ./server/

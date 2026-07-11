@@ -166,11 +166,8 @@ export function VaultSettings () {
             </div>
           </div>
           <div className='form-actions'>
-            <button className='btn btn-primary' type='submit' disabled={busy}>
-              {busy ? 'Saving…' : 'Save settings'}
-            </button>
-            <button className='btn btn-secondary' type='button' onClick={() => { sync().catch(() => {}) }} disabled={syncing || remoteUrl === ''}>
-              {syncing ? 'Syncing…' : 'Clone / sync now'}
+            <button className='btn btn-primary' type='submit' disabled={busy || syncing}>
+              {busy ? 'Saving and syncing…' : 'Save and sync'}
             </button>
           </div>
         </form>

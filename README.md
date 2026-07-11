@@ -53,7 +53,7 @@ Then create the owner credentials (password plus TOTP) and open
 `http://localhost:8722/`:
 
 ```sh
-docker exec -it second-brain-web-second-brain-web-1 \
+./compose-helper.sh exec second-brain-web \
   node server/dist/cli/reset-auth.js /data
 ```
 

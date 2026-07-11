@@ -18,7 +18,7 @@ Updated: 2026-07-11 (active: none — milestone 34 completed)
 - **The app is production-runnable.** Quick start from the repo root:
   `./configure` (writes `.config/{.env,providers.yaml,deploy_key}`) then
   `./compose-helper.sh up`; owner setup via
-  `docker exec -it <container> node server/dist/cli/reset-auth.js /data`.
+  `./compose-helper.sh exec second-brain-web node server/dist/cli/reset-auth.js /data`.
   Bare metal: `cd app && npm install && npm run build`, then `npm start` with
   `SECOND_BRAIN_WEB_DATA_DIR` at a private `0700` dir.
 - Key facts: all app source lives under `app/` (npm workspace root — run every
@@ -33,13 +33,7 @@ None
 
 ## Next step
 
-(Milestone 34 completed — configure is now an interactive Node CLI
-(`app/server/src/cli/configure.ts`, launched by the thin `./configure` /
-`configure.ps1`). It loads .config, edits in place (per-provider keep/rename/
-change-model/change-key/delete, runtime settings, deploy key, secrets),
-preserves unknown .env keys + untouched providers, and saves on demand. Select a
-new milestone from the backlog. Outstanding: PowerShell launcher smoke-test on
-Windows.)
+(Out-of-band repairs applied: Dockerfile git tools installed, README auth setup corrected to use compose-helper, and vault config save combined with sync. Select a new milestone from the backlog. Outstanding: PowerShell launcher smoke-test on Windows.)
 
 ## Read before working
 

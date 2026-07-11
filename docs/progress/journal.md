@@ -736,3 +736,12 @@ unit tests + scripted-stdin runs (add-with-filter deterministic, edit+delete+
 preserve, deploy-key/runtime paths, e2e encrypt→decrypt). ps1 launcher + tool
 run on Windows still outstanding for the principal (no pwsh here). Tree clean.
 Active: none.
+
+## 2026-07-11 15:15 — session start
+Tree was dirty from out-of-band repairs.
+
+- 15:16 REPAIR: fixed missing `git` and `openssh-client` in the runtime Dockerfile stage, added `ripgrep`, `tree`, `fd-find`, `jq`, `curl`, and `wget` to support the agent's CLI tools.
+- 15:16 REPAIR: updated README.md to use `./compose-helper.sh exec` for auth bootstrap.
+- 15:16 REPAIR: combined vault config save and sync operations in the backend (`PUT /api/vault/config`) to rollback on clone failure, and removed the standalone "Clone / sync now" button from the web UI.
+
+## 15:16 — session end
