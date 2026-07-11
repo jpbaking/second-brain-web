@@ -1,6 +1,6 @@
 # STATUS — single source of truth
 
-Updated: 2026-07-11 (active: none — OpenAI live-path diagnosis complete)
+Updated: 2026-07-11 (active: milestone 36)
 
 ## Where we are
 
@@ -29,11 +29,13 @@ Updated: 2026-07-11 (active: none — OpenAI live-path diagnosis complete)
 
 ## Active milestone
 
-None
+Milestone 36 — Claude Code subscription provider.
+Checklist: `docs/progress/milestones/milestone-36-claude-code-provider.md`.
+Next: m36-01 declarative provider/configurator support.
 
 ## Next step
 
-Select a new milestone from the backlog. Outstanding: PowerShell launcher smoke-test on Windows.
+Complete m36-01. Outstanding unrelated item: PowerShell launcher smoke-test on Windows.
 
 ## Read before working
 
@@ -42,8 +44,7 @@ Select a new milestone from the backlog. Outstanding: PowerShell launcher smoke-
 
 ## Questions for the principal
 
-- The configured OpenAI key can list models, but generation fails with
-  `insufficient_quota`; billing/quota must be restored before chat can answer.
+- None currently. Manual `claude-auth` will be requested at m36-05 if needed.
 
 ## Known issues / parked TODOs
 

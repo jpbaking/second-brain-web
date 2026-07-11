@@ -798,3 +798,8 @@ a deleted-volume stack using `jpbaking/second-brain-test`.
 Recovery cleanup complete and stale atomic vault-config test repaired. OpenAI
 live-path root cause recorded in STATUS: model listing succeeds but generation
 is rejected for insufficient quota. Tree clean after repair commit; active none.
+
+## 2026-07-11 17:07 — milestone 36 start
+Principal directed: add Cline SDK's Claude Code CLI provider, expose manual
+container auth through compose-helper, and remind Claude Code users to run it
+after configure. Created milestone 36; next m36-01.

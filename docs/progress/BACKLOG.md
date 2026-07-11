@@ -12,6 +12,9 @@ See `docs/project-plan/phase-008-feature-backlog-and-design-hooks.md` for other 
 
 ## Improvements
 
+- Claude Code subscription provider — picked up in milestone 36: Cline SDK
+  `claude-code` inference, container-local manual auth, configurator reminder.
+
 - ~~Fix layout and theme compliance issues across feature screens~~ — picked up in milestone 35.
   - ~~`ProfileScreen.tsx`: Needs complete rewrite. It uses Tailwind-style utility classes instead of the required `app-page`/`app-hero`/`action-card` pattern, lacks the standard `alert` classes, and does not properly use form elements.~~
   - ~~`SchedulesScreen.tsx`: Uses incorrect form classes (`form-group`, `text-input`, `select-input`), references non-existent CSS variables (`--surface-sunken`, `--text-muted`), and uses heavy inline styles.~~
