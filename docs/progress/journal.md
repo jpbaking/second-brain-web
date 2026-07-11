@@ -827,3 +827,9 @@ after configure. Created milestone 36; next m36-01.
   without exposing account details. Lint/build green. Full suite green at
   322/322 with `--maxWorkers=2`; two unrestricted parallel runs each had a
   different pre-existing 5-second timing flake, both passed alone/limited.
+- 17:20 STARTED m36-05: add a runtime Claude Code profile, recreate the named
+  volume, verify provisioning/CLI/auth status, then request manual login.
+- 17:22 BLOCKED m36-05: fresh-volume stack healthy; Claude 2.1.207 callable;
+  `/data/claude-code` is 0700 node:node; keyless `claude-code-sonnet` provisioned;
+  `claude auth status` correctly reports loggedIn=false. Principal must run
+  `./compose-helper.sh claude-auth`; live web chat verification follows.

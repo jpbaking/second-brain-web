@@ -31,11 +31,11 @@ Updated: 2026-07-11 (active: milestone 36)
 
 Milestone 36 — Claude Code subscription provider.
 Checklist: `docs/progress/milestones/milestone-36-claude-code-provider.md`.
-Next: m36-05 clean-volume live smoke test.
+Next: principal runs `./compose-helper.sh claude-auth`; then finish m36-05 live chat.
 
 ## Next step
 
-Complete m36-05. Outstanding unrelated item: PowerShell launcher smoke-test on Windows.
+After Claude login, complete m36-05. Outstanding unrelated item: PowerShell launcher smoke-test on Windows.
 
 ## Read before working
 
@@ -44,7 +44,8 @@ Complete m36-05. Outstanding unrelated item: PowerShell launcher smoke-test on W
 
 ## Questions for the principal
 
-- None currently. Manual `claude-auth` will be requested at m36-05 if needed.
+- Run `./compose-helper.sh claude-auth` and complete the interactive Claude
+  subscription login, then tell the agent it is done.
 
 ## Known issues / parked TODOs
 

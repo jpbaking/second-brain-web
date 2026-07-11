@@ -25,7 +25,7 @@ allowance instead of an Anthropic API key.
     versus API billing and the container-local credential boundary.
   - Verify: `cd app && npm run lint && npm test && npm run build`
 
-- [ ] **m36-05 — Clean-volume live smoke test**
+- [ ] **m36-05 — Clean-volume live smoke test** [blocked: awaiting principal Claude login]
   - Recreate the stack, confirm the profile provisions and CLI is callable,
     then pause for the principal's manual Claude login if authentication is
     absent; after login, verify a web chat reaches Claude Code.
