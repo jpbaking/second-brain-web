@@ -1,6 +1,6 @@
 import { afterEach, beforeEach, describe, expect, it } from 'vitest'
 import { DatabaseSync } from 'node:sqlite'
-import { coreDbPath, openCoreDb } from '../src/db.js'
+import { openCoreDb } from '../src/db.js'
 import { prepareDatabases } from '../src/migrations.js'
 import { getReportProvenance, saveReportProvenance, deleteReportProvenance } from '../src/reports/store.js'
 import { createSession } from '../src/agent/chat-store.js'

@@ -42,42 +42,42 @@ function payloadText (payload: unknown): string | undefined {
   return undefined
 }
 
-function renderMessageText(text: string) {
-  const parts = [];
-  let currentIdx = 0;
-  let key = 0;
+function renderMessageText (text: string) {
+  const parts = []
+  let currentIdx = 0
+  let key = 0
 
   while (currentIdx < text.length) {
-    const startIdx = text.indexOf('<thinking>', currentIdx);
+    const startIdx = text.indexOf('<thinking>', currentIdx)
     if (startIdx === -1) {
-      parts.push(<span key={key++}>{text.slice(currentIdx)}</span>);
-      break;
+      parts.push(<span key={key++}>{text.slice(currentIdx)}</span>)
+      break
     }
 
     if (startIdx > currentIdx) {
-      parts.push(<span key={key++}>{text.slice(currentIdx, startIdx)}</span>);
+      parts.push(<span key={key++}>{text.slice(currentIdx, startIdx)}</span>)
     }
 
-    const endIdx = text.indexOf('</thinking>', startIdx + 10);
+    const endIdx = text.indexOf('</thinking>', startIdx + 10)
     if (endIdx === -1) {
       parts.push(
-        <div key={key++} className="chat-thinking is-active">
-          <div className="chat-thinking-header">Thinking…</div>
-          <div className="chat-thinking-content">{text.slice(startIdx + 10)}</div>
+        <div key={key++} className='chat-thinking is-active'>
+          <div className='chat-thinking-header'>Thinking…</div>
+          <div className='chat-thinking-content'>{text.slice(startIdx + 10)}</div>
         </div>
-      );
-      break;
+      )
+      break
     } else {
       parts.push(
-        <div key={key++} className="chat-thinking">
-          <div className="chat-thinking-header">Thinking</div>
-          <div className="chat-thinking-content">{text.slice(startIdx + 10, endIdx)}</div>
+        <div key={key++} className='chat-thinking'>
+          <div className='chat-thinking-header'>Thinking</div>
+          <div className='chat-thinking-content'>{text.slice(startIdx + 10, endIdx)}</div>
         </div>
-      );
-      currentIdx = endIdx + 11;
+      )
+      currentIdx = endIdx + 11
     }
   }
-  return parts.length > 0 ? parts : text;
+  return parts.length > 0 ? parts : text
 }
 
 /** Fold the event log into transcript lines. Assistant text is cumulative. */
@@ -86,7 +86,7 @@ function toTranscript (events: ChatEvent[], isLive: boolean): { lines: Line[], a
   const approvals = new Map<string, PendingApproval>()
   let assistant: Line | null = null
   let isProcessing = false
-  let statusText: string | undefined = undefined
+  let statusText: string | undefined
 
   for (const e of events) {
     if (e.type === 'user_message') {
@@ -122,11 +122,11 @@ function toTranscript (events: ChatEvent[], isLive: boolean): { lines: Line[], a
       statusText = undefined
     }
   }
-  
+
   if (!isLive) {
     isProcessing = false
   }
-  
+
   return { lines, approvals: [...approvals.values()], isProcessing, statusText }
 }
 
@@ -189,8 +189,7 @@ export function ChatScreen ({ mode }: { mode: ChatMode }) {
                 continue
               }
               const event = JSON.parse(dataLine.slice(5).trim()) as ChatEvent
-              if (event.type === 'ended') { setIsLive(false); setPending(false) }
-              else if (event.type === 'approval_request') setPending(false)
+              if (event.type === 'ended') { setIsLive(false); setPending(false) } else if (event.type === 'approval_request') setPending(false)
               setEvents(prev => [...prev, event])
             } catch { /* ignore heartbeats / partial frames */ }
           }

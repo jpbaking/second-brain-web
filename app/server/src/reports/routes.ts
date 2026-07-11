@@ -57,7 +57,7 @@ export function registerReportRoutes (app: FastifyInstance, config: AppConfig, a
 
   app.post('/api/reports/regenerate/*', async (req, reply) => {
     if (agentService === undefined) return reply.code(503).send({ error: 'Agent service not available' })
-    
+
     const requested = (req.params as { '*': string })['*']
     let resolved: string
     try {
@@ -87,7 +87,7 @@ export function registerReportRoutes (app: FastifyInstance, config: AppConfig, a
       title: `Regenerate: ${path.basename(resolved)}`,
       providerProfileId: prov.providerProfileId
     })
-    
+
     agentService.sendMessage(session.id, prov.prompt).catch(() => {})
 
     return await reply.send({ sessionId: session.id })

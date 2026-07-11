@@ -298,7 +298,7 @@ describe('AgentSessionService', () => {
 
     const svc = new AgentSessionService(db, runner, { snapshotFor: () => snap({}), vaultCwd })
     const s = svc.create({ title: 'ReportGen', providerProfileId: 'p-1' })
-    
+
     // Ensure session creation time is strictly before the report creation time
     await new Promise(resolve => setTimeout(resolve, 10))
     await svc.sendMessage(s.id, 'Write a new report')
