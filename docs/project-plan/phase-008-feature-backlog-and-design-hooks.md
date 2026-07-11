@@ -31,6 +31,18 @@ in MVP:
 
 These should be considered soon after MVP, but the MVP can work without them.
 
+### Playwright Integration Testing
+
+Move away from disposable headless Chrome CDP scripts to a structured
+Playwright integration testing suite. This may also involve setting up a
+Playwright MCP server for seamless agent-driven visual verification.
+
+Design hook:
+
+- Ensure the testing harness can boot `buildApp` with a fake agent-runner and
+  navigate the application easily. Keep testing setup isolated (e.g., `app/test/e2e`)
+  without bloating the production server image.
+
 ### Automatic Context Compaction
 
 Trigger compaction automatically on token/context pressure when SDK data is

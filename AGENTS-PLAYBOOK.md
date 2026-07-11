@@ -220,10 +220,10 @@ Distilled from the master plan ([full list](docs/project-plan/master-plan.md)):
 
 - **npm from the wrong directory.** Every npm command runs from `app/`. From
   the root you get "no package.json" or, worse, stale results.
-- **Browser e2e harnesses import `app/server/dist`** — run
-  `cd app && npm run build` first or you test yesterday's code. (Harnesses
-  live in the session scratchpad, not the repo; write them fresh, boot
-  `buildApp` with a fake agent-runner, drive headless Chrome over CDP.)
+- **Browser e2e testing uses Playwright** — run
+  `cd app && npm run build` first or you test yesterday's code. (Historically,
+  harnesses lived in the session scratchpad using raw CDP, but we are moving
+  towards structured Playwright integration testing. See the backlog.)
 - **Date-rot in tests.** Never hardcode "today" in fixtures; derive dates from
   the current date (see `follow-ups-api.test.ts` for the pattern).
 - **Vite serves dev on `SECOND_BRAIN_WEB_PORT`, the API on port+1** in

@@ -8,6 +8,8 @@ and follow AGENTS-PLAYBOOK.md. Completed checklists move to
 
 ## Larger features (from the phase-008 backlog — need principal scoping)
 
+- Playwright integration testing setup
+
 See `docs/project-plan/phase-008-feature-backlog-and-design-hooks.md` for other larger features.
 
 ## Nice-to-have (do not pick up automatically)
