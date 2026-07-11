@@ -16,6 +16,9 @@ coverage/
 providers.yaml
 *.local
 
+# Runtime config produced by ./configure (secrets key, providers, deploy key)
+.config/
+
 # Runtime data and private vault material
 data/
 /data/

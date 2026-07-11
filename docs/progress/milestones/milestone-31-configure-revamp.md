@@ -54,7 +54,7 @@ with the public key surfaced on the Vault page; bash `configure` only for now
       non-interactive run (stdin-fed) produces the expected `.config/` files in
       a temp `ROOT`.
 
-- [ ] **m31-06** Wire `docker-compose.yaml` (`.config/providers.yaml` mount +
+- [x] **m31-06** Wire `docker-compose.yaml` (`.config/providers.yaml` mount +
       `.config/deploy_key` mount + `SECOND_BRAIN_WEB_SSH_KEY_PATH`) and
       `.gitignore` (`.config/`).
       Verify: `SECOND_BRAIN_WEB_SECRETS_KEY=x docker compose --env-file /dev/null config`

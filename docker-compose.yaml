@@ -25,13 +25,22 @@ services:
     environment:
       SECOND_BRAIN_WEB_SECRETS_KEY: '${SECOND_BRAIN_WEB_SECRETS_KEY:-}'
       SECOND_BRAIN_WEB_PROVIDERS_FILE: /config/providers.yaml
+      # The app copies this mounted deploy key to a private 600 file in the data
+      # volume on start-up (the mount is world-readable so the node user can
+      # read it; see ./configure and the .config/ layout).
+      SECOND_BRAIN_WEB_SSH_KEY_PATH: /config/deploy_key
       # production (image default) marks auth cookies Secure: login then works
       # on http://localhost and behind HTTPS, but NOT over plain http on a LAN
       # IP. Only relax this for LAN-without-TLS experiments.
       NODE_ENV: '${SECOND_BRAIN_WEB_NODE_ENV:-production}'
     volumes:
       - sbw-data:/data
-      - ./providers.yaml:/config/providers.yaml:ro
+      # Runtime config lives in the gitignored .config/ dir, produced by
+      # ./configure. These files must exist before `up`, or Docker will create
+      # directories in their place (bind-mount default).
+      - ./.config/providers.yaml:/config/providers.yaml:ro
+      - ./.config/deploy_key:/config/deploy_key:ro
+      - ./.config/deploy_key.pub:/config/deploy_key.pub:ro
     healthcheck:
       test: ['CMD', 'node', '-e', "fetch('http://127.0.0.1:8722/api/health').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"]
       interval: 30s
