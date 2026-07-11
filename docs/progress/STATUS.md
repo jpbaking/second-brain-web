@@ -29,11 +29,11 @@ Updated: 2026-07-11 (active: milestone 37)
 
 ## Active milestone
 
-milestone 37 (Regenerate Report), next item: m37-03
+milestone 37 (Regenerate Report), next item: m37-04
 
 ## Next step
 
-Execute m37-03: Update agent session completion to save provenance for newly generated reports.
+Execute m37-04: Update `GET /api/reports` to merge provenance data into `ReportMetadata`.
 
 ## Read before working
 

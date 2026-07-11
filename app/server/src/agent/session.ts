@@ -2,6 +2,9 @@ import { appendEvent, createSession, getSession, getSessionBySdkId, readEventsSi
 import { toModelConfig } from './runner.js'
 import { TOOL_POLICIES, evaluateTool, isMutatingTool } from './tool-policy.js'
 import { acquireLock, heartbeatLock, releaseLock } from '../vault/lock.js'
+import { readGitStatus } from '../vault/git-status.js'
+import { scanReports } from '../reports/scan.js'
+import { saveReportProvenance } from '../reports/store.js'
 import type { AgentRunner, AgentModelConfig, SdkApprovalRequest, ToolApprovalDecision } from './runner.js'
 import type { ChatEvent, ChatSession, ApprovalPreset } from './chat-store.js'
 import type { ProviderSnapshot } from '../providers/snapshot.js'
@@ -131,6 +134,7 @@ export class AgentSessionService {
       this.live.delete(session.id)
       this.checkCompaction(session.id)
       this.checkAutoCompaction(session.id)
+      this.checkReportProvenance(session.id).catch(() => {})
       const lockId = this.locks.get(session.id)
       if (lockId !== undefined) {
         releaseLock(this.db, lockId)
@@ -214,6 +218,38 @@ export class AgentSessionService {
 
     if (!currentlyCompacting && charCount > AgentSessionService.AUTO_COMPACTION_CHAR_THRESHOLD) {
       this.compactSession(chatSessionId).catch(() => {})
+    }
+  }
+
+  private async checkReportProvenance (chatSessionId: string): Promise<void> {
+    const session = getSession(this.db, chatSessionId)
+    if (!session) return
+
+    let config: CapturedConfig | undefined
+    try {
+      config = this.capturedConfig(chatSessionId)
+    } catch {
+      return
+    }
+
+    const events = readEventsSince(this.db, chatSessionId, 0)
+    const promptEvent = events.find(e => e.type === 'user_message')
+    const prompt = (promptEvent?.payload as { text?: string } | null)?.text ?? null
+
+    const sessionStart = new Date(session.createdAt).getTime()
+    const vaultStatus = await readGitStatus(this.opts.vaultCwd)
+
+    const reports = scanReports(this.opts.vaultCwd)
+    for (const report of reports) {
+      if (new Date(report.mtime).getTime() >= sessionStart) {
+        saveReportProvenance(this.db, {
+          reportPath: report.path,
+          sessionId: chatSessionId,
+          prompt,
+          providerProfileId: config.providerProfileId,
+          vaultCommit: vaultStatus.commit
+        })
+      }
     }
   }
 

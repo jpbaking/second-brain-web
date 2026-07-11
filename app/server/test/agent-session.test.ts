@@ -1,4 +1,5 @@
-import { mkdtempSync, rmSync } from 'node:fs'
+import { mkdtempSync, rmSync, mkdirSync, writeFileSync } from 'node:fs'
+import { execSync } from 'node:child_process'
 import { tmpdir } from 'node:os'
 import path from 'node:path'
 import { afterEach, describe, expect, it } from 'vitest'
@@ -282,5 +283,37 @@ describe('AgentSessionService', () => {
     } finally {
       ;(AgentSessionService as any).AUTO_COMPACTION_CHAR_THRESHOLD = originalThreshold
     }
+  })
+
+  it('saves report provenance upon session completion for new reports', async () => {
+    const db = freshDb()
+    const runner = new FakeRunner()
+
+    const vaultCwd = path.join(scratch[scratch.length - 1]!, 'vault')
+    mkdirSync(path.join(vaultCwd, 'reports'), { recursive: true })
+    execSync('git init', { cwd: vaultCwd })
+    execSync('git config user.name "Test"', { cwd: vaultCwd })
+    execSync('git config user.email "test@example.com"', { cwd: vaultCwd })
+    execSync('git commit --allow-empty -m "initial"', { cwd: vaultCwd })
+
+    const svc = new AgentSessionService(db, runner, { snapshotFor: () => snap({}), vaultCwd })
+    const s = svc.create({ title: 'ReportGen', providerProfileId: 'p-1' })
+    
+    // Ensure session creation time is strictly before the report creation time
+    await new Promise(resolve => setTimeout(resolve, 10))
+    await svc.sendMessage(s.id, 'Write a new report')
+
+    writeFileSync(path.join(vaultCwd, 'reports', 'test-report.md'), '# Test Report\n\nContent.')
+    const sdkId = getSession(db, s.id)!.sdkSessionId!
+
+    runner.emit({ type: 'ended', sessionId: sdkId, payload: null })
+    await new Promise(resolve => setTimeout(resolve, 500))
+
+    const row = db.prepare('SELECT * FROM report_provenance WHERE report_path = ?').get('test-report.md') as any
+    expect(row).toBeDefined()
+    expect(row.session_id).toBe(s.id)
+    expect(row.prompt).toBe('Write a new report')
+    expect(row.provider_profile_id).toBe('prof-1')
+    expect(row.vault_commit).toBeDefined()
   })
 })
