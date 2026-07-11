@@ -201,9 +201,18 @@ export function ChatScreen ({ mode }: { mode: ChatMode }) {
     pump().catch(() => {})
   }, [])
 
+  const loadSessionConfig = useCallback(async (id: string) => {
+    const res = await getJson(`/api/chat/sessions/${id}`)
+    if (!res.ok) return
+    const { session } = await res.json() as { session: ChatSession & { approvalPreset: string } }
+    setSelectedProvider(session.providerProfileId ?? '')
+    setSelectedPreset(session.approvalPreset)
+  }, [])
+
   useEffect(() => {
     if (mode.kind === 'session') {
       openStream(mode.id)
+      loadSessionConfig(mode.id).catch(() => {})
     } else if (mode.kind === 'auto') {
       // Landing: open the most recently active chat, or show the new-chat state.
       getJson('/api/chat/sessions').then(async res => {
@@ -215,6 +224,7 @@ export function ChatScreen ({ mode }: { mode: ChatMode }) {
           window.dispatchEvent(new Event('chats-changed'))
           setActiveId(latest.id)
           openStream(latest.id)
+          loadSessionConfig(latest.id).catch(() => {})
         }
         setReady(true)
       }).catch(() => { setError('Could not load chats.'); setReady(true) })
@@ -223,7 +233,7 @@ export function ChatScreen ({ mode }: { mode: ChatMode }) {
       .then(setProviders).catch(() => {})
     getJson('/api/chat/workflows').then(async r => r.ok ? (await r.json() as { workflows: string[] }).workflows : [])
       .then(setWorkflows).catch(() => {})
-  }, [openStream]) // mode is stable per page load (no client-side router)
+  }, [openStream, loadSessionConfig]) // mode is stable per page load (no client-side router)
 
   useEffect(() => () => streamAbort.current?.abort(), [])
 
@@ -301,6 +311,14 @@ export function ChatScreen ({ mode }: { mode: ChatMode }) {
     setPending(true)
     const res = await sendJson('POST', `/api/chat/sessions/${activeId}/compact`)
     if (!res.ok) { setPending(false); setError('Could not request context compaction.') }
+  }
+
+  async function updateConfig (providerProfileId: string, approvalPreset: string) {
+    setSelectedProvider(providerProfileId)
+    setSelectedPreset(approvalPreset)
+    if (activeId === null || providerProfileId === '') return
+    const res = await sendJson('PATCH', `/api/chat/sessions/${activeId}`, { providerProfileId, approvalPreset })
+    if (!res.ok) setError('Could not update chat settings.')
   }
 
   const { lines, approvals, isProcessing, statusText } = toTranscript(events, isLive)
@@ -388,11 +406,10 @@ export function ChatScreen ({ mode }: { mode: ChatMode }) {
           />
           <button className='btn btn-primary chat-send' type='submit' disabled={input.trim() === ''}>Send</button>
         </form>
-        {newChatState && (
-          <div className='chat-composer-options'>
+        <div className='chat-composer-options'>
             <label className='chat-composer-select'>
               Provider
-              <select value={selectedProvider} onChange={e => setSelectedProvider(e.target.value)}>
+              <select value={selectedProvider} onChange={e => { updateConfig(e.target.value, selectedPreset).catch(() => {}) }}>
                 <option value=''>Default provider</option>
                 {providers.filter(p => p.enabled).map(p => (
                   <option key={p.id} value={p.id}>{p.displayName}{p.isDefault ? ' (default)' : ''}</option>
@@ -401,14 +418,13 @@ export function ChatScreen ({ mode }: { mode: ChatMode }) {
             </label>
             <label className='chat-composer-select'>
               Approvals
-              <select value={selectedPreset} onChange={e => setSelectedPreset(e.target.value)}>
+              <select value={selectedPreset} onChange={e => { updateConfig(selectedProvider || providers.find(p => p.isDefault)?.id || '', e.target.value).catch(() => {}) }}>
                 <option value='normal'>Normal</option>
                 <option value='read-only'>Read-only</option>
                 <option value='high-trust'>High-trust</option>
               </select>
             </label>
-          </div>
-        )}
+        </div>
       </div>
     </div>
   )

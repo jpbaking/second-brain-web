@@ -34,7 +34,7 @@ Milestone 41: Expanded chat controls. Checklist:
 
 ## Next step
 
-Implement m41-01: mutable per-chat provider and approval settings.
+Implement m41-02: abort active turns from the composer.
 
 ## Read before working
 

@@ -956,3 +956,5 @@ Multi-turn chat regression fixed and fully verified. No active milestone; awaiti
 ## 2026-07-12 02:49 — session start
 Tree clean at f0d9f4b. Principal directed expansion of chat controls: mutable provider/approvals, abort, pinning, clear history, and slash autocomplete.
 - 02:49 STARTED milestone 41: created a six-item checklist. Provider changes will stop the active SDK session and rehydrate the next turn with the selected provider; approval changes apply immediately. Slash autocomplete uses the existing vault workflow catalogue. Next: m41-01.
+- 02:50 STARTED m41-01: persist and expose mutable provider/approval settings and keep their controls visible in active chats.
+- 02:52 DONE m41-01: active chats retain provider/approval controls; PATCH updates both. Provider changes stop the current SDK binding, append a new captured config, and rehydrate the next turn under that provider. Verified by 25 focused tests and full server/web build.

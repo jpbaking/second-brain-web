@@ -2,7 +2,7 @@
 
 ## Tasks
 
-- [ ] m41-01: Persist mutable provider and approval settings per chat; expose an authenticated update API. A provider change stops the current SDK session so the next turn rehydrates under the new provider; approval changes apply immediately.
+- [x] m41-01: Persist mutable provider and approval settings per chat; expose an authenticated update API. A provider change stops the current SDK session so the next turn rehydrates under the new provider; approval changes apply immediately.
   - Verify: `cd app && npm test --workspace server -- chat-store.test.ts agent-session.test.ts chat-api.test.ts`
 - [ ] m41-02: Add abort-turn service/API support and replace the processing-state Send action with an Abort action.
   - Verify: `cd app && npm test --workspace server -- agent-session.test.ts chat-api.test.ts && npm run build --workspace web`

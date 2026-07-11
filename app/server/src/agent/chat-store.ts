@@ -125,6 +125,11 @@ export function renameSession (db: DatabaseSync, id: string, title: string, now:
   return db.prepare('UPDATE chat_sessions SET title = ?, updated_at = ? WHERE id = ?').run(title, now.toISOString(), id).changes > 0
 }
 
+export function updateSessionConfig (db: DatabaseSync, id: string, providerProfileId: string, approvalPreset: ApprovalPreset, now: Date = new Date()): boolean {
+  return db.prepare('UPDATE chat_sessions SET provider_profile_id = ?, approval_preset = ?, updated_at = ? WHERE id = ?')
+    .run(providerProfileId, approvalPreset, now.toISOString(), id).changes > 0
+}
+
 export function saveCompaction (db: DatabaseSync, id: string, summary: string, now: Date = new Date()): boolean {
   const iso = now.toISOString()
   return db.prepare('UPDATE chat_sessions SET compaction_summary = ?, compacted_at = ?, updated_at = ? WHERE id = ?').run(summary, iso, iso, id).changes > 0

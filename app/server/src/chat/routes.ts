@@ -57,9 +57,20 @@ export function registerChatRoutes (app: FastifyInstance, config: AppConfig, run
 
   app.patch('/api/chat/sessions/:id', async (req, reply) => {
     const id = (req.params as { id: string }).id
-    const title = str((req.body as { title?: unknown })?.title)
-    if (title === undefined) return await reply.code(400).send({ error: 'title is required' })
-    if (!renameSession(db, id, title)) return await reply.code(404).send({ error: 'session not found' })
+    const body = (req.body ?? {}) as { title?: unknown, providerProfileId?: unknown, approvalPreset?: unknown }
+    const title = str(body.title)
+    if (title !== undefined && !renameSession(db, id, title)) return await reply.code(404).send({ error: 'session not found' })
+    if (body.providerProfileId !== undefined || body.approvalPreset !== undefined) {
+      const current = getSession(db, id)
+      if (current === undefined) return await reply.code(404).send({ error: 'session not found' })
+      const providerProfileId = str(body.providerProfileId) ?? current.providerProfileId
+      const approvalPreset = body.approvalPreset === 'read-only' || body.approvalPreset === 'high-trust' || body.approvalPreset === 'normal' ? body.approvalPreset : current.approvalPreset
+      if (providerProfileId === null) return await reply.code(400).send({ error: 'providerProfileId is required' })
+      try { return await service.updateConfig(id, providerProfileId, approvalPreset) } catch (err) {
+        return await reply.code(400).send({ error: err instanceof Error ? err.message : 'could not update session' })
+      }
+    }
+    if (title === undefined) return await reply.code(400).send({ error: 'an update is required' })
     return getSession(db, id)
   })
 

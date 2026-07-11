@@ -1,4 +1,4 @@
-import { createSession, getSession, getSessionBySdkId, readEventsSince, setSdkSessionId, saveCompaction } from './chat-store.js'
+import { createSession, getSession, getSessionBySdkId, readEventsSince, setSdkSessionId, saveCompaction, updateSessionConfig } from './chat-store.js'
 import { toModelConfig } from './runner.js'
 import { TOOL_POLICIES, evaluateTool, isMutatingTool } from './tool-policy.js'
 import { acquireLock, heartbeatLock, releaseLock } from '../vault/lock.js'
@@ -445,9 +445,25 @@ export class AgentSessionService {
   /** The config captured at create (non-secret), from the first session_config event. */
   private capturedConfig (chatSessionId: string): CapturedConfig {
     this.flushEvents()
-    const event = readEventsSince(this.db, chatSessionId, 0).find(e => e.type === 'session_config')
+    const event = readEventsSince(this.db, chatSessionId, 0).findLast(e => e.type === 'session_config')
     if (event === undefined) throw new Error(`chat session ${chatSessionId} has no captured config`)
     return event.payload as CapturedConfig
+  }
+
+  async updateConfig (chatSessionId: string, providerProfileId: string, approvalPreset: ApprovalPreset): Promise<ChatSession> {
+    const snap = this.opts.snapshotFor(providerProfileId)
+    if (snap === undefined) throw new Error('provider profile is unavailable')
+    const current = getSession(this.db, chatSessionId)
+    if (current === undefined) throw new Error('session not found')
+    if (current.providerProfileId !== snap.profileId) {
+      const sdkSessionId = this.live.get(chatSessionId)
+      if (sdkSessionId !== undefined) await this.runner.stop(sdkSessionId)
+      this.live.delete(chatSessionId)
+      setSdkSessionId(this.db, chatSessionId, null)
+      this.emitEvent(chatSessionId, 'session_config', capturedFromSnapshot(snap))
+    }
+    updateSessionConfig(this.db, chatSessionId, snap.profileId, approvalPreset)
+    return getSession(this.db, chatSessionId) as ChatSession
   }
 
   /** Build the SDK start config from the captured config plus the current key. */
