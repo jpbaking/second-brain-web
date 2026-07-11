@@ -29,7 +29,7 @@ async function sendJson (method: string, url: string, body?: unknown): Promise<R
   })
 }
 
-const localDateTime = new Intl.DateTimeFormat(undefined, { dateStyle: 'medium', timeStyle: 'short' })
+const localDateTime = new Intl.DateTimeFormat(undefined, { dateStyle: 'medium', timeStyle: 'medium' })
 const localDateTimeFull = new Intl.DateTimeFormat(undefined, { dateStyle: 'full', timeStyle: 'long' })
 
 function messageTime (createdAt?: string) {

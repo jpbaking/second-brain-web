@@ -1014,3 +1014,11 @@ Tree clean at 5970c5e. Principal directed timestamps for every reasoning block a
 
 ## 03:24 — session end
 Milestone 43 complete; rebuilding the production container with browser-local timestamps for handoff.
+
+## 2026-07-12 03:25 — session start
+Tree clean at 186a810. Principal requested visible chat timestamps include seconds.
+- 03:25 REPAIR STARTED: change the browser-local visible formatter from short to medium time precision.
+- 03:26 REPAIR DONE: visible browser-local timestamps now include seconds. Verified by 9 web tests, clean web lint, and production web build.
+
+## 03:26 — session end
+Second-precision timestamps shipped; rebuilding the running container for handoff.
