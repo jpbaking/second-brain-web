@@ -1,6 +1,6 @@
 # STATUS — single source of truth
 
-Updated: 2026-07-12 (no active milestone; milestone 48 complete)
+Updated: 2026-07-12 (active: milestone 49 — chat file upload)
 
 ## Where we are
 
@@ -29,7 +29,12 @@ Updated: 2026-07-12 (no active milestone; milestone 48 complete)
 
 ## Active milestone
 
-Milestone 48 (Web Search Tools — SearXNG) is complete. Archived checklist:
+**Milestone 49 — Chat-scoped file upload (attachments).** Checklist:
+`docs/progress/milestones/milestone-49-chat-file-upload.md`. Next item:
+m49-01 (server attachment store + routes). Principal go: 2026-07-12
+("implement the chat file upload").
+
+Archived: Milestone 48 (Web Search Tools — SearXNG) is complete. Archived checklist:
 `docs/progress/milestones/archive/milestone-48-web-search.md`. Chat agent now
 has auto-approved `web__search` / `web__fetch` MCP tools backed by the new
 compose-internal `searxng` service; needs `./compose-helper.sh up` (rebuild)
@@ -43,7 +48,7 @@ Archived: Milestone 46 (Markdown messages) is complete. Archived checklist:
 
 ## Next step
 
-Await direction.
+Work milestone 49, item m49-01.
 
 ## Read before working
 

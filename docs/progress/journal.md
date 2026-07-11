@@ -1120,3 +1120,7 @@ Tree clean at 69d46a0 (HANDOFF.md untracked). No active milestone; ad-hoc repair
 - 06:09 DONE m48-03: web-tools-registration.ts writes/removes the "web" stdio server entry in <dataDir>/sessions/settings/cline_mcp_settings.json (schema-checked against the SDK's zod parser: { transport: { type: stdio, command, args, env } }); ClineAgentRunner.ensureCore applies it right after pinning CLINE_DATA_DIR, driven by SECOND_BRAIN_WEB_SEARXNG_URL; script path resolved next to the compiled runner. Other servers and unknown settings keys preserved; corrupt file recovered. 5 unit tests + lint green.
 - 06:13 DONE m48-04: web__search / web__fetch added to READ_TOOLS (auto-approve, incl. read-only preset — network reads, never the vault) and TOOL_POLICIES. Policy tests extended.
 - 06:14 DONE m48-05: full suite green — lint, build, 351 server + 9 web tests. Stdio smoke test of the compiled dist/agent/web-tools-mcp.js: initialize + tools/list handshake OK; live tools/call fetch of example.com returned extracted text. Milestone 48 complete; live searxng check awaits ./compose-helper.sh up (principal).
+
+## 2026-07-12 06:19 — session start
+Tree clean at 7df650b. Principal go: chat file upload backlog item → opened
+milestone 49 (chat-scoped attachments). Next item: m49-01.
