@@ -5,7 +5,7 @@ Provide a private settings area for working preferences (Principal Profile) to f
 
 ## Checklist
 
-- [ ] m27-01: Create migration 12 in `app/server/src/migrations.ts` to add `principal_profile` table (`id` TEXT PRIMARY KEY CHECK(id = 'default'), `preferences_json` TEXT NOT NULL, `updated_at` TEXT NOT NULL).
+- [x] m27-01: Create migration 12 in `app/server/src/migrations.ts` to add `principal_profile` table (`id` TEXT PRIMARY KEY CHECK(id = 'default'), `preferences_json` TEXT NOT NULL, `updated_at` TEXT NOT NULL).
       Run: `npm test --workspace server -- migrations.test.ts`
 - [ ] m27-02: Add `app/server/src/profile/store.ts` with `getProfile` and `updateProfile` functions.
       Run: `npm test --workspace server`

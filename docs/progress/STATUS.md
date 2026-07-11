@@ -33,7 +33,7 @@ Milestone 27 (Principal Profile) is active.
 
 ## Next step
 
-- m27-01: Create migration 12 in `app/server/src/migrations.ts` to add `principal_profile` table.
+- m27-02: Add `app/server/src/profile/store.ts` with `getProfile` and `updateProfile` functions.
 
 ## Read before working
 

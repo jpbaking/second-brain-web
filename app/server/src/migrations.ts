@@ -156,6 +156,16 @@ const coreMigrations: Migration[] = [
       )
     `,
   },
+  {
+    version: 12,
+    sql: `
+      CREATE TABLE principal_profile (
+        id TEXT PRIMARY KEY CHECK (id = 'default'),
+        preferences_json TEXT NOT NULL,
+        updated_at TEXT NOT NULL
+      )
+    `,
+  },
 ]
 
 const sidecarMigrations: Migration[] = [
