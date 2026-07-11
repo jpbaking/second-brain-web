@@ -19,11 +19,12 @@ function snap (over: Partial<ProviderSnapshot>): ProviderSnapshot {
 describe('sdkProviderId', () => {
   it('maps m05 provider ids to SDK provider ids', () => {
     expect(sdkProviderId('anthropic')).toBe('anthropic')
+    expect(sdkProviderId('gemini')).toBe('gemini')
     expect(sdkProviderId('openai')).toBe('openai-native')
     expect(sdkProviderId('openai-compatible')).toBe('openai-compatible')
   })
   it('throws on an unsupported provider id', () => {
-    expect(() => sdkProviderId('gemini')).toThrow(/unsupported/)
+    expect(() => sdkProviderId('unknown')).toThrow(/unsupported/)
   })
 })
 
@@ -49,6 +50,11 @@ describe('toModelConfig', () => {
     const cfg = toModelConfig(snap({ providerId: 'openai', modelId: 'gpt-5', apiKey: 'sk-oa' }))
     expect(cfg.providerId).toBe('openai-native')
     expect(cfg.modelId).toBe('gpt-5')
+  })
+
+  it('maps an official Gemini snapshot to the native gemini provider', () => {
+    const cfg = toModelConfig(snap({ providerId: 'gemini', modelId: 'gemini-2.5-pro', apiKey: 'google-key' }))
+    expect(cfg).toEqual({ providerId: 'gemini', modelId: 'gemini-2.5-pro', apiKey: 'google-key' })
   })
 
   it('normalises a bare openai-compatible base URL and passes the key + headers', () => {

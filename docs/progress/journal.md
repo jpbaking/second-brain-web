@@ -435,3 +435,7 @@ Tree clean at 98ac8de. Active: milestone 17, next item: m17-01.
 ## 2026-07-11 08:07 — session end (milestone 17 complete)
 Owner TOTP secrets are encrypted at rest exclusively with `SECOND_BRAIN_WEB_SECRETS_KEY`; fresh resets refuse a missing key, encrypted login works, and legacy v1 plaintext state migrates without credential changes or destructive failure. No milestone is active.
 - 08:08 CHECKPOINT: m17-04 and milestone archive committed as add84f5; tree clean.
+
+## 2026-07-11 08:09 — session start
+Tree clean at 4cf8ce8. Active: milestone 18, next item: m18-01.
+- 08:09 STARTED m18-01: add Gemini to the native SDK mapping and provider API allow-list with focused regressions.

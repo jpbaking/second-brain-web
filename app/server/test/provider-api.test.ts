@@ -94,13 +94,21 @@ describe('provider API', () => {
     expect(res.json().error).toMatch(/SECOND_BRAIN_WEB_SECRETS_KEY/)
   })
 
-  it('rejects an unknown provider and a bad base URL', async () => {
+  it('accepts Gemini and rejects an unknown provider and a bad base URL', async () => {
     const { app, cookie } = await authedApp('k')
+    const gemini = await app.inject({
+      method: 'POST',
+      url: '/api/providers',
+      headers: { cookie },
+      payload: { displayName: 'Gemini', providerId: 'gemini', modelId: 'gemini-2.5-pro' },
+    })
+    expect(gemini.statusCode).toBe(201)
+    expect(gemini.json()).toMatchObject({ providerId: 'gemini', modelId: 'gemini-2.5-pro' })
     const bad = await app.inject({
       method: 'POST',
       url: '/api/providers',
       headers: { cookie },
-      payload: { displayName: 'X', providerId: 'gemini', modelId: 'm' },
+      payload: { displayName: 'X', providerId: 'unknown', modelId: 'm' },
     })
     expect(bad.statusCode).toBe(400)
     const badUrl = await app.inject({

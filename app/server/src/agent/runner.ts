@@ -21,12 +21,14 @@ export interface AgentModelConfig {
 /**
  * Map a m05 provider id to the SDK provider id.
  * - `anthropic`         → `anthropic`      (official Anthropic API)
+ * - `gemini`            → `gemini`         (official Gemini API)
  * - `openai`            → `openai-native`  (official OpenAI API)
  * - `openai-compatible` → `openai-compatible` (LM Studio and other gateways)
  * Pending live confirmation in m5a-10.
  */
 const PROVIDER_ID_MAP: Record<string, string> = {
   anthropic: 'anthropic',
+  gemini: 'gemini',
   openai: 'openai-native',
   'openai-compatible': 'openai-compatible',
 }

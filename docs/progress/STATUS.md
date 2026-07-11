@@ -32,7 +32,7 @@ provider provisioning) remains fully designed and gated.
 
 ## Next step
 
-- **m18-01:** add Gemini to SDK mapping and provider API validation.
+- **m18-02:** add Gemini-aware provider connectivity testing.
 - Checklist: `docs/progress/milestones/milestone-18-gemini-provider.md`.
 
 ## Read before working

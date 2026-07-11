@@ -14,7 +14,7 @@ import type { AppConfig } from '../config.js'
 import type { CreateProfileInput, UpdateProfileInput } from './store.js'
 import type { FastifyInstance } from 'fastify'
 
-const KNOWN_PROVIDERS = new Set(['anthropic', 'openai', 'openai-compatible'])
+const KNOWN_PROVIDERS = new Set(['anthropic', 'gemini', 'openai', 'openai-compatible'])
 
 interface ProviderBody {
   displayName?: unknown
