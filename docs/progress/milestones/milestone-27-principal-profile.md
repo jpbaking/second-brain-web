@@ -11,5 +11,5 @@ Provide a private settings area for working preferences (Principal Profile) to f
       Run: `npm test --workspace server`
 - [x] m27-03: Add `/api/profile` GET and PUT routes in `app/server/src/profile/routes.ts` (and register in `app.ts`).
       Run: `npm test --workspace server`
-- [ ] m27-04: Create `app/web/src/ProfileScreen.tsx` to view and edit preferences (Default report style, Timezone, Work week). Add to `/profile` route and `AppShell.tsx` navigation.
+- [x] m27-04: Create `app/web/src/ProfileScreen.tsx` to view and edit preferences (Default report style, Timezone, Work week). Add to `/profile` route and `AppShell.tsx` navigation.
       Run: `npm run lint && npm run build`

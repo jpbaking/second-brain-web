@@ -46,7 +46,7 @@ export class SchedulerService {
         } else {
           const lastRun = new Date(job.last_run_at).getTime()
           const msSinceLast = now - lastRun
-          
+
           if (job.frequency === 'hourly' && msSinceLast >= 60 * 60 * 1000) isDue = true
           if (job.frequency === 'daily' && msSinceLast >= 24 * 60 * 60 * 1000) isDue = true
           if (job.frequency === 'weekly' && msSinceLast >= 7 * 24 * 60 * 60 * 1000) isDue = true

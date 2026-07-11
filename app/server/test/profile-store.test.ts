@@ -32,7 +32,7 @@ describe('profile store', () => {
 
   it('merges updates with existing profile', () => {
     updateProfile(db, { timezone: 'Europe/London', workWeek: 'Mon-Fri' })
-    
+
     const updated = updateProfile(db, { timezone: 'UTC' })
     expect(updated).toEqual({ timezone: 'UTC', workWeek: 'Mon-Fri' })
     expect(getProfile(db)).toEqual({ timezone: 'UTC', workWeek: 'Mon-Fri' })

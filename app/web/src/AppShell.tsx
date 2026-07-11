@@ -22,6 +22,7 @@ const NAV_ITEMS: NavItem[] = [
   { href: '/reports', label: 'Reports' },
   { href: '/search', label: 'Search' },
   { href: '/explorer', label: 'Explorer' },
+  { href: '/profile', label: 'Profile' },
   { href: '/schedules', label: 'Schedules' },
   { href: '/vault', label: 'Vault' },
   { href: '/backup', label: 'Backup' },

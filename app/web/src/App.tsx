@@ -14,6 +14,8 @@ import { BackupScreen } from './BackupScreen.js'
 import { SchedulesScreen } from './SchedulesScreen.js'
 import { AppShell } from './AppShell.js'
 
+import { ProfileScreen } from './ProfileScreen.js'
+
 interface SystemStatus {
   dataDir: {
     path: string
@@ -56,6 +58,7 @@ export function App () {
 
 function routedScreen (path: string) {
   switch (path) {
+    case '/profile': return <ProfileScreen />
     case '/vault': return <VaultSettings />
     case '/providers': return <ProviderSettings />
     case '/command-centre': return <CommandCenter />

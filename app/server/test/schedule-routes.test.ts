@@ -43,7 +43,7 @@ describe('schedule routes', () => {
     prepareDatabases(config.dataDir)
     const { password, state } = await generateOwnerAuth()
     writeOwnerAuth(config.dataDir, state, { SECOND_BRAIN_WEB_SECRETS_KEY: config.secretsKey })
-    
+
     const app = buildApp(config)
     apps.push(app)
 

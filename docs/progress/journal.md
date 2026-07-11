@@ -571,3 +571,6 @@ Tree clean at 0b502b6. Active: milestone 27, next item: m27-01.
 - 10:33 STARTED m27-03: Add /api/profile GET and PUT routes in app/server/src/profile/routes.ts (and register in app.ts)
 - 10:33 DONE m27-03: verified by `npm test --workspace server -- profile-api.test.ts` -> 2 tests green.
 - 10:34 DONE m27-03: verified by `npm test --workspace server -- profile-api.test.ts` -> 2 tests green.
+- 10:35 STARTED m27-04: Create app/web/src/ProfileScreen.tsx to view and edit preferences, add to /profile route and AppShell.tsx
+- 10:36 DONE m27-04: verified by `npm run lint && npm run build` -> green.
+- 10:39 DONE m27-04: verified by npm run lint and build -> green.

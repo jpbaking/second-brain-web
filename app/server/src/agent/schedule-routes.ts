@@ -34,7 +34,7 @@ export function registerScheduleRoutes (app: FastifyInstance, config: AppConfig)
     if (body.frequency !== 'hourly' && body.frequency !== 'daily' && body.frequency !== 'weekly') {
       return await reply.code(400).send({ error: 'frequency must be hourly, daily, or weekly' })
     }
-    
+
     const db = openCoreDb(config.dataDir)
     try {
       const id = randomUUID()
@@ -43,7 +43,7 @@ export function registerScheduleRoutes (app: FastifyInstance, config: AppConfig)
         INSERT INTO scheduled_jobs (id, name, workflow, frequency, created_at)
         VALUES (?, ?, ?, ?, ?)
       `).run(id, body.name.trim(), body.workflow.trim(), body.frequency, now)
-      
+
       const job = db.prepare('SELECT * FROM scheduled_jobs WHERE id = ?').get(id)
       return await reply.code(201).send(job)
     } finally {

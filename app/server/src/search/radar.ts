@@ -19,7 +19,7 @@ export function readRadar (db: DatabaseSync): RadarData {
     AND mtime < strftime('%Y-%m-%dT%H:%M:%fZ', 'now', '-60 days')
     ORDER BY mtime ASC
     LIMIT 5
-  `).all() as RadarItem[]
+  `).all() as unknown as RadarItem[]
 
   const stalePeople = db.prepare(`
     SELECT path, title, mtime FROM vault_search
@@ -27,13 +27,13 @@ export function readRadar (db: DatabaseSync): RadarData {
     AND mtime < strftime('%Y-%m-%dT%H:%M:%fZ', 'now', '-60 days')
     ORDER BY mtime ASC
     LIMIT 5
-  `).all() as RadarItem[]
+  `).all() as unknown as RadarItem[]
 
   const warnings = db.prepare(`
     SELECT path, title FROM vault_search
     WHERE vault_search MATCH 'TODO OR WARNING'
     LIMIT 5
-  `).all() as RadarItem[]
+  `).all() as unknown as RadarItem[]
 
   return { staleProjects, stalePeople, warnings }
 }

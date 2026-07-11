@@ -50,7 +50,7 @@ describe('workflow expansion (unit)', () => {
     expect(expanded).toContain('File everything under inbox/.')
     // A /name shortcut is accepted.
     expect(expandWorkflow(root, '/inbox')).toBe(expanded)
-    
+
     // Parameters are interpolated.
     const paramsExpanded = expandWorkflow(root, 'inbox', { Title: 'Sync meeting', Date: 'Today' })
     expect(paramsExpanded).toContain('[Parameters]\nTitle: Sync meeting\nDate: Today\n\n# Inbox')
@@ -123,7 +123,7 @@ describe('workflow command route', () => {
     prepareDatabases(config.dataDir)
     seedWorkflows(vaultWorkspacePath(config.dataDir))
     writeFileSync(path.join(workflowsDir(vaultWorkspacePath(config.dataDir)), 'prep.md'), '# Prep\nRun prep.\n')
-    
+
     const { password, state } = await generateOwnerAuth()
     writeOwnerAuth(config.dataDir, state, { SECOND_BRAIN_WEB_SECRETS_KEY: config.secretsKey })
     const runner = new CapturingRunner()
@@ -144,7 +144,7 @@ describe('workflow command route', () => {
       payload: { title: 'Q3 Planning', date: 'Tomorrow', attendees: 'Alice, Bob', objective: 'Plan Q3' }
     })
     expect(res.statusCode).toBe(201)
-    
+
     expect(runner.starts).toHaveLength(1)
     const prompt = runner.starts[0]?.prompt ?? ''
     expect(prompt).toContain('[Parameters]')

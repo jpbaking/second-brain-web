@@ -22,7 +22,7 @@ export function getProfile (db: DatabaseSync): PrincipalProfile {
 export function updateProfile (db: DatabaseSync, updates: Partial<PrincipalProfile>): PrincipalProfile {
   const current = getProfile(db)
   const next: PrincipalProfile = { ...current, ...updates }
-  
+
   const now = new Date().toISOString()
   db.prepare(`
     INSERT INTO principal_profile (id, preferences_json, updated_at)
@@ -31,6 +31,6 @@ export function updateProfile (db: DatabaseSync, updates: Partial<PrincipalProfi
       preferences_json = excluded.preferences_json,
       updated_at = excluded.updated_at
   `).run(JSON.stringify(next), now)
-  
+
   return next
 }
