@@ -10,10 +10,11 @@ and follow AGENTS-PLAYBOOK.md. Completed checklists move to
 
 See `docs/project-plan/phase-008-feature-backlog-and-design-hooks.md` for the
 view, scheduled briefs, semantic search (embeddings),
-voice capture, rich diff review, backup/restore UI.
+voice capture, rich diff review.
 
 ## Dropped / resolved (kept for the record)
 
+- ~~Backup/Restore UI~~ — completed in milestone 25. Added `/api/backup/core` and `/api/backup/sidecar` to serve database snapshots, and created a dedicated `BackupScreen` in the UI to download them safely.
 - ~~Meeting Prep Mode~~ — completed in milestone 24. Added `/api/chat/workflows/prep` and a dedicated frontend screen to kick off parameterized workflow sessions.
 - ~~Automatic context compaction triggers~~ — completed in milestone 22. Triggers 
   compaction based on character count threshold at the end of agent turns.

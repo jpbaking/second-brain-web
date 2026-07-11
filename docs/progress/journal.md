@@ -546,4 +546,10 @@ Contradiction and staleness radar shipped. Reverting to no active milestone. Awa
 - 10:19 DONE m24: Milestone 24 complete (4/4). Tests and builds pass.
 
 ## 2026-07-11 10:20 — session end (milestone 24 complete)
-Meeting prep mode shipped. Reverting to no active milestone. Awaiting principal direction.
+- 10:21 STARTED m25: Backup / Restore UI.
+- 10:22 DONE m25-01: Added `GET /api/backup/:db` endpoint using `node:sqlite`'s `serialize()` and tests in `backup-api.test.ts`.
+- 10:23 DONE m25-02 & m25-03: Created `BackupScreen.tsx`, added to router and navigation sidebar.
+- 10:23 DONE m25: Milestone 25 complete (3/3). Tests and builds pass.
+
+## 2026-07-11 10:23 — session end (milestone 25 complete)
+System backup UI shipped. Reverting to no active milestone. Awaiting principal direction.

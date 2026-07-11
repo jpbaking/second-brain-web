@@ -23,6 +23,7 @@ const NAV_ITEMS: NavItem[] = [
   { href: '/search', label: 'Search' },
   { href: '/explorer', label: 'Explorer' },
   { href: '/vault', label: 'Vault' },
+  { href: '/backup', label: 'Backup' },
   { href: '/providers', label: 'Providers' },
 ]
 
