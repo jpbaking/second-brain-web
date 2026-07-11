@@ -12,7 +12,7 @@ SDK auto-loads from `cline_mcp_settings.json`.
       server exposing `search` (SearXNG JSON query) and `fetch` (HTTP GET +
       HTML→text extraction, size/time caps). Verify: unit tests for result
       formatting and HTML extraction pass.
-- [ ] m48-03 Register the MCP server in the Cline settings file
+- [x] m48-03 Register the MCP server in the Cline settings file
       (`<dataDir>/sessions/settings/cline_mcp_settings.json`) when
       `SECOND_BRAIN_WEB_SEARXNG_URL` is set; remove/disable when unset.
       Verify: unit test on the settings writer.

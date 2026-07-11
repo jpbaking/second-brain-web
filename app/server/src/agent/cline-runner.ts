@@ -1,6 +1,9 @@
 import { existsSync } from 'node:fs'
+import path from 'node:path'
+import { fileURLToPath } from 'node:url'
 import { ClineCore } from '@cline/core'
 import { agentStorageEnv } from './runner.js'
+import { applyWebToolsRegistration } from './web-tools-registration.js'
 import { vaultWorkspacePath } from '../vault/config.js'
 import type { AgentRunner, AgentStartInput, AgentStartResult } from './runner.js'
 
@@ -44,6 +47,14 @@ export class ClineAgentRunner implements AgentRunner {
       // as its cwd (m39). Runs lazily on the first chat, by which point the
       // vault exists.
       enterVaultCwd(this.dataDir)
+      // Register (or unregister) the web-tools MCP server before the SDK
+      // reads its settings file on the first session start (m48). The file
+      // lives under CLINE_DATA_DIR, which agentStorageEnv just pinned.
+      applyWebToolsRegistration({
+        settingsPath: path.join(this.dataDir, 'sessions', 'settings', 'cline_mcp_settings.json'),
+        scriptPath: path.join(path.dirname(fileURLToPath(import.meta.url)), 'web-tools-mcp.js'),
+        searxngUrl: process.env.SECOND_BRAIN_WEB_SEARXNG_URL,
+      })
       const core = await ClineCore.create({ clientName: this.clientName, backendMode: 'local' })
       // Attach any listeners registered before start() (e.g. the SSE bridge).
       for (const listener of this.listeners) core.subscribe(listener)
