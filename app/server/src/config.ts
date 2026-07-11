@@ -13,6 +13,7 @@ export const DATA_SUBDIRS = [
   'logs',
   'sessions',
   'claude-code',
+  'chat-uploads',
 ] as const
 
 export interface AppConfig {

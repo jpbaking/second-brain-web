@@ -8,7 +8,7 @@ reads text content into the conversation). Cleaned up when the session is
 deleted. Backlog entry: "Chat-scoped file upload (attachments)" (SDK findings
 2026-07-12).
 
-- [ ] **m49-01** Server attachment store + routes: `chat-uploads` data subdir;
+- [x] **m49-01** Server attachment store + routes: `chat-uploads` data subdir;
   `POST /api/chat/sessions/:id/uploads` (multipart, per-file size cap from
   `uploadMaxBytes`, safe filenames) storing under
   `chat-uploads/<sessionId>/<attachmentId>/<name>` and returning

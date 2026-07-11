@@ -1124,3 +1124,4 @@ Tree clean at 69d46a0 (HANDOFF.md untracked). No active milestone; ad-hoc repair
 ## 2026-07-12 06:19 — session start
 Tree clean at 7df650b. Principal go: chat file upload backlog item → opened
 milestone 49 (chat-scoped attachments). Next item: m49-01.
+- 06:23 STARTED m49-01: chat-uploads subdir, attachment store module, upload/delete routes + tests

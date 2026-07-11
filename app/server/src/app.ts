@@ -13,6 +13,7 @@ import { registerVaultRoutes } from './vault/routes.js'
 import { registerProviderRoutes } from './providers/routes.js'
 import { registerChatRoutes } from './chat/routes.js'
 import { registerCaptureRoutes } from './chat/capture.js'
+import { registerChatUploadRoutes } from './chat/uploads.js'
 import { registerScheduleRoutes } from './agent/schedule-routes.js'
 import { SchedulerService } from './agent/scheduler.js'
 import { registerUploadRoutes } from './vault/upload.js'
@@ -83,6 +84,7 @@ export function buildApp (config?: AppConfig, deps?: AppDeps): FastifyInstance {
 
     registerCaptureRoutes(app, agentService)
     registerUploadRoutes(app, config, agentService)
+    registerChatUploadRoutes(app, config)
     registerFollowUpActionRoutes(app, config, agentService)
   }
 
