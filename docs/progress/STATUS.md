@@ -33,7 +33,7 @@ Updated: 2026-07-11 (active: milestone 28)
 
 ## Next step
 
-m29-04: Ensure Docker build excludes Playwright binaries to keep the production image slim.
+(Milestone 29 completed. Select a new milestone from the backlog.)
 
 ## Read before working
 
