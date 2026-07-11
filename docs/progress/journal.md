@@ -976,3 +976,6 @@ Milestone 41 complete: mutable chat settings, abort, pinning, clear-history choi
 ## 2026-07-12 03:02 — session start
 Tree clean at 6b02546. Principal approved the recommended durable reasoning transcript implementation.
 - 03:02 STARTED milestone 42: normalise incremental chunks versus cumulative snapshots, then preserve emitted status/reasoning in accessible disclosures. Next: m42-01.
+- 03:03 STARTED m42-01: extract a pure transcript fold with delta/snapshot/thinking regression coverage.
+- 03:05 DONE m42-01: added tested fold normalisation; chunks append, agent snapshots replace, mixed streams prefer snapshots, and thinking tags are extracted after reconstruction. `npm test --workspace web` → 5 green.
+- 03:05 STARTED m42-02: wire preserved activity/reasoning into accessible transcript disclosures.

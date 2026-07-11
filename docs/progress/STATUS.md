@@ -34,7 +34,7 @@ Milestone 42: Durable reasoning transcript. Checklist:
 
 ## Next step
 
-Implement m42-01: tested delta/snapshot transcript normalisation.
+Implement m42-02: durable expandable reasoning/activity disclosures.
 
 ## Read before working
 
