@@ -69,6 +69,40 @@ function Get-Slug([string]$Value) {
   ($Value.ToLower() -replace '[^a-z0-9-]', '-' -replace '-{2,}', '-').Trim('-')
 }
 
+# Show a list on the host, paging when it is taller than the window.
+function Show-List([string[]]$Lines) {
+  $rows = try { $Host.UI.RawUI.WindowSize.Height } catch { 24 }
+  if ($Lines.Count -gt ($rows - 2)) { $Lines | Out-Host -Paging }
+  else { $Lines | ForEach-Object { Write-Host $_ } }
+}
+
+# Pick from $Models and return the chosen id. A long list can be narrowed with a
+# case-insensitive substring filter and is paged when it does not fit the
+# window; 'm' always allows manual entry.
+function Select-Model([string[]]$Models) {
+  $filter = ''
+  while ($true) {
+    $shown = if ($filter) { @($Models | Where-Object { $_.ToLower().Contains($filter.ToLower()) }) } else { @($Models) }
+    if ($shown.Count -eq 0) {
+      Write-Host "  No models match `"$filter`" - showing all."
+      $filter = ''
+      continue
+    }
+    $lines = @()
+    if ($filter) { $lines += ('  Filter "{0}" - {1} match(es):' -f $filter, $shown.Count) }
+    for ($i = 0; $i -lt $shown.Count; $i++) { $lines += ('    {0,3}) {1}' -f ($i + 1), $shown[$i]) }
+    Show-List $lines
+    $choice = Read-Host "  Select a model [1-$($shown.Count)], 'f' to filter, or 'm' to type one"
+    if ($choice -eq 'm') { return (Read-Required '  Model') }
+    elseif ($choice -eq 'f') { $filter = Read-Host '  Filter (substring, blank = show all)' }
+    elseif (($choice -match '^\d+$') -and ([int]$choice -ge 1) -and ([int]$choice -le $shown.Count)) {
+      return $shown[[int]$choice - 1]
+    } else {
+      Write-Host ("  Enter a number between 1 and {0}, 'f', or 'm'." -f $shown.Count)
+    }
+  }
+}
+
 function New-SecretsKey { [Convert]::ToBase64String([Security.Cryptography.RandomNumberGenerator]::GetBytes(32)) }
 
 # ---- app CLI bridges (dist first, then the docker image) --------------------
@@ -175,15 +209,7 @@ while ($true) {
     Write-Host '  Querying available models...'
     $models = Get-ProviderModels $provider $base $apiKey
     if ($models -and $models.Count -gt 0) {
-      for ($i = 0; $i -lt $models.Count; $i++) { Write-Host ('    {0,3}) {1}' -f ($i + 1), $models[$i]) }
-      while ($true) {
-        $choice = Read-Host "  Select a model [1-$($models.Count)], or 'm' to type one"
-        if ($choice -eq 'm') { $model = Read-Required '  Model'; break }
-        elseif (($choice -match '^\d+$') -and ([int]$choice -ge 1) -and ([int]$choice -le $models.Count)) {
-          $model = $models[[int]$choice - 1]; break
-        }
-        Write-Host ("  Enter a number between 1 and {0}, or 'm'." -f $models.Count)
-      }
+      $model = Select-Model $models
     } else {
       Write-Host '  Could not list models automatically - enter one manually.'
       $model = Read-Required '  Model'

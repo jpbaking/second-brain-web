@@ -34,8 +34,8 @@ The primary way to build and run locally is
 directory: the secrets key (`.config/.env`), provider profiles with only
 encrypted keys (`.config/providers.yaml`), and a generated vault SSH deploy key
 (`.config/deploy_key`). For each provider you pick the provider and enter its
-key first, then choose a model from the list it reports (invalid input
-re-prompts in place rather than aborting). The deploy key's public half is
+key first, then choose a model from the list it reports (type `f` to filter a
+long list by substring; invalid input re-prompts in place rather than aborting). The deploy key's public half is
 printed and also shown on the Vault page to register with your Git host. Re-run
 it and restart the app to change providers; the first enabled YAML entry is the
 default.

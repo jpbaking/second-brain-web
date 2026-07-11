@@ -33,7 +33,7 @@ parity review against `configure` (the bash reference).
       `configure.ps1` (table the mapping in the journal). Principal runs the
       script on Windows to confirm execution.
 
-- [ ] **m32-02** Long model lists: add a filter + pager to the picker in BOTH
+- [x] **m32-02** Long model lists: add a filter + pager to the picker in BOTH
       `configure` and `configure.ps1` — type a substring to narrow, page lists
       taller than the terminal, plus keep 'm' for manual entry.
       Verify (bash): scripted run against the stub with a filter narrowing a

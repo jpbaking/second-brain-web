@@ -677,3 +677,13 @@ review; principal runs on Windows. Next: m32-01.
   execution smoke-test is the principal's to run. Fixed one bug pre-commit:
   extracted Test-DockerImage so `docker image inspect` stdout can't leak into
   the availability boolean.
+- 14:03 STARTED m32-02: add filter+pager model picker to configure and configure.ps1.
+- 14:08 DONE m32-02: added filter+pager model picker to both scripts.
+  bash: new page_list (less/more, terminal-gated via `[[ -t 2 ]]` and tput) +
+  choose_model (case-insensitive substring filter, 'f' to refilter, 'm' manual);
+  verified `bash -n` clean and scripted runs against a 30-model stub — filter
+  'sonnet' narrowed to 1 and selected; direct number 30 -> opus; 'm' -> manual.
+  ps1 parity (no pwsh; review): Show-List uses Out-Host -Paging when taller than
+  the window; Select-Model mirrors filter/'f'/'m'/number logic. README notes the
+  'f' filter. Paging itself only engages in a real terminal (principal to eyeball
+  on a tall list).

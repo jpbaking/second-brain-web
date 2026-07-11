@@ -85,6 +85,57 @@ slugify() {
     | sed 's/[^a-z0-9-]/-/g; s/-\{2,\}/-/g; s/^-*//; s/-*$//'
 }
 
+# Show a list (read on stdin) on the terminal, paging through less/more when it
+# is taller than the window. Output goes to stderr so it never mixes with a
+# value captured via command substitution elsewhere.
+page_list() {
+  local content rows n
+  content=$(cat)
+  rows=$(tput lines 2>/dev/null || printf '24')
+  n=$(printf '%s\n' "$content" | wc -l)
+  if [[ -t 2 ]] && (( n > rows - 2 )); then
+    if command -v less >/dev/null; then printf '%s\n' "$content" | less -FX -R >&2
+    elif command -v more >/dev/null; then printf '%s\n' "$content" | more >&2
+    else printf '%s\n' "$content" >&2
+    fi
+  else
+    printf '%s\n' "$content" >&2
+  fi
+}
+
+# Pick from the global `models` array into the global `model`. A long list can
+# be narrowed with a case-insensitive substring filter, and is paged when it
+# does not fit the window. 'm' always allows manual entry.
+choose_model() {
+  local filter='' choice idx n
+  local -a shown
+  while true; do
+    shown=()
+    for idx in "${!models[@]}"; do
+      if [[ -z "$filter" || ${models[$idx],,} == *"${filter,,}"* ]]; then shown+=("$idx"); fi
+    done
+    if (( ${#shown[@]} == 0 )); then
+      printf '  No models match "%s" — showing all.\n' "$filter" >&2
+      filter=''
+      continue
+    fi
+    {
+      [[ -n "$filter" ]] && printf '  Filter "%s" — %d match(es):\n' "$filter" "${#shown[@]}"
+      for n in "${!shown[@]}"; do printf '    %3d) %s\n' "$((n + 1))" "${models[${shown[$n]}]}"; done
+    } | page_list
+    choice=$(prompt "  Select a model [1-${#shown[@]}], 'f' to filter, or 'm' to type one: ")
+    if [[ "$choice" == m ]]; then
+      model=$(prompt_required '  Model: '); return
+    elif [[ "$choice" == f ]]; then
+      filter=$(prompt '  Filter (substring, blank = show all): ')
+    elif [[ "$choice" =~ ^[0-9]+$ ]] && (( choice >= 1 && choice <= ${#shown[@]} )); then
+      model=${models[${shown[$((choice - 1))]}]}; return
+    else
+      printf "  Enter a number between 1 and %d, 'f', or 'm'.\n" "${#shown[@]}" >&2
+    fi
+  done
+}
+
 # ---- app CLI bridges (dist first, then the docker image) --------------------
 
 encrypt_secret() {
@@ -174,19 +225,7 @@ while confirm "$([[ $count -eq 0 ]] && printf '\nAdd a provider? [y/N] ' || prin
     if models_raw=$(printf '%s' "$api_key" | list_models "$provider" "$base_url" 2>/dev/null) \
         && [[ -n "$models_raw" ]]; then
       mapfile -t models <<< "$models_raw"
-      local_n=${#models[@]}
-      for i in "${!models[@]}"; do printf '    %3d) %s\n' "$((i + 1))" "${models[$i]}" >&2; done
-      while true; do
-        choice=$(prompt "  Select a model [1-$local_n], or 'm' to type one: ")
-        if [[ "$choice" == m ]]; then
-          model=$(prompt_required '  Model: ')
-          break
-        elif [[ "$choice" =~ ^[0-9]+$ ]] && (( choice >= 1 && choice <= local_n )); then
-          model=${models[$((choice - 1))]}
-          break
-        fi
-        printf '  Enter a number between 1 and %d, or '\''m'\''.\n' "$local_n" >&2
-      done
+      choose_model
     else
       printf '  Could not list models automatically — enter one manually.\n' >&2
       model=$(prompt_required '  Model: ')
