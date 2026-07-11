@@ -29,11 +29,11 @@ Updated: 2026-07-11 (active: milestone 37)
 
 ## Active milestone
 
-milestone 37 (Regenerate Report), next item: m37-05
+milestone 37 (Regenerate Report) is complete.
 
 ## Next step
 
-Execute m37-05: Add `POST /api/reports/content/*/regenerate` endpoint to kick off regeneration.
+Move to the next milestone in the roadmap or await instructions.
 
 ## Read before working
 

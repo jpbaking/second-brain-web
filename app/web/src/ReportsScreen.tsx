@@ -10,6 +10,13 @@ interface ReportMetadata {
   date: string
   mtime: string
   bytes: number
+  provenance?: {
+    sessionId: string
+    prompt: string | null
+    providerProfileId: string | null
+    vaultCommit: string | null
+    createdAt: string
+  }
 }
 
 export function ReportsScreen () {
@@ -19,6 +26,24 @@ export function ReportsScreen () {
   const [type, setType] = useState<'all' | ReportType>('all')
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
+  const [regenerating, setRegenerating] = useState<string | null>(null)
+
+  const regenerate = async (path: string) => {
+    setRegenerating(path)
+    try {
+      const response = await fetch(`/api/reports/regenerate/${encodeReportPath(path)}`, { method: 'POST' })
+      if (response.status === 401) return window.location.assign('/login')
+      if (!response.ok) {
+        const body = await response.json().catch(() => ({}))
+        throw new Error(body.error ?? 'Failed to regenerate report.')
+      }
+      const data = await response.json() as { sessionId: string }
+      window.location.assign(`/chat/${data.sessionId}`)
+    } catch (e) {
+      alert(e instanceof Error ? e.message : 'Error regenerating report')
+      setRegenerating(null)
+    }
+  }
 
   useEffect(() => {
     fetch('/api/reports')
@@ -96,6 +121,15 @@ export function ReportsScreen () {
                 >
                   {report.type === 'html' ? 'Open' : 'Download'}
                 </a>
+                {report.provenance !== undefined && (
+                  <button
+                    className='btn btn-primary btn-sm report-action'
+                    disabled={regenerating === report.path}
+                    onClick={() => regenerate(report.path)}
+                  >
+                    {regenerating === report.path ? '...' : 'Regenerate'}
+                  </button>
+                )}
               </li>
             ))}
           </ul>
