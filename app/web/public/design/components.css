@@ -1015,7 +1015,7 @@ button.tag.active { background: var(--brand-blue); border-color: var(--brand-blu
 .prose code { font-family: var(--font-mono); font-size: 0.875em; background: var(--surface); padding: 2px 6px; border-radius: var(--radius-sm); color: var(--ink); }
 .prose pre { background: var(--ink); color: #E8EAF6; border-radius: var(--radius-md); padding: var(--space-4); overflow-x: auto; margin-block: 1.6em; overflow-wrap: normal; word-break: normal; white-space: pre; }
 .prose pre code { background: none; padding: 0; color: inherit; font-size: 0.875rem; line-height: 1.6; }
-.prose hr { border: none; border-top: 1px solid var(--line); margin-block: var(--space-6); }
+.prose hr { border: none; border-top: 1px solid var(--line); margin-block: var(--space-4); }
 .prose table { width: 100%; border-collapse: collapse; font-size: var(--ui-small); margin-block: 1.6em; }
 .prose th { font-family: var(--font-mono); font-size: var(--ui-kicker); letter-spacing: var(--track-label); text-transform: uppercase; text-align: left; color: var(--muted); border-bottom: 1px solid var(--line); padding: var(--space-1) var(--space-2); }
 .prose td { padding: var(--space-1) var(--space-2); border-bottom: 1px solid var(--line); vertical-align: top; }

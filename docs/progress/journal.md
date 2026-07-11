@@ -1046,6 +1046,7 @@ Tree clean at e6647bd. Principal directed improvement of the system prompt for w
 ## 03:38 — session end
 Structured weak-model prompt deployed and verified. Awaiting direction.
 
+
 ## 2026-07-12 03:51 — session start
 Tree clean at 1733fbe. Active: milestone 46, next item: m46-01.
 - 03:51 STARTED m46-01: Add `react-markdown` to the `web` workspace.
@@ -1072,3 +1073,8 @@ Tree clean at a7f3ad6. Active: milestone 47, next item: m47-01.
 
 ## 2026-07-12 03:59 — session end
 Mermaid support implemented in ChatScreen. Awaiting direction.
+
+## 2026-07-12 03:59 — session start (recovery)
+Tree DIRTY (untracked). Principal requested reducing horizontal rule margins.
+- 03:59 REPAIR: decreased `margin-block` for `.prose hr` from `var(--space-6)` to `var(--space-4)` in `components.css`.
+- 03:59 DONE REPAIR: verified by `npm test` and `npm run build` locally.
