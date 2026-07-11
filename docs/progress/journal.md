@@ -1097,3 +1097,5 @@ Tree clean at 69d46a0 (HANDOFF.md untracked). No active milestone; ad-hoc repair
 - 04:58 DONE REPAIR: suppressErrorRendering in mermaid.initialize kills the body-appended bombs; new StreamingContext (l.complete === false) makes <Mermaid> keep the last good render / "Rendering diagram…" placeholder instead of an error while the message streams. Verified by lint, build, web tests (9) green.
 - 05:00 STARTED REPAIR: switching to a chat with mermaid diagrams left the view short of the bottom — diagrams render async after the scroll-to-bottom.
 - 05:01 DONE REPAIR: ResizeObserver on chat-scroll children re-pins to bottom whenever content grows, gated by a stick-to-bottom flag (cleared when the user scrolls >40px up). Lint, build, web tests green.
+- 05:04 STARTED: composer textarea — default one line, auto-grow to ~half screen, then scroll.
+- 05:05 DONE: rows=1 + auto-grow effect (height = scrollHeight, keyed on value so send-clear collapses it); CSS max-height 45vh with overflow-y auto. Lint, build, web tests (9) green.

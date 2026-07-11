@@ -215,6 +215,17 @@ export function ChatScreen ({ mode }: { mode: ChatMode }) {
   const [zoom, setZoom] = useState<ZoomContent | null>(null)
   const streamAbort = useRef<AbortController | null>(null)
   const scrollRef = useRef<HTMLDivElement | null>(null)
+  const inputRef = useRef<HTMLTextAreaElement | null>(null)
+
+  // Auto-grow the composer with its content: one line when empty, up to the
+  // CSS max-height (near half the screen), after which it scrolls. Keyed on
+  // the value so clearing on send collapses it back to one line.
+  useEffect(() => {
+    const el = inputRef.current
+    if (el === null) return
+    el.style.height = 'auto'
+    el.style.height = `${el.scrollHeight + 2}px` // +2 for the borders (border-box)
+  }, [input])
   const zoomRef = useRef<HTMLDialogElement | null>(null)
 
   useEffect(() => {
@@ -543,7 +554,8 @@ export function ChatScreen ({ mode }: { mode: ChatMode }) {
           )}
           <form className='chat-composer' onSubmit={e => { e.preventDefault(); send().catch(() => {}) }} aria-label='Message composer'>
             <textarea
-              className='chat-input' rows={2} value={input} data-testid='composer'
+              ref={inputRef}
+              className='chat-input' rows={1} value={input} data-testid='composer'
               placeholder='Message your secretary…' aria-label='Message'
               onChange={e => { setInput(e.target.value); setSlashIndex(0) }}
               onKeyDown={e => {

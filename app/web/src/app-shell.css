@@ -420,8 +420,10 @@
   background: var(--surface);
   color: var(--ink);
   font: inherit;
-  min-height: 52px;
-  max-height: 40vh;
+  /* Height is driven by the auto-grow effect in ChatScreen: one line when
+     empty, growing with content until this cap, then scrolling. */
+  max-height: 45vh;
+  overflow-y: auto;
 }
 
 .chat-input:focus {
