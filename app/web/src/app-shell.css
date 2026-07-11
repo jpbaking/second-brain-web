@@ -598,12 +598,16 @@
   align-items: flex-start;
 }
 
+/* Match .prose pre code's metrics exactly, or the gutter rows come out
+   taller than the code lines and the numbers drift out of alignment. */
 .chat-code-gutter {
   display: flex;
   flex-direction: column;
   flex: none;
   min-width: 3ch;
   margin-right: var(--space-3);
+  font-size: 0.875rem;
+  line-height: 1.6;
   text-align: right;
   opacity: 0.45;
   user-select: none;
@@ -635,6 +639,7 @@
 .chat-zoom-modal .chat-zoom-body {
   overflow: auto;
   flex: 1;
+  max-width: none; /* the body carries .prose, whose 72ch cap would stop code filling the dialog */
 }
 
 /* Let wide code push the modal out to its max width (the scrollable pre

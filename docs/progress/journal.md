@@ -1086,3 +1086,8 @@ Tree clean at 6586dbf. No active milestone; principal reported mermaid diagrams 
 - 04:18 DONE (ad-hoc): boxed + spaced mermaid diagrams in the transcript (border + margin-block via `.prose .mermaid-diagram`) — separation was lost when the <pre> wrapper was dropped. Lint + build green.
 - 04:27 DONE (ad-hoc): chat code blocks get line numbers (CSS counters in ::before, excluded from copy), code blocks + mermaid diagrams get an icon-only copy-source button (raw markdown text, click doesn't bubble to zoom), and the zoom modal is now fit-content (min = previous 1100px width, content fills when narrow). Lint + build green.
 - 04:31 DONE (ad-hoc): syntax highlighting for chat code blocks via highlight.js (common-languages build, atom-one-dark theme, transparent bg over the existing dark pre). Line numbers moved from CSS counters to a non-selectable flex gutter so the highlighted HTML stays intact. Unknown languages fall back to plain text. Lint + build green.
+
+## 2026-07-12 04:40 — session start (VS Code, continuing HANDOFF.md)
+Tree clean at 69d46a0 (HANDOFF.md untracked). No active milestone; ad-hoc repair on chat zoom modal.
+- 04:41 STARTED REPAIR: zoom-modal code block — gutter numbers drift out of line, code doesn't fill modal width.
+- 04:45 DONE REPAIR: gutter now matches `.prose pre code` metrics (0.875rem/1.6); `.chat-zoom-body` gets `max-width: none` to lift the `.prose` 72ch cap. Verified by lint+build green and a headless-Chrome screenshot of a 60-line block in the modal (aligned, full width).
