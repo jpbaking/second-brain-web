@@ -467,3 +467,5 @@ Docker runtime installation is scoped to server production dependencies. The sli
 
 ## 2026-07-11 08:27 — session start
 Tree clean at 8380b1c. Principal directed the next recommended backlog item; selected the self-contained follow-up display cleanup. Active: milestone 20, next item: m20-01.
+- 08:27 STARTED m20-01: add a presentation-only formatter and use it for follow-up display and edit defaults while leaving parser/API text untouched.
+- 08:28 DONE m20-01: verified by `npm run lint --workspace web && npm run build --workspace web` → lint clean and production web build passed.

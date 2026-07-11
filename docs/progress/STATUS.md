@@ -32,7 +32,7 @@ Milestone 15 (YAML-only provider provisioning) remains designed and gated.
 
 ## Next step
 
-- Complete m20-01: add and wire the presentation-only text formatter.
+- Complete m20-02: run parser/full gates and visually verify the deliverable.
 
 ## Read before working
 

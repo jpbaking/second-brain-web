@@ -125,59 +125,66 @@ export function FollowUpsScreen () {
         {!loading && error === null && items.length === 0 && <p className='followup-empty'>Nothing in this queue.</p>}
         {items.length > 0 && (
           <ul className='followup-list' aria-label={`${items.length} follow-ups`}>
-            {items.map(item => (
-              <li key={item.id} className='followup-row'>
-                <div className='followup-main'>
-                  <span className='followup-text'>{item.text}</span>
-                  <span className='followup-source'>
-                    <span className='followup-origin'>{item.sourceFile}:{item.sourceLine}</span>
-                    {item.linkedSource !== null && (
-                      <span className='followup-link'>→ {item.linkedSource}</span>
+            {items.map(item => {
+              const displayText = followUpDisplayText(item.text)
+              return (
+                <li key={item.id} className='followup-row'>
+                  <div className='followup-main'>
+                    <span className='followup-text'>{displayText}</span>
+                    <span className='followup-source'>
+                      <span className='followup-origin'>{item.sourceFile}:{item.sourceLine}</span>
+                      {item.linkedSource !== null && (
+                        <span className='followup-link'>→ {item.linkedSource}</span>
+                      )}
+                    </span>
+                    {editing?.id === item.id && (
+                      <form
+                        className='followup-edit'
+                        onSubmit={event => { event.preventDefault(); act(item, 'edit', editing.text.trim()).catch(() => {}) }}
+                      >
+                        <input
+                          className='input'
+                          aria-label='Edit follow-up text'
+                          value={editing.text}
+                          onChange={event => setEditing({ id: item.id, text: event.target.value })}
+                        />
+                        <div className='followup-edit-actions'>
+                          <button type='submit' className='btn btn-primary btn-sm' disabled={busyId === item.id || editing.text.trim() === ''}>Save</button>
+                          <button type='button' className='btn btn-ghost btn-sm' onClick={() => setEditing(null)}>Cancel</button>
+                        </div>
+                      </form>
                     )}
-                  </span>
-                  {editing?.id === item.id && (
-                    <form
-                      className='followup-edit'
-                      onSubmit={event => { event.preventDefault(); act(item, 'edit', editing.text.trim()).catch(() => {}) }}
-                    >
-                      <input
-                        className='input'
-                        aria-label='Edit follow-up text'
-                        value={editing.text}
-                        onChange={event => setEditing({ id: item.id, text: event.target.value })}
-                      />
-                      <div className='followup-edit-actions'>
-                        <button type='submit' className='btn btn-primary btn-sm' disabled={busyId === item.id || editing.text.trim() === ''}>Save</button>
-                        <button type='button' className='btn btn-ghost btn-sm' onClick={() => setEditing(null)}>Cancel</button>
+                  </div>
+                  <div className='followup-meta'>
+                    <span className='badge'>{labelForKind(item)}</span>
+                    {item.dueDate !== null && (
+                      <time className={`followup-due ${dueClass(item, today)}`} dateTime={item.dueDate}>
+                        {dueLabel(item.dueDate, today)}
+                      </time>
+                    )}
+                    {!item.completed && editing?.id !== item.id && (
+                      <div className='followup-actions'>
+                        <button type='button' className='btn btn-primary btn-sm' disabled={busyId === item.id} onClick={() => { act(item, 'complete').catch(() => {}) }}>
+                          {busyId === item.id ? 'Filing…' : 'Mark done'}
+                        </button>
+                        <button type='button' className='btn btn-secondary btn-sm' disabled={busyId === item.id} onClick={() => setEditing({ id: item.id, text: displayText })}>
+                          Edit
+                        </button>
                       </div>
-                    </form>
-                  )}
-                </div>
-                <div className='followup-meta'>
-                  <span className='badge'>{labelForKind(item)}</span>
-                  {item.dueDate !== null && (
-                    <time className={`followup-due ${dueClass(item, today)}`} dateTime={item.dueDate}>
-                      {dueLabel(item.dueDate, today)}
-                    </time>
-                  )}
-                  {!item.completed && editing?.id !== item.id && (
-                    <div className='followup-actions'>
-                      <button type='button' className='btn btn-primary btn-sm' disabled={busyId === item.id} onClick={() => { act(item, 'complete').catch(() => {}) }}>
-                        {busyId === item.id ? 'Filing…' : 'Mark done'}
-                      </button>
-                      <button type='button' className='btn btn-secondary btn-sm' disabled={busyId === item.id} onClick={() => setEditing({ id: item.id, text: item.text })}>
-                        Edit
-                      </button>
-                    </div>
-                  )}
-                </div>
-              </li>
-            ))}
+                    )}
+                  </div>
+                </li>
+              )
+            })}
           </ul>
         )}
       </main>
     </div>
   )
+}
+
+export function followUpDisplayText (text: string): string {
+  return text.replace(/\s+—\s*source:\s*\[[^\]]+\]\([^)]+\)\s*$/i, '').trim()
 }
 
 function labelForKind (item: FollowUpItem): string {
