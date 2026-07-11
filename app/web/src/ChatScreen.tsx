@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState, type ReactNode } from 'react'
+import { createContext, useCallback, useContext, useEffect, useRef, useState, type ReactNode } from 'react'
 import ReactMarkdown from 'react-markdown'
 import remarkGfm from 'remark-gfm'
 import mermaid from 'mermaid'
@@ -52,7 +52,21 @@ interface LockState { held: boolean, stale: boolean, lock: { sessionId: string |
 
 mermaid.initialize({ startOnLoad: false, theme: 'default' })
 
-function Mermaid ({ chart }: { chart: string }) {
+// Full-window preview of a diagram or code block, opened by clicking it in
+// the transcript. The markdown component map is module-level (stable identity,
+// see markdownComponents), so the opener is passed down via context.
+type ZoomContent = { kind: 'mermaid', chart: string } | { kind: 'code', code: string, lang: string | null }
+const ZoomContext = createContext<(content: ZoomContent) => void>(() => {})
+
+// Plain text of a hast element node (react-markdown's `node` prop).
+function hastText (node: unknown): string {
+  if (node === null || typeof node !== 'object') return ''
+  const n = node as { type?: string, value?: string, children?: unknown[] }
+  if (n.type === 'text') return n.value ?? ''
+  return (n.children ?? []).map(hastText).join('')
+}
+
+function Mermaid ({ chart, zoomable = false }: { chart: string, zoomable?: boolean }) {
   const containerRef = useRef<HTMLDivElement>(null)
   useEffect(() => {
     let active = true
@@ -72,7 +86,16 @@ function Mermaid ({ chart }: { chart: string }) {
     renderChart().catch(() => {})
     return () => { active = false }
   }, [chart])
-  return <div ref={containerRef} className='mermaid-diagram' style={{ overflowX: 'auto', background: 'var(--surface)', padding: 'var(--space-2)', borderRadius: 'var(--radius-md)' }} />
+  const openZoom = useContext(ZoomContext)
+  return (
+    <div
+      ref={containerRef}
+      className='mermaid-diagram'
+      style={{ overflowX: 'auto', background: 'var(--surface)', padding: 'var(--space-2)', borderRadius: 'var(--radius-md)', cursor: zoomable ? 'zoom-in' : undefined }}
+      title={zoomable ? 'Click to expand' : undefined}
+      onClick={zoomable ? () => openZoom({ kind: 'mermaid', chart }) : undefined}
+    />
+  )
 }
 
 // Stable component map: an inline object would give `code` a new identity on
@@ -82,9 +105,25 @@ const markdownComponents = {
   code ({ node, className, children, ...props }: { node?: unknown, className?: string, children?: ReactNode }) {
     const match = /language-(\w+)/.exec(className ?? '')
     if (match !== null && match[1] === 'mermaid') {
-      return <Mermaid chart={String(children).replace(/\n$/, '')} />
+      return <Mermaid chart={String(children).replace(/\n$/, '')} zoomable />
     }
     return <code className={className} {...props}>{children}</code>
+  },
+  pre ({ node, children }: { node?: unknown, children?: ReactNode }) {
+    const openZoom = useContext(ZoomContext)
+    const codeNode = (node as { children?: Array<{ properties?: { className?: unknown } }> })?.children?.[0]
+    const classNames = codeNode?.properties?.className
+    const cls = Array.isArray(classNames) ? classNames.join(' ') : ''
+    // Mermaid code blocks render as diagrams with their own click handling;
+    // drop the <pre> wrapper entirely.
+    if (cls.includes('language-mermaid')) return <>{children}</>
+    const code = hastText(node).replace(/\n$/, '')
+    const lang = /language-(\w+)/.exec(cls)?.[1] ?? null
+    return (
+      <pre style={{ cursor: 'zoom-in' }} title='Click to expand' onClick={() => openZoom({ kind: 'code', code, lang })}>
+        {children}
+      </pre>
+    )
   }
 }
 
@@ -106,8 +145,14 @@ export function ChatScreen ({ mode }: { mode: ChatMode }) {
   const [selectedPreset, setSelectedPreset] = useState('normal')
   const [slashIndex, setSlashIndex] = useState(0)
   const [lockState, setLockState] = useState<LockState | null>(null)
+  const [zoom, setZoom] = useState<ZoomContent | null>(null)
   const streamAbort = useRef<AbortController | null>(null)
   const scrollRef = useRef<HTMLDivElement | null>(null)
+  const zoomRef = useRef<HTMLDialogElement | null>(null)
+
+  useEffect(() => {
+    if (zoom !== null) zoomRef.current?.showModal()
+  }, [zoom])
 
   // Stream events for the active session (replay + live) via a fetch stream.
   const openStream = useCallback((id: string) => {
@@ -293,131 +338,151 @@ export function ChatScreen ({ mode }: { mode: ChatMode }) {
   }
 
   return (
-    <div className='chat-pane' data-testid='chat-pane'>
-      <div className='chat-scroll' ref={scrollRef}>
-        {error !== null && (
-          <div className='alert alert-danger chat-alert' role='alert'>
-            <span className='alert-title'>Chat</span>
-            <span data-testid='chat-error'>{error}</span>
+    <ZoomContext.Provider value={setZoom}>
+      {zoom !== null && (
+        <dialog
+          ref={zoomRef}
+          className='modal chat-zoom-modal'
+          onClose={() => setZoom(null)}
+          onClick={e => { if (e.target === e.currentTarget) zoomRef.current?.close() }}
+        >
+          <div className='modal-head'>
+            <h2 className='modal-title'>{zoom.kind === 'mermaid' ? 'Diagram' : `Code${zoom.lang !== null ? ` — ${zoom.lang}` : ''}`}</h2>
+            <button type='button' className='modal-close' onClick={() => zoomRef.current?.close()}>Close</button>
           </div>
-        )}
-
-        {newChatState && (
-          <div className='chat-welcome' data-testid='new-chat-state'>
-            <img src='/design/assets/logo-mark.svg' alt='' />
-            <h1>What can I help with?</h1>
-            <p>Messages go to your executive secretary, who can read and update your vault.</p>
+          <div className={`modal-body chat-zoom-body${zoom.kind === 'code' ? ' prose' : ''}`}>
+            {zoom.kind === 'mermaid'
+              ? <Mermaid chart={zoom.chart} />
+              : <pre><code>{zoom.code}</code></pre>}
           </div>
-        )}
+        </dialog>
+      )}
+      <div className='chat-pane' data-testid='chat-pane'>
+        <div className='chat-scroll' ref={scrollRef}>
+          {error !== null && (
+            <div className='alert alert-danger chat-alert' role='alert'>
+              <span className='alert-title'>Chat</span>
+              <span data-testid='chat-error'>{error}</span>
+            </div>
+          )}
 
-        {!newChatState && (
-          <div className='chat-thread' data-testid='transcript'>
-            {lines.map(l => (
-              l.role === 'system'
-                ? <div key={l.key} className='chat-divider'><span>{l.text}</span></div>
-                : (
-                  <div key={l.key} className={`chat-msg chat-msg-${l.role}`}>
-                    <div className='chat-msg-meta'>
-                      {l.role === 'assistant' && <span className='chat-msg-author'>Secretary</span>}
-                      {messageTime(l.createdAt)}
-                    </div>
-                    {l.role === 'assistant' && ((l.reasoning ?? '') !== '' || (l.activities?.length ?? 0) > 0) && (
-                      <details className={`chat-reasoning${l.complete === false ? ' is-active' : ''}`} open={l.complete === false ? true : undefined}>
-                        <summary>{l.complete === false ? 'Working…' : ((l.reasoning ?? '') !== '' ? 'Reasoning and activity' : 'Activity details')}</summary>
-                        {(l.activities?.length ?? 0) > 0 && <ul>{l.activities?.map((activity, index) => <li key={`${l.key}-activity-${index}`}><span>{activity.text}</span>{messageTime(activity.createdAt)}</li>)}</ul>}
-                        {(l.reasoningBlocks?.length ?? 0) > 0 && <div className='chat-reasoning-blocks'>{l.reasoningBlocks?.map((block, index) => <section key={`${l.key}-reasoning-${index}`} className='chat-reasoning-content'>{messageTime(block.createdAt)}<div>{block.text}</div></section>)}</div>}
-                      </details>
-                    )}
-                    {l.text !== '' && (
-                      <div className={`chat-bubble${l.role === 'assistant' ? ' prose' : ''}`}>
-                        {l.role === 'assistant'
-                          ? (
-                            <ReactMarkdown remarkPlugins={[remarkGfm]} components={markdownComponents}>
-                              {l.text}
-                            </ReactMarkdown>
-                            )
-                          : l.text}
+          {newChatState && (
+            <div className='chat-welcome' data-testid='new-chat-state'>
+              <img src='/design/assets/logo-mark.svg' alt='' />
+              <h1>What can I help with?</h1>
+              <p>Messages go to your executive secretary, who can read and update your vault.</p>
+            </div>
+          )}
+
+          {!newChatState && (
+            <div className='chat-thread' data-testid='transcript'>
+              {lines.map(l => (
+                l.role === 'system'
+                  ? <div key={l.key} className='chat-divider'><span>{l.text}</span></div>
+                  : (
+                    <div key={l.key} className={`chat-msg chat-msg-${l.role}`}>
+                      <div className='chat-msg-meta'>
+                        {l.role === 'assistant' && <span className='chat-msg-author'>Secretary</span>}
+                        {messageTime(l.createdAt)}
                       </div>
-                    )}
-                  </div>
-                  )
-            ))}
-            {showProcessing && (
-              <div className='chat-msg chat-msg-assistant'>
-                <span className='chat-msg-author'>Secretary</span>
-                <div className='chat-processing'>
-                  <div className='chat-processing-spinner' />
-                  <span>{statusText ?? 'Processing...'}</span>
-                </div>
-              </div>
-            )}
-            {lines.length === 0 && !showProcessing && ready && <p className='chat-empty'>No messages yet. Say hello.</p>}
-          </div>
-        )}
-
-        {approvals.map(a => (
-          <div key={a.toolCallId} className='alert alert-warn chat-alert' role='status'>
-            <span className='alert-title'>Approve {a.toolName}?</span>
-            <span className='chat-approval-actions'>
-              <button className='btn btn-primary btn-sm' type='button' onClick={() => { resolveApproval(a.toolCallId, true).catch(() => {}) }}>Approve</button>
-              <button className='btn btn-secondary btn-sm' type='button' onClick={() => { resolveApproval(a.toolCallId, false).catch(() => {}) }}>Deny</button>
-            </span>
-          </div>
-        ))}
-      </div>
-
-      <div className='chat-composer-wrap'>
-        {activeId !== null && (
-          <div className='chat-toolbar' data-testid='workflow-bar'>
-            {workflows.map(w => (
-              <button key={w} className='chat-chip' type='button' onClick={() => { runWorkflow(w).catch(() => {}) }}>/{w}</button>
-            ))}
-            <button className='chat-chip' type='button' data-testid='compact-btn' onClick={() => { compactContext().catch(() => {}) }}>Compact context</button>
-            {lockState?.held && (
-              <span className={`chat-lock${lockState.lock?.sessionId === activeId ? ' is-mine' : ''}`}>
-                {lockState.lock?.sessionId === activeId ? 'Write lock held' : 'Vault locked by another session'}
-              </span>
-            )}
-          </div>
-        )}
-        {slashMatches.length > 0 && (
-          <div className='chat-slash-menu' role='listbox' aria-label='Workflow commands'>
-            {slashMatches.map((name, index) => <button key={name} type='button' role='option' aria-selected={index === slashIndex} className={index === slashIndex ? 'is-active' : ''} onMouseDown={e => { e.preventDefault(); chooseSlash(name, false) }}>/{name}</button>)}
-          </div>
-        )}
-        <form className='chat-composer' onSubmit={e => { e.preventDefault(); send().catch(() => {}) }} aria-label='Message composer'>
-          <textarea
-            className='chat-input' rows={2} value={input} data-testid='composer'
-            placeholder='Message your secretary…' aria-label='Message'
-            onChange={e => { setInput(e.target.value); setSlashIndex(0) }}
-            onKeyDown={e => {
-              if (slashMatches.length > 0 && e.key === 'ArrowDown') { e.preventDefault(); setSlashIndex(i => (i + 1) % slashMatches.length) } else if (slashMatches.length > 0 && e.key === 'ArrowUp') { e.preventDefault(); setSlashIndex(i => (i - 1 + slashMatches.length) % slashMatches.length) } else if (slashMatches.length > 0 && e.key === 'Tab') { e.preventDefault(); chooseSlash(slashMatches[slashIndex]!, false) } else if (slashMatches.length > 0 && e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); chooseSlash(slashMatches[slashIndex]!, true) } else if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); send().catch(() => {}) }
-            }}
-          />
-          {showProcessing
-            ? <button className='btn btn-danger chat-send' type='button' onClick={() => { abortTurn().catch(() => {}) }}>Abort</button>
-            : <button className='btn btn-primary chat-send' type='submit' disabled={input.trim() === ''}>Send</button>}
-        </form>
-        <div className='chat-composer-options'>
-          <label className='chat-composer-select'>
-            Provider
-            <select value={selectedProvider} onChange={e => { updateConfig(e.target.value, selectedPreset).catch(() => {}) }}>
-              <option value=''>Default provider</option>
-              {providers.filter(p => p.enabled).map(p => (
-                <option key={p.id} value={p.id}>{p.displayName}{p.isDefault ? ' (default)' : ''}</option>
+                      {l.role === 'assistant' && ((l.reasoning ?? '') !== '' || (l.activities?.length ?? 0) > 0) && (
+                        <details className={`chat-reasoning${l.complete === false ? ' is-active' : ''}`} open={l.complete === false ? true : undefined}>
+                          <summary>{l.complete === false ? 'Working…' : ((l.reasoning ?? '') !== '' ? 'Reasoning and activity' : 'Activity details')}</summary>
+                          {(l.activities?.length ?? 0) > 0 && <ul>{l.activities?.map((activity, index) => <li key={`${l.key}-activity-${index}`}><span>{activity.text}</span>{messageTime(activity.createdAt)}</li>)}</ul>}
+                          {(l.reasoningBlocks?.length ?? 0) > 0 && <div className='chat-reasoning-blocks'>{l.reasoningBlocks?.map((block, index) => <section key={`${l.key}-reasoning-${index}`} className='chat-reasoning-content'>{messageTime(block.createdAt)}<div>{block.text}</div></section>)}</div>}
+                        </details>
+                      )}
+                      {l.text !== '' && (
+                        <div className={`chat-bubble${l.role === 'assistant' ? ' prose' : ''}`}>
+                          {l.role === 'assistant'
+                            ? (
+                              <ReactMarkdown remarkPlugins={[remarkGfm]} components={markdownComponents}>
+                                {l.text}
+                              </ReactMarkdown>
+                              )
+                            : l.text}
+                        </div>
+                      )}
+                    </div>
+                    )
               ))}
-            </select>
-          </label>
-          <label className='chat-composer-select'>
-            Approvals
-            <select value={selectedPreset} onChange={e => { updateConfig(selectedProvider || providers.find(p => p.isDefault)?.id || '', e.target.value).catch(() => {}) }}>
-              <option value='normal'>Normal</option>
-              <option value='read-only'>Read-only</option>
-              <option value='high-trust'>High-trust</option>
-            </select>
-          </label>
+              {showProcessing && (
+                <div className='chat-msg chat-msg-assistant'>
+                  <span className='chat-msg-author'>Secretary</span>
+                  <div className='chat-processing'>
+                    <div className='chat-processing-spinner' />
+                    <span>{statusText ?? 'Processing...'}</span>
+                  </div>
+                </div>
+              )}
+              {lines.length === 0 && !showProcessing && ready && <p className='chat-empty'>No messages yet. Say hello.</p>}
+            </div>
+          )}
+
+          {approvals.map(a => (
+            <div key={a.toolCallId} className='alert alert-warn chat-alert' role='status'>
+              <span className='alert-title'>Approve {a.toolName}?</span>
+              <span className='chat-approval-actions'>
+                <button className='btn btn-primary btn-sm' type='button' onClick={() => { resolveApproval(a.toolCallId, true).catch(() => {}) }}>Approve</button>
+                <button className='btn btn-secondary btn-sm' type='button' onClick={() => { resolveApproval(a.toolCallId, false).catch(() => {}) }}>Deny</button>
+              </span>
+            </div>
+          ))}
+        </div>
+
+        <div className='chat-composer-wrap'>
+          {activeId !== null && (
+            <div className='chat-toolbar' data-testid='workflow-bar'>
+              {workflows.map(w => (
+                <button key={w} className='chat-chip' type='button' onClick={() => { runWorkflow(w).catch(() => {}) }}>/{w}</button>
+              ))}
+              <button className='chat-chip' type='button' data-testid='compact-btn' onClick={() => { compactContext().catch(() => {}) }}>Compact context</button>
+              {lockState?.held && (
+                <span className={`chat-lock${lockState.lock?.sessionId === activeId ? ' is-mine' : ''}`}>
+                  {lockState.lock?.sessionId === activeId ? 'Write lock held' : 'Vault locked by another session'}
+                </span>
+              )}
+            </div>
+          )}
+          {slashMatches.length > 0 && (
+            <div className='chat-slash-menu' role='listbox' aria-label='Workflow commands'>
+              {slashMatches.map((name, index) => <button key={name} type='button' role='option' aria-selected={index === slashIndex} className={index === slashIndex ? 'is-active' : ''} onMouseDown={e => { e.preventDefault(); chooseSlash(name, false) }}>/{name}</button>)}
+            </div>
+          )}
+          <form className='chat-composer' onSubmit={e => { e.preventDefault(); send().catch(() => {}) }} aria-label='Message composer'>
+            <textarea
+              className='chat-input' rows={2} value={input} data-testid='composer'
+              placeholder='Message your secretary…' aria-label='Message'
+              onChange={e => { setInput(e.target.value); setSlashIndex(0) }}
+              onKeyDown={e => {
+                if (slashMatches.length > 0 && e.key === 'ArrowDown') { e.preventDefault(); setSlashIndex(i => (i + 1) % slashMatches.length) } else if (slashMatches.length > 0 && e.key === 'ArrowUp') { e.preventDefault(); setSlashIndex(i => (i - 1 + slashMatches.length) % slashMatches.length) } else if (slashMatches.length > 0 && e.key === 'Tab') { e.preventDefault(); chooseSlash(slashMatches[slashIndex]!, false) } else if (slashMatches.length > 0 && e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); chooseSlash(slashMatches[slashIndex]!, true) } else if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); send().catch(() => {}) }
+              }}
+            />
+            {showProcessing
+              ? <button className='btn btn-danger chat-send' type='button' onClick={() => { abortTurn().catch(() => {}) }}>Abort</button>
+              : <button className='btn btn-primary chat-send' type='submit' disabled={input.trim() === ''}>Send</button>}
+          </form>
+          <div className='chat-composer-options'>
+            <label className='chat-composer-select'>
+              Provider
+              <select value={selectedProvider} onChange={e => { updateConfig(e.target.value, selectedPreset).catch(() => {}) }}>
+                <option value=''>Default provider</option>
+                {providers.filter(p => p.enabled).map(p => (
+                  <option key={p.id} value={p.id}>{p.displayName}{p.isDefault ? ' (default)' : ''}</option>
+                ))}
+              </select>
+            </label>
+            <label className='chat-composer-select'>
+              Approvals
+              <select value={selectedPreset} onChange={e => { updateConfig(selectedProvider || providers.find(p => p.isDefault)?.id || '', e.target.value).catch(() => {}) }}>
+                <option value='normal'>Normal</option>
+                <option value='read-only'>Read-only</option>
+                <option value='high-trust'>High-trust</option>
+              </select>
+            </label>
+          </div>
         </div>
       </div>
-    </div>
+    </ZoomContext.Provider>
   )
 }

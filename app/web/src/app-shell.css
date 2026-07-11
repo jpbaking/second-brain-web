@@ -551,6 +551,25 @@
   overflow-wrap: anywhere;
 }
 
+/* Full-window preview of a chat code block or mermaid diagram. */
+.chat-zoom-modal {
+  width: min(1100px, calc(100vw - 48px));
+  max-height: calc(100vh - 48px);
+  display: flex;
+  flex-direction: column;
+}
+
+.chat-zoom-modal .chat-zoom-body {
+  overflow: auto;
+  flex: 1;
+}
+
+.chat-zoom-modal .mermaid-diagram svg {
+  width: 100%;
+  height: auto;
+  max-width: none;
+}
+
 .report-toolbar {
   display: grid;
   grid-template-columns: minmax(220px, 1fr) 150px 150px;

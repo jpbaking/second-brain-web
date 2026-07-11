@@ -1082,3 +1082,4 @@ Tree DIRTY (untracked). Principal requested reducing horizontal rule margins.
 ## 2026-07-12 04:05 — session start
 Tree clean at 6586dbf. No active milestone; principal reported mermaid diagrams flickering on every /api/vault/lock poll.
 - 04:05 REPAIR: mermaid flicker — inline `components` object passed to ReactMarkdown gave `code` a new component identity on every render, so the 2s lock-poll re-render remounted each Mermaid diagram. Hoisted the components map to module level. Verified by `npm run lint` + `npm run build` green.
+- 04:14 DONE (ad-hoc): click-to-expand modal for chat code blocks and mermaid diagrams — native <dialog class="modal"> lightbox (Esc/backdrop/Close all close it), opener passed via React context so the module-level markdown component map stays identity-stable. Verified by `npm run lint`, `npm run build`, 332+9 tests green.
