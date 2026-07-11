@@ -596,6 +596,10 @@
 .chat-codeblock pre {
   display: flex;
   align-items: flex-start;
+  /* Padding lives on the gutter/code instead, so the sticky gutter can sit
+     flush with the box edge — padding on the pre would let scrolled code
+     peek out to its left. */
+  padding: 0;
 }
 
 /* Match .prose pre code's metrics exactly, or the gutter rows come out
@@ -605,24 +609,31 @@
   flex-direction: column;
   flex: none;
   min-width: 3ch;
-  margin-right: var(--space-3);
   font-size: 0.875rem;
   line-height: 1.6;
   text-align: right;
-  opacity: 0.45;
+  /* Dim via color, not opacity — the sticky background must stay opaque. */
+  color: color-mix(in srgb, currentcolor 45%, transparent);
   user-select: none;
+  /* Stay visible while the pre scrolls sideways. */
+  position: sticky;
+  left: 0;
+  background: var(--ink);
+  /* The right padding is the number→code gap; as padding (not margin) the
+     opaque background covers it while code scrolls past underneath. */
+  padding: var(--space-4) var(--space-3) var(--space-4) var(--space-4);
 }
 
 .chat-codeblock pre code {
   display: block;
   flex: 1;
   white-space: pre;
+  padding: var(--space-4) var(--space-4) var(--space-4) 0;
 }
 
 /* The imported hljs theme sets its own background; the pre already has one. */
 .chat-codeblock .hljs {
   background: transparent;
-  padding: 0;
 }
 
 /* Full-window preview of a chat code block or mermaid diagram. Grows to fit
@@ -643,10 +654,13 @@
 }
 
 /* Let wide code push the modal out to its max width (the scrollable pre
-   would otherwise never report its full width); narrow code still fills. */
+   would otherwise never report its full width); narrow code still fills.
+   max-width keeps the pre scrolling internally once the dialog hits the
+   viewport cap, instead of the whole modal body scrolling sideways. */
 .chat-zoom-body .chat-codeblock pre {
   width: max-content;
   min-width: 100%;
+  max-width: 100%;
 }
 
 .chat-zoom-modal .mermaid-diagram svg {

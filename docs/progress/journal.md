@@ -1091,3 +1091,5 @@ Tree clean at 6586dbf. No active milestone; principal reported mermaid diagrams 
 Tree clean at 69d46a0 (HANDOFF.md untracked). No active milestone; ad-hoc repair on chat zoom modal.
 - 04:41 STARTED REPAIR: zoom-modal code block — gutter numbers drift out of line, code doesn't fill modal width.
 - 04:45 DONE REPAIR: gutter now matches `.prose pre code` metrics (0.875rem/1.6); `.chat-zoom-body` gets `max-width: none` to lift the `.prose` 72ch cap. Verified by lint+build green and a headless-Chrome screenshot of a 60-line block in the modal (aligned, full width).
+- 04:52 STARTED REPAIR: narrow viewports — zoom modal body scrolled sideways as a whole instead of the code box.
+- 04:56 DONE REPAIR: pre capped at max-width 100% so it scrolls internally; gutter made position:sticky with opaque bg (padding moved off the pre onto gutter/code so it sits flush and covers the number→code gap). Verified by headless-Chrome screenshots at 900px and 1600px, scrolled fully right. Lint+build green.
