@@ -12,6 +12,10 @@ See `docs/project-plan/phase-008-feature-backlog-and-design-hooks.md` for other 
 
 ## Improvements
 
+- Port `configure.ps1` to match the milestone-31 bash `configure` revamp
+  (retry-in-place input, provider+key-first model picker, generate vault
+  keypair, `.config/` output). Deferred while the bash version is validated.
+
 - ~~Onboarding / State checks on login:~~ (completed in milestone 30)
   - ~~If no providers have been configured, show an info/error page (only "Sign Out" allowed in navigation).~~
   - ~~If a provider is configured but there is no vault, land the user in vault config and restrict navigation to only that and "Sign Out".~~

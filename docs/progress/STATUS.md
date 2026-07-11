@@ -1,6 +1,6 @@
 # STATUS — single source of truth
 
-Updated: 2026-07-11 (active: none — milestone 30 completed)
+Updated: 2026-07-11 (active: milestone 31 — configure helper revamp)
 
 ## Where we are
 
@@ -29,11 +29,17 @@ Updated: 2026-07-11 (active: none — milestone 30 completed)
 
 ## Active milestone
 
-None
+Milestone 31 — configure helper revamp
+(`docs/progress/milestones/milestone-31-configure-revamp.md`)
+
+Principal-directed. Retry-in-place input; provider+key-first with a queried
+model picker; `configure` generates the vault keypair (public key shown on the
+Vault page); all runtime config moves to a gitignored `.config/` dir.
 
 ## Next step
 
-(Milestone 30 completed. Select a new milestone from the backlog.)
+m31-01: server honours `SECOND_BRAIN_WEB_SSH_KEY_PATH` (copy mounted key to
+`<dataDir>/ssh/deploy_key` at 600 on boot).
 
 ## Read before working
 

@@ -627,3 +627,9 @@ server tests pass in isolation). Fixed three items found in review:
   header (was "active: milestone 28").
 Note: residual full-suite flakiness is environmental (collect ~460-530s under load);
 touched-in-isolation tests pass. Not a branch defect.
+
+## 2026-07-11 13:21 — session start
+Tree clean at 0a507e6. Principal directed a `configure` helper revamp; asked
+clarifications (config dir `.config/`; vault key generate-only with public key
+shown on the Vault page; bash only). Created milestone 31 checklist and pointed
+STATUS at it. Next item: m31-01.
