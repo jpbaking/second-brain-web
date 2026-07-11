@@ -31,8 +31,8 @@ The principal authorised the recommended next backlog item on 2026-07-11.
 
 ## Next step
 
-- Complete `m15-04`: add interactive Bash and PowerShell configure scripts
-  that generate deployment files without persisting plaintext provider keys.
+- Complete `m15-05`: wire provider YAML into compose and update the examples,
+  quick start, deployment, and backup documentation.
 - Checklist: `docs/progress/milestones/milestone-15-provider-provisioning.md`.
 
 ## Read before working

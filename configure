@@ -1,0 +1,92 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+ROOT=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)
+ENV_FILE="$ROOT/.env"
+PROVIDERS_FILE="$ROOT/providers.yaml"
+
+prompt() {
+  local label=$1 value
+  printf '%s' "$label" >&2
+  IFS= read -r value
+  printf '%s' "$value"
+}
+
+secret_prompt() {
+  local label=$1 value
+  printf '%s' "$label" >&2
+  if [[ -t 0 ]]; then IFS= read -r -s value; printf '\n' >&2; else IFS= read -r value; fi
+  printf '%s' "$value"
+}
+
+yaml_quote() {
+  local value=${1//\'/\'\'}
+  printf "'%s'" "$value"
+}
+
+existing_key=''
+if [[ -f "$ENV_FILE" ]]; then
+  existing_key=$(sed -n 's/^SECOND_BRAIN_WEB_SECRETS_KEY=//p' "$ENV_FILE" | tail -n 1)
+fi
+
+if [[ -n "$existing_key" ]]; then
+  secrets_key=$existing_key
+  rotate=$(prompt 'Reuse the existing secrets key? [Y/n] ')
+  if [[ "$rotate" =~ ^[Nn]$ ]]; then
+    printf '%s\n' 'Warning: rotation invalidates every existing provider ciphertext; re-enter all provider keys.' >&2
+    secrets_key=$(openssl rand -base64 32)
+  fi
+else
+  secrets_key=$(openssl rand -base64 32)
+  printf '%s\n' 'Generated SECOND_BRAIN_WEB_SECRETS_KEY.' >&2
+fi
+
+umask 077
+printf 'SECOND_BRAIN_WEB_SECRETS_KEY=%s\n' "$secrets_key" > "$ENV_FILE"
+chmod 600 "$ENV_FILE"
+
+encrypt_secret() {
+  if [[ -f "$ROOT/app/server/dist/cli/encrypt-secret.js" ]]; then
+    printf '%s' "$1" | SECOND_BRAIN_WEB_SECRETS_KEY="$secrets_key" node "$ROOT/app/server/dist/cli/encrypt-secret.js"
+    return
+  fi
+  if docker image inspect second-brain-web >/dev/null 2>&1; then
+    printf '%s' "$1" | docker run --rm -i -e SECOND_BRAIN_WEB_SECRETS_KEY="$secrets_key" second-brain-web node server/dist/cli/encrypt-secret.js
+    return
+  fi
+  printf '%s\n' 'configure: build the app (`cd app && npm run build`) or the second-brain-web image, then run again.' >&2
+  exit 1
+}
+
+printf 'providers:\n' > "$PROVIDERS_FILE"
+count=0
+while true; do
+  add=$(prompt "$([[ $count -eq 0 ]] && printf 'Add a provider? [y/N] ' || printf 'Add another provider? [y/N] ')")
+  [[ "$add" =~ ^[Yy]$ ]] || break
+  id=$(prompt '  Config key (lowercase letters, digits, hyphens): ')
+  [[ "$id" =~ ^[a-z][a-z0-9-]*$ ]] || { printf '%s\n' 'Invalid config key.' >&2; exit 1; }
+  display_name=$(prompt '  Display name: ')
+  provider=$(prompt '  Provider (anthropic|gemini|openai|openai-compatible): ')
+  [[ "$provider" =~ ^(anthropic|gemini|openai|openai-compatible)$ ]] || { printf '%s\n' 'Invalid provider.' >&2; exit 1; }
+  model=$(prompt '  Model: ')
+  [[ -n "$model" ]] || { printf '%s\n' 'Model is required.' >&2; exit 1; }
+  base_url=''
+  if [[ "$provider" == openai-compatible ]]; then base_url=$(prompt '  Base URL: '); fi
+  api_key=$(secret_prompt '  API key (blank for none): ')
+  ciphertext=''
+  if [[ -n "$api_key" ]]; then ciphertext=$(encrypt_secret "$api_key"); fi
+  unset api_key
+
+  {
+    printf '  %s:\n' "$id"
+    [[ -n "$display_name" ]] && printf '    display_name: %s\n' "$(yaml_quote "$display_name")"
+    printf '    provider: %s\n' "$provider"
+    printf '    model: %s\n' "$(yaml_quote "$model")"
+    [[ -n "$base_url" ]] && printf '    base_url: %s\n' "$(yaml_quote "$base_url")"
+    [[ -n "$ciphertext" ]] && printf '    key: %s\n' "$(yaml_quote "$ciphertext")"
+  } >> "$PROVIDERS_FILE"
+  count=$((count + 1))
+done
+if [[ $count -eq 0 ]]; then printf '  {}\n' >> "$PROVIDERS_FILE"; fi
+chmod 600 "$PROVIDERS_FILE"
+printf 'Configured %d provider(s). Next: ./compose-helper.sh up\n' "$count"

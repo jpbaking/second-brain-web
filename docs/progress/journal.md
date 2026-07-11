@@ -495,3 +495,5 @@ Tree clean at bfd9592. Active: milestone 15, next item: m15-01.
 - 08:38 STARTED m15-02: add strict ordered YAML loading at boot and rebuild the provider-profile cache with the first enabled entry as default.
 - 08:41 DONE m15-02: focused provisioning suite 11 tests green; full suite 62 files / 279 tests green; lint (one pre-existing warning) and both builds passed. Commit 543d7b0.
 - 08:41 STARTED m15-03: remove provider mutation HTTP routes and web forms, expose key status only, and retain the authenticated read/Test surface.
+- 08:47 DONE m15-03: mutation routes return 404; focused provider/API tests 12 green; full suite 62 files / 277 tests, both lints, and both builds passed. Headless Chrome at 1440 px confirmed the read-only page and configure hint render cleanly. Commit b2bd498.
+- 08:47 STARTED m15-04: add Bash and PowerShell configure flows with key reuse/rotation, silent provider-key intake, and encrypted deployment-file output.
