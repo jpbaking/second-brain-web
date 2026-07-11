@@ -1,6 +1,6 @@
 # STATUS — single source of truth
 
-Updated: 2026-07-12 (active: milestone 48 — web search tools)
+Updated: 2026-07-12 (no active milestone; milestone 48 complete)
 
 ## Where we are
 
@@ -29,9 +29,11 @@ Updated: 2026-07-12 (active: milestone 48 — web search tools)
 
 ## Active milestone
 
-Milestone 48 (Web Search Tools — SearXNG): checklist at
-`docs/progress/milestones/milestone-48-web-search.md`. Principal go given
-2026-07-12 ("can you implement this?").
+Milestone 48 (Web Search Tools — SearXNG) is complete. Archived checklist:
+`docs/progress/milestones/archive/milestone-48-web-search.md`. Chat agent now
+has auto-approved `web__search` / `web__fetch` MCP tools backed by the new
+compose-internal `searxng` service; needs `./compose-helper.sh up` (rebuild)
+to go live.
 
 Archived: Milestone 47 (Mermaid Support) is complete. Archived checklist:
 `docs/progress/milestones/archive/milestone-47-mermaid-support.md`.
