@@ -499,3 +499,17 @@ Tree clean at bfd9592. Active: milestone 15, next item: m15-01.
 - 08:47 STARTED m15-04: add Bash and PowerShell configure flows with key reuse/rotation, silent provider-key intake, and encrypted deployment-file output.
 - 08:48 DONE m15-04: scripted Bash configuration produced mode-600 files, ciphertext decrypted to the supplied key, and plaintext was absent from disk; Bash and PowerShell parser checks passed. Commit 2ba6418.
 - 08:48 STARTED m15-05: mount provider YAML read-only in compose, add safe examples/ignores, and update quick-start, deployment, and backup guidance.
+- 08:51 DONE m15-05: grep contracts passed; compose built and booted healthy with a missing bind source (directory tolerated) and with a real read-only YAML file; live health returned 200. Commit 6567dd3.
+- 08:51 STARTED m15-06: exercise configure-to-compose for a keyed profile, the authenticated read/Test/chat snapshot paths, plaintext absence, and the final full gate.
+
+## 2026-07-11 09:51 — session start (recovery)
+Tree dirty at 6567dd3 (previous agent's m15-06 WIP: configure chmod 600→644 fix + journal entries). Changes match intent; verification follows.
+- 09:51 RECOVERY m15-06: previous agent found providers.yaml needed 644 (ciphertext-only; decryption key in mode-600 .env) for the unprivileged container user. Change kept.
+- 09:52 CONTINUED m15-06: full source gate — lint 0 err, 62 files / 277 tests green, server+web builds passed.
+- 09:54 CONTINUED m15-06: compose e2e — scripted `./configure` produced .env (mode 600, key present) + providers.yaml (mode 644, v1: ciphertext, no plaintext); `./compose-helper.sh rebuild` booted healthy; health 200, status schema v10/v3, guard 401 unauth.
+- 09:55 CONTINUED m15-06: authenticated e2e — password+TOTP login, GET /api/providers listed YAML profile (test-claude, anthropic, default, key: "configured", no plaintext), Provider Test returned 401 from Anthropic (dummy key) without leaking it.
+- 09:55 CONTINUED m15-06: snapshot decryption — POST /api/chat/sessions with the keyed default profile succeeded (providerProfileId=test-claude), no plaintext key in response or on-disk DB bytes.
+- 09:57 DONE m15-06: all deliverable contracts verified. Full gate + compose e2e passed. Milestone 15 complete (6/6).
+
+## 2026-07-11 09:57 — session end (milestone 15 complete)
+Declarative provider provisioning shipped: YAML-only source, encrypted keys, configure scripts, compose bind-mount, read-only UI. No milestone is active; awaiting principal direction.

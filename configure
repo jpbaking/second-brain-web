@@ -88,5 +88,7 @@ while true; do
   count=$((count + 1))
 done
 if [[ $count -eq 0 ]]; then printf '  {}\n' >> "$PROVIDERS_FILE"; fi
-chmod 600 "$PROVIDERS_FILE"
+# The unprivileged container user must be able to read this bind mount. It
+# contains ciphertext only; the decryption key remains in mode-600 .env.
+chmod 644 "$PROVIDERS_FILE"
 printf 'Configured %d provider(s). Next: ./compose-helper.sh up\n' "$count"

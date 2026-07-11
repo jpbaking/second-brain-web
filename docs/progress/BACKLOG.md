@@ -6,15 +6,6 @@ in `docs/progress/milestones/` (numbered after the last archived milestone)
 and follow AGENTS-PLAYBOOK.md. Completed checklists move to
 `docs/progress/milestones/archive/`.
 
-## Gated (designed, waiting for "go")
-
-- **Milestone 15 — declarative provider provisioning (YAML-only).**
-  Design: `docs/design/provider-provisioning.md` (revision 3).
-  Checklist already written: `docs/progress/milestones/milestone-15-provider-provisioning.md`.
-  Summary: `providers.yaml` (pre-encrypted keys, first entry = default) is the
-  sole provider source; provider CRUD UI/API removed (read-only view + Test
-  stays); interactive `configure` / `configure.ps1` scripts.
-
 ## Larger features (from the phase-008 backlog — need principal scoping)
 
 See `docs/project-plan/phase-008-feature-backlog-and-design-hooks.md` for the
@@ -24,6 +15,10 @@ voice capture, rich diff review, backup/restore UI.
 
 ## Dropped / resolved (kept for the record)
 
+- ~~Declarative provider provisioning (YAML-only)~~ — completed in milestone 15.
+  `providers.yaml` (pre-encrypted keys) is the sole provider source; CRUD
+  removed (read-only + Test stays); `configure`/`configure.ps1` scripts;
+  compose bind-mount.
 - ~~Run bare-metal production under a dedicated system user~~ — completed in
   milestone 21 with a validated, home-isolated systemd unit and documented
   install/bootstrap/upgrade flow. Containers remain isolated by `USER node`.

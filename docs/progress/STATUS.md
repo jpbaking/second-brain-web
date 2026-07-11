@@ -1,6 +1,6 @@
 # STATUS — single source of truth
 
-Updated: 2026-07-11 (milestone 15 active)
+Updated: 2026-07-11 (no active milestone)
 
 ## Where we are
 
@@ -8,32 +8,33 @@ Updated: 2026-07-11 (milestone 15 active)
   (milestones 0–12: auth, vault clone/health/commit/push, providers, Cline SDK
   chat with tool approvals + write lock, capture/uploads, reports, follow-ups,
   FTS search, link explorer, production hardening) plus the principal-directed
-  milestones 13 (compose-helper run path), 14 (app source under `app/`), and
-  16 (chat-first UI: landing = last active chat, sidebar shell).
+  milestones 13 (compose-helper run path), 14 (app source under `app/`),
+  16 (chat-first UI: landing = last active chat, sidebar shell),
+  15 (declarative provider provisioning: YAML-only, configure scripts,
+  encrypted keys, compose bind-mount), 19–21 (slim Docker, follow-up display,
+  dedicated-user deployment).
   Per-milestone checklists with verification evidence:
   `docs/progress/milestones/archive/`. Full narrative: `journal.md`.
 - **The app is production-runnable.** Quick start from the repo root:
-  `cp .env.example .env` (set `SECOND_BRAIN_WEB_SECRETS_KEY`) then
+  `./configure` (generates `.env` + `providers.yaml`) then
   `./compose-helper.sh up`; owner setup via
   `docker exec -it <container> node server/dist/cli/reset-auth.js /data`.
   Bare metal: `cd app && npm install && npm run build`, then `npm start` with
   `SECOND_BRAIN_WEB_DATA_DIR` at a private `0700` dir.
 - Key facts: all app source lives under `app/` (npm workspace root — run every
   npm command from there). Core DB schema v10; sidecar (`indexes/vault.sqlite`)
-  v3. Server test suite: 266 tests, all green. UI routes: `/` = chat (last
+  v3. Server test suite: 277 tests, all green. UI routes: `/` = chat (last
   active or new), `/command-centre`, `/capture`, `/follow-ups`, `/reports`,
   `/search`, `/explorer`, `/vault`, `/providers`, `/login`, `/setup`.
 
 ## Current phase
 
-**Milestone 15 is active:** declarative provider provisioning (YAML-only).
-The principal authorised the recommended next backlog item on 2026-07-11.
+No milestone is active. Work exists only in `docs/progress/BACKLOG.md` and
+starts only when the principal says go.
 
 ## Next step
 
-- Complete `m15-06`: run the full source gate and real compose deliverable
-  check, including provider list/Test and keyed chat snapshot decryption.
-- Checklist: `docs/progress/milestones/milestone-15-provider-provisioning.md`.
+- None. Awaiting principal direction.
 
 ## Read before working
 
