@@ -12,6 +12,17 @@ See `docs/project-plan/phase-008-feature-backlog-and-design-hooks.md` for other 
 
 ## Improvements
 
+- **Chat-scoped file upload (attachments)** — attach files to a chat message
+  without touching the inbox; files live only in that chat's context, like the
+  Cline VS Code extension. SDK support confirmed (2026-07-12): `ClineCore`
+  `start`/`send` both take `userImages?: string[]` (data URIs → image blocks)
+  and `userFiles?: string[]` (filesystem paths; the local runtime host reads
+  text content into the conversation — binary rejected, size-capped). Sketch:
+  authed upload endpoint storing under `dataDir/chat-uploads/<sessionId>/`,
+  extend `AgentRunner.start/send` with `userImages`/`userFiles`, composer
+  attach button + pending-attachment chips in the web UI. Cleanup on session
+  delete.
+
 - ~~**Weak-model system prompt**~~ — completed in milestone 45: replace the
   one-line fallback with a compact, explicit operating contract for models
   with at least 64K context.

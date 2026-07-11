@@ -1113,3 +1113,4 @@ Tree clean at 69d46a0 (HANDOFF.md untracked). No active milestone; ad-hoc repair
 - 05:30 DONE: userSelect none on the pannable viewport. Lint+build green.
 - 05:33 STARTED: click-to-expand zoom modal for markdown tables.
 - 05:34 DONE: table renderer in markdownComponents wraps tables in ZoomableTable (cursor zoom-in, opens modal reusing the rendered children); modal shows kind=table with prose styling, margin-block 0 inside the body. Lint, build, web tests (9) green.
+- 05:40 Researched Cline SDK file handling for chat-scoped uploads: StartSessionInput/SendSessionInput accept userImages (data URIs → image blocks) and userFiles (paths, read as text by the local host's default loader; binary rejected). Backlogged the feature with a design sketch; awaiting principal go.
