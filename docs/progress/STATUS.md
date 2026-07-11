@@ -1,6 +1,6 @@
 # STATUS — single source of truth
 
-Updated: 2026-07-11 (active: milestone 28)
+Updated: 2026-07-11 (active: none — milestone 30 completed)
 
 ## Where we are
 

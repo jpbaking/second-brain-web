@@ -612,3 +612,18 @@ Tree clean. Active: milestone 30, next item: m30-01.
 - 12:35 DONE m30-01 and m30-02: verified by npm run build. Commit pending.
 ## 2026-07-11 12:35 — session end
 Tree clean. Milestone 30 completed and archived.
+
+## 2026-07-11 13:05 — merge-readiness review + fixes (agents/gpt)
+Principal review of agents/gpt before merge to main. Gates green (lint, build, 293
+server tests pass in isolation). Fixed three items found in review:
+- repair: SchedulerService.stop() now cancels the 1s initial-tick setTimeout, not
+  just the interval — an app.close() within the first second previously left it
+  firing against a torn-down data dir ("unable to open database file").
+- test: gave the git-subprocess-heavy vault-status-api suite a 20s timeout (real
+  clone/commit/push exceed the 5s default under full-suite parallel load).
+- docs: deployment.md env table now notes SECOND_BRAIN_WEB_SECRETS_KEY is required
+  for owner auth (encrypted TOTP), with an upgrade note.
+- progress: archived completed milestone-29 checklist; corrected stale STATUS.md
+  header (was "active: milestone 28").
+Note: residual full-suite flakiness is environmental (collect ~460-530s under load);
+touched-in-isolation tests pass. Not a branch defect.

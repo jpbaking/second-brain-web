@@ -6,6 +6,7 @@ import type { AgentSessionService } from './session.js'
 
 export class SchedulerService {
   private timer: NodeJS.Timeout | null = null
+  private initialTick: NodeJS.Timeout | null = null
 
   constructor (
     private readonly config: AppConfig,
@@ -15,14 +16,23 @@ export class SchedulerService {
   start (): void {
     if (this.timer !== null) return
     this.timer = setInterval(() => { this.tick().catch(console.error) }, 60_000)
-    // Run an initial tick shortly after startup
-    setTimeout(() => { this.tick().catch(console.error) }, 1000)
+    // Run an initial tick shortly after startup. Tracked so stop() can cancel
+    // it — otherwise a shutdown within the first second leaves this firing
+    // against a torn-down data dir.
+    this.initialTick = setTimeout(() => {
+      this.initialTick = null
+      this.tick().catch(console.error)
+    }, 1000)
   }
 
   stop (): void {
     if (this.timer !== null) {
       clearInterval(this.timer)
       this.timer = null
+    }
+    if (this.initialTick !== null) {
+      clearTimeout(this.initialTick)
+      this.initialTick = null
     }
   }
 

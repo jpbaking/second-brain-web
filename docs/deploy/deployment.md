@@ -113,7 +113,7 @@ Runtime data remains in `/var/lib/second-brain-web`; migrations run at startup.
 | Variable | Required | Default (image) | Purpose |
 |---|---|---|---|
 | `SECOND_BRAIN_WEB_DATA_DIR` | yes | `/data` | Private data root (db, indexes, ssh, auth, workspaces). Must be `0700`. |
-| `SECOND_BRAIN_WEB_SECRETS_KEY` | for provider keys | — | AES-256-GCM key that encrypts stored provider API keys. Without it you cannot save a keyed provider profile. Keep it out of the image and out of version control. |
+| `SECOND_BRAIN_WEB_SECRETS_KEY` | for provider keys and owner auth | — | AES-256-GCM key that encrypts stored provider API keys **and the owner TOTP secret**. Without it you cannot save a keyed provider profile, and reading owner auth fails once the TOTP secret has been encrypted. **Upgrade note:** owner state written before the encrypted-TOTP change is re-encrypted on first read, so an existing install that had never set this key must set it (to a stable value) before upgrading, or login will fail. Keep it out of the image and out of version control. |
 | `SECOND_BRAIN_WEB_PROVIDERS_FILE` | no | — | Read-only `providers.yaml` path. Profiles are full-replaced at startup in document order; the first enabled entry is the default. |
 | `SECOND_BRAIN_WEB_HOST` | no | `0.0.0.0` | Bind address inside the container. |
 | `SECOND_BRAIN_WEB_PORT` | no | `8722` | Listen port. |

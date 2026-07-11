@@ -75,7 +75,9 @@ afterEach(async () => {
   for (const dir of scratch.splice(0)) rmSync(dir, { recursive: true, force: true })
 })
 
-describe('vault status API', () => {
+// These cases drive real git subprocesses (clone, commit, push to a bare
+// remote), which can exceed the 5s default under full-suite parallel load.
+describe('vault status API', { timeout: 20_000 }, () => {
   it('requires authentication', async () => {
     const { app } = await authedApp()
     expect((await app.inject({ method: 'GET', url: '/api/vault/status' })).statusCode).toBe(401)
