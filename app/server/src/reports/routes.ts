@@ -85,7 +85,7 @@ export function registerReportRoutes (app: FastifyInstance, config: AppConfig, a
 
     const session = agentService.create({
       title: `Regenerate: ${path.basename(resolved)}`,
-      providerProfileId: prov.providerProfileId ?? undefined
+      providerProfileId: prov.providerProfileId
     })
     
     agentService.sendMessage(session.id, prov.prompt).catch(() => {})
