@@ -240,25 +240,6 @@ export function ChatScreen ({ mode }: { mode: ChatMode }) {
             <img src='/design/assets/logo-mark.svg' alt='' />
             <h1>What can I help with?</h1>
             <p>Messages go to your executive secretary, who can read and update your vault.</p>
-            <div className='chat-welcome-options'>
-              <label>
-                <span>Provider</span>
-                <select className='select' value={selectedProvider} onChange={e => setSelectedProvider(e.target.value)}>
-                  <option value=''>Default provider</option>
-                  {providers.filter(p => p.enabled).map(p => (
-                    <option key={p.id} value={p.id}>{p.displayName}{p.isDefault ? ' (default)' : ''}</option>
-                  ))}
-                </select>
-              </label>
-              <label>
-                <span>Approvals</span>
-                <select className='select' value={selectedPreset} onChange={e => setSelectedPreset(e.target.value)}>
-                  <option value='normal'>Normal</option>
-                  <option value='read-only'>Read-only</option>
-                  <option value='high-trust'>High-trust</option>
-                </select>
-              </label>
-            </div>
           </div>
         )}
 
@@ -314,6 +295,27 @@ export function ChatScreen ({ mode }: { mode: ChatMode }) {
           />
           <button className='btn btn-primary chat-send' type='submit' disabled={input.trim() === ''}>Send</button>
         </form>
+        {newChatState && (
+          <div className='chat-composer-options'>
+            <label className='chat-composer-select'>
+              Provider
+              <select value={selectedProvider} onChange={e => setSelectedProvider(e.target.value)}>
+                <option value=''>Default provider</option>
+                {providers.filter(p => p.enabled).map(p => (
+                  <option key={p.id} value={p.id}>{p.displayName}{p.isDefault ? ' (default)' : ''}</option>
+                ))}
+              </select>
+            </label>
+            <label className='chat-composer-select'>
+              Approvals
+              <select value={selectedPreset} onChange={e => setSelectedPreset(e.target.value)}>
+                <option value='normal'>Normal</option>
+                <option value='read-only'>Read-only</option>
+                <option value='high-trust'>High-trust</option>
+              </select>
+            </label>
+          </div>
+        )}
       </div>
     </div>
   )

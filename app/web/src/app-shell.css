@@ -360,6 +360,39 @@
   gap: var(--space-2);
 }
 
+.chat-composer-options {
+  display: flex;
+  gap: var(--space-3);
+  margin-top: var(--space-2);
+  padding: 0 var(--space-1);
+}
+
+.chat-composer-select {
+  display: flex;
+  align-items: center;
+  gap: var(--space-1);
+  font-size: var(--ui-kicker);
+  color: var(--muted);
+}
+
+.chat-composer-select select {
+  background: transparent;
+  border: none;
+  color: var(--ink);
+  font-size: var(--ui-kicker);
+  font-family: inherit;
+  font-weight: 500;
+  cursor: pointer;
+  padding: 0;
+  outline: none;
+  appearance: none;
+}
+
+.chat-composer-select select:hover,
+.chat-composer-select select:focus-visible {
+  text-decoration: underline;
+}
+
 .chat-input {
   flex: 1 1 auto;
   resize: none;
