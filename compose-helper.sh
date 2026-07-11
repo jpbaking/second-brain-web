@@ -86,9 +86,10 @@ Commands:
   start    Start detached (no pull/build)
   restart  Stop then start detached (no pull/build)
   stop     Stop with ${DCH_STOP_TIMEOUT}s timeout, remove orphans
-  down     Stop with ${DCH_STOP_TIMEOUT}s timeout, remove orphans and volumes
-  logs     Follow logs from last ${DCH_LOGS_TAIL} lines
-  <other>  Pass-through to docker compose
+  down       Stop with ${DCH_STOP_TIMEOUT}s timeout, remove orphans and volumes
+  logs       Follow logs from last ${DCH_LOGS_TAIL} lines
+  reset-auth Reset owner authentication (password + TOTP) in the running container
+  <other>    Pass-through to docker compose
 
 Note: passing 2 or more arguments always bypasses named commands and routes
 directly to docker compose (e.g. 'up --build' skips the 'up' shorthand).
@@ -145,6 +146,9 @@ case "${1:-}" in
         ;;
     logs)
         run_dc logs -f --tail="$DCH_LOGS_TAIL"
+        ;;
+    reset-auth)
+        run_dc exec second-brain-web node server/dist/cli/reset-auth.js /data
         ;;
     *)
         run_dc "$@"

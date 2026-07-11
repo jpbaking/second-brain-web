@@ -53,8 +53,7 @@ Then create the owner credentials (password plus TOTP) and open
 `http://localhost:8722/`:
 
 ```sh
-./compose-helper.sh exec second-brain-web \
-  node server/dist/cli/reset-auth.js /data
+./compose-helper.sh reset-auth
 ```
 
 Day-to-day commands:

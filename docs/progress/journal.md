@@ -762,3 +762,9 @@ Tree clean at 4cebaa1. Active: milestone 35, next item: m35-01.
 - 16:02 DONE m35-05: verified by `npm run lint && npm run build` -> successful. Commit pending.
 
 ## 16:03 — session end. Milestone 35 complete (5/5). Next: select a new milestone.
+
+- 16:08 STARTED repair: add reset-auth shorthand to compose-helper
+- 16:08 DONE repair: added reset-auth shorthand to compose-helper.sh and updated README.md to use it.
+
+## 2026-07-11 16:08 — session end
+repair: added reset-auth shorthand to compose-helper.
