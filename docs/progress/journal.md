@@ -588,3 +588,4 @@ Tree clean at 0b8834e. Active: milestone 28, next item: m28-01.
 - 11:11 STARTED m28-04: update ReviewCommitModal.tsx to add interactive checkboxes and diff viewer
 - 11:13 DONE m28-04: verified by `npm run build` → UI updated. Committing.
 - 11:13 NOTE m28-04: commit is 57b737f.
+- 11:13 STARTED m28-05: add markdown preview to review diffs UI
