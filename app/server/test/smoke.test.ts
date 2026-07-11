@@ -34,7 +34,7 @@ describe('smoke', () => {
   it('boots and serves health, auth, and a guarded route end-to-end', async () => {
     const root = mkdtempSync(path.join(tmpdir(), 'sbw-smoke-'))
     scratch.push(root)
-    const config = loadConfig({ SECOND_BRAIN_WEB_DATA_DIR: path.join(root, 'data') })
+    const config = loadConfig({ SECOND_BRAIN_WEB_DATA_DIR: path.join(root, 'data'), SECOND_BRAIN_WEB_SECRETS_KEY: 'test-owner-key' })
     prepareDatabases(config.dataDir)
     const { password, state } = await generateOwnerAuth()
     writeOwnerAuth(config.dataDir, state, { SECOND_BRAIN_WEB_SECRETS_KEY: config.secretsKey })

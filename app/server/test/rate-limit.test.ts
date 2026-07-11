@@ -23,7 +23,7 @@ const dbs: DatabaseSync[] = []
 function throttleDb (): DatabaseSync {
   const root = mkdtempSync(path.join(tmpdir(), 'sbw-throttle-'))
   scratch.push(root)
-  const dataDir = loadConfig({ SECOND_BRAIN_WEB_DATA_DIR: path.join(root, 'data') }).dataDir
+  const dataDir = loadConfig({ SECOND_BRAIN_WEB_DATA_DIR: path.join(root, 'data'), SECOND_BRAIN_WEB_SECRETS_KEY: 'test-owner-key' }).dataDir
   prepareDatabases(dataDir)
   const db = openCoreDb(dataDir)
   dbs.push(db)
@@ -72,7 +72,7 @@ describe('login rate limiting (endpoint)', () => {
   async function app (): Promise<FastifyInstance> {
     const root = mkdtempSync(path.join(tmpdir(), 'sbw-ratelimit-'))
     scratch.push(root)
-    const config = loadConfig({ SECOND_BRAIN_WEB_DATA_DIR: path.join(root, 'data') })
+    const config = loadConfig({ SECOND_BRAIN_WEB_DATA_DIR: path.join(root, 'data'), SECOND_BRAIN_WEB_SECRETS_KEY: 'test-owner-key' })
     prepareDatabases(config.dataDir)
     const { state } = await generateOwnerAuth()
     writeOwnerAuth(config.dataDir, state, { SECOND_BRAIN_WEB_SECRETS_KEY: config.secretsKey })

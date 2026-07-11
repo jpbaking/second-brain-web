@@ -1,6 +1,6 @@
 # STATUS — single source of truth
 
-Updated: 2026-07-11 (milestone 17 activated)
+Updated: 2026-07-11 (milestone 17 complete)
 
 ## Where we are
 
@@ -26,23 +26,19 @@ Updated: 2026-07-11 (milestone 17 activated)
 
 ## Current phase
 
-**Milestone 17 — encrypted TOTP secret at rest is active.** The principal
-directed the next recommended backlog item on 2026-07-11. Milestone 15
-(YAML-only provider provisioning) remains fully designed and gated.
+Backlog-driven. **No milestone is active.** Milestone 17 encrypted the owner
+TOTP secret at rest and safely migrates legacy state. Milestone 15 (YAML-only
+provider provisioning) remains fully designed and gated.
 
 ## Next step
 
-- **m17-04:** run the full gate and fresh CLI/login integration check.
-- Checklist: `docs/progress/milestones/milestone-17-encrypted-totp.md`.
+- None queued. Future work starts only when the principal says go.
 
 ## Read before working
 
 - `AGENTS-PLAYBOOK.md` — always, top to bottom.
-- `docs/progress/milestones/milestone-17-encrypted-totp.md`.
-- `docs/project-plan/master-plan.md` — especially the dedicated secrets-key
-  rule.
-- `docs/project-plan/phase-002-security-auth-and-secrets.md` — TOTP storage
-  and reset behaviour.
+- `docs/progress/BACKLOG.md` — the work queue.
+- The design and project-plan documents relevant to the selected item.
 
 ## Questions for the principal
 

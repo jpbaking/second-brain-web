@@ -31,7 +31,7 @@ afterEach(async () => {
 async function loggedInApp (): Promise<{ app: FastifyInstance, token: string }> {
   const root = mkdtempSync(path.join(tmpdir(), 'sbw-logout-'))
   scratch.push(root)
-  const config = loadConfig({ SECOND_BRAIN_WEB_DATA_DIR: path.join(root, 'data') })
+  const config = loadConfig({ SECOND_BRAIN_WEB_DATA_DIR: path.join(root, 'data'), SECOND_BRAIN_WEB_SECRETS_KEY: 'test-owner-key' })
   prepareDatabases(config.dataDir)
   const { password, state } = await generateOwnerAuth()
   writeOwnerAuth(config.dataDir, state, { SECOND_BRAIN_WEB_SECRETS_KEY: config.secretsKey })

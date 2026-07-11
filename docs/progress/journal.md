@@ -428,3 +428,9 @@ Tree clean at 98ac8de. Active: milestone 17, next item: m17-01.
 - 08:00 STARTED m17-02: decrypt v2 owner state for login and safely migrate legacy v1 plaintext state without changing credentials.
 - 08:02 DONE m17-02: verified by `npm test --workspace server -- owner.test.ts auth-flow.test.ts` → 8 tests green. Commit f74c353.
 - 08:02 STARTED m17-03: update reset-auth, test/runtime call sites, and operator docs for mandatory encrypted owner persistence.
+- 08:04 DONE m17-03: focused auth/reset suite 19 tests green; `npm run lint` exits 0 (one pre-existing `index-build.ts` comma-dangle warning). Commit 034d15d.
+- 08:04 STARTED m17-04: full lint/test/build gate plus fresh encrypted reset-auth and real login integration check.
+- 08:07 DONE m17-04: full gate green — lint exits 0 (one pre-existing comma-dangle warning), 60 files / 263 tests passed, server + web builds passed. Fresh `reset-auth.sh` wrote mode-600 owner v2 ciphertext with no plaintext provisioning secret; real password+TOTP login and guarded `/api/vault/config` returned 200. Milestone 17 complete.
+
+## 2026-07-11 08:07 — session end (milestone 17 complete)
+Owner TOTP secrets are encrypted at rest exclusively with `SECOND_BRAIN_WEB_SECRETS_KEY`; fresh resets refuse a missing key, encrypted login works, and legacy v1 plaintext state migrates without credential changes or destructive failure. No milestone is active.

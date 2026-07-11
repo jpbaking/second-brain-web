@@ -26,7 +26,7 @@ function cookieValue (header: string | string[] | undefined, name: string): stri
 async function fixture (): Promise<{ app: FastifyInstance, cookie: string }> {
   const root = mkdtempSync(path.join(tmpdir(), 'sbw-search-api-'))
   scratch.push(root)
-  const config = loadConfig({ SECOND_BRAIN_WEB_DATA_DIR: path.join(root, 'data') })
+  const config = loadConfig({ SECOND_BRAIN_WEB_DATA_DIR: path.join(root, 'data'), SECOND_BRAIN_WEB_SECRETS_KEY: 'test-owner-key' })
   prepareDatabases(config.dataDir)
   const ws = vaultWorkspacePath(config.dataDir)
   const write = (rel: string, body: string) => {

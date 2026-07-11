@@ -36,7 +36,7 @@ function cookieValue (header: string | string[] | undefined, name: string): stri
 async function authedApp (withWorkflow = true): Promise<{ app: FastifyInstance, cookie: string, runner: FakeRunner }> {
   const root = mkdtempSync(path.join(tmpdir(), 'sbw-post-upload-'))
   scratch.push(root)
-  const config = loadConfig({ SECOND_BRAIN_WEB_DATA_DIR: path.join(root, 'data') })
+  const config = loadConfig({ SECOND_BRAIN_WEB_DATA_DIR: path.join(root, 'data'), SECOND_BRAIN_WEB_SECRETS_KEY: 'test-owner-key' })
   prepareDatabases(config.dataDir)
   if (withWorkflow) {
     const workflows = path.join(vaultWorkspacePath(config.dataDir), '.clinerules', 'workflows')

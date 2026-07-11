@@ -3,6 +3,7 @@ import { tmpdir } from 'node:os'
 import path from 'node:path'
 import { afterEach, describe, expect, it } from 'vitest'
 import { buildApp } from '../src/app.js'
+import { registerProviderRoutes } from '../src/providers/routes.js'
 import { loadConfig } from '../src/config.js'
 import { prepareDatabases } from '../src/migrations.js'
 import { generateOwnerAuth, writeOwnerAuth } from '../src/auth/bootstrap.js'
@@ -20,11 +21,13 @@ function cookieValue (h: string | string[] | undefined, name: string): string | 
   return m && m[1] !== '' ? decodeURIComponent(m[1]) : undefined
 }
 
-async function authedApp (secretsKey?: string): Promise<{ app: FastifyInstance, cookie: string }> {
+async function authedApp (secretsKey: string): Promise<{ app: FastifyInstance, cookie: string }> {
   const root = mkdtempSync(path.join(tmpdir(), 'sbw-provapi-'))
   scratch.push(root)
-  const env: NodeJS.ProcessEnv = { SECOND_BRAIN_WEB_DATA_DIR: path.join(root, 'data') }
-  if (secretsKey !== undefined) env.SECOND_BRAIN_WEB_SECRETS_KEY = secretsKey
+  const env: NodeJS.ProcessEnv = {
+    SECOND_BRAIN_WEB_DATA_DIR: path.join(root, 'data'),
+    SECOND_BRAIN_WEB_SECRETS_KEY: secretsKey,
+  }
   const config = loadConfig(env)
   prepareDatabases(config.dataDir)
   const { password, state } = await generateOwnerAuth()
@@ -75,11 +78,16 @@ describe('provider API', () => {
   })
 
   it('refuses to store a key when SECOND_BRAIN_WEB_SECRETS_KEY is unset', async () => {
-    const { app, cookie } = await authedApp() // no secrets key
+    const root = mkdtempSync(path.join(tmpdir(), 'sbw-provapi-nokey-'))
+    scratch.push(root)
+    const config = loadConfig({ SECOND_BRAIN_WEB_DATA_DIR: path.join(root, 'data') })
+    prepareDatabases(config.dataDir)
+    const app = buildApp()
+    registerProviderRoutes(app, config)
+    apps.push(app)
     const res = await app.inject({
       method: 'POST',
       url: '/api/providers',
-      headers: { cookie },
       payload: { displayName: 'X', providerId: 'openai', modelId: 'm', apiKey: 'sk-abc' },
     })
     expect(res.statusCode).toBe(400)

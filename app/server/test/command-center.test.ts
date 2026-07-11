@@ -26,7 +26,7 @@ function cookieValue (h: string | string[] | undefined, name: string): string | 
 async function authedApp (): Promise<{ app: FastifyInstance, cookie: string, dataDir: string }> {
   const root = mkdtempSync(path.join(tmpdir(), 'sbw-cc-'))
   scratch.push(root)
-  const config = loadConfig({ SECOND_BRAIN_WEB_DATA_DIR: path.join(root, 'data') })
+  const config = loadConfig({ SECOND_BRAIN_WEB_DATA_DIR: path.join(root, 'data'), SECOND_BRAIN_WEB_SECRETS_KEY: 'test-owner-key' })
   prepareDatabases(config.dataDir)
   const { password, state } = await generateOwnerAuth()
   writeOwnerAuth(config.dataDir, state, { SECOND_BRAIN_WEB_SECRETS_KEY: config.secretsKey })

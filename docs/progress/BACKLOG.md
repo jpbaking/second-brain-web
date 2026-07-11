@@ -31,9 +31,6 @@ and follow AGENTS-PLAYBOOK.md. Completed checklists move to
 - **Run the production app under a dedicated system user.** Global
   `~/.cline/skills` and rules paths merge into agent sessions; a dedicated
   user isolates them. (Container deployments already isolate this.)
-- **Encrypt the TOTP secret at rest.** Currently plaintext base32 in
-  `auth/owner.json` (0600) per the phase-002 MVP; encrypt with
-  `SECOND_BRAIN_WEB_SECRETS_KEY`.
 
 ## Larger features (from the phase-008 backlog — need principal scoping)
 
@@ -44,6 +41,9 @@ voice capture, rich diff review, backup/restore UI.
 
 ## Dropped / resolved (kept for the record)
 
+- ~~Encrypt the TOTP secret at rest~~ — completed in milestone 17. New owner
+  state is encrypted with `SECOND_BRAIN_WEB_SECRETS_KEY`; legacy plaintext
+  state migrates safely on first authenticated read.
 - ~~`reset-auth` should also revoke active DB sessions~~ — already implemented
   in milestone 2: the CLI calls `invalidateSessionsAndChallenges`, which
   revokes every active DB session and deletes pending login challenges.

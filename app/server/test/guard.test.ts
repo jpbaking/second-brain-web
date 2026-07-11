@@ -46,7 +46,7 @@ afterEach(async () => {
 async function fixture (): Promise<{ app: FastifyInstance, password: string, secret: string, digits: number, period: number }> {
   const root = mkdtempSync(path.join(tmpdir(), 'sbw-guard-'))
   scratch.push(root)
-  const config = loadConfig({ SECOND_BRAIN_WEB_DATA_DIR: path.join(root, 'data') })
+  const config = loadConfig({ SECOND_BRAIN_WEB_DATA_DIR: path.join(root, 'data'), SECOND_BRAIN_WEB_SECRETS_KEY: 'test-owner-key' })
   prepareDatabases(config.dataDir)
   const { password, state } = await generateOwnerAuth()
   writeOwnerAuth(config.dataDir, state, { SECOND_BRAIN_WEB_SECRETS_KEY: config.secretsKey })

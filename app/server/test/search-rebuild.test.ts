@@ -19,7 +19,7 @@ const apps: FastifyInstance[] = []
 function dataDir (): string {
   const root = mkdtempSync(path.join(tmpdir(), 'sbw-search-rebuild-'))
   scratch.push(root)
-  return loadConfig({ SECOND_BRAIN_WEB_DATA_DIR: path.join(root, 'data') }).dataDir
+  return loadConfig({ SECOND_BRAIN_WEB_DATA_DIR: path.join(root, 'data'), SECOND_BRAIN_WEB_SECRETS_KEY: 'test-owner-key' }).dataDir
 }
 
 function write (dir: string, rel: string, body: string): void {
@@ -43,7 +43,7 @@ function cookieValue (header: string | string[] | undefined, name: string): stri
 }
 
 async function authedApp (dir: string): Promise<{ app: FastifyInstance, cookie: string }> {
-  const config = loadConfig({ SECOND_BRAIN_WEB_DATA_DIR: dir })
+  const config = loadConfig({ SECOND_BRAIN_WEB_DATA_DIR: dir, SECOND_BRAIN_WEB_SECRETS_KEY: 'test-owner-key' })
   const { password, state } = await generateOwnerAuth()
   writeOwnerAuth(config.dataDir, state, { SECOND_BRAIN_WEB_SECRETS_KEY: config.secretsKey })
   const app = buildApp(config)

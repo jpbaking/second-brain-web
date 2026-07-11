@@ -24,7 +24,10 @@ function cookieValue (header: string | string[] | undefined, name: string): stri
 async function authedApp (uploadMaxBytes?: number): Promise<{ app: FastifyInstance, cookie: string, config: AppConfig }> {
   const root = mkdtempSync(path.join(tmpdir(), 'sbw-upload-'))
   scratch.push(root)
-  const env: NodeJS.ProcessEnv = { SECOND_BRAIN_WEB_DATA_DIR: path.join(root, 'data') }
+  const env: NodeJS.ProcessEnv = {
+    SECOND_BRAIN_WEB_DATA_DIR: path.join(root, 'data'),
+    SECOND_BRAIN_WEB_SECRETS_KEY: 'test-owner-key',
+  }
   if (uploadMaxBytes !== undefined) env.SECOND_BRAIN_WEB_UPLOAD_MAX_BYTES = String(uploadMaxBytes)
   const config = loadConfig(env)
   prepareDatabases(config.dataDir)
