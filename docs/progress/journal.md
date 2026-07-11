@@ -872,3 +872,8 @@ Tree clean at 25100b1. Active: milestone 37, next item: m37-04.
 - 17:46 STARTED m37-06: Add "Regenerate" UI button and wire up frontend API call
 - 17:46 DONE m37-06: verified by `npm run build --workspace web` → successful build. Commit 1a2fc5a.
 - 17:46 DONE milestone 37 (Regenerate Report).
+
+## 2026-07-11 18:05 — session start
+Tree clean at 89e4fab. Active: milestone 38, next item: m38-01.
+- 18:08 STARTED m38-01: Update `toTranscript` in `ChatScreen.tsx` to handle `status` events
+- 18:09 REPAIR: fix outdated schemaVersion assertion (12 -> 13) in test/status.test.ts

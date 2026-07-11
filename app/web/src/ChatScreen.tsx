@@ -42,33 +42,87 @@ function payloadText (payload: unknown): string | undefined {
   return undefined
 }
 
+function renderMessageText(text: string) {
+  const parts = [];
+  let currentIdx = 0;
+  let key = 0;
+
+  while (currentIdx < text.length) {
+    const startIdx = text.indexOf('<thinking>', currentIdx);
+    if (startIdx === -1) {
+      parts.push(<span key={key++}>{text.slice(currentIdx)}</span>);
+      break;
+    }
+
+    if (startIdx > currentIdx) {
+      parts.push(<span key={key++}>{text.slice(currentIdx, startIdx)}</span>);
+    }
+
+    const endIdx = text.indexOf('</thinking>', startIdx + 10);
+    if (endIdx === -1) {
+      parts.push(
+        <div key={key++} className="chat-thinking is-active">
+          <div className="chat-thinking-header">Thinking…</div>
+          <div className="chat-thinking-content">{text.slice(startIdx + 10)}</div>
+        </div>
+      );
+      break;
+    } else {
+      parts.push(
+        <div key={key++} className="chat-thinking">
+          <div className="chat-thinking-header">Thinking</div>
+          <div className="chat-thinking-content">{text.slice(startIdx + 10, endIdx)}</div>
+        </div>
+      );
+      currentIdx = endIdx + 11;
+    }
+  }
+  return parts.length > 0 ? parts : text;
+}
+
 /** Fold the event log into transcript lines. Assistant text is cumulative. */
-function toTranscript (events: ChatEvent[]): { lines: Line[], approvals: PendingApproval[] } {
+function toTranscript (events: ChatEvent[]): { lines: Line[], approvals: PendingApproval[], isProcessing: boolean, statusText?: string } {
   const lines: Line[] = []
   const approvals = new Map<string, PendingApproval>()
   let assistant: Line | null = null
+  let isProcessing = false
+  let statusText: string | undefined = undefined
+
   for (const e of events) {
     if (e.type === 'user_message') {
       assistant = null
+      isProcessing = true
+      statusText = undefined
       lines.push({ key: `u-${e.seq}`, role: 'user', text: payloadText(e.payload) ?? '' })
+    } else if (e.type === 'status') {
+      const p = e.payload as Record<string, unknown> | null
+      if (p !== null) {
+        if (typeof p.text === 'string') statusText = p.text
+        else if (typeof p.state === 'string') statusText = p.state
+      }
     } else if (e.type === 'chunk' || e.type === 'agent_event') {
+      isProcessing = true
       const text = payloadText(e.payload)
       if (text === undefined || text === '') continue
-      if (assistant === null) { assistant = { key: `a-${e.seq}`, role: 'assistant', text }; lines.push(assistant) } else { assistant.text = text }
+      if (assistant === null) { assistant = { key: `a-${e.seq}`, role: 'assistant', text }; lines.push(assistant) } else { assistant.text += text }
     } else if (e.type === 'approval_request') {
       const p = e.payload as { toolCallId?: string, toolName?: string }
       if (typeof p?.toolCallId === 'string') approvals.set(p.toolCallId, { toolCallId: p.toolCallId, toolName: p.toolName ?? 'tool' })
+      isProcessing = false
     } else if (e.type === 'approval_resolved' || e.type === 'approval_auto_denied') {
       const p = e.payload as { toolCallId?: string }
       if (typeof p?.toolCallId === 'string') approvals.delete(p.toolCallId)
+      isProcessing = true
     } else if (e.type === 'compaction') {
       assistant = null
       lines.push({ key: `c-${e.seq}`, role: 'system', text: 'Context compacted' })
     } else if (e.type === 'ended') {
       assistant = null
+      isProcessing = false
+      statusText = undefined
     }
   }
-  return { lines, approvals: [...approvals.values()] }
+  return { lines, approvals: [...approvals.values()], isProcessing, statusText }
 }
 
 /** Derive a session title from the first message, ChatGPT-style. */
@@ -222,7 +276,7 @@ export function ChatScreen ({ mode }: { mode: ChatMode }) {
     if (!res.ok) setError('Could not request context compaction.')
   }
 
-  const { lines, approvals } = toTranscript(events)
+  const { lines, approvals, isProcessing, statusText } = toTranscript(events)
   const newChatState = ready && activeId === null
 
   return (
@@ -251,11 +305,20 @@ export function ChatScreen ({ mode }: { mode: ChatMode }) {
                 : (
                   <div key={l.key} className={`chat-msg chat-msg-${l.role}`}>
                     {l.role === 'assistant' && <span className='chat-msg-author'>Secretary</span>}
-                    <div className='chat-bubble'>{l.text}</div>
+                    <div className='chat-bubble'>{l.role === 'assistant' ? renderMessageText(l.text) : l.text}</div>
                   </div>
                   )
             ))}
-            {lines.length === 0 && ready && <p className='chat-empty'>No messages yet. Say hello.</p>}
+            {isProcessing && (
+              <div className='chat-msg chat-msg-assistant'>
+                <span className='chat-msg-author'>Secretary</span>
+                <div className='chat-processing'>
+                  <div className='chat-processing-spinner' />
+                  <span>{statusText ?? 'Processing...'}</span>
+                </div>
+              </div>
+            )}
+            {lines.length === 0 && !isProcessing && ready && <p className='chat-empty'>No messages yet. Say hello.</p>}
           </div>
         )}
 

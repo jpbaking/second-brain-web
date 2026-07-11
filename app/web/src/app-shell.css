@@ -998,3 +998,68 @@
     width: fit-content;
   }
 }
+
+/* --- Processing Animation & Thinking Blocks --- */
+.chat-thinking {
+  margin-block: 8px;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  overflow: hidden;
+}
+
+.chat-thinking-header {
+  font-family: var(--font-mono);
+  font-size: var(--ui-small);
+  color: var(--muted);
+  background: var(--amber-surface);
+  padding: 4px 10px;
+  border-bottom: 1px solid var(--line);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.chat-thinking.is-active .chat-thinking-header {
+  color: var(--accent-amber-deep);
+  animation: pulse 2s infinite;
+}
+
+.chat-thinking-content {
+  padding: 8px 10px;
+  font-size: 0.9em;
+  color: var(--muted);
+  white-space: pre-wrap;
+}
+
+@keyframes pulse {
+  0% { opacity: 0.6; }
+  50% { opacity: 1; }
+  100% { opacity: 0.6; }
+}
+
+.chat-processing {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  color: var(--muted);
+  font-family: var(--font-mono);
+  font-size: var(--ui-small);
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-md);
+  width: fit-content;
+}
+
+.chat-processing-spinner {
+  width: 14px;
+  height: 14px;
+  border: 2px solid var(--line);
+  border-top-color: var(--brand-blue);
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}

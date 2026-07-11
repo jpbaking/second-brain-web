@@ -29,11 +29,11 @@ Updated: 2026-07-11 (active: milestone 37)
 
 ## Active milestone
 
-milestone 37 (Regenerate Report) is complete.
+milestone 38 (Processing Animation and Thinking Blocks) is active. Next item: m38-01.
 
 ## Next step
 
-Move to the next milestone in the roadmap or await instructions.
+Implement processing animation and thinking blocks for the chat UI.
 
 ## Read before working
 
