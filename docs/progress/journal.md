@@ -220,3 +220,5 @@ Milestone 62 complete and archived. Tree clean after commit. Handoff: no active 
 
 ## 2026-07-12 14:28 — session end
 Milestone 63 complete and archived. Handoff: no active milestone; container rebuild pending for 62-63.
+- 14:31 STARTED repair: rename must not bump updated_at (renamed chats jumped to top of list)
+- 14:32 DONE repair: renameSession no longer bumps updated_at (rename keeps list position; only activity/pin reorder). Verified by chat-store test asserting updatedAt unchanged; full suite 383+9 green.

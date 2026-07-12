@@ -50,8 +50,12 @@ describe('chat session store', () => {
     expect(getSession(db, s.id)?.title).toBe('First')
     expect(listSessions(db)).toHaveLength(2)
 
+    // Rename keeps updated_at (and so the list position); only activity and
+    // pinning may reorder the sidebar.
+    const before = getSession(db, s.id)?.updatedAt
     expect(renameSession(db, s.id, 'Renamed')).toBe(true)
     expect(getSession(db, s.id)?.title).toBe('Renamed')
+    expect(getSession(db, s.id)?.updatedAt).toBe(before)
 
     expect(closeSession(db, s.id)).toBe(true)
     expect(getSession(db, s.id)?.status).toBe('closed')

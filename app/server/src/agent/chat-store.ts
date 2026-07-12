@@ -184,8 +184,10 @@ export function getSessionBySdkId (db: DatabaseSync, sdkSessionId: string): Chat
   return row === undefined ? undefined : toSession(row)
 }
 
-export function renameSession (db: DatabaseSync, id: string, title: string, now: Date = new Date()): boolean {
-  return db.prepare('UPDATE chat_sessions SET title = ?, updated_at = ? WHERE id = ?').run(title, now.toISOString(), id).changes > 0
+// Deliberately leaves updated_at alone: the sidebar orders by it, and a
+// rename must not send the chat to the top of the list.
+export function renameSession (db: DatabaseSync, id: string, title: string): boolean {
+  return db.prepare('UPDATE chat_sessions SET title = ? WHERE id = ?').run(title, id).changes > 0
 }
 
 export function updateSessionConfig (db: DatabaseSync, id: string, providerProfileId: string, approvalPreset: ApprovalPreset, now: Date = new Date()): boolean {
