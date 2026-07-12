@@ -10,7 +10,7 @@ reasoning effort.
 - [x] **m51-01** Server: add `chatDefaults` to the `PrincipalProfile` type
   and cover the round-trip (PUT then GET) in the profile API test.
   Verify: `cd app && npm test --workspace server -- profile-api.test.ts`
-- [ ] **m51-02** Web: in the new-chat state, initialise the composer from
+- [x] **m51-02** Web: in the new-chat state, initialise the composer from
   `profile.chatDefaults` (validated against the loaded provider list); any
   change to provider / approvals / thinking / effort while no session exists
   PUTs the new defaults. Existing chats are untouched.

@@ -30,3 +30,5 @@ Principal go: new-chat composer settings become defaults for future new chats.
 Opened milestone 51 (chatDefaults in principal profile prefs). Next m51-01.
 - 10:03 STARTED m51-01: chatDefaults on PrincipalProfile + API round-trip test
 - 10:04 DONE m51-01: chatDefaults on PrincipalProfile; verified by `npm test --workspace server -- profile-api.test.ts` → 3 green.
+- 10:04 STARTED m51-02: composer reads/writes chatDefaults in new-chat state
+- 10:08 DONE m51-02: composer initialises from profile.chatDefaults in new-chat state and PUTs on any change with no active session; verified by lint/build + Playwright reload probe (model + thinking persisted). 

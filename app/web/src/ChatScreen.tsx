@@ -402,10 +402,33 @@ export function ChatScreen ({ mode }: { mode: ChatMode }) {
     return () => document.removeEventListener('mousedown', onDown)
   }, [menuOpen])
 
+  // New-chat defaults (m51): the settings last chosen in a new-chat state are
+  // saved to the principal profile and become the starting point for future
+  // new chats. The saved provider is validated against the current profiles.
+  const applyChatDefaults = useCallback(async () => {
+    try {
+      const [profileRes, providersRes] = await Promise.all([getJson('/api/profile'), getJson('/api/providers')])
+      if (!profileRes.ok) return
+      const { chatDefaults } = await profileRes.json() as { chatDefaults?: { providerProfileId?: string | null, approvalPreset?: string, thinking?: boolean, reasoningEffort?: string | null } }
+      if (chatDefaults === undefined) return
+      const profiles = providersRes.ok ? (await providersRes.json() as { profiles: ProviderProfile[] }).profiles : []
+      if (typeof chatDefaults.providerProfileId === 'string' && profiles.some(p => p.id === chatDefaults.providerProfileId && p.enabled)) {
+        setSelectedProvider(chatDefaults.providerProfileId)
+      }
+      if (chatDefaults.approvalPreset === 'normal' || chatDefaults.approvalPreset === 'read-only' || chatDefaults.approvalPreset === 'high-trust') {
+        setSelectedPreset(chatDefaults.approvalPreset)
+      }
+      if (typeof chatDefaults.thinking === 'boolean') setThinking(chatDefaults.thinking)
+      if (chatDefaults.reasoningEffort === null || typeof chatDefaults.reasoningEffort === 'string') setEffort(chatDefaults.reasoningEffort)
+    } catch { /* defaults are best-effort */ }
+  }, [])
+
   useEffect(() => {
     if (mode.kind === 'session') {
       openStream(mode.id)
       loadSessionConfig(mode.id).catch(() => {})
+    } else if (mode.kind === 'new') {
+      applyChatDefaults().catch(() => {})
     } else if (mode.kind === 'auto') {
       // Landing: open the most recently active chat, or show the new-chat state.
       getJson('/api/chat/sessions').then(async res => {
@@ -418,6 +441,8 @@ export function ChatScreen ({ mode }: { mode: ChatMode }) {
           setActiveId(latest.id)
           openStream(latest.id)
           loadSessionConfig(latest.id).catch(() => {})
+        } else {
+          applyChatDefaults().catch(() => {})
         }
         setReady(true)
       }).catch(() => { setError('Could not load chats.'); setReady(true) })
@@ -426,7 +451,7 @@ export function ChatScreen ({ mode }: { mode: ChatMode }) {
       .then(setProviders).catch(() => {})
     getJson('/api/chat/workflows').then(async r => r.ok ? (await r.json() as { workflows: string[] }).workflows : [])
       .then(setWorkflows).catch(() => {})
-  }, [openStream, loadSessionConfig]) // mode is stable per page load (no client-side router)
+  }, [openStream, loadSessionConfig, applyChatDefaults]) // mode is stable per page load (no client-side router)
 
   useEffect(() => () => streamAbort.current?.abort(), [])
 
@@ -551,10 +576,20 @@ export function ChatScreen ({ mode }: { mode: ChatMode }) {
     if (!res.ok) { setPending(false); setError('Could not request context compaction.') }
   }
 
+  // Settings changed in a new-chat state become the defaults for future new
+  // chats (m51). Best-effort: a failed save never blocks the composer.
+  function saveChatDefaults (defaults: { providerProfileId: string | null, approvalPreset: string, thinking: boolean, reasoningEffort: string | null }) {
+    sendJson('PUT', '/api/profile', { chatDefaults: defaults }).catch(() => {})
+  }
+
   async function updateConfig (providerProfileId: string, approvalPreset: string) {
     setSelectedProvider(providerProfileId)
     setSelectedPreset(approvalPreset)
-    if (activeId === null || providerProfileId === '') return
+    if (activeId === null) {
+      saveChatDefaults({ providerProfileId: providerProfileId === '' ? null : providerProfileId, approvalPreset, thinking, reasoningEffort: effort })
+      return
+    }
+    if (providerProfileId === '') return
     const res = await sendJson('PATCH', `/api/chat/sessions/${activeId}`, { providerProfileId, approvalPreset })
     if (!res.ok) setError('Could not update chat settings.')
   }
@@ -562,7 +597,11 @@ export function ChatScreen ({ mode }: { mode: ChatMode }) {
   async function updateTuning (nextThinking: boolean, nextEffort: string | null) {
     setThinking(nextThinking)
     setEffort(nextEffort)
-    if (activeId === null) return // applied after the session is created on first send
+    if (activeId === null) {
+      // Applied to the session after it is created on first send.
+      saveChatDefaults({ providerProfileId: selectedProvider === '' ? null : selectedProvider, approvalPreset: selectedPreset, thinking: nextThinking, reasoningEffort: nextEffort })
+      return
+    }
     const res = await sendJson('PATCH', `/api/chat/sessions/${activeId}`, { thinking: nextThinking, reasoningEffort: nextEffort })
     if (!res.ok) setError('Could not update reasoning settings.')
   }
