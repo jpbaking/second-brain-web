@@ -1,6 +1,6 @@
 # STATUS — single source of truth
 
-Updated: 2026-07-12 (active: milestone 52 — approval detail)
+Updated: 2026-07-12 (no active milestone; milestone 52 complete)
 
 ## Where we are
 
@@ -18,14 +18,15 @@ Updated: 2026-07-12 (active: milestone 52 — approval detail)
   `cd app && npm install && npm run build && npm start` with
   `SECOND_BRAIN_WEB_DATA_DIR` at a private `0700` dir.
 - Key facts: all app source under `app/` (npm workspace root — run every npm
-  command from there). Core DB schema v15; sidecar v3. Server suite: 367
+  command from there). Core DB schema v15; sidecar v3. Server suite: 371
   tests green. UI routes: `/` = chat, `/command-centre`, `/capture`,
   `/follow-ups`, `/reports`, `/search`, `/explorer`, `/vault`, `/providers`,
   `/login`, `/setup`.
 
 ## Active milestone
 
-Milestone 52 — approval detail: docs/progress/milestones/milestone-52-approval-detail.md, next m52-01.
+Milestone 52 (approval detail) is complete: approval cards show the target
+path/command and a size-capped, collapsible preview of the pending change.
 
 Previous: milestone 51 (new-chat defaults) is complete: composer settings changed in a
 new-chat state persist to profile `chatDefaults` and seed future new chats.
@@ -45,7 +46,7 @@ object). Milestones 48–49 need `./compose-helper.sh up` (rebuild) to go live.
 
 ## Next step
 
-Work milestone 52.
+Await direction.
 
 ## Read before working
 

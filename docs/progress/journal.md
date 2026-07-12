@@ -43,3 +43,8 @@ Milestone 51 complete. No active milestone; rebuild needed for 48–51 to go liv
 - 10:23 DONE m52-01: summariseToolInput + detail on approval_request events; verified by `npm test --workspace server -- tool-policy chat-approvals` → 28 green.
 - 10:23 STARTED m52-02: approval card shows path/command + collapsible preview
 - 10:25 DONE m52-02: approval card shows path/command inline + collapsible content preview; verified by lint/build/web tests + Playwright screenshot.
+- 10:25 STARTED m52-03: full verify + archive
+- 10:26 DONE m52-03: full verify — lint green, server 371 + web 9 green, build green. Checklist archived.
+
+## 2026-07-12 10:26 — session end
+Milestone 52 complete. No active milestone; rebuild needed for 48–52 to go live.

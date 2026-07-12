@@ -12,6 +12,6 @@ SDK approval request already carries the tool `input`; surface it.
 - [x] **m52-02** Web: the approval card names the target — path or command
   inline, plus a collapsible monospace preview when present.
   Verify: `cd app && npm run lint && npm run build` + Playwright screenshot
-- [ ] **m52-03** Full verify + archive: lint, full suite, build; archive this
+- [x] **m52-03** Full verify + archive: lint, full suite, build; archive this
   checklist, update STATUS.
   Verify: `cd app && npm run lint && npm test && npm run build`
