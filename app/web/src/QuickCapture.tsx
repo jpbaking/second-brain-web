@@ -269,7 +269,7 @@ function InboxIntakeFields () {
       {processingSessionId !== null && (
         <div className='alert alert-info' role='status'>
           <span className='alert-title'>Inbox processing started</span>
-          <a href='/chat'>Open chat</a>
+          <a href={`/chat/${encodeURIComponent(processingSessionId)}`}>Open chat</a>
         </div>
       )}
 

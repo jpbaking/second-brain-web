@@ -247,3 +247,5 @@ chatgpt" setup error). m73-06 live ChatGPT check still with the principal.
 Tree clean at 296de9c. No active milestone; principal reported a /capture bug (second file drop not added) — handling as REPAIR.
 - 07:14 STARTED REPAIR: QuickCapture addFiles reads FileList inside deferred setState updater; DataTransfer is neutered by then, so subsequent drops add nothing. Snapshot to an array first.
 - 07:16 DONE REPAIR: snapshot FileList to array in QuickCapture.addFiles before setState; verified by `cd app && npm run lint && npm run build && npm test` → lint clean, build ok, 425 tests green. Runtime drag-drop not re-driven in a browser this session — principal to confirm.
+- 07:20 STARTED REPAIR: capture "Open chat" links to bare /chat (new-chat state) instead of /chat/<processing session id>.
+- 07:22 DONE REPAIR: "Open chat" now links to /chat/<sessionId>; verified by `cd app && npm run lint && npm run build && npm test` → clean, 425 tests green. Commit follows.
