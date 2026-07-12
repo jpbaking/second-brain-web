@@ -1,6 +1,6 @@
 # STATUS — single source of truth
 
-Updated: 2026-07-12 (no active milestone; milestone 55 complete)
+Updated: 2026-07-12 (milestone 56 active)
 
 ## Where we are
 
@@ -25,7 +25,10 @@ Updated: 2026-07-12 (no active milestone; milestone 55 complete)
 
 ## Active milestone
 
-Milestone 55 (table copy in preview modal) is complete. Expanded Markdown
+Milestone 56 (copy raw assistant responses) is active. Next: m56-01, add a
+Copy action below each assistant message for its original Markdown source.
+
+Previous: milestone 55 (table copy in preview modal) is complete. Expanded Markdown
 tables expose the same rich HTML/Excel-compatible TSV copy control.
 
 Previous: milestone 54 (Excel-compatible Markdown table copy) is complete. Rendered chat
@@ -58,7 +61,8 @@ object). Milestones 48–49 need `./compose-helper.sh up` (rebuild) to go live.
 
 ## Next step
 
-Await direction.
+Implement m56-01 from
+`docs/progress/milestones/milestone-56-message-copy.md`.
 
 ## Read before working
 

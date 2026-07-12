@@ -100,3 +100,7 @@ to the expanded table modal. Opened milestone 55; next m55-01.
 ## 2026-07-12 12:54 — session end
 Milestone 55 complete. The expanded table modal now includes the same rich
 HTML/Excel-compatible TSV copy control; rebuild needed to go live.
+
+## 2026-07-12 13:00 — session start
+Tree clean at ecdbfad. Principal go: add a Copy action below every assistant
+message for its raw Markdown response. Opened milestone 56; next m56-01.
