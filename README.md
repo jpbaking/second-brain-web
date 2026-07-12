@@ -26,7 +26,7 @@ The primary way to build and run locally is
 `docker compose` wrapper that is committed to this repo. With Docker installed:
 
 ```sh
-./configure                 # PowerShell: ./configure.ps1
+./configure
 ./compose-helper.sh up      # build the image, start it, follow logs
 ```
 

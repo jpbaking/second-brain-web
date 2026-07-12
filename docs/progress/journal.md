@@ -209,3 +209,9 @@ step.
   line alongside the otpauth URI (principal request).
 - 03:10 DONE repair: verified by a live scripts/reset-auth.sh run showing the
   "Or enter the secret manually" line, lint clean, reset tests green.
+- 03:16 STARTED repair: drop configure.ps1 (principal decision — Linux/macOS
+  only, multi-OS support not worth maintaining).
+- 03:17 DONE repair: configure.ps1 deleted; references updated in README,
+  .env.example, the configure shim comment, and (journalled per playbook)
+  a minimal factual edit to docs/design/provider-provisioning.md. Verified
+  by grep (no live ps1/PowerShell references outside archives) and bash -n.

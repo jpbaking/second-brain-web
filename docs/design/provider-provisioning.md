@@ -158,10 +158,11 @@ New CLI, sibling of `reset-auth`: `app/server/src/cli/encrypt-secret.ts` →
 the YAML; `configure` must offer a re-encrypt flow (re-prompt for plaintext
 keys) when the user rotates.
 
-## The `configure` scripts
+## The `configure` script
 
-Two thin interactive wrappers at the repo root (the "run-it" layer):
-`configure` (bash) and `configure.ps1` (PowerShell). Both:
+One thin interactive wrapper at the repo root (the "run-it" layer):
+`configure` (bash, Linux/macOS only — the PowerShell variant was dropped
+2026-07-13). It must:
 
 1. **Secrets key:** if `.env` already has a non-empty
    `SECOND_BRAIN_WEB_SECRETS_KEY`, reuse it (offer rotation with a loud

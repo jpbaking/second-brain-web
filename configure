@@ -2,9 +2,9 @@
 set -euo pipefail
 
 # configure — launcher for the interactive Node configurator
-# (app/server/src/cli/configure.ts). All logic lives in the app so it is
-# written once and shared with Windows via configure.ps1. This shim just finds
-# a way to run it: the built app with host Node, else the Docker image.
+# (app/server/src/cli/configure.ts). All logic lives in the app; this shim
+# just finds a way to run it: the built app with host Node, else the Docker
+# image. Linux/macOS only.
 
 ROOT=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)
 CONFIG_DIR="$ROOT/.config"
