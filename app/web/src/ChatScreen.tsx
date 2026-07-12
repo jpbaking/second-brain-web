@@ -305,17 +305,11 @@ export function ChatScreen ({ mode }: { mode: ChatMode }) {
   // Auto-grow the composer with its content: one line when empty, up to the
   // CSS max-height (near half the screen), after which it scrolls. Keyed on
   // the value so clearing on send collapses it back to one line.
-  const [multiline, setMultiline] = useState(false)
   useEffect(() => {
     const el = inputRef.current
     if (el === null) return
     el.style.height = 'auto'
-    el.style.height = `${el.scrollHeight + 2}px` // +2 for the borders (border-box)
-    // One-line content centres the send button beside it; taller content
-    // pins the button to the bottom (see .chat-composer.is-multiline).
-    const cs = getComputedStyle(el)
-    const oneLine = (parseFloat(cs.lineHeight) || 24) + parseFloat(cs.paddingTop) + parseFloat(cs.paddingBottom)
-    setMultiline(el.scrollHeight > oneLine + 4)
+    el.style.height = `${el.scrollHeight}px`
   }, [input])
   const zoomRef = useRef<HTMLDialogElement | null>(null)
 
@@ -682,7 +676,7 @@ export function ChatScreen ({ mode }: { mode: ChatMode }) {
               ))}
             </div>
           )}
-          <form className={`chat-composer${multiline ? ' is-multiline' : ''}`} onSubmit={e => { e.preventDefault(); send().catch(() => {}) }} aria-label='Message composer'>
+          <form className='chat-composer' onSubmit={e => { e.preventDefault(); send().catch(() => {}) }} aria-label='Message composer'>
             <input
               ref={fileRef} type='file' multiple hidden data-testid='attach-input'
               onChange={e => {
@@ -691,13 +685,6 @@ export function ChatScreen ({ mode }: { mode: ChatMode }) {
                 e.target.value = ''
               }}
             />
-            <button
-              className='btn btn-secondary chat-attach' type='button'
-              aria-label='Attach files' title='Attach files'
-              onClick={() => fileRef.current?.click()}
-            >
-              <svg width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='currentColor' strokeWidth='2' strokeLinecap='round' strokeLinejoin='round' aria-hidden='true'><path d='m21.44 11.05-9.19 9.19a6 6 0 0 1-8.49-8.49l8.57-8.57A4 4 0 1 1 18 8.84l-8.59 8.57a2 2 0 0 1-2.83-2.83l8.49-8.48' /></svg>
-            </button>
             <textarea
               ref={inputRef}
               className='chat-input' rows={1} value={input} data-testid='composer'
@@ -707,29 +694,46 @@ export function ChatScreen ({ mode }: { mode: ChatMode }) {
                 if (slashMatches.length > 0 && e.key === 'ArrowDown') { e.preventDefault(); setSlashIndex(i => (i + 1) % slashMatches.length) } else if (slashMatches.length > 0 && e.key === 'ArrowUp') { e.preventDefault(); setSlashIndex(i => (i - 1 + slashMatches.length) % slashMatches.length) } else if (slashMatches.length > 0 && e.key === 'Tab') { e.preventDefault(); chooseSlash(slashMatches[slashIndex]!, false) } else if (slashMatches.length > 0 && e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); chooseSlash(slashMatches[slashIndex]!, true) } else if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); send().catch(() => {}) }
               }}
             />
-            {showProcessing
-              ? <button className='btn btn-danger chat-send' type='button' onClick={() => { abortTurn().catch(() => {}) }}>Abort</button>
-              : <button className='btn btn-primary chat-send' type='submit' disabled={input.trim() === ''}>Send</button>}
+            <div className='chat-composer-bar'>
+              <button
+                className='chat-composer-icon' type='button'
+                aria-label='Attach files' title='Attach files'
+                onClick={() => fileRef.current?.click()}
+              >
+                <svg width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='currentColor' strokeWidth='2' strokeLinecap='round' strokeLinejoin='round' aria-hidden='true'><path d='m21.44 11.05-9.19 9.19a6 6 0 0 1-8.49-8.49l8.57-8.57A4 4 0 1 1 18 8.84l-8.59 8.57a2 2 0 0 1-2.83-2.83l8.49-8.48' /></svg>
+              </button>
+              <div className='chat-composer-options'>
+                <label className='chat-composer-select'>
+                  Provider
+                  <select value={selectedProvider} onChange={e => { updateConfig(e.target.value, selectedPreset).catch(() => {}) }}>
+                    <option value=''>Default provider</option>
+                    {providers.filter(p => p.enabled).map(p => (
+                      <option key={p.id} value={p.id}>{p.displayName}{p.isDefault ? ' (default)' : ''}</option>
+                    ))}
+                  </select>
+                </label>
+                <label className='chat-composer-select'>
+                  Approvals
+                  <select value={selectedPreset} onChange={e => { updateConfig(selectedProvider || providers.find(p => p.isDefault)?.id || '', e.target.value).catch(() => {}) }}>
+                    <option value='normal'>Normal</option>
+                    <option value='read-only'>Read-only</option>
+                    <option value='high-trust'>High-trust</option>
+                  </select>
+                </label>
+              </div>
+              {showProcessing
+                ? (
+                  <button className='chat-send is-abort' type='button' aria-label='Abort' title='Abort' onClick={() => { abortTurn().catch(() => {}) }}>
+                    <svg width='16' height='16' viewBox='0 0 24 24' fill='currentColor' aria-hidden='true'><rect x='6' y='6' width='12' height='12' rx='2' /></svg>
+                  </button>
+                  )
+                : (
+                  <button className='chat-send' type='submit' aria-label='Send' title='Send' disabled={input.trim() === ''}>
+                    <svg width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='currentColor' strokeWidth='2.5' strokeLinecap='round' strokeLinejoin='round' aria-hidden='true'><path d='M12 19V5' /><path d='m5 12 7-7 7 7' /></svg>
+                  </button>
+                  )}
+            </div>
           </form>
-          <div className='chat-composer-options'>
-            <label className='chat-composer-select'>
-              Provider
-              <select value={selectedProvider} onChange={e => { updateConfig(e.target.value, selectedPreset).catch(() => {}) }}>
-                <option value=''>Default provider</option>
-                {providers.filter(p => p.enabled).map(p => (
-                  <option key={p.id} value={p.id}>{p.displayName}{p.isDefault ? ' (default)' : ''}</option>
-                ))}
-              </select>
-            </label>
-            <label className='chat-composer-select'>
-              Approvals
-              <select value={selectedPreset} onChange={e => { updateConfig(selectedProvider || providers.find(p => p.isDefault)?.id || '', e.target.value).catch(() => {}) }}>
-                <option value='normal'>Normal</option>
-                <option value='read-only'>Read-only</option>
-                <option value='high-trust'>High-trust</option>
-              </select>
-            </label>
-          </div>
         </div>
       </div>
     </ZoomContext.Provider>

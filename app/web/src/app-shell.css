@@ -405,28 +405,51 @@
   color: var(--ink);
 }
 
-.chat-attach {
-  flex: none;
-  padding-inline: var(--space-2);
-}
-
+/* One rounded container: input on top, controls bar underneath. */
 .chat-composer {
   display: flex;
-  /* Send/Abort sits centred beside a one-line input… */
-  align-items: center;
-  gap: var(--space-2);
+  flex-direction: column;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-lg, 14px);
+  background: var(--surface);
+  padding: var(--space-2);
 }
 
-/* …and drops to the bottom once the input grows past one line. */
-.chat-composer.is-multiline {
-  align-items: flex-end;
+.chat-composer:focus-within {
+  outline: 2px solid var(--brand-blue);
+  outline-offset: -1px;
+}
+
+.chat-composer-bar {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  margin-top: var(--space-1);
+}
+
+.chat-composer-icon {
+  flex: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-md);
+  background: transparent;
+  color: var(--muted);
+  cursor: pointer;
+}
+
+.chat-composer-icon:hover {
+  color: var(--ink);
+  background: var(--bg);
 }
 
 .chat-composer-options {
   display: flex;
   gap: var(--space-3);
-  margin-top: var(--space-2);
-  padding: 0 var(--space-1);
+  margin-left: auto;
 }
 
 .chat-composer-select {
@@ -455,24 +478,43 @@
   text-decoration: underline;
 }
 
+/* Borderless inside the container; the container carries the focus ring. */
 .chat-input {
-  flex: 1 1 auto;
   resize: none;
-  padding: var(--space-2) var(--space-3);
-  border: 1px solid var(--line);
-  border-radius: var(--radius-md);
-  background: var(--surface);
+  padding: var(--space-1) var(--space-2);
+  border: none;
+  background: transparent;
   color: var(--ink);
   font: inherit;
+  outline: none;
   /* Height is driven by the auto-grow effect in ChatScreen: one line when
      empty, growing with content until this cap, then scrolling. */
   max-height: 45vh;
   overflow-y: auto;
 }
 
-.chat-input:focus {
-  outline: 2px solid var(--brand-blue);
-  outline-offset: -1px;
+/* Round icon send/abort button, bottom-right of the composer. */
+.chat-send {
+  flex: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border: none;
+  border-radius: 999px;
+  background: var(--brand-blue);
+  color: var(--surface);
+  cursor: pointer;
+}
+
+.chat-send:disabled {
+  opacity: 0.4;
+  cursor: default;
+}
+
+.chat-send.is-abort {
+  background: var(--accent-red, #b91c1c);
 }
 
 .chat-approval-actions {
