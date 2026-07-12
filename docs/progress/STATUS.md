@@ -1,6 +1,6 @@
 # STATUS — single source of truth
 
-Updated: 2026-07-12 (active: milestone 51 — new-chat defaults)
+Updated: 2026-07-12 (no active milestone; milestone 51 complete)
 
 ## Where we are
 
@@ -18,14 +18,15 @@ Updated: 2026-07-12 (active: milestone 51 — new-chat defaults)
   `cd app && npm install && npm run build && npm start` with
   `SECOND_BRAIN_WEB_DATA_DIR` at a private `0700` dir.
 - Key facts: all app source under `app/` (npm workspace root — run every npm
-  command from there). Core DB schema v15; sidecar v3. Server suite: 366
+  command from there). Core DB schema v15; sidecar v3. Server suite: 367
   tests green. UI routes: `/` = chat, `/command-centre`, `/capture`,
   `/follow-ups`, `/reports`, `/search`, `/explorer`, `/vault`, `/providers`,
   `/login`, `/setup`.
 
 ## Active milestone
 
-Milestone 51 — new-chat defaults: docs/progress/milestones/milestone-51-new-chat-defaults.md, next m51-01.
+Milestone 51 (new-chat defaults) is complete: composer settings changed in a
+new-chat state persist to profile `chatDefaults` and seed future new chats.
 
 Previous: milestone 50 (composer model menu) is complete. Archived checklist:
 `docs/progress/milestones/archive/milestone-50-composer-model-menu.md`. The
@@ -42,7 +43,7 @@ object). Milestones 48–49 need `./compose-helper.sh up` (rebuild) to go live.
 
 ## Next step
 
-Work milestone 51.
+Await direction.
 
 ## Read before working
 

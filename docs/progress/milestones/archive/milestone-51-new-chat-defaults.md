@@ -15,6 +15,6 @@ reasoning effort.
   change to provider / approvals / thinking / effort while no session exists
   PUTs the new defaults. Existing chats are untouched.
   Verify: `cd app && npm run lint && npm run build` + Playwright check
-- [ ] **m51-03** Full verify + archive: lint, full suite, build; archive
+- [x] **m51-03** Full verify + archive: lint, full suite, build; archive
   this checklist, update STATUS.
   Verify: `cd app && npm run lint && npm test && npm run build`
