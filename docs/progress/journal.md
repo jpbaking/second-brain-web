@@ -215,3 +215,5 @@ step.
   .env.example, the configure shim comment, and (journalled per playbook)
   a minimal factual edit to docs/design/provider-provisioning.md. Verified
   by grep (no live ps1/PowerShell references outside archives) and bash -n.
+- 03:07 note: the two timestamps above should read 03:05/03:06 — recorded
+  wrongly; correcting here rather than editing the append-only log.
