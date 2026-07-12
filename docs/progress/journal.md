@@ -242,3 +242,8 @@ chatgpt" setup error). m73-06 live ChatGPT check still with the principal.
 - 06:18 DONE repair: GET /api/vault/lock request received/completed now log
   at trace; verified by structured-logs.test.ts 5 green (new case asserts
   trace for the poll, info for other requests) + lint clean.
+
+## 2026-07-13 07:13 — session start
+Tree clean at 296de9c. No active milestone; principal reported a /capture bug (second file drop not added) — handling as REPAIR.
+- 07:14 STARTED REPAIR: QuickCapture addFiles reads FileList inside deferred setState updater; DataTransfer is neutered by then, so subsequent drops add nothing. Snapshot to an array first.
+- 07:16 DONE REPAIR: snapshot FileList to array in QuickCapture.addFiles before setState; verified by `cd app && npm run lint && npm run build && npm test` → lint clean, build ok, 425 tests green. Runtime drag-drop not re-driven in a browser this session — principal to confirm.

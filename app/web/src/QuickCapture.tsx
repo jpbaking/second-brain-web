@@ -130,12 +130,15 @@ function InboxIntakeFields () {
   const [processingSessionId, setProcessingSessionId] = useState<string | null>(null)
 
   function addFiles (incoming: FileList | File[]) {
+    // Snapshot now: a DataTransfer FileList is emptied once the drop handler
+    // returns, before React runs the state updater.
+    const additions = Array.from(incoming)
     setUpload(null)
     setProcessingSessionId(null)
     setError(null)
     setFiles((current) => {
       const byIdentity = new Map(current.map((file) => [fileIdentity(file), file]))
-      for (const file of Array.from(incoming)) byIdentity.set(fileIdentity(file), file)
+      for (const file of additions) byIdentity.set(fileIdentity(file), file)
       return Array.from(byIdentity.values())
     })
   }
