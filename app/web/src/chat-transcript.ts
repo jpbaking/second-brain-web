@@ -2,6 +2,7 @@ export interface ChatEvent { seq: number, type: string, payload: unknown, create
 export interface PendingApproval { toolCallId: string, toolName: string }
 export interface ReasoningBlock { text: string, createdAt?: string }
 export interface ActivityEntry { text: string, createdAt?: string }
+export interface MessageAttachment { name: string, kind: 'image' | 'file' }
 export interface Line {
   key: string
   role: 'user' | 'assistant' | 'system'
@@ -11,6 +12,16 @@ export interface Line {
   reasoningBlocks?: ReasoningBlock[]
   activities?: ActivityEntry[]
   complete?: boolean
+  attachments?: MessageAttachment[]
+}
+
+function payloadAttachments (payload: unknown): MessageAttachment[] | undefined {
+  if (payload === null || typeof payload !== 'object') return undefined
+  const list = (payload as Record<string, unknown>).attachments
+  if (!Array.isArray(list)) return undefined
+  const attachments = list.filter((a): a is MessageAttachment =>
+    a !== null && typeof a === 'object' && typeof (a as MessageAttachment).name === 'string')
+  return attachments.length > 0 ? attachments : undefined
 }
 
 function payloadText (payload: unknown): string | undefined {
@@ -90,7 +101,8 @@ export function foldTranscript (events: ChatEvent[], isLive: boolean): { lines: 
       completedReasoning = []
       isProcessing = true
       statusText = undefined
-      lines.push({ key: `u-${e.seq}`, role: 'user', text: payloadText(e.payload) ?? '', createdAt: e.createdAt })
+      const attachments = payloadAttachments(e.payload)
+      lines.push({ key: `u-${e.seq}`, role: 'user', text: payloadText(e.payload) ?? '', createdAt: e.createdAt, ...(attachments !== undefined ? { attachments } : {}) })
     } else if (e.type === 'status') {
       const p = e.payload as Record<string, unknown> | null
       const status = typeof p?.text === 'string' ? p.text : (typeof p?.state === 'string' ? p.state : undefined)

@@ -372,6 +372,44 @@
   color: var(--brand-blue);
 }
 
+.chat-attachments {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-1);
+  margin-bottom: var(--space-1);
+}
+
+.chat-attachment-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 10px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: var(--surface);
+  color: var(--muted);
+  font-size: var(--ui-kicker);
+  font-family: var(--font-mono);
+}
+
+.chat-attachment-chip button {
+  border: none;
+  background: none;
+  color: var(--muted);
+  cursor: pointer;
+  padding: 0;
+  line-height: 1;
+}
+
+.chat-attachment-chip button:hover {
+  color: var(--ink);
+}
+
+.chat-attach {
+  flex: none;
+  padding-inline: var(--space-2);
+}
+
 .chat-composer {
   display: flex;
   /* Send/Abort sits centred beside a one-line input… */

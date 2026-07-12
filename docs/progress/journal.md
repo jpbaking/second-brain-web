@@ -1130,3 +1130,5 @@ milestone 49 (chat-scoped attachments). Next item: m49-01.
 - 09:00 DONE m49-02: attachmentIds → userImages/userFiles through routes, service, runner; also fixed the Cline send envelope (SDK runTurn takes one input object). Verified by `npm test --workspace server -- chat-uploads.test.ts agent-session.test.ts` → 23 green.
 - 09:00 STARTED m49-03: delete chat-uploads dir on session delete / clear-all
 - 09:01 DONE m49-03: session delete and clear-all remove chat-uploads dirs; verified by `npm test --workspace server -- chat-uploads.test.ts` → 13 green.
+- 09:01 STARTED m49-04: composer attach button, pending chips, send attachmentIds, transcript attachment names
+- 09:03 DONE m49-04: attach button + pending chips + attachmentIds on send + transcript attachment chips; verified by `npm run lint && npm run build` → green.

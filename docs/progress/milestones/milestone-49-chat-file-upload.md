@@ -27,7 +27,7 @@ deleted. Backlog entry: "Chat-scoped file upload (attachments)" (SDK findings
   and clear-all (`DELETE /api/chat/sessions`, honouring `preservePinned`)
   remove the session's `chat-uploads/<sessionId>/` directory.
   Verify: `cd app && npm test --workspace server -- chat-uploads.test.ts`
-- [ ] **m49-04** Web composer: attach button (+ paperclip) uploading via the
+- [x] **m49-04** Web composer: attach button (+ paperclip) uploading via the
   new endpoint, pending-attachment chips (removable) above the composer, send
   includes `attachmentIds`, and user messages in the transcript show their
   attachment names.

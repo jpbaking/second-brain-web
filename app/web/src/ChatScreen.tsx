@@ -293,9 +293,14 @@ export function ChatScreen ({ mode }: { mode: ChatMode }) {
   const [slashIndex, setSlashIndex] = useState(0)
   const [lockState, setLockState] = useState<LockState | null>(null)
   const [zoom, setZoom] = useState<ZoomContent | null>(null)
+  // Files attached but not yet sent. They upload during send() (a brand-new
+  // chat has no session id to upload against until then) and clear with the
+  // message; chips above the composer let the user drop one before sending.
+  const [pendingFiles, setPendingFiles] = useState<File[]>([])
   const streamAbort = useRef<AbortController | null>(null)
   const scrollRef = useRef<HTMLDivElement | null>(null)
   const inputRef = useRef<HTMLTextAreaElement | null>(null)
+  const fileRef = useRef<HTMLInputElement | null>(null)
 
   // Auto-grow the composer with its content: one line when empty, up to the
   // CSS max-height (near half the screen), after which it scrolls. Keyed on
@@ -444,7 +449,9 @@ export function ChatScreen ({ mode }: { mode: ChatMode }) {
   async function send () {
     const text = input.trim()
     if (text === '') return
+    const files = pendingFiles
     setInput('')
+    setPendingFiles([])
     setError(null)
     setIsLive(true)
     setPending(true)
@@ -457,6 +464,7 @@ export function ChatScreen ({ mode }: { mode: ChatMode }) {
       if (res.status === 401) { window.location.assign('/login'); return }
       if (!res.ok) {
         setInput(text)
+        setPendingFiles(files)
         setPending(false)
         setError((await res.json().catch(() => ({})) as { error?: string }).error ?? 'Could not start a chat.')
         return
@@ -469,7 +477,22 @@ export function ChatScreen ({ mode }: { mode: ChatMode }) {
       openStream(id)
     }
 
-    const res = await sendJson('POST', `/api/chat/sessions/${id}/messages`, { text })
+    let attachmentIds: string[] | undefined
+    if (files.length > 0) {
+      const form = new FormData()
+      for (const file of files) form.append('files', file, file.name)
+      const upload = await fetch(`/api/chat/sessions/${id}/uploads`, { method: 'POST', credentials: 'same-origin', body: form })
+      if (!upload.ok) {
+        setInput(text)
+        setPendingFiles(files)
+        setPending(false)
+        setError((await upload.json().catch(() => ({})) as { error?: string }).error ?? 'Attachments could not be uploaded.')
+        return
+      }
+      attachmentIds = ((await upload.json()) as { attachments: Array<{ id: string }> }).attachments.map(a => a.id)
+    }
+
+    const res = await sendJson('POST', `/api/chat/sessions/${id}/messages`, { text, ...(attachmentIds !== undefined ? { attachmentIds } : {}) })
     if (!res.ok) { setPending(false); setError('Message could not be sent.') }
   }
 
@@ -579,6 +602,13 @@ export function ChatScreen ({ mode }: { mode: ChatMode }) {
                           {(l.reasoningBlocks?.length ?? 0) > 0 && <div className='chat-reasoning-blocks'>{l.reasoningBlocks?.map((block, index) => <section key={`${l.key}-reasoning-${index}`} className='chat-reasoning-content'>{messageTime(block.createdAt)}<div>{block.text}</div></section>)}</div>}
                         </details>
                       )}
+                      {(l.attachments?.length ?? 0) > 0 && (
+                        <div className='chat-attachments'>
+                          {l.attachments?.map((attachment, index) => (
+                            <span key={`${l.key}-att-${index}`} className='chat-attachment-chip'>{attachment.kind === 'image' ? '🖼 ' : '📎 '}{attachment.name}</span>
+                          ))}
+                        </div>
+                      )}
                       {l.text !== '' && (
                         <div className={`chat-bubble${l.role === 'assistant' ? ' prose' : ''}`}>
                           {l.role === 'assistant'
@@ -638,7 +668,36 @@ export function ChatScreen ({ mode }: { mode: ChatMode }) {
               {slashMatches.map((name, index) => <button key={name} type='button' role='option' aria-selected={index === slashIndex} className={index === slashIndex ? 'is-active' : ''} onMouseDown={e => { e.preventDefault(); chooseSlash(name, false) }}>/{name}</button>)}
             </div>
           )}
+          {pendingFiles.length > 0 && (
+            <div className='chat-attachments' data-testid='pending-attachments'>
+              {pendingFiles.map((file, index) => (
+                <span key={`${file.name}-${index}`} className='chat-attachment-chip'>
+                  {file.name}
+                  <button
+                    type='button' aria-label={`Remove ${file.name}`} title='Remove'
+                    onClick={() => setPendingFiles(prev => prev.filter((_, i) => i !== index))}
+                  >×
+                  </button>
+                </span>
+              ))}
+            </div>
+          )}
           <form className={`chat-composer${multiline ? ' is-multiline' : ''}`} onSubmit={e => { e.preventDefault(); send().catch(() => {}) }} aria-label='Message composer'>
+            <input
+              ref={fileRef} type='file' multiple hidden data-testid='attach-input'
+              onChange={e => {
+                const chosen = Array.from(e.target.files ?? [])
+                if (chosen.length > 0) setPendingFiles(prev => [...prev, ...chosen])
+                e.target.value = ''
+              }}
+            />
+            <button
+              className='btn btn-secondary chat-attach' type='button'
+              aria-label='Attach files' title='Attach files'
+              onClick={() => fileRef.current?.click()}
+            >
+              <svg width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='currentColor' strokeWidth='2' strokeLinecap='round' strokeLinejoin='round' aria-hidden='true'><path d='m21.44 11.05-9.19 9.19a6 6 0 0 1-8.49-8.49l8.57-8.57A4 4 0 1 1 18 8.84l-8.59 8.57a2 2 0 0 1-2.83-2.83l8.49-8.48' /></svg>
+            </button>
             <textarea
               ref={inputRef}
               className='chat-input' rows={1} value={input} data-testid='composer'
