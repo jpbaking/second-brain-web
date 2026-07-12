@@ -2,6 +2,7 @@ import { pathToFileURL } from 'node:url'
 import { Server } from '@modelcontextprotocol/sdk/server/index.js'
 import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js'
 import { CallToolRequestSchema, ListToolsRequestSchema } from '@modelcontextprotocol/sdk/types.js'
+import { configureLogging, getAppLogger } from '../logging.js'
 
 /**
  * Stdio MCP server giving the chat agent web access (milestone 48). Runs as a
@@ -20,6 +21,7 @@ export const MAX_RESULTS_CAP = 20
 /** Fetched pages are cut to this many characters after extraction. */
 export const FETCH_CHAR_CAP = 40_000
 const FETCH_TIMEOUT_MS = 20_000
+const logger = getAppLogger('mcp.web-tools')
 
 interface SearxResult {
   title?: string
@@ -186,6 +188,7 @@ export async function main (): Promise<void> {
       }
       return { content: [{ type: 'text', text }] }
     } catch (err) {
+      logger.error('web tool call failed', err, { toolName: req.params.name })
       return { content: [{ type: 'text', text: err instanceof Error ? err.message : String(err) }], isError: true }
     }
   })
@@ -195,8 +198,9 @@ export async function main (): Promise<void> {
 // Started as a standalone process by the Cline SDK; never auto-runs on import
 // (tests import the pure helpers above).
 if (process.argv[1] !== undefined && import.meta.url === pathToFileURL(process.argv[1]).href) {
+  configureLogging()
   main().catch((err) => {
-    console.error(err)
+    logger.fatal('web tools MCP server failed', err)
     process.exit(1)
   })
 }

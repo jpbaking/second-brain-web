@@ -37,7 +37,7 @@ log level configurable in `.env`.
 
 ## Next step
 
-Implement **m71-02**: error hierarchy/cause chains and runtime logger migration.
+Run **m71-03**: full lint/test/build, document, and archive milestone 71.
 
 ## Read before working
 

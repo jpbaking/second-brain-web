@@ -6,10 +6,13 @@ import { acquireLock, heartbeatLock, releaseLock } from '../vault/lock.js'
 import { readGitStatus } from '../vault/git-status.js'
 import { scanReports } from '../reports/scan.js'
 import { saveReportProvenance } from '../reports/store.js'
+import { getAppLogger } from '../logging.js'
 import type { AgentRunner, AgentModelConfig, SdkApprovalRequest, ToolApprovalDecision } from './runner.js'
 import type { ChatEvent, ChatSession, ApprovalPreset } from './chat-store.js'
 import type { ProviderSnapshot } from '../providers/snapshot.js'
 import type { DatabaseSync } from 'node:sqlite'
+
+const logger = getAppLogger('agent.session')
 
 /**
  * Agent session backend (milestone 5A). Bridges a chat session (m5a-03 store) to
@@ -166,7 +169,9 @@ export class AgentSessionService {
       if (this.starting.has(session.id)) this.endedWhileStarting.add(session.id)
       this.checkCompaction(session.id)
       this.checkAutoCompaction(session.id)
-      this.checkReportProvenance(session.id).catch(() => {})
+      this.checkReportProvenance(session.id).catch(err => {
+        logger.error('report provenance scan failed', err, { chatSessionId: session.id })
+      })
       const lockId = this.locks.get(session.id)
       if (lockId !== undefined) {
         releaseLock(this.db, lockId)
@@ -256,7 +261,7 @@ export class AgentSessionService {
     } catch (err) {
       try { this.db.exec('ROLLBACK') } catch {}
       if (err instanceof Error && err.message.includes('database is not open')) return
-      console.error('Failed to flush chat events batch:', err)
+      logger.error('failed to flush chat events batch', err, { batchSize: batch.length })
     }
   }
 
@@ -297,7 +302,9 @@ export class AgentSessionService {
     }
 
     if (!currentlyCompacting && charCount > AgentSessionService.AUTO_COMPACTION_CHAR_THRESHOLD) {
-      this.compactSession(chatSessionId).catch(() => {})
+      this.compactSession(chatSessionId).catch(err => {
+        logger.error('automatic compaction failed', err, { chatSessionId })
+      })
     }
   }
 
@@ -610,11 +617,12 @@ export class AgentSessionService {
         const sdkSessionId = await this.ensureLive(chatSessionId, wasLive ? undefined : text, wasLive ? undefined : media)
         if (wasLive) await this.runner.send(sdkSessionId, { type: 'user_message', text, ...media })
       } catch (err) {
+        logger.error('agent message failed', err, { chatSessionId })
         this.emitEvent(chatSessionId, 'status', { text: `Error: ${err instanceof Error ? err.message : String(err)}` })
         this.emitEvent(chatSessionId, 'ended', null)
       }
     }
-    work().catch(() => {})
+    work().catch(err => logger.error('agent message worker failed', err, { chatSessionId }))
 
     return { accepted: true }
   }
@@ -630,11 +638,12 @@ export class AgentSessionService {
         const sdkSessionId = await this.ensureLive(chatSessionId, wasLive ? undefined : text)
         if (wasLive) await this.runner.send(sdkSessionId, { type: 'user_message', text })
       } catch (err) {
+        logger.error('agent compaction request failed', err, { chatSessionId })
         this.emitEvent(chatSessionId, 'status', { text: `Error: ${err instanceof Error ? err.message : String(err)}` })
         this.emitEvent(chatSessionId, 'ended', null)
       }
     }
-    work().catch(() => {})
+    work().catch(err => logger.error('agent compaction worker failed', err, { chatSessionId }))
 
     return { accepted: true }
   }

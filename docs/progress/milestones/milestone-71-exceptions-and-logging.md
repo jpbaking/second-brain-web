@@ -10,7 +10,7 @@ cause chains from `error-extender`, replace runtime console/Pino logging with
   `.env.example`; cover level validation/filtering and credential redaction.
   Verify: `cd app && npm test --workspace server -- structured-logs.test.ts config.test.ts configure-lib.test.ts && npm run lint`
 
-- [ ] **m71-02** Move the server's custom error types onto a shared
+- [x] **m71-02** Move the server's custom error types onto a shared
   `error-extender` hierarchy, preserve underlying causes at rethrow boundaries,
   and route background/start-up failures through named log4js categories with
   full chained stacks.

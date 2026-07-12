@@ -1,5 +1,7 @@
 import { readFileSync, readdirSync } from 'node:fs'
 import path from 'node:path'
+import { extendError } from 'error-extender'
+import { AppError, asError } from '../errors.js'
 
 /**
  * Workflow shortcut expansion (milestone 5A; spike m00-08 / findings m00-10 #3).
@@ -11,7 +13,7 @@ import path from 'node:path'
 const WORKFLOWS_SUBDIR = path.join('.clinerules', 'workflows')
 const WORKFLOW_PREFIX = 'Run the following workflow now.\n\n'
 
-export class WorkflowNotFoundError extends Error {}
+export const WorkflowNotFoundError = extendError('WorkflowNotFoundError', { parent: AppError })
 
 export function workflowsDir (vaultCwd: string): string {
   return path.join(vaultCwd, WORKFLOWS_SUBDIR)
@@ -66,8 +68,8 @@ export function expandWorkflow (vaultCwd: string, name: string, params?: Record<
   let content: string
   try {
     content = readFileSync(file, 'utf8')
-  } catch {
-    throw new WorkflowNotFoundError(`unknown workflow: ${safe}`)
+  } catch (err) {
+    throw new WorkflowNotFoundError({ message: `unknown workflow: ${safe}`, cause: asError(err) })
   }
   let prefix = WORKFLOW_PREFIX
   if (params && Object.keys(params).length > 0) {

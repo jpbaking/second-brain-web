@@ -1,6 +1,8 @@
 import { chmodSync, copyFileSync, existsSync, mkdirSync, statSync } from 'node:fs'
 import path from 'node:path'
 import { deployKeyPath } from './vault/config.js'
+import { extendError } from 'error-extender'
+import { AppError } from './errors.js'
 
 /** Subdirectories of the data root (master plan: Default Runtime Layout). */
 export const DATA_SUBDIRS = [
@@ -26,7 +28,7 @@ export interface AppConfig {
   uploadMaxBytes: number
 }
 
-export class ConfigError extends Error {}
+export const ConfigError = extendError('ConfigError', { parent: AppError })
 
 /**
  * Resolve configuration from the environment and prepare the data root.
@@ -36,11 +38,12 @@ export class ConfigError extends Error {}
 export function loadConfig (env: NodeJS.ProcessEnv = process.env): AppConfig {
   const dataDir = env.SECOND_BRAIN_WEB_DATA_DIR
   if (dataDir === undefined || dataDir.trim() === '') {
-    throw new ConfigError(
-      'SECOND_BRAIN_WEB_DATA_DIR is not set. Point it at a private directory ' +
-      '(e.g. /data/second-brain-web) that will hold auth state, databases, ' +
-      'keys, and the vault checkout, then start again.'
-    )
+    throw new ConfigError({
+      message:
+        'SECOND_BRAIN_WEB_DATA_DIR is not set. Point it at a private directory ' +
+        '(e.g. /data/second-brain-web) that will hold auth state, databases, ' +
+        'keys, and the vault checkout, then start again.',
+    })
   }
   const resolved = path.resolve(dataDir)
 
@@ -54,12 +57,12 @@ export function loadConfig (env: NodeJS.ProcessEnv = process.env): AppConfig {
 
   const port = Number(env.SECOND_BRAIN_WEB_PORT ?? 8722)
   if (!Number.isInteger(port) || port < 1 || port > 65535) {
-    throw new ConfigError(`SECOND_BRAIN_WEB_PORT is not a valid port: ${env.SECOND_BRAIN_WEB_PORT}`)
+    throw new ConfigError({ message: `SECOND_BRAIN_WEB_PORT is not a valid port: ${env.SECOND_BRAIN_WEB_PORT}` })
   }
 
   const uploadMaxBytes = Number(env.SECOND_BRAIN_WEB_UPLOAD_MAX_BYTES ?? 50 * 1024 * 1024)
   if (!Number.isSafeInteger(uploadMaxBytes) || uploadMaxBytes < 1) {
-    throw new ConfigError(`SECOND_BRAIN_WEB_UPLOAD_MAX_BYTES is not valid: ${env.SECOND_BRAIN_WEB_UPLOAD_MAX_BYTES}`)
+    throw new ConfigError({ message: `SECOND_BRAIN_WEB_UPLOAD_MAX_BYTES is not valid: ${env.SECOND_BRAIN_WEB_UPLOAD_MAX_BYTES}` })
   }
 
   return {
@@ -106,9 +109,10 @@ export function importDeployKey (dataDir: string, env: NodeJS.ProcessEnv): void 
 function assertPrivate (dir: string): void {
   const mode = statSync(dir).mode & 0o777
   if ((mode & 0o077) !== 0) {
-    throw new ConfigError(
-      `Data directory ${dir} is accessible by other users (mode ${mode.toString(8)}). ` +
-      `It holds secrets; run: chmod 700 '${dir}' and start again.`
-    )
+    throw new ConfigError({
+      message:
+        `Data directory ${dir} is accessible by other users (mode ${mode.toString(8)}). ` +
+        `It holds secrets; run: chmod 700 '${dir}' and start again.`,
+    })
   }
 }

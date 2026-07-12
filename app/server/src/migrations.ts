@@ -1,5 +1,7 @@
 import { existsSync, rmSync } from 'node:fs'
+import { extendError } from 'error-extender'
 import { coreDbPath, openCoreDb, openSidecarDb, sidecarDbPath } from './db.js'
+import { AppError, asError } from './errors.js'
 import type { DatabaseSync } from 'node:sqlite'
 
 interface Migration {
@@ -245,7 +247,7 @@ const sidecarMigrations: Migration[] = [
   },
 ]
 
-export class MigrationError extends Error {}
+export const MigrationError = extendError('MigrationError', { parent: AppError })
 
 export function prepareDatabases (dataDir: string): void {
   withDatabase(openCoreDb(dataDir), db => {
@@ -292,7 +294,7 @@ function migrate (db: DatabaseSync, migrations: Migration[]): void {
     let version = current
     for (const migration of pending) {
       if (migration.version !== version + 1) {
-        throw new MigrationError(`Migration gap: expected ${version + 1}, got ${migration.version}`)
+        throw new MigrationError({ message: `Migration gap: expected ${version + 1}, got ${migration.version}` })
       }
       db.exec(migration.sql)
       db.prepare('UPDATE schema_version SET version = ? WHERE id = 1').run(migration.version)
@@ -301,7 +303,8 @@ function migrate (db: DatabaseSync, migrations: Migration[]): void {
     db.exec('COMMIT')
   } catch (err) {
     db.exec('ROLLBACK')
-    throw err
+    if (err instanceof MigrationError) throw err
+    throw new MigrationError({ message: 'Database migration failed.', cause: asError(err) })
   }
 }
 
@@ -313,7 +316,7 @@ function currentVersion (db: DatabaseSync): number {
 function assertIntegrity (db: DatabaseSync, file: string): void {
   const row = db.prepare('PRAGMA integrity_check').get() as { integrity_check: string }
   if (row.integrity_check !== 'ok') {
-    throw new MigrationError(`SQLite integrity check failed for ${file}: ${row.integrity_check}`)
+    throw new MigrationError({ message: `SQLite integrity check failed for ${file}: ${row.integrity_check}` })
   }
 }
 

@@ -1,4 +1,6 @@
 import { createCipheriv, createDecipheriv, randomBytes, scryptSync } from 'node:crypto'
+import { extendError } from 'error-extender'
+import { AppError, asError } from '../errors.js'
 
 /**
  * Application secret encryption (phase-002 Provider API Keys). Provider keys are
@@ -11,7 +13,7 @@ const ENV_KEY = 'SECOND_BRAIN_WEB_SECRETS_KEY'
 const KDF_SALT = 'second-brain-web/secrets/v1'
 const VERSION = 'v1'
 
-export class SecretsError extends Error {}
+export const SecretsError = extendError('SecretsError', { parent: AppError })
 
 /** Whether encrypted secret storage is available (the key is configured). */
 export function secretsKeyConfigured (env: NodeJS.ProcessEnv = process.env): boolean {
@@ -22,10 +24,11 @@ export function secretsKeyConfigured (env: NodeJS.ProcessEnv = process.env): boo
 function requireSecretKey (env: NodeJS.ProcessEnv): string {
   const value = env[ENV_KEY]
   if (value === undefined || value.trim() === '') {
-    throw new SecretsError(
-      `${ENV_KEY} is not set. Set it to a strong random value to enable ` +
-      'encrypted secret storage, then try again.'
-    )
+    throw new SecretsError({
+      message:
+        `${ENV_KEY} is not set. Set it to a strong random value to enable ` +
+        'encrypted secret storage, then try again.',
+    })
   }
   return value
 }
@@ -50,14 +53,17 @@ export function decryptSecret (encoded: string, env: NodeJS.ProcessEnv = process
   const key = deriveKey(requireSecretKey(env))
   const [version, nonceB64, tagB64, ctB64] = encoded.split(':')
   if (version !== VERSION || nonceB64 === undefined || tagB64 === undefined || ctB64 === undefined) {
-    throw new SecretsError('malformed secret ciphertext.')
+    throw new SecretsError({ message: 'malformed secret ciphertext.' })
   }
   const decipher = createDecipheriv('aes-256-gcm', key, Buffer.from(nonceB64, 'base64'))
   decipher.setAuthTag(Buffer.from(tagB64, 'base64'))
   try {
     return Buffer.concat([decipher.update(Buffer.from(ctB64, 'base64')), decipher.final()]).toString('utf8')
-  } catch {
-    throw new SecretsError('could not decrypt secret (wrong key or corrupt data).')
+  } catch (err) {
+    throw new SecretsError({
+      message: 'could not decrypt secret (wrong key or corrupt data).',
+      cause: asError(err),
+    })
   }
 }
 

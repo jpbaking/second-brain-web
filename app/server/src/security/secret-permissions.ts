@@ -1,5 +1,7 @@
 import { existsSync, statSync } from 'node:fs'
 import path from 'node:path'
+import { extendError } from 'error-extender'
+import { AppError } from '../errors.js'
 
 /**
  * Startup secret-permission checks (milestone 12). The data root as a whole is
@@ -27,7 +29,7 @@ export interface SecretPermissionIssue {
   mode: string
 }
 
-export class SecretPermissionError extends Error {}
+export const SecretPermissionError = extendError('SecretPermissionError', { parent: AppError })
 
 /** Return every existing secret file whose mode grants group or other access. */
 export function checkSecretPermissions (dataDir: string): SecretPermissionIssue[] {
@@ -51,5 +53,5 @@ export function assertSecretPermissions (dataDir: string): void {
   const issues = checkSecretPermissions(dataDir)
   if (issues.length === 0) return
   const detail = issues.map(issue => `  ${issue.path} is mode ${issue.mode}; run: chmod 600 '${path.join(dataDir, issue.path)}'`).join('\n')
-  throw new SecretPermissionError(`secret files are accessible by other users:\n${detail}`)
+  throw new SecretPermissionError({ message: `secret files are accessible by other users:\n${detail}` })
 }

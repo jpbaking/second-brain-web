@@ -1,8 +1,11 @@
 import { openCoreDb } from '../db.js'
 import { expandWorkflow } from './workflows.js'
 import { vaultWorkspacePath } from '../vault/config.js'
+import { getAppLogger } from '../logging.js'
 import type { AppConfig } from '../config.js'
 import type { AgentSessionService } from './session.js'
+
+const logger = getAppLogger('agent.scheduler')
 
 export class SchedulerService {
   private timer: NodeJS.Timeout | null = null
@@ -15,13 +18,15 @@ export class SchedulerService {
 
   start (): void {
     if (this.timer !== null) return
-    this.timer = setInterval(() => { this.tick().catch(console.error) }, 60_000)
+    this.timer = setInterval(() => {
+      this.tick().catch(err => logger.error('scheduler tick failed', err))
+    }, 60_000)
     // Run an initial tick shortly after startup. Tracked so stop() can cancel
     // it — otherwise a shutdown within the first second leaves this firing
     // against a torn-down data dir.
     this.initialTick = setTimeout(() => {
       this.initialTick = null
-      this.tick().catch(console.error)
+      this.tick().catch(err => logger.error('initial scheduler tick failed', err))
     }, 1000)
   }
 
@@ -70,7 +75,7 @@ export class SchedulerService {
               job.id
             )
           } catch (err) {
-            console.error(`Failed to run job ${job.name}:`, err)
+            logger.error('scheduled job failed', err, { jobName: job.name, jobId: job.id })
           }
         }
       }

@@ -1,10 +1,11 @@
 import log4js, { type Logger, type LoggingEvent } from 'log4js'
 import { extendError } from 'error-extender'
+import { AppError } from './errors.js'
 
 export const LOG_LEVELS = ['trace', 'debug', 'info', 'warn', 'error', 'fatal', 'off'] as const
 export type LogLevel = typeof LOG_LEVELS[number]
 
-export const LoggingConfigError = extendError('LoggingConfigError')
+export const LoggingConfigError = extendError('LoggingConfigError', { parent: AppError })
 
 export interface LogStream {
   write: (line: string) => void
@@ -48,9 +49,12 @@ export function configureLogging (env: NodeJS.ProcessEnv = process.env): LogLeve
   log4js.configure({
     appenders: {
       stdout: { type: 'stdout', layout: { type: JSON_LAYOUT } },
+      stderr: { type: 'stderr', layout: { type: JSON_LAYOUT } },
     },
     categories: {
       default: { appenders: ['stdout'], level },
+      // MCP servers use stdout for JSON-RPC; their logs must stay on stderr.
+      mcp: { appenders: ['stderr'], level },
     },
   })
   return level
@@ -102,10 +106,12 @@ function serialiseRecord (record: LogFields): LogFields {
 
 function serialiseValue (value: unknown): unknown {
   if (value instanceof Error) {
+    const data = 'data' in value ? (value as Error & { data?: unknown }).data : undefined
     return {
       name: value.name,
       message: value.message,
       stack: value.stack,
+      ...(data === undefined ? {} : { data: serialiseValue(data) }),
     }
   }
   if (Array.isArray(value)) return value.map(serialiseValue)

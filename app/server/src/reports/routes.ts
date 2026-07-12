@@ -1,10 +1,12 @@
 import { createReadStream } from 'node:fs'
 import { realpath, stat } from 'node:fs/promises'
 import path from 'node:path'
+import { extendError } from 'error-extender'
 import { scanReports } from './scan.js'
 import { getReportProvenance } from './store.js'
 import { openCoreDb } from '../db.js'
 import { vaultWorkspacePath } from '../vault/config.js'
+import { AppError, asError } from '../errors.js'
 import type { AppConfig } from '../config.js'
 import type { FastifyInstance } from 'fastify'
 import type { AgentSessionService } from '../agent/session.js'
@@ -41,7 +43,7 @@ export function registerReportRoutes (app: FastifyInstance, config: AppConfig, a
     try {
       resolved = await resolveReportPath(workspace, requested)
     } catch (error) {
-      const status = error instanceof ReportPathError ? error.status : 404
+      const status = error instanceof ReportPathError ? error.data?.status ?? 404 : 404
       return await reply.code(status).send({ error: error instanceof Error ? error.message : 'Report not found.' })
     }
     const contentType = CONTENT_TYPES[path.extname(resolved).toLowerCase()]
@@ -63,7 +65,7 @@ export function registerReportRoutes (app: FastifyInstance, config: AppConfig, a
     try {
       resolved = await resolveReportPath(workspace, requested)
     } catch (error) {
-      const status = error instanceof ReportPathError ? error.status : 404
+      const status = error instanceof ReportPathError ? error.data?.status ?? 404 : 404
       return await reply.code(status).send({ error: error instanceof Error ? error.message : 'Report not found.' })
     }
 
@@ -94,27 +96,28 @@ export function registerReportRoutes (app: FastifyInstance, config: AppConfig, a
   })
 }
 
-class ReportPathError extends Error {
-  constructor (message: string, readonly status: number) {
-    super(message)
-  }
-}
+interface ReportPathData { status: number }
+const ReportPathError = extendError<ReportPathData>('ReportPathError', { parent: AppError })
 
 export async function resolveReportPath (workspace: string, requested: string): Promise<string> {
   if (requested === '' || requested.includes('\0') || requested.includes('\\') || path.posix.isAbsolute(requested)) {
-    throw new ReportPathError('Invalid report path.', 400)
+    throw new ReportPathError({ message: 'Invalid report path.', data: { status: 400 } })
   }
   const segments = requested.split('/')
   if (segments.some(segment => segment === '' || segment === '.' || segment === '..')) {
-    throw new ReportPathError('Invalid report path.', 400)
+    throw new ReportPathError({ message: 'Invalid report path.', data: { status: 400 } })
   }
 
-  const root = await realpath(path.join(workspace, 'reports')).catch(() => { throw new ReportPathError('Report shelf not found.', 404) })
-  const candidate = await realpath(path.join(root, ...segments)).catch(() => { throw new ReportPathError('Report not found.', 404) })
+  const root = await realpath(path.join(workspace, 'reports')).catch((err: unknown) => {
+    throw new ReportPathError({ message: 'Report shelf not found.', data: { status: 404 }, cause: asError(err) })
+  })
+  const candidate = await realpath(path.join(root, ...segments)).catch((err: unknown) => {
+    throw new ReportPathError({ message: 'Report not found.', data: { status: 404 }, cause: asError(err) })
+  })
   if (candidate !== root && !candidate.startsWith(`${root}${path.sep}`)) {
-    throw new ReportPathError('Report path escapes the report shelf.', 400)
+    throw new ReportPathError({ message: 'Report path escapes the report shelf.', data: { status: 400 } })
   }
   const info = await stat(candidate)
-  if (!info.isFile()) throw new ReportPathError('Report not found.', 404)
+  if (!info.isFile()) throw new ReportPathError({ message: 'Report not found.', data: { status: 404 } })
   return candidate
 }

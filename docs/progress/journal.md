@@ -62,3 +62,10 @@ level. Baseline `npm test` is clean: 78 server files / 385 tests and 1 web file
 - 01:05 DONE m71-01: log4js emits safe structured HTTP JSON; root level is
   validated/configurable through configure, compose, and `.env.example`;
   verified by the targeted 22 tests and full workspace lint clean.
+- 01:06 STARTED m71-02: migrate custom errors to one error-extender hierarchy,
+  retain causes at wrapping boundaries, and replace runtime console failures
+  with categorised log4js records.
+- 01:10 DONE m71-02: all 13 custom server exception types now inherit AppError;
+  wrapper boundaries retain `cause`, and startup/scheduler/session/MCP failures
+  use named log4js categories (MCP logs stay on stderr); verified by 9 targeted
+  files / 56 tests, workspace lint clean, and server TypeScript build clean.

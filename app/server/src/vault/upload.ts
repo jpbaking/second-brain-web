@@ -4,7 +4,9 @@ import { mkdir, rename, rm, stat, writeFile } from 'node:fs/promises'
 import path from 'node:path'
 import { pipeline } from 'node:stream/promises'
 import fastifyMultipart from '@fastify/multipart'
+import { extendError } from 'error-extender'
 import { openCoreDb } from '../db.js'
+import { AppError } from '../errors.js'
 import { vaultWorkspacePath } from './config.js'
 import { acquireLock, releaseLock } from './lock.js'
 import { WorkflowNotFoundError, expandWorkflow } from '../agent/workflows.js'
@@ -60,16 +62,16 @@ export function registerUploadRoutes (app: FastifyInstance, config: AppConfig, s
 
       for await (const part of req.parts()) {
         if (part.type === 'field') {
-          if (typeof part.value !== 'string') throw new IntakeValidationError(`Invalid intake field: ${part.fieldname}`)
+          if (typeof part.value !== 'string') throw new IntakeValidationError({ message: `Invalid intake field: ${part.fieldname}` })
           metadata[part.fieldname] = part.value
           continue
         }
         const relativeName = safeUploadPath(part.filename)
         if (relativeName.toLowerCase() === '_intake.md') {
-          throw new UnsafeUploadPathError('The filename _intake.md is reserved for intake metadata.')
+          throw new UnsafeUploadPathError({ message: 'The filename _intake.md is reserved for intake metadata.' })
         }
         if (stored.some(file => file.path === path.posix.join(relativeRoot, relativeName))) {
-          throw new UnsafeUploadPathError(`Duplicate upload path: ${relativeName}`)
+          throw new UnsafeUploadPathError({ message: `Duplicate upload path: ${relativeName}` })
         }
         const destination = path.join(destinationRoot, ...relativeName.split('/'))
         await mkdir(path.dirname(destination), { recursive: true })
@@ -164,22 +166,22 @@ export function registerUploadRoutes (app: FastifyInstance, config: AppConfig, s
   })
 }
 
-export class UnsafeUploadPathError extends Error {}
-export class IntakeValidationError extends Error {}
-class UploadLimitError extends Error {}
+export const UnsafeUploadPathError = extendError('UnsafeUploadPathError', { parent: AppError })
+export const IntakeValidationError = extendError('IntakeValidationError', { parent: AppError })
+const UploadLimitError = extendError('UploadLimitError', { parent: AppError })
 
 export function safeUploadPath (filename: string): string {
   if (filename === '' || filename.includes('\0') || path.posix.isAbsolute(filename) || path.win32.isAbsolute(filename)) {
-    throw new UnsafeUploadPathError('Unsafe upload path.')
+    throw new UnsafeUploadPathError({ message: 'Unsafe upload path.' })
   }
 
   const segments = filename.replaceAll('\\', '/').split('/')
   if (segments.some(segment => segment === '' || segment === '.' || segment === '..')) {
-    throw new UnsafeUploadPathError('Unsafe upload path.')
+    throw new UnsafeUploadPathError({ message: 'Unsafe upload path.' })
   }
 
   const safe = segments.map(sanitiseSegment)
-  if (safe.some(segment => segment === '')) throw new UnsafeUploadPathError('Unsafe upload path.')
+  if (safe.some(segment => segment === '')) throw new UnsafeUploadPathError({ message: 'Unsafe upload path.' })
   return safe.join('/')
 }
 
@@ -193,12 +195,12 @@ function sanitiseSegment (segment: string): string {
 export function parseIntakeMetadata (fields: Record<string, string>): IntakeMetadata {
   const allowed = new Set(['description', 'date', 'people', 'projects', 'urgency', 'workflow', 'notes'])
   const unknown = Object.keys(fields).find(field => !allowed.has(field))
-  if (unknown !== undefined) throw new IntakeValidationError(`Unknown intake field: ${unknown}`)
+  if (unknown !== undefined) throw new IntakeValidationError({ message: `Unknown intake field: ${unknown}` })
 
   const value = (name: string, max: number): string | undefined => {
     const trimmed = fields[name]?.trim()
     if (trimmed === undefined || trimmed === '') return undefined
-    if (trimmed.length > max) throw new IntakeValidationError(`Intake field is too long: ${name}`)
+    if (trimmed.length > max) throw new IntakeValidationError({ message: `Intake field is too long: ${name}` })
     return trimmed
   }
 
@@ -206,16 +208,16 @@ export function parseIntakeMetadata (fields: Record<string, string>): IntakeMeta
   if (date !== undefined) {
     const parsed = new Date(`${date}T00:00:00.000Z`)
     if (!/^\d{4}-\d{2}-\d{2}$/.test(date) || Number.isNaN(parsed.getTime()) || parsed.toISOString().slice(0, 10) !== date) {
-      throw new IntakeValidationError('Invalid intake date.')
+      throw new IntakeValidationError({ message: 'Invalid intake date.' })
     }
   }
   const urgency = value('urgency', 10)
   if (urgency !== undefined && !['low', 'normal', 'high', 'urgent'].includes(urgency)) {
-    throw new IntakeValidationError('Invalid intake urgency.')
+    throw new IntakeValidationError({ message: 'Invalid intake urgency.' })
   }
   const workflow = value('workflow', 30)
   if (workflow !== undefined && !['process-inbox', 'create-report', 'prep-meeting', 'file-later'].includes(workflow)) {
-    throw new IntakeValidationError('Invalid desired handling.')
+    throw new IntakeValidationError({ message: 'Invalid desired handling.' })
   }
 
   const result: IntakeMetadata = {}

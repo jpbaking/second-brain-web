@@ -3,7 +3,9 @@ import { createWriteStream } from 'node:fs'
 import { mkdir, readdir, readFile, rm, stat } from 'node:fs/promises'
 import path from 'node:path'
 import { pipeline } from 'node:stream/promises'
+import { extendError } from 'error-extender'
 import { openCoreDb } from '../db.js'
+import { AppError } from '../errors.js'
 import { getSession } from '../agent/chat-store.js'
 import type { AppConfig } from '../config.js'
 import type { FastifyInstance } from 'fastify'
@@ -57,7 +59,7 @@ export function attachmentKind (name: string): 'image' | 'file' {
   return IMAGE_EXTENSIONS.has(path.extname(name).toLowerCase()) ? 'image' : 'file'
 }
 
-export class UnsafeAttachmentNameError extends Error {}
+export const UnsafeAttachmentNameError = extendError('UnsafeAttachmentNameError', { parent: AppError })
 
 /**
  * Attachments are single files: keep only the basename, strip control
@@ -66,13 +68,13 @@ export class UnsafeAttachmentNameError extends Error {}
 export function safeAttachmentName (filename: string): string {
   const base = path.basename(filename.replaceAll('\\', '/'))
   if (base === '' || base === '.' || base === '..' || base.includes('\0')) {
-    throw new UnsafeAttachmentNameError('Unsafe attachment name.')
+    throw new UnsafeAttachmentNameError({ message: 'Unsafe attachment name.' })
   }
   const safe = Array.from(base, character => {
     const code = character.codePointAt(0) ?? 0
     return code < 32 || code === 127 ? '_' : character
   }).join('').slice(0, 180)
-  if (safe === '' || safe === '.' || safe === '..') throw new UnsafeAttachmentNameError('Unsafe attachment name.')
+  if (safe === '' || safe === '.' || safe === '..') throw new UnsafeAttachmentNameError({ message: 'Unsafe attachment name.' })
   return safe
 }
 
@@ -132,7 +134,7 @@ export function registerChatUploadRoutes (app: FastifyInstance, config: AppConfi
     try {
       for await (const part of req.parts()) {
         if (part.type === 'field') continue
-        if (stored.length >= MAX_ATTACHMENTS) throw new AttachmentLimitError(`At most ${MAX_ATTACHMENTS} attachments per message.`)
+        if (stored.length >= MAX_ATTACHMENTS) throw new AttachmentLimitError({ message: `At most ${MAX_ATTACHMENTS} attachments per message.` })
         const name = safeAttachmentName(part.filename)
         const attachmentId = createAttachmentId()
         const dir = path.join(sessionUploadsDir(config.dataDir, id), attachmentId)
@@ -174,8 +176,8 @@ export function registerChatUploadRoutes (app: FastifyInstance, config: AppConfi
   })
 }
 
-class FileTooLargeError extends Error {}
-class AttachmentLimitError extends Error {}
+const FileTooLargeError = extendError('FileTooLargeError', { parent: AppError })
+const AttachmentLimitError = extendError('AttachmentLimitError', { parent: AppError })
 
 function isErrorWithCode (error: unknown): error is { code: string } {
   return typeof error === 'object' && error !== null && 'code' in error

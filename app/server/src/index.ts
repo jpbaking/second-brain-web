@@ -3,7 +3,7 @@ import { ConfigError, loadConfig } from './config.js'
 import { MigrationError, prepareDatabases } from './migrations.js'
 import { ProviderProvisioningError, provisionProviderProfiles } from './providers/provisioning.js'
 import { assertSecretPermissions, SecretPermissionError } from './security/secret-permissions.js'
-import { configureLogging } from './logging.js'
+import { configureLogging, getAppLogger } from './logging.js'
 
 try {
   configureLogging()
@@ -12,6 +12,8 @@ try {
   process.exit(1)
 }
 
+const logger = getAppLogger('startup')
+
 let config
 try {
   config = loadConfig()
@@ -19,7 +21,7 @@ try {
   assertSecretPermissions(config.dataDir)
 } catch (err) {
   if (err instanceof ConfigError || err instanceof SecretPermissionError) {
-    console.error(`setup error: ${err.message}`)
+    logger.fatal('setup error', err)
     process.exit(1)
   }
   throw err
@@ -33,13 +35,13 @@ try {
   await app.listen({ host: config.host, port: config.port })
 } catch (err) {
   if (err instanceof MigrationError) {
-    console.error(`database error: ${err.message}`)
+    logger.fatal('database error', err)
     process.exit(1)
   }
   if (err instanceof ProviderProvisioningError) {
-    console.error(`setup error: ${err.message}`)
+    logger.fatal('setup error', err)
     process.exit(1)
   }
-  app.log.error(err)
+  logger.fatal('server startup failed', err)
   process.exit(1)
 }
