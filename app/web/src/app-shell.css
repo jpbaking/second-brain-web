@@ -460,7 +460,7 @@
   font-size: var(--ui-kicker);
   letter-spacing: var(--track-label);
   text-transform: uppercase;
-  color: var(--muted);
+  color: var(--accent-amber, #b45309);
 }
 
 .chat-msg-meta { display: flex; align-items: baseline; gap: .6rem; }

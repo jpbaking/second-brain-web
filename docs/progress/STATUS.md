@@ -1,6 +1,6 @@
 # STATUS — single source of truth
 
-Updated: 2026-07-12 (no active milestone; milestone 66 complete)
+Updated: 2026-07-12 (no active milestone; milestone 67 complete)
 
 ## Where we are
 
@@ -25,7 +25,11 @@ Updated: 2026-07-12 (no active milestone; milestone 66 complete)
 
 ## Active milestone
 
-Milestone 66 (explorer file browser) is complete: `/explorer` is now a
+Milestone 67 (amber Secretary label) is complete: the "Secretary" author
+label above assistant chat messages uses `var(--accent-amber)` instead of
+muted grey. **Milestones 62–67 need `./compose-helper.sh up` to go live.**
+
+Previous: milestone 66 (explorer file browser) is complete: `/explorer` is now a
 read-only vault file browser (breadcrumbs, directory listing,
 rendered-Markdown/plain-text preview; `GET /api/explorer/tree` + `/file`).
 The link-graph UI and endpoints are gone; link extraction stays for search
@@ -98,7 +102,7 @@ object). Milestones 48–49 need `./compose-helper.sh up` (rebuild) to go live.
 
 ## Next step
 
-Await direction. Rebuild (./compose-helper.sh up) pending for milestones 62–66.
+Await direction. Rebuild (./compose-helper.sh up) pending for milestones 62–67.
 
 ## Read before working
 

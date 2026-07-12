@@ -252,3 +252,11 @@ milestone 66.
 
 ## 2026-07-12 15:20 — session end
 Milestone 66 complete and archived. /explorer is a read-only vault file browser with rendered md preview; e2e spec added. Handoff: no active milestone; rebuild pending for 62–66.
+
+## 2026-07-12 15:35 — session start
+Tree clean at 4d95d1f. Principal directed: amber "Secretary" label in chat. Opened milestone 67.
+- 15:35 DONE m67-01: .chat-msg-author now var(--accent-amber); lint+build clean; Playwright screenshot shows amber SECRETARY (rgb(217,130,31)). Temp spec removed. Checklist archived.
+
+## 2026-07-12 15:35 — session start
+Tree clean at 4d95d1f. Principal directed: amber "Secretary" label in chat. Opened milestone 67.
+- 15:35 DONE m67-01: .chat-msg-author now var(--accent-amber); lint+build clean; Playwright screenshot shows amber SECRETARY (rgb(217,130,31)). Temp spec removed. Checklist archived.
