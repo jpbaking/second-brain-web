@@ -18,7 +18,7 @@ download); no link data in the file view; graph dropped entirely.
   `explorer-api.test.ts` for the new endpoints (traversal rejection, dir
   listing, md/text/binary file reads, 404s).
   Verify: `cd app && npm test --workspace server -- explorer-api.test.ts`
-- [ ] **m66-02** Web: rewrite `ExplorerScreen.tsx` as the file browser —
+- [x] **m66-02** Web: rewrite `ExplorerScreen.tsx` as the file browser —
   breadcrumb path, directory listing, file pane with rendered Markdown
   (react-markdown + remarkGfm) or plain text; kit classes only; update
   hero tagline; remove graph CSS that is now unused.

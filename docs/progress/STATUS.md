@@ -29,7 +29,7 @@ Milestone 66 — revamp `/explorer` into a read-only vault file browser
 (rendered Markdown preview; link-graph UI and endpoints dropped; link
 extraction kept for search reindex). Checklist:
 `docs/progress/milestones/milestone-66-explorer-file-browser.md`.
-Next item: m66-02.
+Next item: m66-03.
 
 Previous: milestone 65 (brain logo mark + favicons) is complete: the radio-tower mark is replaced by a brain mark (side profile + node network, kit colours) across logo-mark, invert, SVG and raster favicons; webmanifest named Second Brain. **Milestones 62–65 need `./compose-helper.sh up` to go live.**
 
@@ -96,7 +96,7 @@ object). Milestones 48–49 need `./compose-helper.sh up` (rebuild) to go live.
 
 ## Next step
 
-m66-02 (rewrite ExplorerScreen as file browser). Rebuild (./compose-helper.sh up) pending for milestones 62–65.
+m66-03 (full verify + archive). Rebuild (./compose-helper.sh up) pending for milestones 62–65.
 
 ## Read before working
 

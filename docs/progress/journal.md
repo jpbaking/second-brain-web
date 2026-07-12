@@ -245,3 +245,5 @@ milestone 66.
 - 15:14 STARTED progress: milestone 66 checklist + STATUS pointed at m66-01.
 - 15:16 STARTED m66-01: replace /api/explorer routes with file-browser tree+file endpoints, rewrite explorer-api.test.ts.
 - 15:13 DONE m66-01: verified by `npm test --workspace server -- explorer-api.test.ts` → 9 tests green; lint clean.
+- 15:13 STARTED m66-02: rewrite ExplorerScreen as file browser (breadcrumbs, listing, md preview).
+- 15:15 DONE m66-02: ExplorerScreen rewritten as file browser; verified by `npm run lint && npm run build` → clean.
