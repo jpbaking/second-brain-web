@@ -9,7 +9,7 @@ import { generateOwnerAuth, writeOwnerAuth } from '../src/auth/bootstrap.js'
 import { totpCode } from '../src/auth/totp.js'
 import { CHALLENGE_COOKIE, SESSION_COOKIE } from '../src/auth/cookies.js'
 import { vaultWorkspacePath } from '../src/vault/config.js'
-import { WorkflowNotFoundError, expandWorkflow, listWorkflows, workflowsDir } from '../src/agent/workflows.js'
+import { WorkflowNotFoundError, expandWorkflow, listWorkflowSummaries, listWorkflows, workflowsDir } from '../src/agent/workflows.js'
 import type { AgentRunner, AgentStartInput, AgentStartResult } from '../src/agent/runner.js'
 import type { FastifyInstance } from 'fastify'
 import { seedDefaultProvider } from './helpers/seed-provider.js'
@@ -45,6 +45,10 @@ describe('workflow expansion (unit)', () => {
     seedWorkflows(root)
 
     expect(listWorkflows(root)).toEqual(['inbox', 'report'])
+    expect(listWorkflowSummaries(root)).toEqual([
+      { name: 'inbox', description: 'File everything under inbox/.' },
+      { name: 'report', description: 'Summarise the week.' },
+    ])
     const expanded = expandWorkflow(root, 'inbox')
     expect(expanded.startsWith('Run the following workflow now.\n\n')).toBe(true)
     expect(expanded).toContain('File everything under inbox/.')
@@ -100,7 +104,10 @@ describe('workflow command route', () => {
 
     // Workflow list route.
     const wf = await app.inject({ method: 'GET', url: '/api/chat/workflows', headers: { cookie } })
-    expect(wf.json().workflows).toEqual(['inbox', 'report'])
+    expect(wf.json().workflows).toEqual([
+      { name: 'inbox', description: 'File everything under inbox/.' },
+      { name: 'report', description: 'Summarise the week.' },
+    ])
 
     seedDefaultProvider(config.dataDir)
     const id = (await app.inject({ method: 'POST', url: '/api/chat/sessions', headers: { cookie }, payload: { title: 'C' } })).json().id

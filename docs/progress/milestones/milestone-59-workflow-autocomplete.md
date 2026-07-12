@@ -1,6 +1,6 @@
 # Milestone 59: Workflow autocomplete UX
 
-- [ ] **m59-01** — Return workflow names with one-line descriptions derived
+- [x] **m59-01** — Return workflow names with one-line descriptions derived
   from their introductory Markdown paragraphs. Verification:
   `npm test --workspace server -- workflow.test.ts`.
 - [ ] **m59-02** — Hide workflow chips, show descriptions and an unmistakable

@@ -4,7 +4,7 @@ import { vaultWorkspacePath } from '../vault/config.js'
 import { AgentSessionService } from '../agent/session.js'
 import { deleteSessionUploads, imageDataUri, resolveAttachments } from './uploads.js'
 import type { MessageAttachments } from '../agent/session.js'
-import { WorkflowNotFoundError, expandWorkflow, listWorkflows } from '../agent/workflows.js'
+import { WorkflowNotFoundError, expandWorkflow, listWorkflowSummaries } from '../agent/workflows.js'
 import { REASONING_EFFORTS, closeSession, getSession, listSessions, normalisePreset, readEventsSince, renameSession, setSessionPinned, updateSessionTuning } from '../agent/chat-store.js'
 import type { ReasoningEffort } from '../agent/chat-store.js'
 import type { AgentRunner } from '../agent/runner.js'
@@ -195,7 +195,7 @@ export function registerChatRoutes (app: FastifyInstance, config: AppConfig, run
   })
 
   app.get('/api/chat/workflows', async () => {
-    return { workflows: listWorkflows(vaultWorkspacePath(config.dataDir)) }
+    return { workflows: listWorkflowSummaries(vaultWorkspacePath(config.dataDir)) }
   })
 
   app.post('/api/chat/workflows/prep', async (req, reply) => {

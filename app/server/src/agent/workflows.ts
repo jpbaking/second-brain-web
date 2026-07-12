@@ -29,6 +29,29 @@ export function listWorkflows (vaultCwd: string): string[] {
   }
 }
 
+export interface WorkflowSummary { name: string, description: string }
+
+/** Workflow names plus the first prose paragraph after the Markdown heading. */
+export function listWorkflowSummaries (vaultCwd: string): WorkflowSummary[] {
+  return listWorkflows(vaultCwd).map(name => {
+    try {
+      const lines = readFileSync(path.join(workflowsDir(vaultCwd), `${name}.md`), 'utf8').split(/\r?\n/)
+      let started = false
+      const paragraph: string[] = []
+      for (const line of lines) {
+        const trimmed = line.trim()
+        if (!started && (trimmed === '' || trimmed.startsWith('#'))) continue
+        if (trimmed === '') break
+        started = true
+        paragraph.push(trimmed)
+      }
+      return { name, description: paragraph.join(' ').replace(/\s+/g, ' ') }
+    } catch {
+      return { name, description: '' }
+    }
+  })
+}
+
 /**
  * Expand a workflow into the message to send. Accepts a bare name or a
  * `/name` shortcut. Rejects traversal, and throws {@link WorkflowNotFoundError}

@@ -25,8 +25,8 @@ Updated: 2026-07-12 (milestone 59 active)
 
 ## Active milestone
 
-Milestone 59 (workflow autocomplete UX) is active. Next: m59-01, expose
-workflow descriptions derived from their Markdown introductions.
+Milestone 59 (workflow autocomplete UX) is active. m59-01 is complete; next:
+m59-02 autocomplete UI and fresh-chat execution.
 
 Previous: milestone 58 (agent deploy-key Git access) is complete. Agent-launched Git
 inherits the same canonical hardened deploy-key SSH command as Save & Sync.
@@ -70,7 +70,7 @@ object). Milestones 48–49 need `./compose-helper.sh up` (rebuild) to go live.
 
 ## Next step
 
-Implement m59-01 from
+Implement m59-02 from
 `docs/progress/milestones/milestone-59-workflow-autocomplete.md`.
 
 ## Read before working

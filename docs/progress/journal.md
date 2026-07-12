@@ -149,3 +149,6 @@ the same hardened SSH command as Save & Sync; rebuild needed to go live.
 Tree clean at 4130f22. Principal go: hide workflow chips; improve slash
 autocomplete selection and descriptions; run workflows from a fresh chat.
 Opened milestone 59; next m59-01.
+- 13:18 STARTED m59-01: expose workflow descriptions from introductory Markdown.
+- 13:18 DONE m59-01: workflow API returns sorted names plus descriptions
+  derived from each file's first prose paragraph. Workflow suite 5 green.
