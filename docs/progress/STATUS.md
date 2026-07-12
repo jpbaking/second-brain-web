@@ -1,6 +1,6 @@
 # STATUS — single source of truth
 
-Updated: 2026-07-12 (no active milestone; milestone 53 complete)
+Updated: 2026-07-12 (milestone 54 active)
 
 ## Where we are
 
@@ -25,7 +25,10 @@ Updated: 2026-07-12 (no active milestone; milestone 53 complete)
 
 ## Active milestone
 
-Milestone 53 (approval modes) is complete: Manual/Normal/Auto/Chat modes
+Milestone 54 (Excel-compatible Markdown table copy) is active. Next: m54-01,
+add one copy control that writes HTML table markup and TSV together.
+
+Previous: milestone 53 (approval modes) is complete: Manual/Normal/Auto/Chat modes
 with a vault-scoped policy matrix (schema v16 migrates legacy presets;
 `.git` protected in every mode; library/ guard unchanged) and a modes popup
 menu in the composer.
@@ -51,7 +54,8 @@ object). Milestones 48–49 need `./compose-helper.sh up` (rebuild) to go live.
 
 ## Next step
 
-Await direction.
+Implement m54-01 from
+`docs/progress/milestones/milestone-54-table-copy.md`.
 
 ## Read before working
 

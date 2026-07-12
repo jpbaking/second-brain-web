@@ -69,3 +69,8 @@ Approval-mode routing repaired. No active milestone; rebuild needed to go live.
 
 ## 2026-07-12 12:44 — session end
 Vault agent contract and approval modes aligned with the current second-brain rules. Rebuild needed to go live.
+
+## 2026-07-12 12:47 — session start
+Tree clean at 8cba1f9. Principal go: rendered Markdown tables get one copy
+control with HTML and Excel-compatible TSV clipboard formats. Opened milestone
+54; next m54-01.
