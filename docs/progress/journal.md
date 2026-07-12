@@ -115,3 +115,7 @@ message for its raw Markdown response. Opened milestone 56; next m56-01.
 ## 2026-07-12 13:02 — session end
 Milestone 56 complete. Each assistant response now has a bottom Copy action
 for its exact raw Markdown; rebuild needed to go live.
+
+## 2026-07-12 13:05 — session start
+Tree clean at 0cd3f40. Principal reported the table copy control sits too
+close to the header. Opened milestone 57; next m57-01.
