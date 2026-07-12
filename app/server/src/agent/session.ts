@@ -1,6 +1,6 @@
 import { createSession, deleteSessions, getSession, getSessionBySdkId, listSessions, readEventsSince, setSdkSessionId, saveCompaction, updateSessionConfig } from './chat-store.js'
 import { toModelConfig } from './runner.js'
-import { DEFAULT_SYSTEM_PROMPT } from './system-prompt.js'
+import { buildSystemPrompt } from './system-prompt.js'
 import { TOOL_POLICIES, evaluateTool, isMutatingTool, summariseToolInput } from './tool-policy.js'
 import { acquireLock, heartbeatLock, releaseLock } from '../vault/lock.js'
 import { readGitStatus } from '../vault/git-status.js'
@@ -500,7 +500,7 @@ export class AgentSessionService {
       ...(session?.thinking === true ? { thinking: true } : {}),
       ...(session?.reasoningEffort != null ? { reasoningEffort: session.reasoningEffort } : {}),
       cwd: this.opts.vaultCwd,
-      systemPrompt: this.opts.systemPrompt ?? DEFAULT_SYSTEM_PROMPT,
+      systemPrompt: this.opts.systemPrompt ?? buildSystemPrompt(this.opts.vaultCwd),
       // The SDK requires all three runtime feature flags (config.enableTools →
       // enable_tools, etc.). Sub-agents and teams are off for the MVP.
       enableTools: this.opts.enableTools ?? true,
