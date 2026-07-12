@@ -1,6 +1,6 @@
 # STATUS — single source of truth
 
-Updated: 2026-07-12 (no active milestone; milestone 59 complete)
+Updated: 2026-07-12 (milestone 60 active)
 
 ## Where we are
 
@@ -25,7 +25,10 @@ Updated: 2026-07-12 (no active milestone; milestone 59 complete)
 
 ## Active milestone
 
-Milestone 59 (workflow autocomplete UX) is complete. Workflow chips are
+Milestone 60 (consistent non-chat page heroes) is active. Next: m60-01, add a
+shared logo/title hero and migrate every non-chat screen.
+
+Previous: milestone 59 (workflow autocomplete UX) is complete. Workflow chips are
 hidden; slash autocomplete has descriptions and a strong selected state; a
 workflow can create and run as the first turn of a fresh chat.
 
@@ -71,7 +74,8 @@ object). Milestones 48–49 need `./compose-helper.sh up` (rebuild) to go live.
 
 ## Next step
 
-Await direction.
+Implement m60-01 from
+`docs/progress/milestones/milestone-60-consistent-page-heroes.md`.
 
 ## Read before working
 

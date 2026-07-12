@@ -163,3 +163,7 @@ Opened milestone 59; next m59-01.
 ## 2026-07-12 13:21 — session end
 Milestone 59 complete. Workflow chips are hidden; slash autocomplete shows
 descriptions and selection; workflows run from fresh chats. Rebuild needed.
+
+## 2026-07-12 13:24 — session start
+Tree clean at ff23488. Principal go: make the logo/title lockup consistent on
+all pages except chat. Opened milestone 60; next m60-01.
