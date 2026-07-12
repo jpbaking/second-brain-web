@@ -4,6 +4,7 @@ import { fileURLToPath } from 'node:url'
 import { ClineCore } from '@cline/core'
 import { extendError } from 'error-extender'
 import { AgentRunnerError, agentStorageEnv } from './runner.js'
+import { registerClaudeCodeInferencePin } from './claude-code-pin.js'
 import { applyWebToolsRegistration } from './web-tools-registration.js'
 import { deployKeyPath, vaultWorkspacePath } from '../vault/config.js'
 import { buildGitSshCommand } from '../vault/git.js'
@@ -84,6 +85,10 @@ export class ClineAgentRunner implements AgentRunner {
 
   private async ensureCore (): Promise<ClineCoreLike> {
     if (this.core === undefined) {
+      // Claude Code must stay inference-only: without this pin the CLI runs
+      // its own tools outside Cline's approvals and vault guard, and their
+      // permission failures make chats iterate forever (repair 2026-07-13).
+      registerClaudeCodeInferencePin()
       // Point SDK storage under our 0700 data root before it resolves paths.
       try {
         Object.assign(process.env, agentStorageEnv(this.dataDir), agentGitEnv(this.dataDir))

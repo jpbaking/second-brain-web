@@ -12,6 +12,15 @@ See `docs/project-plan/phase-008-feature-backlog-and-design-hooks.md` for other 
 
 ## Improvements
 
+- claude-code chats are inference-only (Q&A, no vault tools) since the
+  2026-07-13 repair: the Cline SDK cannot bridge its tools to the Claude
+  Code CLI (`ai-sdk-provider-claude-code` ignores AI SDK tools; @cline/core
+  0.0.58–0.0.59 has no MCP bridge), and un-pinned CLI tools bypass approvals
+  + the vault guard and error-loop forever. Watch upstream for tool
+  bridging (`createAiSdkMcpServer`), then remove
+  `app/server/src/agent/claude-code-pin.ts`; meanwhile consider surfacing
+  "no tools" on claude-code profiles in the UI/model menu.
+
 - ChatGPT (subscription) provider via the Cline SDK's `openai-codex`
   provider — active as milestone 73. The SDK ships the ChatGPT OAuth flow
   (`loginOpenAICodex` in `@cline/core`) and the runtime accepts

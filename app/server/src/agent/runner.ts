@@ -160,7 +160,9 @@ export function toModelConfig (snapshot: ProviderSnapshot): AgentModelConfig {
   if (snapshot.providerId === 'claude-code') {
     // The nested Claude Agent SDK must not load CLAUDE.md/settings or expose
     // its own filesystem/shell tools. Cline's catalog, approval resolver and
-    // vault write guard remain the only authority for actions.
+    // vault write guard remain the only authority for actions. The current
+    // @cline/core drops this field, so the pin is enforced by the registered
+    // handler in claude-code-pin.ts; this stays as documented intent.
     config.claudeCode = { tools: [], settingSources: [] }
   }
   if (snapshot.baseUrl !== null) {

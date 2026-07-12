@@ -217,3 +217,23 @@ step.
   by grep (no live ps1/PowerShell references outside archives) and bash -n.
 - 03:07 note: the two timestamps above should read 03:05/03:06 — recorded
   wrongly; correcting here rather than editing the append-only log.
+- 03:47 STARTED repair: claude-code chats never finish — SDK ignores our
+  inference-only pin, CLI attempts its own tools, every attempt errors and
+  the runtime iterates forever. Fix: register an llms handler that routes
+  claude-code through the builtin with tools pinned off (proved live in a
+  scratch harness: single iteration, clean end).
+- 04:00 DONE repair: registerClaudeCodeInferencePin() (claude-code-pin.ts)
+  registers an llms handler routing claude-code through the builtin via
+  routingProviderId with CLI tools/settingSources pinned off; wired in
+  cline-runner ensureCore. Root cause chain: provider ignores AI SDK tools
+  → core drops our claudeCode config (gateway option whitelist has no
+  claude-code branch) → CLI runs its own tools → permission failures →
+  endless iterations. Verified live against server/dist with a loader spy
+  (options arrive pinned, one iteration, clean end) plus 3 new unit tests;
+  server suite 415 green, lint + build clean. BACKLOG notes the upstream
+  limitation (claude-code is Q&A-only until Cline bridges tools).
+
+## 2026-07-13 04:01 — session end
+Repair committed. Rebuild required for the container to pick it up
+(./compose-helper.sh up — also cures the stale-image "unknown provider type
+chatgpt" setup error). m73-06 live ChatGPT check still with the principal.
