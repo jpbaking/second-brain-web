@@ -37,7 +37,7 @@ log level configurable in `.env`.
 
 ## Next step
 
-Implement **m71-01**: logging foundation, HTTP logging, and env/configure wiring.
+Implement **m71-02**: error hierarchy/cause chains and runtime logger migration.
 
 ## Read before working
 

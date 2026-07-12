@@ -33,6 +33,8 @@ services:
       # on http://localhost and behind HTTPS, but NOT over plain http on a LAN
       # IP. Only relax this for LAN-without-TLS experiments.
       NODE_ENV: '${SECOND_BRAIN_WEB_NODE_ENV:-production}'
+      # Root/default log4js category level (trace|debug|info|warn|error|fatal|off).
+      SECOND_BRAIN_WEB_LOG_LEVEL: '${SECOND_BRAIN_WEB_LOG_LEVEL:-info}'
       # Enables the chat agent's web__search / web__fetch tools (milestone 48).
       # Unset it to run without the searxng service.
       SECOND_BRAIN_WEB_SEARXNG_URL: 'http://searxng:8080'

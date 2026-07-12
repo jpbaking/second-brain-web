@@ -6,6 +6,7 @@ import * as readline from 'node:readline'
 import { Writable } from 'node:stream'
 import { encryptSecret } from '../secrets/crypto.js'
 import { listModels } from '../providers/models.js'
+import { isLogLevel, LOG_LEVELS } from '../logging.js'
 import {
   DEFAULT_BIND, DEFAULT_PORT, KNOWN_PROVIDERS,
   getEnv, isValidPort, isValidProvider, isValidProviderId,
@@ -100,6 +101,7 @@ interface State {
   bind: string
   port: string
   nodeEnv: string
+  logLevel: string
 }
 
 function newSecretsKey (): string { return randomBytes(32).toString('base64') }
@@ -115,6 +117,7 @@ function loadState (): State {
     bind: getEnv(env, 'SECOND_BRAIN_WEB_BIND') ?? DEFAULT_BIND,
     port: getEnv(env, 'SECOND_BRAIN_WEB_PORT') ?? DEFAULT_PORT,
     nodeEnv: getEnv(env, 'SECOND_BRAIN_WEB_NODE_ENV') ?? 'production',
+    logLevel: getEnv(env, 'SECOND_BRAIN_WEB_LOG_LEVEL') ?? 'info',
   }
 }
 
@@ -242,6 +245,11 @@ async function editRuntime (state: State): Promise<void> {
   }
   const dev = await confirm('  Enable development mode? (disables Secure auth cookies — plain-HTTP LAN only)', state.nodeEnv === 'development' ? 'y' : 'n')
   state.nodeEnv = dev ? 'development' : 'production'
+  for (;;) {
+    const level = (await askDefault(`  Root log level (${LOG_LEVELS.join('|')})`, state.logLevel)).toLowerCase()
+    if (isLogLevel(level)) { state.logLevel = level; break }
+    say(`  Log level must be one of ${LOG_LEVELS.join(', ')}.`)
+  }
 }
 
 async function editSecretsKey (state: State): Promise<void> {
@@ -278,6 +286,7 @@ function save (state: State): void {
   setEnv(state.env, 'SECOND_BRAIN_WEB_BIND', state.bind)
   setEnv(state.env, 'SECOND_BRAIN_WEB_PORT', state.port)
   setEnv(state.env, 'SECOND_BRAIN_WEB_NODE_ENV', state.nodeEnv)
+  setEnv(state.env, 'SECOND_BRAIN_WEB_LOG_LEVEL', state.logLevel)
   mkdirSync(configDir, { recursive: true, mode: 0o700 })
   writeFileSync(envPath, serializeEnv(state.env), { mode: 0o600 })
   chmodSync(envPath, 0o600)
@@ -300,7 +309,7 @@ function renderMenu (state: State): string[] {
     })
   }
   lines.push('')
-  lines.push(`Runtime:  BIND=${state.bind}  PORT=${state.port}  NODE_ENV=${state.nodeEnv}`)
+  lines.push(`Runtime:  BIND=${state.bind}  PORT=${state.port}  NODE_ENV=${state.nodeEnv}  LOG_LEVEL=${state.logLevel}`)
   lines.push(`Deploy key: ${existsSync(keyPath) ? 'present' : 'absent'}`)
   lines.push('')
   lines.push('Actions: [1-N] edit provider   a) add   r) runtime   k) deploy key   x) secrets key   s) save & exit   q) quit')

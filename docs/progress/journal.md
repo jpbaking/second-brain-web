@@ -57,3 +57,8 @@ Tree clean at 693ea1d. Principal directed Java-style exception cause chains via
 level. Baseline `npm test` is clean: 78 server files / 385 tests and 1 web file
 / 9 tests. Opened milestone 71.
 - 01:00 STARTED progress: milestone 71 checklist + STATUS pointed at m71-01.
+- 01:01 STARTED m71-01: add log4js foundation, safe structured HTTP logs, and
+  SECOND_BRAIN_WEB_LOG_LEVEL configure/compose/env wiring.
+- 01:05 DONE m71-01: log4js emits safe structured HTTP JSON; root level is
+  validated/configurable through configure, compose, and `.env.example`;
+  verified by the targeted 22 tests and full workspace lint clean.

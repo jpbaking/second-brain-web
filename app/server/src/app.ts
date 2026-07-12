@@ -24,6 +24,7 @@ import { registerExplorerRoutes } from './explorer/routes.js'
 import { registerSystemRoutes } from './system/routes.js'
 import { registerProfileRoutes } from './profile/routes.js'
 import { ClineAgentRunner } from './agent/cline-runner.js'
+import { getAppLogger } from './logging.js'
 import type { AgentRunner } from './agent/runner.js'
 
 const here = path.dirname(fileURLToPath(import.meta.url))
@@ -33,30 +34,41 @@ const webDist = path.resolve(here, '../../web/dist')
 /** Test/embedding seam: override the agent runner (defaults to the live Cline SDK). */
 export interface AppDeps {
   agentRunner?: AgentRunner
-  /** Capture structured logs (tests); defaults to stdout in non-test envs. */
+  /** Capture structured log4js records (tests); defaults to stdout outside tests. */
   logStream?: { write: (line: string) => void }
 }
 
-/**
- * Structured (JSON) logging config. Fastify/pino already emits JSON and its
- * default request serializer logs only method/url/host/remote address — never
- * headers or bodies — so credentials in a login body or the session cookie are
- * not logged. `redact` is defence-in-depth: if a serializer ever changes to
- * include headers, the cookie and authorization values are stripped.
- */
-function loggerOptions (stream?: { write: (line: string) => void }): Record<string, unknown> {
-  return {
-    redact: { paths: ['req.headers.cookie', 'req.headers.authorization'], remove: true },
-    ...(stream !== undefined ? { stream } : {}),
-  }
-}
-
 export function buildApp (config?: AppConfig, deps?: AppDeps): FastifyInstance {
-  // Quiet by default under test, unless a stream is injected to assert logging.
-  const logger = process.env.NODE_ENV === 'test' && deps?.logStream === undefined
-    ? false
-    : loggerOptions(deps?.logStream)
-  const app = Fastify({ logger })
+  const app = Fastify({ logger: false })
+  const loggingEnabled = process.env.NODE_ENV !== 'test' || deps?.logStream !== undefined
+  const logger = getAppLogger('http', deps?.logStream)
+
+  if (loggingEnabled) {
+    app.addHook('onRequest', (req, _reply, done) => {
+      logger.info('request received', {
+        reqId: req.id,
+        req: {
+          method: req.method,
+          url: req.url,
+          host: req.host,
+          remoteAddress: req.ip,
+        },
+      })
+      done()
+    })
+    app.addHook('onResponse', (req, reply, done) => {
+      logger.info('request completed', {
+        reqId: req.id,
+        res: { statusCode: reply.statusCode },
+        responseTime: reply.elapsedTime,
+      })
+      done()
+    })
+    app.addHook('onError', (req, _reply, error, done) => {
+      logger.error('request failed', error, { reqId: req.id })
+      done()
+    })
+  }
 
   app.register(fastifyCookie)
 

@@ -4,7 +4,7 @@ Principal-directed 2026-07-13: improve debugging traceability with Java-style
 cause chains from `error-extender`, replace runtime console/Pino logging with
 `log4js`, and make the root log level configurable through `.env`.
 
-- [ ] **m71-01** Add `error-extender` and `log4js`; introduce structured
+- [x] **m71-01** Add `error-extender` and `log4js`; introduce structured
   log4js configuration and safe HTTP request/response/error logging; expose
   `SECOND_BRAIN_WEB_LOG_LEVEL` through the configurator, compose, and
   `.env.example`; cover level validation/filtering and credential redaction.

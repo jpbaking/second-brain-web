@@ -3,6 +3,14 @@ import { ConfigError, loadConfig } from './config.js'
 import { MigrationError, prepareDatabases } from './migrations.js'
 import { ProviderProvisioningError, provisionProviderProfiles } from './providers/provisioning.js'
 import { assertSecretPermissions, SecretPermissionError } from './security/secret-permissions.js'
+import { configureLogging } from './logging.js'
+
+try {
+  configureLogging()
+} catch (err) {
+  process.stderr.write(`logging setup error: ${err instanceof Error ? err.stack ?? err.message : String(err)}\n`)
+  process.exit(1)
+}
 
 let config
 try {
