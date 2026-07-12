@@ -1,6 +1,6 @@
 # STATUS — single source of truth
 
-Updated: 2026-07-12 (no active milestone; milestone 49 complete)
+Updated: 2026-07-12 (active: milestone 50 — composer model menu)
 
 ## Where we are
 
@@ -25,7 +25,9 @@ Updated: 2026-07-12 (no active milestone; milestone 49 complete)
 
 ## Active milestone
 
-None. Latest: milestone 49 (chat-scoped file upload) — composer paperclip,
+Milestone 50 — composer model menu (thinking + effort): docs/progress/milestones/milestone-50-composer-model-menu.md, next item m50-01.
+
+Previous: milestone 49 (chat-scoped file upload) — composer paperclip,
 files under `dataDir/chat-uploads/<sessionId>/`, images → SDK `userImages`
 data URIs, other files → `userFiles` paths, cleanup on session delete/clear.
 m49-02 also fixed the Cline `send` envelope (single `{sessionId, prompt}`
@@ -33,7 +35,7 @@ object). Milestones 48–49 need `./compose-helper.sh up` (rebuild) to go live.
 
 ## Next step
 
-Await direction.
+Work milestone 50, item m50-01.
 
 ## Read before working
 
