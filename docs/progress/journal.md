@@ -107,3 +107,8 @@ clean: 2 files / 15 tests.
 - 01:35 DONE m72-02: Cline initialisation stages and start/send/subscribe/
   unsubscribe/read/stop now throw ClineAgentRunnerError with safe context and
   chained causes; verified by 3 files / 12 tests, server lint, and server build.
+
+## 2026-07-13 01:35 — session end
+m72-01 committed as 7b3cecf and m72-02 as b16d102. Tree clean; milestone 72
+remains active. Handoff: begin m72-03 with agent/session.ts, chat-store.ts,
+workflows, approvals, and scheduler only.
