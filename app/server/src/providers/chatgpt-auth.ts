@@ -52,7 +52,7 @@ export async function freshenChatGptProfileSecret (
   if (secret === undefined) {
     throw new ChatGptAuthError({
       message: 'chatgpt profile has no stored credentials; run ./configure to log in.',
-      data: safeErrorData({ operation: 'freshen', resourceId: profileId }),
+      data: safeErrorData({ code: 'CHATGPT_AUTH_ERROR', operation: 'freshen', resourceId: profileId }),
     })
   }
   const current = parseChatGptCredentials(decryptSecret(secret.ciphertext, env))
@@ -63,14 +63,14 @@ export async function freshenChatGptProfileSecret (
   } catch (err) {
     throw new ChatGptAuthError({
       message: 'could not refresh the ChatGPT access token.',
-      data: safeErrorData({ operation: 'freshen', resourceId: profileId }),
+      data: safeErrorData({ code: 'CHATGPT_AUTH_ERROR', operation: 'freshen', resourceId: profileId }),
       cause: asError(err),
     })
   }
   if (fresh === null) {
     throw new ChatGptAuthError({
       message: 'the ChatGPT login has expired; run ./configure to log in again.',
-      data: safeErrorData({ operation: 'freshen', resourceId: profileId }),
+      data: safeErrorData({ code: 'CHATGPT_AUTH_ERROR', operation: 'freshen', resourceId: profileId }),
     })
   }
   if (fresh.access !== current.access || fresh.refresh !== current.refresh) {

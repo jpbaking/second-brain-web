@@ -159,3 +159,10 @@ provider support (backlog + implementation). Milestone 72 paused at m72-03.
   getValidOpenAICodexCredentials, persists rotated blobs (rotateProfileSecret),
   hooked into ensureLive for chatgpt profiles; verified by chatgpt-auth.test.ts
   6 green + full server suite 410 green + lint clean.
+- 02:15 STARTED m73-04: configure CLI chatgpt OAuth login (loginOpenAICodex
+  with manual-code fallback) + catalog model pick + encrypted blob save.
+- 02:21 DONE m73-04: configure adds/edits chatgpt via loginOpenAICodex (URL +
+  manual code fallback), catalog model picker (gpt-5.5 family), encrypted
+  blob into providers.yaml. Verified by scripted runs (menu [OAuth] label,
+  catalog model switch, abandoned login leaves state untouched) + server
+  suite 410 green ×2 + lint + build. Full live login deferred to m73-06.

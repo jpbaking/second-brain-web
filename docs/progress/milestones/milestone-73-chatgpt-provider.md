@@ -59,7 +59,7 @@ OAuth handled by `./configure` (not compose-helper — see design notes).
   tests fake it); when rotated, re-encrypt and persist to the profile secret.
   Verify: `npm test --workspace server -- ` new test file green (rotated blob
   persisted, expired-refresh error surfaces as a typed AppError).
-- [ ] **m73-04 — configure CLI ChatGPT login.** `configure` add/edit offers
+- [x] **m73-04 — configure CLI ChatGPT login.** `configure` add/edit offers
   `chatgpt`: runs `loginOpenAICodex` (print URL + manual code fallback, no
   callback-server dependency), picks the model from the SDK catalog
   (`filterOpenAICodexModels`), writes the encrypted blob into

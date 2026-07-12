@@ -4,6 +4,8 @@ import { chmodSync, existsSync, mkdirSync, readFileSync, rmSync, writeFileSync }
 import path from 'node:path'
 import * as readline from 'node:readline'
 import { Writable } from 'node:stream'
+import { loginOpenAICodex } from '@cline/core'
+import { filterOpenAICodexModels, getModelsForProvider } from '@cline/llms'
 import { encryptSecret } from '../secrets/crypto.js'
 import { listModels } from '../providers/models.js'
 import { LOG_LEVELS } from '../logging.js'
@@ -176,18 +178,75 @@ async function selectOption (label: string, options: readonly string[], current?
   }
 }
 
+// ---- chatgpt OAuth ----------------------------------------------------------
+
+/**
+ * ChatGPT subscription sign-in via the SDK's OpenAI Codex OAuth flow (m73).
+ * Returns the credential blob to encrypt into the provider entry, or null
+ * when the login fails or is abandoned. The manual code prompt keeps the flow
+ * usable when the localhost callback cannot be reached (Docker, SSH).
+ */
+async function loginChatGpt (): Promise<string | null> {
+  say('  ChatGPT uses your subscription — sign in with the browser link below.')
+  try {
+    const credentials = await loginOpenAICodex({
+      onAuth: (info: { url: string, instructions?: string }) => {
+        say('  Open this URL in a browser to authorise:')
+        say(`    ${info.url}`)
+        if (info.instructions !== undefined) say(`  ${info.instructions}`)
+      },
+      onProgress: (message: string) => say(`  ${message}`),
+      onPrompt: async (prompt: { message: string, defaultValue?: string }) => await askDefault(`  ${prompt.message}`, prompt.defaultValue ?? ''),
+      onManualCodeInput: async () => await askRequired('  Paste the authorisation code: '),
+    })
+    return JSON.stringify({
+      access: credentials.access,
+      refresh: credentials.refresh,
+      expires: credentials.expires,
+      ...(credentials.accountId !== undefined ? { accountId: credentials.accountId } : {}),
+    })
+  } catch (err) {
+    say(`  ChatGPT login failed: ${err instanceof Error ? err.message : String(err)}`)
+    return null
+  }
+}
+
+/** ChatGPT model ids from the SDK catalog; empty when the catalog is unavailable. */
+async function chatGptModels (): Promise<string[]> {
+  try {
+    return Object.keys(filterOpenAICodexModels(await getModelsForProvider('openai-codex')))
+  } catch {
+    return []
+  }
+}
+
+async function pickChatGptModel (current?: string): Promise<string> {
+  const models = await chatGptModels()
+  if (models.length === 0) {
+    say('  Could not load the ChatGPT model catalog — enter one manually.')
+    return await askRequired('  Model: ')
+  }
+  return await selectFromList(models, current)
+}
+
 // ---- provider actions -------------------------------------------------------
 
 async function addProvider (state: State): Promise<void> {
   const provider = await selectOption('Provider', KNOWN_PROVIDERS)
   const baseUrl = provider === 'openai-compatible' ? await askRequired('  Base URL: ') : ''
-  const apiKey = provider === 'claude-code' ? '' : await askSecret('  API key (blank for none): ')
+  let chatGptBlob: string | null = null
+  if (provider === 'chatgpt') {
+    chatGptBlob = await loginChatGpt()
+    if (chatGptBlob === null) { say('  Provider not added — ChatGPT needs a completed login.'); return }
+  }
+  const apiKey = provider === 'claude-code' || provider === 'chatgpt' ? '' : await askSecret('  API key (blank for none): ')
 
   let model: string
   if (provider === 'claude-code') {
     say('  Claude Code uses the subscription authenticated inside the running container.')
     model = await askDefault('  Model', 'sonnet')
-  } else if (apiKey !== '') model = await pickModel(provider, baseUrl, apiKey)
+  } else if (provider === 'chatgpt') model = await pickChatGptModel()
+  else if (apiKey !== '') model = await pickModel(provider, baseUrl, apiKey)
   else model = await askRequired('  Model: ')
 
   let id = ''
@@ -202,7 +261,8 @@ async function addProvider (state: State): Promise<void> {
 
   const entry: ProviderEntry = { display_name: displayName, provider, model }
   if (baseUrl !== '') entry.base_url = baseUrl
-  if (apiKey !== '') entry.key = encryptSecret(apiKey, { SECOND_BRAIN_WEB_SECRETS_KEY: state.secretsKey })
+  if (chatGptBlob !== null) entry.key = encryptSecret(chatGptBlob, { SECOND_BRAIN_WEB_SECRETS_KEY: state.secretsKey })
+  else if (apiKey !== '') entry.key = encryptSecret(apiKey, { SECOND_BRAIN_WEB_SECRETS_KEY: state.secretsKey })
   state.providers[id] = entry
   say(`  Added provider "${id}".`)
 }
@@ -213,8 +273,9 @@ async function editProvider (state: State, id: string): Promise<void> {
     if (entry === undefined) return
     say('')
     const usesCli = entry.provider === 'claude-code'
-    say(`  Editing ${providerSummary(id, entry)}${usesCli ? '  [CLI auth]' : entry.key !== undefined ? '  [key set]' : '  [no key]'}`)
-    const action = await ask(`    n) rename  d) display name  m) change model${usesCli ? '' : '  a) change API key'}  x) delete  b) back: `)
+    const usesOauth = entry.provider === 'chatgpt'
+    say(`  Editing ${providerSummary(id, entry)}${usesCli ? '  [CLI auth]' : usesOauth ? '  [OAuth]' : entry.key !== undefined ? '  [key set]' : '  [no key]'}`)
+    const action = await ask(`    n) rename  d) display name  m) change model${usesCli ? '' : usesOauth ? '  a) log in again' : '  a) change API key'}  x) delete  b) back: `)
     if (action === 'b' || action === '' || closed) return
     if (action === 'x') {
       if (await confirm(`    Delete provider "${id}"?`, 'n')) { delete state.providers[id]; say(`    Deleted "${id}".`); return }
@@ -230,6 +291,8 @@ async function editProvider (state: State, id: string): Promise<void> {
       if (next !== id) { state.providers[next] = entry; delete state.providers[id]; id = next }
     } else if (action === 'd') {
       entry.display_name = await askDefault('    Display name', entry.display_name ?? id)
+    } else if (action === 'm' && usesOauth) {
+      entry.model = await pickChatGptModel(entry.model)
     } else if (action === 'm') {
       const listed = !usesCli && await confirm('    List models from the provider? (re-enter the API key)', 'n')
       if (listed) {
@@ -237,6 +300,12 @@ async function editProvider (state: State, id: string): Promise<void> {
         entry.model = key === '' ? await askDefault('    Model', entry.model) : await pickModel(entry.provider, entry.base_url ?? '', key, entry.model)
       } else {
         entry.model = await askDefault('    Model', entry.model)
+      }
+    } else if (action === 'a' && usesOauth) {
+      const blob = await loginChatGpt()
+      if (blob === null) { say('    Kept the existing login.') } else {
+        entry.key = encryptSecret(blob, { SECOND_BRAIN_WEB_SECRETS_KEY: state.secretsKey })
+        say('    Updated the ChatGPT login.')
       }
     } else if (action === 'a' && !usesCli) {
       const key = await askSecret('    New API key (blank to remove): ')
@@ -317,7 +386,7 @@ function renderMenu (state: State): string[] {
     ids.forEach((id, i) => {
       const e = state.providers[id]
       if (e === undefined) return
-      lines.push(`  ${i + 1}) ${providerSummary(id, e)}${e.provider === 'claude-code' ? '  [CLI auth]' : e.key !== undefined ? '  [key set]' : '  [no key]'}`)
+      lines.push(`  ${i + 1}) ${providerSummary(id, e)}${e.provider === 'claude-code' ? '  [CLI auth]' : e.provider === 'chatgpt' ? '  [OAuth]' : e.key !== undefined ? '  [key set]' : '  [no key]'}`)
     })
   }
   lines.push('')
