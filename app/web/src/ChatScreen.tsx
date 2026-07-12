@@ -287,7 +287,7 @@ const markdownComponents = {
 
 // Transcript table: clicking opens it in the zoom modal. The already-built
 // React children are reused as the modal's content.
-function ZoomableTable ({ children }: { children?: ReactNode }) {
+function ZoomableTable ({ children, zoomable = true }: { children?: ReactNode, zoomable?: boolean }) {
   const openZoom = useContext(ZoomContext)
   const tableRef = useRef<HTMLTableElement>(null)
   const [copied, setCopied] = useState(false)
@@ -338,9 +338,9 @@ function ZoomableTable ({ children }: { children?: ReactNode }) {
       </button>
       <table
         ref={tableRef}
-        style={{ cursor: 'zoom-in' }}
-        title='Click to expand'
-        onClick={() => openZoom({ kind: 'table', children })}
+        style={zoomable ? { cursor: 'zoom-in' } : undefined}
+        title={zoomable ? 'Click to expand' : undefined}
+        onClick={zoomable ? () => openZoom({ kind: 'table', children }) : undefined}
       >
         {children}
       </table>
@@ -712,7 +712,7 @@ export function ChatScreen ({ mode }: { mode: ChatMode }) {
           <div className={`modal-body chat-zoom-body${zoom.kind !== 'mermaid' ? ' prose' : ''}`}>
             {zoom.kind === 'mermaid' && <Mermaid chart={zoom.chart} pannable />}
             {zoom.kind === 'code' && <CodeBlock code={zoom.code} lang={zoom.lang} />}
-            {zoom.kind === 'table' && <table>{zoom.children}</table>}
+            {zoom.kind === 'table' && <ZoomableTable zoomable={false}>{zoom.children}</ZoomableTable>}
           </div>
         </dialog>
       )}

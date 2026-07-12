@@ -90,3 +90,6 @@ Excel-compatible TSV from one control; rebuild needed to go live.
 ## 2026-07-12 12:53 — session start
 Tree clean at 59f46f8. Principal go: add the same rich/TSV table copy control
 to the expanded table modal. Opened milestone 55; next m55-01.
+- 12:53 STARTED m55-01: reuse the table copy component in the expanded modal.
+- 12:53 DONE m55-01: expanded tables reuse the rich HTML/TSV copy control
+  without reopening the modal. Verified by web lint and production build.

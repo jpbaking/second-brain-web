@@ -992,7 +992,8 @@
    the vertical gap matches the horizontal one. */
 .chat-zoom-body .chat-codeblock pre,
 .chat-zoom-body .mermaid-diagram,
-.chat-zoom-body > table {
+.chat-zoom-body > table,
+.chat-zoom-body > .chat-table-wrap > table {
   margin-block: 0;
 }
 
