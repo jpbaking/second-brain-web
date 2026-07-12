@@ -44,7 +44,7 @@ exceptions with complete `cause` chains and safe structured context.
   redaction, and chained-stack tests.
   Verify: `cd app && npm test --workspace server -- errors.test.ts agent-runner.test.ts && npm run lint --workspace server && npm run build --workspace server`
 
-- [ ] **m72-02 — Cline adapter boundary.** Add `ClineAgentRunnerError` beneath
+- [x] **m72-02 — Cline adapter boundary.** Add `ClineAgentRunnerError` beneath
   `AgentRunnerError`; wrap `ensureCore`, `start`, `send`, `subscribe` (including
   unsubscribe), `readMessages`, and `stop` with safe `operation`/`stage` data.
   Preserve normal no-op outcomes (missing vault; stop before core creation),

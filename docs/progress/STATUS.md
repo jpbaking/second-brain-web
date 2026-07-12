@@ -1,6 +1,6 @@
 # STATUS — single source of truth
 
-Updated: 2026-07-13 (milestone 72 active; m72-01 complete)
+Updated: 2026-07-13 (milestone 72 active; m72-02 complete)
 
 ## Where we are
 
@@ -31,13 +31,13 @@ Updated: 2026-07-13 (milestone 72 active; m72-01 complete)
 
 ## Active milestone
 
-**Milestone 72 — repository-wide exception boundaries.** m72-01 established
-safe metadata/wrapping helpers and the generic AgentRunnerError boundary.
+**Milestone 72 — repository-wide exception boundaries.** m72-01/02 established
+safe wrapping plus AgentRunnerError and ClineAgentRunnerError boundaries.
 **Milestones 62–71 need `./compose-helper.sh up` (rebuild) to go live.**
 
 ## Next step
 
-Implement **m72-02**: the `ClineAgentRunnerError` adapter boundary.
+Implement **m72-03**: agent services, chat persistence, workflows, scheduler.
 
 ## Read before working
 

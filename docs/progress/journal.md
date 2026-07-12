@@ -102,3 +102,8 @@ clean: 2 files / 15 tests.
 - 01:32 DONE m72-01: added runtime-allow-listed SafeErrorData, cause-preserving
   wrapError, and AgentRunnerError for unsupported provider resolution;
   verified by 2 files / 17 tests, server lint, and server build clean.
+- 01:33 STARTED m72-02: add the ClineAgentRunnerError boundary and injectable
+  SDK seam for deterministic operation/stage/cause tests without a live model.
+- 01:35 DONE m72-02: Cline initialisation stages and start/send/subscribe/
+  unsubscribe/read/stop now throw ClineAgentRunnerError with safe context and
+  chained causes; verified by 3 files / 12 tests, server lint, and server build.
