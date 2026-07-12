@@ -36,7 +36,7 @@ function cookieValue (h: string | string[] | undefined, name: string): string | 
   return list.find(x => x.startsWith(`${name}=`))?.slice(name.length + 1).split(';')[0]
 }
 
-async function authedApp (): Promise<{ app: FastifyInstance, cookie: string, config: AppConfig }> {
+async function authedApp (): Promise<{ app: FastifyInstance, cookie: string, config: AppConfig, runner: FakeRunner }> {
   const root = mkdtempSync(path.join(tmpdir(), 'sbw-chat-uploads-'))
   scratch.push(root)
   const config = loadConfig({
@@ -47,7 +47,8 @@ async function authedApp (): Promise<{ app: FastifyInstance, cookie: string, con
   prepareDatabases(config.dataDir)
   const { password, state } = await generateOwnerAuth()
   writeOwnerAuth(config.dataDir, state, { SECOND_BRAIN_WEB_SECRETS_KEY: config.secretsKey })
-  const app = buildApp(config, { agentRunner: new FakeRunner() })
+  const runner = new FakeRunner()
+  const app = buildApp(config, { agentRunner: runner })
   apps.push(app)
   const pw = await app.inject({ method: 'POST', url: '/api/auth/password', payload: { password } })
   const challenge = cookieValue(pw.headers['set-cookie'], CHALLENGE_COOKIE)
@@ -60,7 +61,7 @@ async function authedApp (): Promise<{ app: FastifyInstance, cookie: string, con
   })
   const cookie = `${SESSION_COOKIE}=${cookieValue(totp.headers['set-cookie'], SESSION_COOKIE)}`
   seedDefaultProvider(config.dataDir)
-  return { app, cookie, config }
+  return { app, cookie, config, runner }
 }
 
 async function createSession (app: FastifyInstance, cookie: string): Promise<string> {
@@ -179,6 +180,58 @@ describe('chat attachment uploads', () => {
     expect(existsSync(path.join(sessionUploadsDir(config.dataDir, id), attachment.id))).toBe(false)
     const again = await app.inject({ method: 'DELETE', url: `/api/chat/sessions/${id}/uploads/${attachment.id}`, headers: { cookie } })
     expect(again.statusCode).toBe(404)
+  })
+})
+
+describe('messages with attachments', () => {
+  it('passes images as data URIs and files as paths to the runner, and records names on the user_message event', async () => {
+    const { app, cookie, config, runner } = await authedApp()
+    const id = await createSession(app, cookie)
+    const body = multipart([
+      { name: 'notes.txt', content: 'hello' },
+      { name: 'pixel.png', content: 'PNGDATA', type: 'image/png' },
+    ])
+    const upload = await app.inject({
+      method: 'POST',
+      url: `/api/chat/sessions/${id}/uploads`,
+      headers: { cookie, 'content-type': body.contentType },
+      payload: body.payload,
+    })
+    const { attachments } = upload.json() as UploadResponse
+
+    const send = await app.inject({
+      method: 'POST',
+      url: `/api/chat/sessions/${id}/messages`,
+      headers: { cookie },
+      payload: { text: 'look at these', attachmentIds: attachments.map(a => a.id) },
+    })
+    expect(send.statusCode).toBe(202)
+    await new Promise(resolve => setTimeout(resolve, 50))
+
+    expect(runner.starts).toHaveLength(1)
+    const start = runner.starts[0]!
+    expect(start.prompt).toBe('look at these')
+    expect(start.userImages).toEqual([`data:image/png;base64,${Buffer.from('PNGDATA').toString('base64')}`])
+    expect(start.userFiles).toEqual([path.join(sessionUploadsDir(config.dataDir, id), attachments[0]!.id, 'notes.txt')])
+
+    const events = await app.inject({ method: 'GET', url: `/api/chat/sessions/${id}`, headers: { cookie } })
+    const userMessage = (events.json() as { events: Array<{ type: string, payload: unknown }> }).events.find(e => e.type === 'user_message')
+    expect(userMessage?.payload).toMatchObject({
+      text: 'look at these',
+      attachments: [{ name: 'notes.txt', kind: 'file' }, { name: 'pixel.png', kind: 'image' }],
+    })
+  })
+
+  it('rejects a message referencing an unknown attachment', async () => {
+    const { app, cookie } = await authedApp()
+    const id = await createSession(app, cookie)
+    const res = await app.inject({
+      method: 'POST',
+      url: `/api/chat/sessions/${id}/messages`,
+      headers: { cookie },
+      payload: { text: 'hi', attachmentIds: ['0123456789abcdef'] },
+    })
+    expect(res.statusCode).toBe(400)
   })
 })
 

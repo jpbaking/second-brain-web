@@ -16,7 +16,7 @@ deleted. Backlog entry: "Chat-scoped file upload (attachments)" (SDK findings
   `file`); `DELETE /api/chat/sessions/:id/uploads/:attachmentId` removes a
   pending attachment.
   Verify: `cd app && npm test --workspace server -- chat-uploads.test.ts`
-- [ ] **m49-02** Wire attachments through the agent: message POST accepts
+- [x] **m49-02** Wire attachments through the agent: message POST accepts
   `attachmentIds`; `AgentSessionService.sendMessage` resolves them to
   `userImages` (data URI) / `userFiles` (absolute path), passes them through
   `AgentRunner.start`/`send` (and the Cline adapter maps them onto the SDK's

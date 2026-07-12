@@ -2,6 +2,8 @@ import { openCoreDb } from '../db.js'
 import { resolveDefaultSnapshot, resolveSnapshot } from '../providers/snapshot.js'
 import { vaultWorkspacePath } from '../vault/config.js'
 import { AgentSessionService } from '../agent/session.js'
+import { imageDataUri, resolveAttachments } from './uploads.js'
+import type { MessageAttachments } from '../agent/session.js'
 import { WorkflowNotFoundError, expandWorkflow, listWorkflows } from '../agent/workflows.js'
 import { closeSession, getSession, listSessions, readEventsSince, renameSession, setSessionPinned } from '../agent/chat-store.js'
 import type { AgentRunner } from '../agent/runner.js'
@@ -138,11 +140,32 @@ export function registerChatRoutes (app: FastifyInstance, config: AppConfig, run
 
   app.post('/api/chat/sessions/:id/messages', async (req, reply) => {
     const id = (req.params as { id: string }).id
-    const text = str((req.body as { text?: unknown })?.text)
+    const body = (req.body ?? {}) as { text?: unknown, attachmentIds?: unknown }
+    const text = str(body.text)
     if (text === undefined) return await reply.code(400).send({ error: 'text is required' })
     if (getSession(db, id) === undefined) return await reply.code(404).send({ error: 'session not found' })
+
+    // Chat-scoped attachments (m49): resolve pending upload ids into SDK
+    // userImages (data URIs) and userFiles (paths) before dispatch.
+    let attachments: MessageAttachments | undefined
+    if (Array.isArray(body.attachmentIds) && body.attachmentIds.length > 0) {
+      if (!body.attachmentIds.every(v => typeof v === 'string')) {
+        return await reply.code(400).send({ error: 'attachmentIds must be strings' })
+      }
+      try {
+        const resolved = await resolveAttachments(config.dataDir, id, body.attachmentIds)
+        attachments = {
+          userImages: await Promise.all(resolved.filter(a => a.kind === 'image').map(imageDataUri)),
+          userFiles: resolved.filter(a => a.kind === 'file').map(a => a.absolutePath),
+          names: resolved.map(a => ({ name: a.name, kind: a.kind })),
+        }
+      } catch (err) {
+        return await reply.code(400).send({ error: err instanceof Error ? err.message : 'invalid attachments' })
+      }
+    }
+
     try {
-      const result = await service.sendMessage(id, text)
+      const result = await service.sendMessage(id, text, attachments)
       return await reply.code(202).send(result)
     } catch (err) {
       return await reply.code(502).send({ error: err instanceof Error ? err.message : 'agent send failed' })

@@ -67,6 +67,8 @@ export class ClineAgentRunner implements AgentRunner {
     const core = await this.ensureCore()
     const result = await core.start({
       prompt: input.prompt,
+      ...(input.userImages !== undefined && input.userImages.length > 0 ? { userImages: input.userImages } : {}),
+      ...(input.userFiles !== undefined && input.userFiles.length > 0 ? { userFiles: input.userFiles } : {}),
       ...(input.initialMessages !== undefined ? { initialMessages: input.initialMessages } : {}),
       ...(input.capabilities !== undefined ? { capabilities: input.capabilities } : {}),
       ...(input.toolPolicies !== undefined ? { toolPolicies: input.toolPolicies } : {}),
@@ -75,9 +77,17 @@ export class ClineAgentRunner implements AgentRunner {
     return { sessionId: result.sessionId, messagesPath: result.messagesPath }
   }
 
-  async send (sessionId: string, input: { type: string, text?: string }): Promise<void> {
+  async send (sessionId: string, input: { type: string, text?: string, userImages?: string[], userFiles?: string[] }): Promise<void> {
     const core = await this.ensureCore()
-    await core.send(sessionId, input as Parameters<ClineCore['send']>[1])
+    // The SDK's send (RuntimeHost.runTurn) takes a single input object keyed
+    // by sessionId + prompt — not the (sessionId, {type, text}) pair our
+    // AgentRunner interface exposes.
+    await core.send({
+      sessionId,
+      prompt: input.text ?? '',
+      ...(input.userImages !== undefined && input.userImages.length > 0 ? { userImages: input.userImages } : {}),
+      ...(input.userFiles !== undefined && input.userFiles.length > 0 ? { userFiles: input.userFiles } : {}),
+    } as unknown as Parameters<ClineCore['send']>[0])
   }
 
   subscribe (listener: (event: unknown) => void): () => void {

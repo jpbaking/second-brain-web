@@ -132,6 +132,10 @@ export interface AgentStartInput {
     enableAgentTeams?: boolean
   }
   prompt?: string
+  /** Chat attachments (m49): image data URIs → SDK image blocks. */
+  userImages?: string[]
+  /** Chat attachments (m49): file paths whose text the runtime reads in. */
+  userFiles?: string[]
   initialMessages?: unknown[]
   /** Approval + policy wiring; resolvers must be installed before start (m00-06). */
   capabilities?: AgentCapabilities
@@ -145,7 +149,7 @@ export interface AgentStartResult {
 
 export interface AgentRunner {
   start: (input: AgentStartInput) => Promise<AgentStartResult>
-  send: (sessionId: string, input: { type: string, text?: string }) => Promise<void>
+  send: (sessionId: string, input: { type: string, text?: string, userImages?: string[], userFiles?: string[] }) => Promise<void>
   subscribe: (listener: (event: unknown) => void) => () => void
   readMessages: (sessionId: string) => Promise<unknown[]>
   stop: (sessionId: string) => Promise<void>

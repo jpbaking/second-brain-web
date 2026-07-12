@@ -32,6 +32,16 @@ export interface CapturedConfig {
   headers: Record<string, string> | null
 }
 
+/** Resolved chat attachments for one message (m49). */
+export interface MessageAttachments {
+  /** Image attachments as data URIs (SDK userImages). */
+  userImages: string[]
+  /** Non-image attachments as absolute file paths (SDK userFiles). */
+  userFiles: string[]
+  /** Display names persisted on the user_message event, in upload order. */
+  names: Array<{ name: string, kind: 'image' | 'file' }>
+}
+
 export interface AgentSessionOptions {
   /** Resolve the (decrypted, in-memory) provider snapshot for a profile id, or the default when null. */
   snapshotFor: (profileId: string | null) => ProviderSnapshot | undefined
@@ -498,9 +508,10 @@ export class AgentSessionService {
 
   /**
    * Ensure a live SDK session for this chat, starting or rehydrating as needed.
-   * Returns the live SDK session id. `prompt` is passed to a fresh start only.
+   * Returns the live SDK session id. `prompt` (and any `media` attachments)
+   * are passed to a fresh start only.
    */
-  private async ensureLive (chatSessionId: string, prompt?: string): Promise<string> {
+  private async ensureLive (chatSessionId: string, prompt?: string, media?: { userImages?: string[], userFiles?: string[] }): Promise<string> {
     const existing = this.live.get(chatSessionId)
     if (existing !== undefined) return existing
 
@@ -522,10 +533,10 @@ export class AgentSessionService {
         if (session.compactionSummary !== null) {
           initialMessages = [{ role: 'user', content: `SYSTEM: Resuming session from compacted context:\n\n<compaction_summary>\n${session.compactionSummary}\n</compaction_summary>` }]
         }
-        const result = await this.runner.start({ config, initialMessages, ...approvalWiring, ...(prompt !== undefined ? { prompt } : {}) })
+        const result = await this.runner.start({ config, initialMessages, ...approvalWiring, ...(prompt !== undefined ? { prompt } : {}), ...media })
         sdkSessionId = result.sessionId
       } else {
-        const result = await this.runner.start({ config, ...approvalWiring, ...(prompt !== undefined ? { prompt } : {}) })
+        const result = await this.runner.start({ config, ...approvalWiring, ...(prompt !== undefined ? { prompt } : {}), ...media })
         sdkSessionId = result.sessionId
       }
     } finally {
@@ -554,17 +565,27 @@ export class AgentSessionService {
     return sdkSessionId
   }
 
-  /** Send a user message, starting or rehydrating the SDK session if needed. */
-  async sendMessage (chatSessionId: string, text: string): Promise<{ accepted: true }> {
+  /**
+   * Send a user message, starting or rehydrating the SDK session if needed.
+   * `attachments` (m49) carries chat-scoped uploads already resolved by the
+   * route: image data URIs for the SDK's userImages, file paths for its
+   * userFiles, and display names persisted on the user_message event.
+   */
+  async sendMessage (chatSessionId: string, text: string, attachments?: MessageAttachments): Promise<{ accepted: true }> {
     // emitEvent (not bare appendEventBatched) so connected SSE clients see the user's
     // own message live, not only on replay.
-    this.emitEvent(chatSessionId, 'user_message', { text })
+    const names = attachments?.names ?? []
+    this.emitEvent(chatSessionId, 'user_message', { text, ...(names.length > 0 ? { attachments: names } : {}) })
     const wasLive = this.live.has(chatSessionId)
+    const media = {
+      ...(attachments !== undefined && attachments.userImages.length > 0 ? { userImages: attachments.userImages } : {}),
+      ...(attachments !== undefined && attachments.userFiles.length > 0 ? { userFiles: attachments.userFiles } : {}),
+    }
 
     const work = async () => {
       try {
-        const sdkSessionId = await this.ensureLive(chatSessionId, wasLive ? undefined : text)
-        if (wasLive) await this.runner.send(sdkSessionId, { type: 'user_message', text })
+        const sdkSessionId = await this.ensureLive(chatSessionId, wasLive ? undefined : text, wasLive ? undefined : media)
+        if (wasLive) await this.runner.send(sdkSessionId, { type: 'user_message', text, ...media })
       } catch (err) {
         this.emitEvent(chatSessionId, 'status', { text: `Error: ${err instanceof Error ? err.message : String(err)}` })
         this.emitEvent(chatSessionId, 'ended', null)
