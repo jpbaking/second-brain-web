@@ -12,7 +12,21 @@ import type { DatabaseSync } from 'node:sqlite'
  */
 
 export type ChatSessionStatus = 'active' | 'closed'
-export type ApprovalPreset = 'read-only' | 'normal' | 'high-trust'
+/**
+ * Approval modes (m53). Manual: only vault reads + safe commands auto-run.
+ * Normal: vault operations auto-run (git-reversible), destructive/outside
+ * ask. Auto: everything in the vault, destructive included. Chat: no vault
+ * access without asking. Legacy values map via {@link normalisePreset}.
+ */
+export type ApprovalPreset = 'manual' | 'normal' | 'auto' | 'chat'
+export const APPROVAL_PRESETS = ['manual', 'normal', 'auto', 'chat'] as const
+
+/** Accept current or legacy preset names ('read-only'→manual, 'high-trust'→auto). */
+export function normalisePreset (value: unknown): ApprovalPreset | undefined {
+  if (value === 'read-only') return 'manual'
+  if (value === 'high-trust') return 'auto'
+  return (APPROVAL_PRESETS as readonly string[]).includes(value as string) ? value as ApprovalPreset : undefined
+}
 /** SDK reasoning-effort levels (@cline/shared REASONING_EFFORT_RATIOS). */
 export const REASONING_EFFORTS = ['none', 'minimal', 'low', 'medium', 'high', 'xhigh'] as const
 export type ReasoningEffort = typeof REASONING_EFFORTS[number]
@@ -80,7 +94,7 @@ function toSession (row: SessionRow): ChatSession {
     providerProfileId: row.provider_profile_id,
     sdkSessionId: row.sdk_session_id,
     status: row.status === 'closed' ? 'closed' : 'active',
-    approvalPreset: (row.approval_preset as ApprovalPreset) || 'normal',
+    approvalPreset: normalisePreset(row.approval_preset) ?? 'normal',
     thinking: row.thinking === 1,
     reasoningEffort: (row.reasoning_effort as ReasoningEffort | null) ?? null,
     pinned: row.pinned === 1,

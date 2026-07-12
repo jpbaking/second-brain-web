@@ -17,7 +17,7 @@ Invariants in every mode: the `library/` originals guard still hard-denies,
 and `.git` is protected from writes/destructive commands (also stated in the
 system prompt).
 
-- [ ] **m53-01** Policy engine: new `ApprovalPreset` values with legacy
+- [x] **m53-01** Policy engine: new `ApprovalPreset` values with legacy
   mapping (`read-only`→`manual`, `high-trust`→`auto`), helpers (safe read
   command, destructive command, outside-vault path/command, `.git`
   protection), and the mode matrix in `evaluateTool`; existing tests updated.

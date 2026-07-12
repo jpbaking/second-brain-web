@@ -82,7 +82,7 @@ describe('AgentSessionService approvals', () => {
     const db = freshDb()
     const { svc, chatId } = await startedSession(db, new CapturingRunner())
     const pending = svc.requestToolApproval({
-      sessionId: 'sdk-1', toolCallId: 't2', toolName: 'editor', input: { path: 'notes/scratch.md' },
+      sessionId: 'sdk-1', toolCallId: 't2', toolName: 'editor', input: { path: '/outside/scratch.md' },
     })
     // The request is streamed but not yet resolved.
     svc.flushEvents()
@@ -110,13 +110,13 @@ describe('AgentSessionService approvals', () => {
 import { readLock } from '../src/vault/lock.js'
 
 describe('AgentSessionService locks', () => {
-  it('acquires lock for high-trust mutating tool and releases on end', async () => {
+  it('acquires lock for auto-mode mutating tool and releases on end', async () => {
     const db = freshDb()
     const svc = new AgentSessionService(db, new CapturingRunner(), { snapshotFor: () => snap(), vaultCwd: '/vault' })
-    const session = svc.create({ title: 'H', approvalPreset: 'high-trust' })
+    const session = svc.create({ title: 'H', approvalPreset: 'auto' })
     await svc.sendMessage(session.id, 'hi')
 
-    // high-trust allows mutating tools, which triggers lock acquisition
+    // auto mode allows mutating tools, which triggers lock acquisition
     const decision = await svc.requestToolApproval({
       sessionId: 'sdk-1', toolCallId: 't1', toolName: 'editor', input: { path: 'notes/scratch.md' }
     })
@@ -139,11 +139,11 @@ describe('AgentSessionService locks', () => {
     const svc = new AgentSessionService(db, new CapturingRunner(), { snapshotFor: () => snap(), vaultCwd: '/vault' })
 
     // session 1
-    const s1 = svc.create({ title: '1', approvalPreset: 'high-trust' })
+    const s1 = svc.create({ title: '1', approvalPreset: 'auto' })
     await svc.sendMessage(s1.id, 'hi')
 
     // session 2
-    const s2 = svc.create({ title: '2', approvalPreset: 'high-trust' })
+    const s2 = svc.create({ title: '2', approvalPreset: 'auto' })
     // We need to inject a runner that maps to sdk-2 for s2.
     // The CapturingRunner returns sdk-X where X increments.
     await svc.sendMessage(s2.id, 'hi') // this gets sdk-2
@@ -193,7 +193,7 @@ describe('approval route', () => {
     await app.inject({ method: 'POST', url: `/api/chat/sessions/${id}/messages`, headers: { cookie }, payload: { text: 'hi' } })
 
     // The SDK asks for approval of an ask-tool; the promise parks.
-    const pending = runner.approval?.requestToolApproval({ sessionId: 'sdk-1', toolCallId: 'call-9', toolName: 'editor', input: { path: 'notes/x.md' } })
+    const pending = runner.approval?.requestToolApproval({ sessionId: 'sdk-1', toolCallId: 'call-9', toolName: 'editor', input: { path: '/outside/x.md' } })
     expect(pending).toBeDefined()
 
     const res = await app.inject({ method: 'POST', url: `/api/chat/sessions/${id}/approvals/call-9`, headers: { cookie }, payload: { approved: true } })

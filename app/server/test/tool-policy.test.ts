@@ -5,6 +5,10 @@ import {
   isMoveOnlyCommand,
   normaliseVaultPath,
   summariseToolInput,
+  isSafeReadCommand,
+  isDestructiveCommand,
+  isOutsideVaultPath,
+  commandReachesOutsideVault,
 } from '../src/agent/tool-policy.js'
 
 describe('normaliseVaultPath', () => {
@@ -80,31 +84,82 @@ describe('evaluateTool — the guard decision', () => {
     expect(evaluateTool({ toolName: 'search', input: { query: 'x' } }).decision).toBe('allow')
   })
 
-  it('auto-approves the MCP web tools, including under read-only preset (m48)', () => {
+  it('auto-approves the MCP web tools in every mode, chat included (m48/m53)', () => {
     expect(evaluateTool({ toolName: 'web__search', input: { query: 'x' } }).decision).toBe('allow')
     expect(evaluateTool({ toolName: 'web__fetch', input: { url: 'https://x.example' } }).decision).toBe('allow')
-    expect(evaluateTool({ toolName: 'web__search', input: { query: 'x' } }, 'read-only').decision).toBe('allow')
+    expect(evaluateTool({ toolName: 'web__search', input: { query: 'x' } }, 'manual').decision).toBe('allow')
+    expect(evaluateTool({ toolName: 'web__search', input: { query: 'x' } }, 'chat').decision).toBe('allow')
   })
 
-  it('enforces read-only preset by denying mutating tools', () => {
-    expect(evaluateTool({ toolName: 'editor', input: { path: 'reports/summary.md' } }, 'read-only').decision).toBe('deny')
-    expect(evaluateTool({ toolName: 'bash', input: { command: 'ls' } }, 'read-only').decision).toBe('deny')
-    // Read tools still allowed
-    expect(evaluateTool({ toolName: 'search', input: {} }, 'read-only').decision).toBe('allow')
-    // Unknown tools still ask
-    expect(evaluateTool({ toolName: 'some_tool', input: {} }, 'read-only').decision).toBe('ask')
+  it('manual mode: reads and safe commands run, everything else asks', () => {
+    expect(evaluateTool({ toolName: 'search', input: {} }, 'manual').decision).toBe('allow')
+    expect(evaluateTool({ toolName: 'bash', input: { command: 'ls reports/ | head' } }, 'manual').decision).toBe('allow')
+    expect(evaluateTool({ toolName: 'bash', input: { command: 'git log --oneline' } }, 'manual').decision).toBe('allow')
+    expect(evaluateTool({ toolName: 'bash', input: { command: 'touch a.md' } }, 'manual').decision).toBe('ask')
+    expect(evaluateTool({ toolName: 'editor', input: { path: 'reports/summary.md' } }, 'manual').decision).toBe('ask')
+    expect(evaluateTool({ toolName: 'some_tool', input: {} }, 'manual').decision).toBe('ask')
   })
 
-  it('enforces normal preset by asking for mutating tools', () => {
-    expect(evaluateTool({ toolName: 'editor', input: { path: 'reports/summary.md' } }, 'normal').decision).toBe('ask')
-    expect(evaluateTool({ toolName: 'bash', input: { command: 'ls' } }, 'normal').decision).toBe('ask')
+  it('normal mode: vault edits/commands run; destructive or outside asks', () => {
+    expect(evaluateTool({ toolName: 'editor', input: { path: 'reports/summary.md' } }, 'normal').decision).toBe('allow')
+    expect(evaluateTool({ toolName: 'bash', input: { command: 'mkdir -p notes && touch notes/a.md' } }, 'normal').decision).toBe('allow')
+    expect(evaluateTool({ toolName: 'bash', input: { command: 'rm notes/a.md' } }, 'normal').decision).toBe('ask')
+    expect(evaluateTool({ toolName: 'bash', input: { command: 'git reset --hard HEAD~1' } }, 'normal').decision).toBe('ask')
+    expect(evaluateTool({ toolName: 'editor', input: { path: '/etc/hosts' } }, 'normal').decision).toBe('ask')
+    expect(evaluateTool({ toolName: 'editor', input: { path: '../outside.md' } }, 'normal').decision).toBe('ask')
+    expect(evaluateTool({ toolName: 'bash', input: { command: 'cat /etc/passwd' } }, 'normal').decision).toBe('ask')
+    expect(evaluateTool({ toolName: 'bash', input: { command: 'ls ~/Downloads' } }, 'normal').decision).toBe('ask')
   })
 
-  it('enforces high-trust preset by allowing mutating tools', () => {
-    expect(evaluateTool({ toolName: 'editor', input: { path: 'reports/summary.md' } }, 'high-trust').decision).toBe('allow')
-    expect(evaluateTool({ toolName: 'bash', input: { command: 'ls' } }, 'high-trust').decision).toBe('allow')
-    // Library writes are STILL denied
-    expect(evaluateTool({ toolName: 'editor', input: { path: 'library/original.md' } }, 'high-trust').decision).toBe('deny')
+  it('auto mode: destructive vault commands run; outside the vault still asks', () => {
+    expect(evaluateTool({ toolName: 'bash', input: { command: 'rm notes/a.md' } }, 'auto').decision).toBe('allow')
+    expect(evaluateTool({ toolName: 'editor', input: { path: 'reports/summary.md' } }, 'auto').decision).toBe('allow')
+    expect(evaluateTool({ toolName: 'bash', input: { command: 'rm -rf /tmp/x' } }, 'auto').decision).toBe('ask')
+    expect(evaluateTool({ toolName: 'editor', input: { path: '/etc/hosts' } }, 'auto').decision).toBe('ask')
+    // Library originals are STILL denied
+    expect(evaluateTool({ toolName: 'editor', input: { path: 'library/original.md' } }, 'auto').decision).toBe('deny')
+    expect(evaluateTool({ toolName: 'bash', input: { command: 'rm library/2026/original.txt' } }, 'auto').decision).toBe('deny')
+  })
+
+  it('chat mode: any vault access asks, even reads', () => {
+    expect(evaluateTool({ toolName: 'read_file', input: { path: 'memory/employer.md' } }, 'chat').decision).toBe('ask')
+    expect(evaluateTool({ toolName: 'search', input: { query: 'x' } }, 'chat').decision).toBe('ask')
+    expect(evaluateTool({ toolName: 'bash', input: { command: 'ls' } }, 'chat').decision).toBe('ask')
+    expect(evaluateTool({ toolName: 'editor', input: { path: 'a.md' } }, 'chat').decision).toBe('ask')
+  })
+
+  it('protects .git in every mode', () => {
+    expect(evaluateTool({ toolName: 'editor', input: { path: '.git/config' } }, 'auto').decision).toBe('deny')
+    expect(evaluateTool({ toolName: 'bash', input: { command: 'rm -rf .git' } }, 'auto').decision).toBe('deny')
+    expect(evaluateTool({ toolName: 'bash', input: { command: 'ls .git' } }, 'manual').decision).toBe('allow')
+  })
+})
+
+describe('mode helper predicates', () => {
+  it('classifies safe read commands', () => {
+    expect(isSafeReadCommand('grep -rn TODO memory/ | head -5')).toBe(true)
+    expect(isSafeReadCommand('git status && git diff')).toBe(true)
+    expect(isSafeReadCommand('echo hi > file.md')).toBe(false)
+    expect(isSafeReadCommand('find . -name "*.tmp" -delete')).toBe(false)
+    expect(isSafeReadCommand('sed -i s/a/b/ x.md')).toBe(false)
+    expect(isSafeReadCommand('git push')).toBe(false)
+  })
+
+  it('classifies destructive commands', () => {
+    expect(isDestructiveCommand('rm -rf notes')).toBe(true)
+    expect(isDestructiveCommand('git clean -fd')).toBe(true)
+    expect(isDestructiveCommand('git restore .')).toBe(true)
+    expect(isDestructiveCommand('mkdir new && mv a b')).toBe(false)
+  })
+
+  it('detects paths and commands reaching outside the vault', () => {
+    expect(isOutsideVaultPath('/etc/hosts')).toBe(true)
+    expect(isOutsideVaultPath('~/notes.md')).toBe(true)
+    expect(isOutsideVaultPath('../sibling.md')).toBe(true)
+    expect(isOutsideVaultPath('memory/notes/a.md')).toBe(false)
+    expect(commandReachesOutsideVault('cat /etc/passwd')).toBe(true)
+    expect(commandReachesOutsideVault('ls ../..')).toBe(true)
+    expect(commandReachesOutsideVault('ls memory/notes')).toBe(false)
   })
 })
 
