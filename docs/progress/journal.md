@@ -122,3 +122,10 @@ close to the header. Opened milestone 57; next m57-01.
 - 13:05 STARTED m57-01: move table copy into a spaced action row.
 - 13:05 DONE m57-01: table copy sits in a separate right-aligned action row
   with spacing before the table header. Verified by web lint and build.
+- 13:05 STARTED m57-02: run the full project gate and archive milestone 57.
+- 13:07 DONE m57-02: full gate green — lint clean, server 381 + web 9 tests
+  passed, and server + web builds passed. Milestone 57 archived.
+
+## 2026-07-12 13:07 — session end
+Milestone 57 complete. Table copy controls now occupy a separate action row
+above the table rather than overlapping its header; rebuild needed to go live.

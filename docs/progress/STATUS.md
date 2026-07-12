@@ -1,6 +1,6 @@
 # STATUS — single source of truth
 
-Updated: 2026-07-12 (milestone 57 active)
+Updated: 2026-07-12 (no active milestone; milestone 57 complete)
 
 ## Where we are
 
@@ -25,8 +25,8 @@ Updated: 2026-07-12 (milestone 57 active)
 
 ## Active milestone
 
-Milestone 57 (table copy spacing) is active. m57-01 is complete; next: m57-02
-full verification and archive.
+Milestone 57 (table copy spacing) is complete. The table copy control sits in
+a separate action row with clear space before the header.
 
 Previous: milestone 56 (copy raw assistant responses) is complete. Every non-empty
 assistant message has a Copy action for its exact original Markdown.
@@ -64,8 +64,7 @@ object). Milestones 48–49 need `./compose-helper.sh up` (rebuild) to go live.
 
 ## Next step
 
-Run m57-02 from
-`docs/progress/milestones/milestone-57-table-copy-spacing.md`.
+Await direction.
 
 ## Read before working
 
