@@ -1,6 +1,6 @@
 # STATUS — single source of truth
 
-Updated: 2026-07-13 (no active milestone; milestone 71 complete)
+Updated: 2026-07-13 (milestone 72 planned; implementation not started)
 
 ## Where we are
 
@@ -31,18 +31,18 @@ Updated: 2026-07-13 (no active milestone; milestone 71 complete)
 
 ## Active milestone
 
-None. Milestone 71 added a shared `error-extender` hierarchy with cause-chain
-stacks and structured `log4js` runtime logging; `SECOND_BRAIN_WEB_LOG_LEVEL`
-configures the root level through `.env`/`./configure`.
+**Milestone 72 — repository-wide exception boundaries.** Checklist written and
+approved for planning only this turn; no application code has changed yet.
 **Milestones 62–71 need `./compose-helper.sh up` (rebuild) to go live.**
 
 ## Next step
 
-Await direction. Rebuild (`./compose-helper.sh up`) pending for milestones 62–71.
+Begin **m72-01**: exception contract helpers and `AgentRunnerError` in runner.ts.
 
 ## Read before working
 
 - `AGENTS-PLAYBOOK.md` — always, top to bottom.
+- `docs/progress/milestones/milestone-72-repository-exception-boundaries.md`.
 - `docs/progress/BACKLOG.md` — the work queue.
 
 ## Questions for the principal

@@ -79,3 +79,16 @@ level. Baseline `npm test` is clean: 78 server files / 385 tests and 1 web file
 ## 2026-07-13 01:13 — session end
 Milestone 71 complete and archived. Handoff: no active milestone; rebuild is
 pending for milestones 62–71.
+
+## 2026-07-13 01:28 — session start
+Tree clean at e76e942. Principal directed a milestone plan before any further
+exception work. Audit baseline: 30 raw `throw new Error` sites across 12 server
+files, 15 existing error-extender constructors, and 70 browser `.catch` handlers
+across 18 files.
+- 01:28 DONE progress: wrote milestone 72's 12-item repository-wide exception
+  boundary checklist, pointed STATUS at m72-01, and added the active BACKLOG
+  entry. No application code changed.
+
+## 2026-07-13 01:28 — session end
+Milestone 72 is planned but implementation has not started. Handoff: begin
+m72-01 only when the principal directs implementation.

@@ -12,6 +12,9 @@ See `docs/project-plan/phase-008-feature-backlog-and-design-hooks.md` for other 
 
 ## Improvements
 
+- Repository-wide named exception boundaries and preserved cause chains across
+  server, CLI, HTTP, and browser code — active as milestone 72.
+
 - Deterministic e2e for the chat processing indicator. The current e2e login
   spec (`test/e2e/login.spec.ts`) fails against the fresh in-process harness
   because the onboarding gate ("No providers configured") intercepts the chat
