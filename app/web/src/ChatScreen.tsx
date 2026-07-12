@@ -31,6 +31,21 @@ interface ProviderProfile {
 /** Slider stops for the effort control; index 0 = provider default (null). */
 const EFFORT_STOPS = [null, 'none', 'minimal', 'low', 'medium', 'high', 'xhigh'] as const
 
+/** Approval modes (m53); descriptions mirror the server's policy matrix. */
+const APPROVAL_MODES = [
+  { id: 'manual', name: 'Manual', desc: 'Reads and safe commands run; every change asks for approval' },
+  { id: 'normal', name: 'Normal', desc: 'Vault edits and commands run (git keeps them reversible); destructive or outside-vault actions ask' },
+  { id: 'auto', name: 'Auto', desc: 'Everything in the vault runs, destructive commands included; outside the vault still asks' },
+  { id: 'chat', name: 'Chat', desc: 'Just chatting — vault access asks first, or switch modes' },
+] as const
+
+/** Accept legacy preset names from old sessions or saved defaults. */
+function normaliseMode (value: unknown): string | undefined {
+  if (value === 'read-only') return 'manual'
+  if (value === 'high-trust') return 'auto'
+  return APPROVAL_MODES.some(m => m.id === value) ? value as string : undefined
+}
+
 export type ChatMode = { kind: 'auto' } | { kind: 'new' } | { kind: 'session', id: string }
 
 async function getJson (url: string): Promise<Response> {
@@ -306,9 +321,11 @@ export function ChatScreen ({ mode }: { mode: ChatMode }) {
   // held locally and applied right after the session is created on first send.
   const [menuOpen, setMenuOpen] = useState(false)
   const [modelListOpen, setModelListOpen] = useState(false)
+  const [modesOpen, setModesOpen] = useState(false)
   const [thinking, setThinking] = useState(false)
   const [effort, setEffort] = useState<string | null>(null)
   const menuRef = useRef<HTMLDivElement | null>(null)
+  const modesRef = useRef<HTMLDivElement | null>(null)
   const [slashIndex, setSlashIndex] = useState(0)
   const [lockState, setLockState] = useState<LockState | null>(null)
   const [zoom, setZoom] = useState<ZoomContent | null>(null)
@@ -384,23 +401,26 @@ export function ChatScreen ({ mode }: { mode: ChatMode }) {
     if (!res.ok) return
     const { session } = await res.json() as { session: ChatSession & { approvalPreset: string, thinking: boolean, reasoningEffort: string | null } }
     setSelectedProvider(session.providerProfileId ?? '')
-    setSelectedPreset(session.approvalPreset)
+    setSelectedPreset(normaliseMode(session.approvalPreset) ?? 'normal')
     setThinking(session.thinking)
     setEffort(session.reasoningEffort)
   }, [])
 
-  // Close the model menu on any outside click.
+  // Close the model/modes menus on any outside click.
   useEffect(() => {
-    if (!menuOpen) return
+    if (!menuOpen && !modesOpen) return
     const onDown = (e: MouseEvent) => {
       if (menuRef.current !== null && !menuRef.current.contains(e.target as Node)) {
         setMenuOpen(false)
         setModelListOpen(false)
       }
+      if (modesRef.current !== null && !modesRef.current.contains(e.target as Node)) {
+        setModesOpen(false)
+      }
     }
     document.addEventListener('mousedown', onDown)
     return () => document.removeEventListener('mousedown', onDown)
-  }, [menuOpen])
+  }, [menuOpen, modesOpen])
 
   // New-chat defaults (m51): the settings last chosen in a new-chat state are
   // saved to the principal profile and become the starting point for future
@@ -415,9 +435,8 @@ export function ChatScreen ({ mode }: { mode: ChatMode }) {
       if (typeof chatDefaults.providerProfileId === 'string' && profiles.some(p => p.id === chatDefaults.providerProfileId && p.enabled)) {
         setSelectedProvider(chatDefaults.providerProfileId)
       }
-      if (chatDefaults.approvalPreset === 'normal' || chatDefaults.approvalPreset === 'read-only' || chatDefaults.approvalPreset === 'high-trust') {
-        setSelectedPreset(chatDefaults.approvalPreset)
-      }
+      const savedMode = normaliseMode(chatDefaults.approvalPreset)
+      if (savedMode !== undefined) setSelectedPreset(savedMode)
       if (typeof chatDefaults.thinking === 'boolean') setThinking(chatDefaults.thinking)
       if (chatDefaults.reasoningEffort === null || typeof chatDefaults.reasoningEffort === 'string') setEffort(chatDefaults.reasoningEffort)
     } catch { /* defaults are best-effort */ }
@@ -853,14 +872,36 @@ export function ChatScreen ({ mode }: { mode: ChatMode }) {
                     </div>
                   )}
                 </div>
-                <label className='chat-composer-select'>
-                  Approvals
-                  <select value={selectedPreset} onChange={e => { updateConfig(selectedProvider || providers.find(p => p.isDefault)?.id || '', e.target.value).catch(() => {}) }}>
-                    <option value='normal'>Normal</option>
-                    <option value='read-only'>Read-only</option>
-                    <option value='high-trust'>High-trust</option>
-                  </select>
-                </label>
+                <div className='chat-menu-anchor' ref={modesRef}>
+                  <button
+                    type='button' className='chat-menu-trigger' data-testid='modes-menu-btn'
+                    aria-haspopup='menu' aria-expanded={modesOpen}
+                    onClick={() => setModesOpen(o => !o)}
+                  >
+                    {APPROVAL_MODES.find(m => m.id === selectedPreset)?.name ?? 'Normal'}
+                  </button>
+                  {modesOpen && (
+                    <div className='chat-menu chat-menu--fit' role='menu' data-testid='modes-menu'>
+                      <div className='chat-menu-kicker'>Mode</div>
+                      {APPROVAL_MODES.map(m => (
+                        <button
+                          key={m.id} type='button' role='menuitemradio'
+                          aria-checked={m.id === selectedPreset}
+                          className={`chat-menu-item chat-mode-item${m.id === selectedPreset ? ' is-active' : ''}`}
+                          onClick={() => { updateConfig(selectedProvider || providers.find(p => p.isDefault)?.id || '', m.id).catch(() => {}); setModesOpen(false) }}
+                        >
+                          <span className='chat-mode-text'>
+                            <span className='chat-mode-name'>{m.name}</span>
+                            <span className='chat-mode-desc'>{m.desc}</span>
+                          </span>
+                          {m.id === selectedPreset && (
+                            <svg width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='currentColor' strokeWidth='2.5' strokeLinecap='round' strokeLinejoin='round' aria-hidden='true'><path d='M20 6 9 17l-5-5' /></svg>
+                          )}
+                        </button>
+                      ))}
+                    </div>
+                  )}
+                </div>
               </div>
               {showProcessing
                 ? (

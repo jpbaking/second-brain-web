@@ -27,7 +27,7 @@ system prompt).
   capture, follow-ups) use `auto`; system prompt gains the `.git` protection
   line.
   Verify: `cd app && npm test --workspace server`
-- [ ] **m53-03** Web: approvals select becomes a modes popup menu (model-menu
+- [x] **m53-03** Web: approvals select becomes a modes popup menu (model-menu
   styling, narrower) with names + descriptions + active check; chatDefaults
   keep working (legacy values normalised).
   Verify: `cd app && npm run lint && npm run build` + Playwright screenshot

@@ -52,3 +52,5 @@ Milestone 52 complete. No active milestone; rebuild needed for 48–52 to go liv
 - 10:53 DONE m53-01: mode matrix in evaluateTool + helper predicates + .git guard; verified by `npm test --workspace server -- tool-policy chat-approvals` → 33 green.
 - 10:53 STARTED m53-02: schema v16 preset migration, route validation, internal auto sessions, system prompt .git line
 - 10:55 DONE m53-02: schema v16 legacy-preset migration, route normalisation, internal sessions → auto, .git line in system prompt; full server suite 376 green.
+- 10:55 STARTED m53-03: modes popup menu in the composer
+- 10:57 DONE m53-03: modes popup menu (names + descriptions + check, legacy values normalised, chatDefaults compatible); verified by lint/build + Playwright screenshot and mode-switch assertion.

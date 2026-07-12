@@ -497,6 +497,37 @@
   z-index: 30;
 }
 
+/* Narrow variant (approval modes): anchored right, fixed width. */
+.chat-menu--fit {
+  left: auto;
+  right: 0;
+  width: min(340px, 80vw);
+}
+
+.chat-mode-item {
+  align-items: flex-start;
+}
+
+.chat-mode-item svg {
+  flex: none;
+  margin-top: 2px;
+  color: var(--brand-blue);
+}
+
+.chat-mode-text {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.chat-mode-name {
+  font-weight: 600;
+}
+
+.chat-mode-desc {
+  color: var(--muted);
+}
+
 .chat-menu-kicker {
   padding: var(--space-1) var(--space-2) 0;
   font-size: var(--ui-kicker);
