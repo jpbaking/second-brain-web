@@ -13,7 +13,7 @@ import { AppHero } from './AppHero.js'
 
 interface ChatSessionSummary { id: string, title: string, status: string, pinned: boolean }
 
-type IconName = 'new' | 'capture' | 'search' | 'command' | 'prep' | 'follow' | 'reports' | 'explorer' | 'profile' | 'schedules' | 'vault' | 'backup' | 'providers' | 'signout' | 'more' | 'collapse'
+type IconName = 'new' | 'capture' | 'search' | 'command' | 'prep' | 'follow' | 'reports' | 'explorer' | 'profile' | 'schedules' | 'vault' | 'backup' | 'providers' | 'signout' | 'more' | 'collapse' | 'expand'
 interface NavItem { href: string, label: string, icon: IconName }
 
 const NAV_ITEMS: NavItem[] = [
@@ -69,6 +69,7 @@ function SidebarIcon ({ name }: { name: IconName }) {
     signout: <><path d='M10 17l5-5-5-5M15 12H3' /><path d='M14 3h7v18h-7' /></>,
     more: <><circle cx='5' cy='12' r='1' fill='currentColor' /><circle cx='12' cy='12' r='1' fill='currentColor' /><circle cx='19' cy='12' r='1' fill='currentColor' /></>,
     collapse: <><path d='m14 7-5 5 5 5' /><rect x='3' y='3' width='18' height='18' rx='3' /></>,
+    expand: <><path d='m10 7 5 5-5 5' /><rect x='3' y='3' width='18' height='18' rx='3' /></>,
   }
   return <svg {...common}>{paths[name]}</svg>
 }
@@ -188,6 +189,7 @@ export function AppShell ({ path: initialPath, children }: { path: string, child
         <div className='sidebar-head'>
           <button className='sidebar-brand sidebar-brand-open' type='button' aria-label='Open sidebar' title='Open sidebar' onClick={() => setDesktopCollapsed(false)}>
             <img src='/design/assets/logo-mark.svg' alt='' />
+            <span className='sidebar-brand-expand'><SidebarIcon name='expand' /></span>
             <span>Second Brain</span>
           </button>
           <button className='sidebar-collapse' type='button' aria-label='Close sidebar' title='Close sidebar' onClick={() => setDesktopCollapsed(true)}><SidebarIcon name='collapse' /></button>

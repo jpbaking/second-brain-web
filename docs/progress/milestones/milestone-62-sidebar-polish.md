@@ -2,7 +2,7 @@
 
 Principal direction (2026-07-12): five sidebar improvements.
 
-- [ ] m62-01: collapsed sidebar — hovering the logo swaps it for an "Open
+- [x] m62-01: collapsed sidebar — hovering the logo swaps it for an "Open
       sidebar" affordance (expand icon) while keeping the click-to-open
       behaviour.
       Verify: `cd app && npm run build` then Playwright screenshot of the

@@ -201,3 +201,5 @@ bottom secondary navigation shipped; rebuild needed to go live.
 
 ## 2026-07-12 14:05 — session start
 Tree clean at d6b310e. Principal directed five sidebar improvements; opened milestone 62 (sidebar polish). Next: m62-01.
+- 14:07 STARTED m62-01: collapsed brand hover swaps logo for open-sidebar icon
+- 14:12 DONE m62-01: collapsed brand hover shows open-sidebar icon; verified by build + Playwright probe (1 passed) + screenshots.
