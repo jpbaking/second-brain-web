@@ -74,4 +74,15 @@ describe('profile API', () => {
     const getRes = await app.inject({ method: 'GET', url: '/api/profile', headers: { cookie } })
     expect(getRes.json()).toEqual({ timezone: 'Europe/London' })
   })
+
+  it('round-trips new-chat composer defaults (m51)', async () => {
+    const { app, cookie } = await authedApp()
+    const chatDefaults = { providerProfileId: 'p2', approvalPreset: 'high-trust', thinking: true, reasoningEffort: 'medium' }
+    const put = await app.inject({ method: 'PUT', url: '/api/profile', headers: { cookie }, payload: { chatDefaults } })
+    expect(put.statusCode).toBe(200)
+    expect(put.json().chatDefaults).toEqual(chatDefaults)
+
+    const got = await app.inject({ method: 'GET', url: '/api/profile', headers: { cookie } })
+    expect(got.json().chatDefaults).toEqual(chatDefaults)
+  })
 })

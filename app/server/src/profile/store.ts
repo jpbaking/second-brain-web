@@ -5,6 +5,14 @@ export interface PrincipalProfile {
   defaultReportStyle?: string
   timezone?: string
   workWeek?: string
+  /** Composer defaults for new chats (m51): whatever was last set in a
+   *  new-chat state before the first send. */
+  chatDefaults?: {
+    providerProfileId?: string | null
+    approvalPreset?: string
+    thinking?: boolean
+    reasoningEffort?: string | null
+  }
 }
 
 export function getProfile (db: DatabaseSync): PrincipalProfile {

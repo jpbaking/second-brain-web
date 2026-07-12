@@ -7,7 +7,7 @@ Persisted server-side in the principal profile preferences
 milestone 27) as `chatDefaults`: provider profile, approval preset, thinking,
 reasoning effort.
 
-- [ ] **m51-01** Server: add `chatDefaults` to the `PrincipalProfile` type
+- [x] **m51-01** Server: add `chatDefaults` to the `PrincipalProfile` type
   and cover the round-trip (PUT then GET) in the profile API test.
   Verify: `cd app && npm test --workspace server -- profile-api.test.ts`
 - [ ] **m51-02** Web: in the new-chat state, initialise the composer from

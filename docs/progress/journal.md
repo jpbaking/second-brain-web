@@ -29,3 +29,4 @@ for 48–50 to go live.
 Principal go: new-chat composer settings become defaults for future new chats.
 Opened milestone 51 (chatDefaults in principal profile prefs). Next m51-01.
 - 10:03 STARTED m51-01: chatDefaults on PrincipalProfile + API round-trip test
+- 10:04 DONE m51-01: chatDefaults on PrincipalProfile; verified by `npm test --workspace server -- profile-api.test.ts` → 3 green.
