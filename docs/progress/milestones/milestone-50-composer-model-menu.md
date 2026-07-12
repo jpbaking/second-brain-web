@@ -26,7 +26,7 @@ treat capabilities as unknown and still offer the controls.
   `PATCH /api/chat/sessions/:id`, returned by session GET/list, and passed
   into the SDK model config at (re)start.
   Verify: `cd app && npm test --workspace server -- chat-api.test.ts agent-session.test.ts migrations.test.ts`
-- [ ] **m50-03** Web: composer popup menu replacing the provider select —
+- [x] **m50-03** Web: composer popup menu replacing the provider select —
   trigger shows the active model (default profile resolved by name, never
   "Default provider"); menu contains a model submenu (enabled profiles),
   a Thinking toggle and an Effort selector (shown when supported or unknown,

@@ -448,8 +448,137 @@
 
 .chat-composer-options {
   display: flex;
+  align-items: center;
   gap: var(--space-3);
   margin-left: auto;
+}
+
+/* Model menu (m50): popup anchored above its trigger in the composer bar. */
+.chat-menu-anchor {
+  position: relative;
+  display: flex;
+}
+
+.chat-menu-trigger {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  border: none;
+  background: none;
+  color: var(--ink);
+  font-size: var(--ui-kicker);
+  font-weight: 500;
+  cursor: pointer;
+  padding: 0;
+}
+
+.chat-menu-trigger:hover {
+  text-decoration: underline;
+}
+
+.chat-menu-thinking-mark {
+  color: var(--brand-blue);
+}
+
+.chat-menu {
+  position: absolute;
+  bottom: calc(100% + var(--space-2));
+  right: 0;
+  min-width: 280px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: var(--space-1);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-md);
+  background: var(--surface);
+  box-shadow: 0 8px 24px rgb(0 0 0 / 12%);
+  z-index: 30;
+}
+
+.chat-menu-kicker {
+  padding: var(--space-1) var(--space-2) 0;
+  font-size: var(--ui-kicker);
+  color: var(--muted);
+}
+
+.chat-menu-item,
+.chat-menu-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+  padding: var(--space-1) var(--space-2);
+  border: none;
+  border-radius: var(--radius-sm, 6px);
+  background: none;
+  color: var(--ink);
+  font-size: var(--ui-kicker);
+  text-align: left;
+}
+
+.chat-menu-item {
+  cursor: pointer;
+}
+
+.chat-menu-item:hover {
+  background: var(--bg);
+}
+
+.chat-menu-item.is-sub {
+  padding-left: var(--space-4);
+}
+
+.chat-menu-item.is-active {
+  color: var(--brand-blue);
+  font-weight: 600;
+}
+
+.chat-menu-hint {
+  color: var(--muted);
+  font-family: var(--font-mono);
+  font-size: var(--ui-kicker);
+  max-width: 160px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.chat-menu-row input[type='range'] {
+  width: 110px;
+  accent-color: var(--brand-blue);
+}
+
+/* Small switch for the Thinking toggle. */
+.chat-switch {
+  flex: none;
+  width: 32px;
+  height: 18px;
+  padding: 2px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: var(--bg);
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+}
+
+.chat-switch-knob {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: var(--muted);
+  transition: transform 120ms ease, background 120ms ease;
+}
+
+.chat-switch.is-on {
+  background: var(--brand-blue);
+  border-color: var(--brand-blue);
+}
+
+.chat-switch.is-on .chat-switch-knob {
+  background: var(--surface);
+  transform: translateX(14px);
 }
 
 .chat-composer-select {

@@ -18,7 +18,18 @@ import type { ChatEvent } from './chat-transcript.js'
  */
 
 interface ChatSession { id: string, title: string, status: string, providerProfileId: string | null }
-interface ProviderProfile { id: string, displayName: string, isDefault: boolean, enabled: boolean }
+interface ProviderProfile {
+  id: string
+  displayName: string
+  modelId: string
+  isDefault: boolean
+  enabled: boolean
+  /** null = model unknown to the catalog: offer the controls anyway. */
+  reasoning: { supported: boolean | null, effort: boolean | null }
+}
+
+/** Slider stops for the effort control; index 0 = provider default (null). */
+const EFFORT_STOPS = [null, 'none', 'minimal', 'low', 'medium', 'high', 'xhigh'] as const
 
 export type ChatMode = { kind: 'auto' } | { kind: 'new' } | { kind: 'session', id: string }
 
@@ -290,6 +301,14 @@ export function ChatScreen ({ mode }: { mode: ChatMode }) {
   const [pending, setPending] = useState(false)
   const [selectedProvider, setSelectedProvider] = useState('')
   const [selectedPreset, setSelectedPreset] = useState('normal')
+  // Model menu (m50): popup with a model submenu, thinking toggle and effort
+  // slider. Tuning is per-session (PATCH); for a not-yet-created chat it is
+  // held locally and applied right after the session is created on first send.
+  const [menuOpen, setMenuOpen] = useState(false)
+  const [modelListOpen, setModelListOpen] = useState(false)
+  const [thinking, setThinking] = useState(false)
+  const [effort, setEffort] = useState<string | null>(null)
+  const menuRef = useRef<HTMLDivElement | null>(null)
   const [slashIndex, setSlashIndex] = useState(0)
   const [lockState, setLockState] = useState<LockState | null>(null)
   const [zoom, setZoom] = useState<ZoomContent | null>(null)
@@ -363,10 +382,25 @@ export function ChatScreen ({ mode }: { mode: ChatMode }) {
   const loadSessionConfig = useCallback(async (id: string) => {
     const res = await getJson(`/api/chat/sessions/${id}`)
     if (!res.ok) return
-    const { session } = await res.json() as { session: ChatSession & { approvalPreset: string } }
+    const { session } = await res.json() as { session: ChatSession & { approvalPreset: string, thinking: boolean, reasoningEffort: string | null } }
     setSelectedProvider(session.providerProfileId ?? '')
     setSelectedPreset(session.approvalPreset)
+    setThinking(session.thinking)
+    setEffort(session.reasoningEffort)
   }, [])
+
+  // Close the model menu on any outside click.
+  useEffect(() => {
+    if (!menuOpen) return
+    const onDown = (e: MouseEvent) => {
+      if (menuRef.current !== null && !menuRef.current.contains(e.target as Node)) {
+        setMenuOpen(false)
+        setModelListOpen(false)
+      }
+    }
+    document.addEventListener('mousedown', onDown)
+    return () => document.removeEventListener('mousedown', onDown)
+  }, [menuOpen])
 
   useEffect(() => {
     if (mode.kind === 'session') {
@@ -469,6 +503,10 @@ export function ChatScreen ({ mode }: { mode: ChatMode }) {
       window.history.replaceState(null, '', `/chat/${id}`)
       window.dispatchEvent(new Event('chats-changed'))
       openStream(id)
+      // Apply any reasoning tuning chosen before the session existed.
+      if (thinking || effort !== null) {
+        await sendJson('PATCH', `/api/chat/sessions/${id}`, { thinking, reasoningEffort: effort })
+      }
     }
 
     let attachmentIds: string[] | undefined
@@ -521,6 +559,14 @@ export function ChatScreen ({ mode }: { mode: ChatMode }) {
     if (!res.ok) setError('Could not update chat settings.')
   }
 
+  async function updateTuning (nextThinking: boolean, nextEffort: string | null) {
+    setThinking(nextThinking)
+    setEffort(nextEffort)
+    if (activeId === null) return // applied after the session is created on first send
+    const res = await sendJson('PATCH', `/api/chat/sessions/${activeId}`, { thinking: nextThinking, reasoningEffort: nextEffort })
+    if (!res.ok) setError('Could not update reasoning settings.')
+  }
+
   async function abortTurn () {
     if (activeId === null) return
     const res = await sendJson('POST', `/api/chat/sessions/${activeId}/abort`)
@@ -532,6 +578,9 @@ export function ChatScreen ({ mode }: { mode: ChatMode }) {
   // the live event stream (mounted into an in-progress turn).
   const showProcessing = (pending || isProcessing) && approvals.length === 0
   const newChatState = ready && activeId === null
+  // The composer always names the real active model — the session's profile,
+  // else the default profile (never a "Default provider" placeholder).
+  const activeProfile = providers.find(p => p.id === selectedProvider) ?? providers.find(p => p.isDefault) ?? providers.find(p => p.enabled)
   const slashQuery = input.startsWith('/') && !input.includes(' ') ? input.slice(1).toLowerCase() : null
   const slashMatches = slashQuery === null ? [] : workflows.filter(name => name.toLowerCase().includes(slashQuery))
 
@@ -703,15 +752,59 @@ export function ChatScreen ({ mode }: { mode: ChatMode }) {
                 <svg width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='currentColor' strokeWidth='2' strokeLinecap='round' strokeLinejoin='round' aria-hidden='true'><path d='m21.44 11.05-9.19 9.19a6 6 0 0 1-8.49-8.49l8.57-8.57A4 4 0 1 1 18 8.84l-8.59 8.57a2 2 0 0 1-2.83-2.83l8.49-8.48' /></svg>
               </button>
               <div className='chat-composer-options'>
-                <label className='chat-composer-select'>
-                  Provider
-                  <select value={selectedProvider} onChange={e => { updateConfig(e.target.value, selectedPreset).catch(() => {}) }}>
-                    <option value=''>Default provider</option>
-                    {providers.filter(p => p.enabled).map(p => (
-                      <option key={p.id} value={p.id}>{p.displayName}{p.isDefault ? ' (default)' : ''}</option>
-                    ))}
-                  </select>
-                </label>
+                <div className='chat-menu-anchor' ref={menuRef}>
+                  <button
+                    type='button' className='chat-menu-trigger' data-testid='model-menu-btn'
+                    aria-haspopup='menu' aria-expanded={menuOpen}
+                    onClick={() => { setMenuOpen(o => !o); setModelListOpen(false) }}
+                  >
+                    {activeProfile?.displayName ?? 'Model'}
+                    {thinking && <span className='chat-menu-thinking-mark' title={`Thinking on${effort !== null ? ` (${effort})` : ''}`}>✦</span>}
+                  </button>
+                  {menuOpen && (
+                    <div className='chat-menu' role='menu' data-testid='model-menu'>
+                      <div className='chat-menu-kicker'>Model</div>
+                      <button type='button' className='chat-menu-item' role='menuitem' onClick={() => setModelListOpen(o => !o)}>
+                        <span>Switch model…</span>
+                        <span className='chat-menu-hint'>{activeProfile?.modelId ?? ''}</span>
+                      </button>
+                      {modelListOpen && providers.filter(p => p.enabled).map(p => (
+                        <button
+                          key={p.id} type='button' role='menuitemradio'
+                          aria-checked={p.id === activeProfile?.id}
+                          className={`chat-menu-item is-sub${p.id === activeProfile?.id ? ' is-active' : ''}`}
+                          onClick={() => { updateConfig(p.id, selectedPreset).catch(() => {}); setModelListOpen(false) }}
+                        >
+                          <span>{p.displayName}{p.isDefault ? ' (default)' : ''}</span>
+                          <span className='chat-menu-hint'>{p.modelId}</span>
+                        </button>
+                      ))}
+                      {activeProfile?.reasoning.supported !== false && (
+                        <div className='chat-menu-row'>
+                          <span>Thinking{activeProfile?.reasoning.supported === null ? <span className='chat-menu-hint'> (untested model)</span> : null}</span>
+                          <button
+                            type='button' role='switch' aria-checked={thinking} aria-label='Thinking'
+                            className={`chat-switch${thinking ? ' is-on' : ''}`}
+                            onClick={() => { updateTuning(!thinking, effort).catch(() => {}) }}
+                          >
+                            <span className='chat-switch-knob' />
+                          </button>
+                        </div>
+                      )}
+                      {thinking && activeProfile?.reasoning.effort !== false && (
+                        <div className='chat-menu-row'>
+                          <span>Effort <span className='chat-menu-hint'>({effort ?? 'default'})</span></span>
+                          <input
+                            type='range' min={0} max={EFFORT_STOPS.length - 1} step={1}
+                            aria-label='Reasoning effort'
+                            value={Math.max(0, EFFORT_STOPS.indexOf(effort as typeof EFFORT_STOPS[number]))}
+                            onChange={e => { updateTuning(thinking, EFFORT_STOPS[Number(e.target.value)] ?? null).catch(() => {}) }}
+                          />
+                        </div>
+                      )}
+                    </div>
+                  )}
+                </div>
                 <label className='chat-composer-select'>
                   Approvals
                   <select value={selectedPreset} onChange={e => { updateConfig(selectedProvider || providers.find(p => p.isDefault)?.id || '', e.target.value).catch(() => {}) }}>
