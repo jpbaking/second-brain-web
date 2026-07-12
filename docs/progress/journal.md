@@ -225,3 +225,7 @@ Milestone 63 complete and archived. Handoff: no active milestone; container rebu
 - 14:35 STARTED m64-01: land on new-chat state at / (drop auto-open of last chat)
 - 14:38 DONE m64-01: `/` lands on new-chat state (auto-open mode removed); probe green (welcome shown despite existing chats, explicit open still works).
 - 14:38 DONE m64-02: expanded brand links to /command-centre; collapsed brand still the open-sidebar button; probe green + screenshots.
+- 14:39 DONE m64-03: full check green (lint clean; 383+9 tests; build ok). Probe removed; checklist archived.
+
+## 2026-07-12 14:39 — session end
+Milestone 64 complete and archived. Handoff: no active milestone; container rebuild pending for 62-64.

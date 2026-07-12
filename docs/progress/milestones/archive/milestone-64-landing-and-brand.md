@@ -14,5 +14,5 @@ role).
       /command-centre; collapsed brand stays the open-sidebar button.
       Verify: Playwright probe: click brand → URL /command-centre; collapse,
       click brand → sidebar expands (no navigation). Screenshots.
-- [ ] m64-03: full check (`cd app && npm run lint && npm test && npm run
+- [x] m64-03: full check (`cd app && npm run lint && npm test && npm run
       build`), remove probe, archive checklist, update STATUS.
