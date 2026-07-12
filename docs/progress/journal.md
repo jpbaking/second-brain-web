@@ -232,3 +232,4 @@ Milestone 64 complete and archived. Handoff: no active milestone; container rebu
 - 14:42 STARTED m65-01: design brain mark, update SVG brand assets
 - 14:45 DONE m65-01: brain mark (side profile + node network, kit colours) in logo-mark, invert, and SVG favicons; verified by build + in-app Playwright screenshots.
 - 14:45 STARTED m65-02: regenerate raster favicons + webmanifest name
+- 14:49 DONE m65-02: transparent raster favicons (ico 16/32/48, icon-192/512, apple-touch 180) regenerated from the brain mark; webmanifest named Second Brain; probe asserts served favicon content.

@@ -9,7 +9,7 @@ tile (#12279E), white line work, amber accent (#D9821F), invert variant.
       `/favicon.svg`, `design/assets/favicons/favicon.svg`).
       Verify: `cd app && npm run build` + Playwright screenshots of the
       sidebar brand, hero, and welcome screen showing the new mark.
-- [ ] m65-02: regenerate raster favicons (favicon.ico, icon-192/512,
+- [x] m65-02: regenerate raster favicons (favicon.ico, icon-192/512,
       apple-touch-icon) from the new mark; set the webmanifest name to
       Second Brain.
       Verify: rasters decode at expected sizes (`file`/dimensions check)

@@ -32,3 +32,14 @@ test('m65-01 brain mark shows in sidebar, welcome, and hero', async ({ page }: {
   await expect(page.getByRole('heading', { name: 'Quick capture' })).toBeVisible()
   await page.screenshot({ path: `${SHOTS}/app-capture-hero.png` })
 })
+
+test('m65-02 favicons serve the new mark', async ({ request }) => {
+  const svg = await request.get('/favicon.svg')
+  expect(svg.ok()).toBe(true)
+  expect(await svg.text()).toContain('M22 45') // the brain outline path
+  const ico = await request.get('/favicon.ico')
+  expect(ico.ok()).toBe(true)
+  expect((await ico.body()).length).toBeGreaterThan(1000)
+  const manifest = await request.get('/design/assets/favicons/site.webmanifest')
+  expect(await manifest.json()).toMatchObject({ name: 'Second Brain' })
+})
