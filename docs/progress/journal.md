@@ -93,3 +93,10 @@ to the expanded table modal. Opened milestone 55; next m55-01.
 - 12:53 STARTED m55-01: reuse the table copy component in the expanded modal.
 - 12:53 DONE m55-01: expanded tables reuse the rich HTML/TSV copy control
   without reopening the modal. Verified by web lint and production build.
+- 12:53 STARTED m55-02: run the full project gate and archive milestone 55.
+- 12:54 DONE m55-02: full gate green — lint clean, server 381 + web 9 tests
+  passed, and server + web builds passed. Milestone 55 archived.
+
+## 2026-07-12 12:54 — session end
+Milestone 55 complete. The expanded table modal now includes the same rich
+HTML/Excel-compatible TSV copy control; rebuild needed to go live.

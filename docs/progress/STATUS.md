@@ -1,6 +1,6 @@
 # STATUS — single source of truth
 
-Updated: 2026-07-12 (milestone 55 active)
+Updated: 2026-07-12 (no active milestone; milestone 55 complete)
 
 ## Where we are
 
@@ -25,8 +25,8 @@ Updated: 2026-07-12 (milestone 55 active)
 
 ## Active milestone
 
-Milestone 55 (table copy in preview modal) is active. m55-01 is complete;
-next: m55-02 full verification and archive.
+Milestone 55 (table copy in preview modal) is complete. Expanded Markdown
+tables expose the same rich HTML/Excel-compatible TSV copy control.
 
 Previous: milestone 54 (Excel-compatible Markdown table copy) is complete. Rendered chat
 tables have one copy control that writes rich HTML and Excel-compatible TSV
@@ -58,8 +58,7 @@ object). Milestones 48–49 need `./compose-helper.sh up` (rebuild) to go live.
 
 ## Next step
 
-Run m55-02 from
-`docs/progress/milestones/milestone-55-modal-table-copy.md`.
+Await direction.
 
 ## Read before working
 
