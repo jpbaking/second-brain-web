@@ -129,3 +129,8 @@ logging and provider request/response tracing before m72-03.
 ## 2026-07-13 01:45 — session end
 m72-02a committed as acc723c. Tree clean; milestone 72 remains active.
 Handoff: begin m72-03 (agent services and chat persistence).
+
+## 2026-07-13 01:47 — session start
+Tree clean at 2cd498b. Principal request (outside milestone): demote vault write-lock poll HTTP logs to debug.
+- 01:48 STARTED repair: log GET /api/vault/lock request received/completed at debug — chat lock polling too noisy at info.
+- 01:51 DONE repair: verified by `npm run lint` + `npm test` (server 399 green, web 9 green).

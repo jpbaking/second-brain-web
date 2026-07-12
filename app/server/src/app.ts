@@ -44,8 +44,13 @@ export function buildApp (config?: AppConfig, deps?: AppDeps): FastifyInstance {
   const logger = getAppLogger('http', deps?.logStream)
 
   if (loggingEnabled) {
+    // The chat screen polls the vault write-lock endpoint continuously, so its
+    // request logs drown out the rest at info level.
+    const requestLogLevel = (req: { method: string, url: string }): 'debug' | 'info' =>
+      req.method === 'GET' && req.url.split('?')[0] === '/api/vault/lock' ? 'debug' : 'info'
+
     app.addHook('onRequest', (req, _reply, done) => {
-      logger.info('request received', {
+      logger[requestLogLevel(req)]('request received', {
         reqId: req.id,
         req: {
           method: req.method,
@@ -57,7 +62,7 @@ export function buildApp (config?: AppConfig, deps?: AppDeps): FastifyInstance {
       done()
     })
     app.addHook('onResponse', (req, reply, done) => {
-      logger.info('request completed', {
+      logger[requestLogLevel(req)]('request completed', {
         reqId: req.id,
         res: { statusCode: reply.statusCode },
         responseTime: reply.elapsedTime,
