@@ -219,8 +219,11 @@
 }
 
 .chat-slash-menu { max-width: 48rem; margin: 0 auto; border: 1px solid var(--border); border-radius: .5rem; background: var(--surface); overflow: hidden; }
-.chat-slash-menu button { display: block; width: 100%; border: 0; background: transparent; color: inherit; padding: .55rem .75rem; text-align: left; cursor: pointer; }
-.chat-slash-menu button.is-active, .chat-slash-menu button:hover { background: var(--surface-hover); }
+.chat-slash-menu button { display: flex; flex-direction: column; gap: .15rem; width: 100%; border: 0; background: transparent; color: inherit; padding: .55rem .75rem; text-align: left; cursor: pointer; }
+.chat-slash-menu button:hover { background: var(--surface-hover); }
+.chat-slash-menu button.is-active { background: color-mix(in srgb, var(--accent) 14%, var(--surface)); box-shadow: inset 4px 0 0 var(--accent); }
+.chat-slash-name { font-weight: 650; }
+.chat-slash-description { width: 100%; overflow: hidden; color: var(--muted); font-size: var(--ui-small); text-overflow: ellipsis; white-space: nowrap; }
 
 .chat-scroll {
   flex: 1 1 auto;

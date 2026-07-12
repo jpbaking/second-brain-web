@@ -18,6 +18,7 @@ import type { ChatEvent } from './chat-transcript.js'
  */
 
 interface ChatSession { id: string, title: string, status: string, providerProfileId: string | null }
+interface WorkflowSummary { name: string, description: string }
 interface ProviderProfile {
   id: string
   displayName: string
@@ -375,7 +376,7 @@ function ZoomableTable ({ children, zoomable = true }: { children?: ReactNode, z
 
 export function ChatScreen ({ mode }: { mode: ChatMode }) {
   const [providers, setProviders] = useState<ProviderProfile[]>([])
-  const [workflows, setWorkflows] = useState<string[]>([])
+  const [workflows, setWorkflows] = useState<WorkflowSummary[]>([])
   const [activeId, setActiveId] = useState<string | null>(mode.kind === 'session' ? mode.id : null)
   const [ready, setReady] = useState(mode.kind !== 'auto')
   const [events, setEvents] = useState<ChatEvent[]>([])
@@ -541,7 +542,7 @@ export function ChatScreen ({ mode }: { mode: ChatMode }) {
     }
     getJson('/api/providers').then(async r => r.ok ? (await r.json() as { profiles: ProviderProfile[] }).profiles : [])
       .then(setProviders).catch(() => {})
-    getJson('/api/chat/workflows').then(async r => r.ok ? (await r.json() as { workflows: string[] }).workflows : [])
+    getJson('/api/chat/workflows').then(async r => r.ok ? (await r.json() as { workflows: WorkflowSummary[] }).workflows : [])
       .then(setWorkflows).catch(() => {})
   }, [openStream, loadSessionConfig, applyChatDefaults]) // mode is stable per page load (no client-side router)
 
@@ -591,6 +592,27 @@ export function ChatScreen ({ mode }: { mode: ChatMode }) {
     return () => { active = false }
   }, [])
 
+  async function createSession (title: string): Promise<string | null> {
+    const providerProfileId = selectedProvider === '' ? undefined : selectedProvider
+    const res = await sendJson('POST', '/api/chat/sessions', { title, providerProfileId, approvalPreset: selectedPreset })
+    if (res.status === 401) { window.location.assign('/login'); return null }
+    if (!res.ok) {
+      setError((await res.json().catch(() => ({})) as { error?: string }).error ?? 'Could not start a chat.')
+      return null
+    }
+    const session = await res.json() as ChatSession
+    const id = session.id
+    setActiveId(id)
+    window.history.replaceState(null, '', `/chat/${id}`)
+    window.dispatchEvent(new Event('chats-changed'))
+    openStream(id)
+    // Apply any reasoning tuning chosen before the session existed.
+    if (thinking || effort !== null) {
+      await sendJson('PATCH', `/api/chat/sessions/${id}`, { thinking, reasoningEffort: effort })
+    }
+    return id
+  }
+
   async function send () {
     const text = input.trim()
     if (text === '') return
@@ -604,25 +626,12 @@ export function ChatScreen ({ mode }: { mode: ChatMode }) {
     let id = activeId
     if (id === null) {
       // New-chat state: create the session on first send, title from the message.
-      const providerProfileId = selectedProvider === '' ? undefined : selectedProvider
-      const res = await sendJson('POST', '/api/chat/sessions', { title: titleFrom(text), providerProfileId, approvalPreset: selectedPreset })
-      if (res.status === 401) { window.location.assign('/login'); return }
-      if (!res.ok) {
+      id = await createSession(titleFrom(text))
+      if (id === null) {
         setInput(text)
         setPendingFiles(files)
         setPending(false)
-        setError((await res.json().catch(() => ({})) as { error?: string }).error ?? 'Could not start a chat.')
         return
-      }
-      const session = await res.json() as ChatSession
-      id = session.id
-      setActiveId(id)
-      window.history.replaceState(null, '', `/chat/${id}`)
-      window.dispatchEvent(new Event('chats-changed'))
-      openStream(id)
-      // Apply any reasoning tuning chosen before the session existed.
-      if (thinking || effort !== null) {
-        await sendJson('PATCH', `/api/chat/sessions/${id}`, { thinking, reasoningEffort: effort })
       }
     }
 
@@ -646,10 +655,15 @@ export function ChatScreen ({ mode }: { mode: ChatMode }) {
   }
 
   async function runWorkflow (name: string) {
-    if (activeId === null) { setError('Send a message to start this chat first.'); return }
+    setError(null)
     setIsLive(true)
     setPending(true)
-    const res = await sendJson('POST', `/api/chat/sessions/${activeId}/commands`, { command: name })
+    let id = activeId
+    if (id === null) {
+      id = await createSession(`/${name}`)
+      if (id === null) { setPending(false); return }
+    }
+    const res = await sendJson('POST', `/api/chat/sessions/${id}/commands`, { command: name })
     if (!res.ok) { setPending(false); setError(`Could not run the "${name}" workflow.`) }
   }
 
@@ -713,7 +727,7 @@ export function ChatScreen ({ mode }: { mode: ChatMode }) {
   // else the default profile (never a "Default provider" placeholder).
   const activeProfile = providers.find(p => p.id === selectedProvider) ?? providers.find(p => p.isDefault) ?? providers.find(p => p.enabled)
   const slashQuery = input.startsWith('/') && !input.includes(' ') ? input.slice(1).toLowerCase() : null
-  const slashMatches = slashQuery === null ? [] : workflows.filter(name => name.toLowerCase().includes(slashQuery))
+  const slashMatches = slashQuery === null ? [] : workflows.filter(workflow => workflow.name.toLowerCase().includes(slashQuery))
 
   function chooseSlash (name: string, run: boolean) {
     setInput(run ? '' : `/${name}`)
@@ -838,9 +852,6 @@ export function ChatScreen ({ mode }: { mode: ChatMode }) {
         <div className='chat-composer-wrap'>
           {activeId !== null && (
             <div className='chat-toolbar' data-testid='workflow-bar'>
-              {workflows.map(w => (
-                <button key={w} className='chat-chip' type='button' onClick={() => { runWorkflow(w).catch(() => {}) }}>/{w}</button>
-              ))}
               <button className='chat-chip' type='button' data-testid='compact-btn' onClick={() => { compactContext().catch(() => {}) }}>Compact context</button>
               {lockState?.held && (
                 <span className={`chat-lock${lockState.lock?.sessionId === activeId ? ' is-mine' : ''}`}>
@@ -851,7 +862,12 @@ export function ChatScreen ({ mode }: { mode: ChatMode }) {
           )}
           {slashMatches.length > 0 && (
             <div className='chat-slash-menu' role='listbox' aria-label='Workflow commands'>
-              {slashMatches.map((name, index) => <button key={name} type='button' role='option' aria-selected={index === slashIndex} className={index === slashIndex ? 'is-active' : ''} onMouseDown={e => { e.preventDefault(); chooseSlash(name, false) }}>/{name}</button>)}
+              {slashMatches.map((workflow, index) => (
+                <button key={workflow.name} type='button' role='option' aria-selected={index === slashIndex} className={index === slashIndex ? 'is-active' : ''} onMouseDown={e => { e.preventDefault(); chooseSlash(workflow.name, false) }}>
+                  <span className='chat-slash-name'>/{workflow.name}</span>
+                  <span className='chat-slash-description'>{workflow.description}</span>
+                </button>
+              ))}
             </div>
           )}
           {pendingFiles.length > 0 && (
@@ -883,7 +899,7 @@ export function ChatScreen ({ mode }: { mode: ChatMode }) {
               placeholder='Message your secretary…' aria-label='Message'
               onChange={e => { setInput(e.target.value); setSlashIndex(0) }}
               onKeyDown={e => {
-                if (slashMatches.length > 0 && e.key === 'ArrowDown') { e.preventDefault(); setSlashIndex(i => (i + 1) % slashMatches.length) } else if (slashMatches.length > 0 && e.key === 'ArrowUp') { e.preventDefault(); setSlashIndex(i => (i - 1 + slashMatches.length) % slashMatches.length) } else if (slashMatches.length > 0 && e.key === 'Tab') { e.preventDefault(); chooseSlash(slashMatches[slashIndex]!, false) } else if (slashMatches.length > 0 && e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); chooseSlash(slashMatches[slashIndex]!, true) } else if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); send().catch(() => {}) }
+                if (slashMatches.length > 0 && e.key === 'ArrowDown') { e.preventDefault(); setSlashIndex(i => (i + 1) % slashMatches.length) } else if (slashMatches.length > 0 && e.key === 'ArrowUp') { e.preventDefault(); setSlashIndex(i => (i - 1 + slashMatches.length) % slashMatches.length) } else if (slashMatches.length > 0 && e.key === 'Tab') { e.preventDefault(); chooseSlash(slashMatches[slashIndex]!.name, false) } else if (slashMatches.length > 0 && e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); chooseSlash(slashMatches[slashIndex]!.name, true) } else if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); send().catch(() => {}) }
               }}
             />
             <div className='chat-composer-bar'>

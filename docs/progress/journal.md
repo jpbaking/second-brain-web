@@ -152,3 +152,7 @@ Opened milestone 59; next m59-01.
 - 13:18 STARTED m59-01: expose workflow descriptions from introductory Markdown.
 - 13:18 DONE m59-01: workflow API returns sorted names plus descriptions
   derived from each file's first prose paragraph. Workflow suite 5 green.
+- 13:19 STARTED m59-02: hide chips, improve autocomplete, and run workflows from fresh chats.
+- 13:20 DONE m59-02: workflow chips hidden; autocomplete shows one-line
+  descriptions and a strong selected state; fresh-chat selection creates a
+  correctly configured session then runs the workflow. Web lint/build passed.
