@@ -134,3 +134,4 @@ Handoff: begin m72-03 (agent services and chat persistence).
 Tree clean at 2cd498b. Principal request (outside milestone): demote vault write-lock poll HTTP logs to debug.
 - 01:48 STARTED repair: log GET /api/vault/lock request received/completed at debug — chat lock polling too noisy at info.
 - 01:51 DONE repair: verified by `npm run lint` + `npm test` (server 399 green, web 9 green).
+- 01:56 STARTED repair: configure CLI — numbered select for provider, log level, and node env instead of free-typed input.
