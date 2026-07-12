@@ -37,3 +37,5 @@ Opened milestone 51 (chatDefaults in principal profile prefs). Next m51-01.
 
 ## 2026-07-12 10:08 — session end
 Milestone 51 complete. No active milestone; rebuild needed for 48–51 to go live.
+- 10:11 STARTED repair: model menu spans the full composer width
+- 10:13 DONE repair: model menu anchored to the composer, spanning its full width (bounding-box asserted ±2px in a Playwright probe + screenshot). Lint/build green.

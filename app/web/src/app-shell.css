@@ -405,8 +405,10 @@
   color: var(--ink);
 }
 
-/* One rounded container: input on top, controls bar underneath. */
+/* One rounded container: input on top, controls bar underneath. Also the
+   positioning context for the model menu, which spans its full width. */
 .chat-composer {
+  position: relative;
   display: flex;
   flex-direction: column;
   border: 1px solid var(--line);
@@ -453,9 +455,8 @@
   margin-left: auto;
 }
 
-/* Model menu (m50): popup anchored above its trigger in the composer bar. */
+/* Model menu (m50): popup anchored to the composer, spanning its width. */
 .chat-menu-anchor {
-  position: relative;
   display: flex;
 }
 
@@ -483,8 +484,8 @@
 .chat-menu {
   position: absolute;
   bottom: calc(100% + var(--space-2));
-  right: 0;
-  min-width: 280px;
+  left: -1px;
+  right: -1px;
   display: flex;
   flex-direction: column;
   gap: 2px;
