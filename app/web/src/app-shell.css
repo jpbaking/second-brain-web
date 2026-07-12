@@ -48,7 +48,9 @@
   width: 24px;
 }
 
-/* Hover-only "open sidebar" affordance; shown only when collapsed. */
+/* Expanded: the brand is a command-centre link; the open-sidebar button
+   variant (logo swapping to an expand icon on hover) exists only collapsed. */
+.sidebar-brand-open { display: none; }
 .sidebar-brand-expand { display: none; }
 
 .sidebar-dismiss {
@@ -351,7 +353,8 @@
   .shell.is-sidebar-collapsed { grid-template-columns: 68px minmax(0, 1fr); }
   .shell.is-sidebar-collapsed .sidebar { overflow: hidden; }
   .shell.is-sidebar-collapsed .sidebar-head { justify-content: center; }
-  .shell.is-sidebar-collapsed .sidebar-brand span,
+  .shell.is-sidebar-collapsed .sidebar-brand-link { display: none; }
+  .shell.is-sidebar-collapsed .sidebar-brand-open { display: flex; }
   .shell.is-sidebar-collapsed .sidebar-collapse,
   .shell.is-sidebar-collapsed .sidebar-action span,
   .shell.is-sidebar-collapsed .sidebar-chat-search,

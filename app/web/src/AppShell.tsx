@@ -238,10 +238,13 @@ export function AppShell ({ path: initialPath, children }: { path: string, child
 
       <aside className={`sidebar${open ? ' is-open' : ''}`} aria-label='Sidebar'>
         <div className='sidebar-head'>
+          <a className='sidebar-brand sidebar-brand-link' href='/command-centre' title='Command centre'>
+            <img src='/design/assets/logo-mark.svg' alt='' />
+            <span>Second Brain</span>
+          </a>
           <button className='sidebar-brand sidebar-brand-open' type='button' aria-label='Open sidebar' title='Open sidebar' onClick={() => setDesktopCollapsed(false)}>
             <img src='/design/assets/logo-mark.svg' alt='' />
             <span className='sidebar-brand-expand'><SidebarIcon name='expand' /></span>
-            <span>Second Brain</span>
           </button>
           <button className='sidebar-collapse' type='button' aria-label='Close sidebar' title='Close sidebar' onClick={() => setDesktopCollapsed(true)}><SidebarIcon name='collapse' /></button>
           <button className='sidebar-dismiss' type='button' aria-label='Close menu' onClick={() => setOpen(false)}>×</button>

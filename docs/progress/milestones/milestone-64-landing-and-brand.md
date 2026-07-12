@@ -10,7 +10,7 @@ role).
       Verify: `cd app && npm run build` then Playwright probe: log in with
       existing chats and assert the new-chat welcome shows and the URL stays
       off /chat/<id>.
-- [ ] m64-02: expanded sidebar brand (logo + "Second Brain") is a link to
+- [x] m64-02: expanded sidebar brand (logo + "Second Brain") is a link to
       /command-centre; collapsed brand stays the open-sidebar button.
       Verify: Playwright probe: click brand → URL /command-centre; collapse,
       click brand → sidebar expands (no navigation). Screenshots.
