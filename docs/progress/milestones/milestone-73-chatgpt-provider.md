@@ -47,7 +47,7 @@ OAuth handled by `./configure` (not compose-helper — see design notes).
   `openai-codex`); provisioning rejects `base_url` for `chatgpt`.
   Verify: `cd app && npm test --workspace server -- runner.test.ts
   provisioning.test.ts configure-lib.test.ts` green with new cases.
-- [ ] **m73-02 — OAuth credential blob through snapshot + runner.** Define
+- [x] **m73-02 — OAuth credential blob through snapshot + runner.** Define
   the encrypted secret JSON shape `{ access, refresh, expires, accountId? }`;
   `toModelConfig` detects `chatgpt`, parses the blob from the snapshot's
   secret, and emits `providerConfig` with

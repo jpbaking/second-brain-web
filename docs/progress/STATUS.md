@@ -40,7 +40,7 @@ to go live.**
 
 ## Next step
 
-Implement **m73-02**: OAuth credential blob through snapshot + runner.
+Implement **m73-03**: token refresh + persistence before session start.
 
 ## Read before working
 

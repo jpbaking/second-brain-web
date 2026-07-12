@@ -73,6 +73,28 @@ describe('toModelConfig', () => {
     expect(cfg).toEqual({ providerId: 'gemini', modelId: 'gemini-2.5-pro', apiKey: 'google-key' })
   })
 
+  it('maps a chatgpt snapshot to openai-codex with OAuth tokens, no apiKey', () => {
+    const blob = JSON.stringify({ access: 'at-1', refresh: 'rt-1', expires: 1893456000000, accountId: 'acc-1' })
+    const cfg = toModelConfig(snap({ providerId: 'chatgpt', modelId: 'gpt-5.1-codex', apiKey: blob }))
+    expect(cfg).toEqual({
+      providerId: 'openai-codex',
+      modelId: 'gpt-5.1-codex',
+      providerConfig: { providerId: 'openai-codex', accessToken: 'at-1', refreshToken: 'rt-1', accountId: 'acc-1' },
+    })
+    expect('apiKey' in cfg).toBe(false)
+  })
+
+  it.each([
+    ['missing secret', null, /missing/],
+    ['non-JSON secret', 'not-json', /not valid JSON/],
+    ['incomplete blob', JSON.stringify({ access: 'at-only' }), /incomplete/],
+  ])('rejects a chatgpt snapshot with a %s', (_label, secret, message) => {
+    expect(() => toModelConfig(snap({ providerId: 'chatgpt', modelId: 'gpt-5.1-codex', apiKey: secret })))
+      .toThrow(AgentRunnerError)
+    expect(() => toModelConfig(snap({ providerId: 'chatgpt', modelId: 'gpt-5.1-codex', apiKey: secret })))
+      .toThrow(message)
+  })
+
   it('maps Claude Code as inference-only with no nested tools or settings', () => {
     const cfg = toModelConfig(snap({ providerId: 'claude-code', modelId: 'sonnet', apiKey: null }))
     expect(cfg).toEqual({

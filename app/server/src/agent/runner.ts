@@ -32,6 +32,56 @@ export interface AgentModelConfig {
     tools: string[]
     settingSources: string[]
   }
+  /** SDK ProviderConfig extras; carries ChatGPT OAuth tokens (m73). */
+  providerConfig?: {
+    providerId: string
+    accessToken: string
+    refreshToken: string
+    accountId?: string
+  }
+}
+
+/**
+ * Decrypted ChatGPT credential blob (m73). Stored in the profile-secret slot
+ * as JSON, encrypted with the app secrets key; mirrors the SDK's
+ * OAuthCredentials shape from `loginOpenAICodex`.
+ */
+export interface ChatGptCredentials {
+  access: string
+  refresh: string
+  /** Expiry in milliseconds since epoch. */
+  expires: number
+  accountId?: string
+}
+
+/** Parse the decrypted chatgpt secret blob, rejecting malformed payloads. */
+export function parseChatGptCredentials (secret: string | null): ChatGptCredentials {
+  const fail = (reason: string): never => {
+    throw new AgentRunnerError({
+      message: `chatgpt provider credentials are ${reason}; run ./configure to log in again.`,
+      data: safeErrorData({ code: 'AGENT_RUNNER_BAD_CHATGPT_CREDENTIALS', operation: 'parse-credentials' }),
+    })
+  }
+  if (secret === null || secret.trim() === '') fail('missing')
+  let parsed: unknown
+  try {
+    parsed = JSON.parse(secret as string)
+  } catch {
+    fail('not valid JSON')
+  }
+  const blob = parsed as Partial<ChatGptCredentials>
+  if (typeof blob !== 'object' || blob === null ||
+      typeof blob.access !== 'string' || blob.access === '' ||
+      typeof blob.refresh !== 'string' || blob.refresh === '' ||
+      typeof blob.expires !== 'number') {
+    fail('incomplete')
+  }
+  return {
+    access: blob.access as string,
+    refresh: blob.refresh as string,
+    expires: blob.expires as number,
+    ...(typeof blob.accountId === 'string' && blob.accountId !== '' ? { accountId: blob.accountId } : {}),
+  }
 }
 
 /**
@@ -95,7 +145,17 @@ export function toModelConfig (snapshot: ProviderSnapshot): AgentModelConfig {
     providerId: sdkProviderId(snapshot.providerId),
     modelId: snapshot.modelId,
   }
-  if (snapshot.apiKey !== null) config.apiKey = snapshot.apiKey
+  if (snapshot.providerId === 'chatgpt') {
+    // The secret slot holds the OAuth blob, not an API key — the SDK's
+    // openai-codex provider authenticates with access/refresh tokens.
+    const credentials = parseChatGptCredentials(snapshot.apiKey)
+    config.providerConfig = {
+      providerId: config.providerId,
+      accessToken: credentials.access,
+      refreshToken: credentials.refresh,
+      ...(credentials.accountId !== undefined ? { accountId: credentials.accountId } : {}),
+    }
+  } else if (snapshot.apiKey !== null) config.apiKey = snapshot.apiKey
   else if (snapshot.providerId === 'openai-compatible') config.apiKey = OPENAI_COMPATIBLE_PLACEHOLDER_KEY
   if (snapshot.providerId === 'claude-code') {
     // The nested Claude Agent SDK must not load CLAUDE.md/settings or expose

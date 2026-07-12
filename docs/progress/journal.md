@@ -149,3 +149,7 @@ provider support (backlog + implementation). Milestone 72 paused at m72-03.
   SDK id map, catalog map, provisioning rules).
 - 02:07 DONE m73-01: chatgpt known-provider + id maps + provisioning
   base_url rejection; verified by 3 test files / 37 tests green. 
+- 02:08 STARTED m73-02: parse chatgpt OAuth blob in toModelConfig and emit
+  SDK providerConfig accessToken/refreshToken/accountId.
+- 02:10 DONE m73-02: parseChatGptCredentials + providerConfig OAuth mapping
+  in toModelConfig; verified by agent-runner.test.ts 16 green + lint clean.
