@@ -9,7 +9,7 @@ The graph UI and its two API endpoints are dropped. Link extraction
 Scope agreed with the principal 2026-07-12: read-only (no rename/delete/
 download); no link data in the file view; graph dropped entirely.
 
-- [ ] **m66-01** Server: replace `/api/explorer` routes with a file-browser
+- [x] **m66-01** Server: replace `/api/explorer` routes with a file-browser
   API. `GET /api/explorer/tree?path=<dir>` lists one directory of the vault
   workspace (dirs first, then files; names + sizes; `.git` and dotfiles
   hidden; safe-path guard reused). `GET /api/explorer/file?path=<file>`

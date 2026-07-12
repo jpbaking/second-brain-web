@@ -243,3 +243,5 @@ Tree clean at 16cbe12. Principal directed: revamp /explorer into a simple
 read-only vault file browser (rendered md preview; graph dropped). Opened
 milestone 66.
 - 15:14 STARTED progress: milestone 66 checklist + STATUS pointed at m66-01.
+- 15:16 STARTED m66-01: replace /api/explorer routes with file-browser tree+file endpoints, rewrite explorer-api.test.ts.
+- 15:13 DONE m66-01: verified by `npm test --workspace server -- explorer-api.test.ts` → 9 tests green; lint clean.

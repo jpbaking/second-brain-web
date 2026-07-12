@@ -1,4 +1,4 @@
-import { mkdirSync, mkdtempSync, rmSync, writeFileSync } from 'node:fs'
+import { mkdirSync, mkdtempSync, rmSync, symlinkSync, writeFileSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import path from 'node:path'
 import { afterEach, describe, expect, it } from 'vitest'
@@ -9,9 +9,8 @@ import { generateOwnerAuth, writeOwnerAuth } from '../src/auth/bootstrap.js'
 import { totpCode } from '../src/auth/totp.js'
 import { CHALLENGE_COOKIE, SESSION_COOKIE } from '../src/auth/cookies.js'
 import { vaultWorkspacePath } from '../src/vault/config.js'
-import { rebuildLinkGraph } from '../src/explorer/graph.js'
-import { areaOf, buildGraph } from '../src/explorer/routes.js'
-import type { ExplorerGraph } from '../src/explorer/routes.js'
+import { isSafeVaultPath, titleOf } from '../src/explorer/routes.js'
+import type { ExplorerFile, ExplorerTree } from '../src/explorer/routes.js'
 import type { FastifyInstance } from 'fastify'
 
 const scratch: string[] = []
@@ -22,21 +21,23 @@ function cookieValue (header: string | string[] | undefined, name: string): stri
   return values.find(value => value.startsWith(`${name}=`))?.slice(name.length + 1).split(';')[0]
 }
 
-async function fixture (): Promise<{ app: FastifyInstance, cookie: string }> {
+async function fixture (): Promise<{ app: FastifyInstance, cookie: string, ws: string }> {
   const root = mkdtempSync(path.join(tmpdir(), 'sbw-explorer-api-'))
   scratch.push(root)
   const config = loadConfig({ SECOND_BRAIN_WEB_DATA_DIR: path.join(root, 'data'), SECOND_BRAIN_WEB_SECRETS_KEY: 'test-owner-key' })
   prepareDatabases(config.dataDir)
   const ws = vaultWorkspacePath(config.dataDir)
-  const write = (rel: string, body: string) => {
+  const write = (rel: string, body: string | Buffer) => {
     const full = path.join(ws, ...rel.split('/'))
     mkdirSync(path.dirname(full), { recursive: true })
     writeFileSync(full, body)
   }
-  write('memory/notes/index.md', '# Index\n\n[Alice](../people/alice.md) and the [weekly](../../reports/2026/weekly.md).\n')
-  write('memory/people/alice.md', '# Alice\n\nLeads [Apollo](../projects/apollo.md).\n')
-  write('reports/2026/weekly.md', '# Weekly\n\nSource: [notes](../../memory/notes/index.md).\n')
-  rebuildLinkGraph(config.dataDir)
+  write('memory/notes/index.md', '# Index\n\nA hub note.\n')
+  write('memory/notes/plain.txt', 'just text\n')
+  write('memory/people/alice.md', '# Alice\n')
+  write('library/blob.bin', Buffer.from([0x89, 0x50, 0x00, 0x47]))
+  mkdirSync(path.join(ws, '.git'), { recursive: true })
+  write('.git/config', 'never listed')
 
   const { password, state } = await generateOwnerAuth()
   writeOwnerAuth(config.dataDir, state, { SECOND_BRAIN_WEB_SECRETS_KEY: config.secretsKey })
@@ -46,7 +47,7 @@ async function fixture (): Promise<{ app: FastifyInstance, cookie: string }> {
   const challenge = cookieValue(pw.headers['set-cookie'], CHALLENGE_COOKIE)
   const code = totpCode(state.totp.secretBase32, { digits: state.totp.digits, period: state.totp.period })
   const totp = await app.inject({ method: 'POST', url: '/api/auth/totp', headers: { cookie: `${CHALLENGE_COOKIE}=${challenge}` }, payload: { code } })
-  return { app, cookie: `${SESSION_COOKIE}=${cookieValue(totp.headers['set-cookie'], SESSION_COOKIE)}` }
+  return { app, cookie: `${SESSION_COOKIE}=${cookieValue(totp.headers['set-cookie'], SESSION_COOKIE)}`, ws }
 }
 
 afterEach(async () => {
@@ -54,78 +55,75 @@ afterEach(async () => {
   for (const dir of scratch.splice(0)) rmSync(dir, { recursive: true, force: true })
 })
 
-describe('explorer API', () => {
+describe('explorer file-browser API', () => {
   it('requires authentication', async () => {
     const { app } = await fixture()
-    expect((await app.inject({ method: 'GET', url: '/api/explorer' })).statusCode).toBe(401)
+    expect((await app.inject({ method: 'GET', url: '/api/explorer/tree' })).statusCode).toBe(401)
+    expect((await app.inject({ method: 'GET', url: '/api/explorer/file?path=memory/notes/index.md' })).statusCode).toBe(401)
   })
 
-  it('returns the full graph of nodes, edges, and areas', async () => {
+  it('lists the vault root with directories first and dotfiles hidden', async () => {
     const { app, cookie } = await fixture()
-    const graph = (await app.inject({ method: 'GET', url: '/api/explorer', headers: { cookie } })).json() as ExplorerGraph
-
-    expect(graph.edges).toContainEqual({ from: 'memory/notes/index.md', to: 'memory/people/alice.md', label: 'Alice' })
-    expect(graph.edges).toContainEqual({ from: 'reports/2026/weekly.md', to: 'memory/notes/index.md', label: 'notes' })
-    expect(graph.edges).toHaveLength(4)
-
-    // Areas cover memory subfolders + reports.
-    expect(graph.areas).toEqual(['notes', 'people', 'projects', 'reports'])
-
-    // The hub note is linked from the report and links out to two pages → degree 3.
-    const index = graph.nodes.find(n => n.path === 'memory/notes/index.md')
-    expect(index).toMatchObject({ area: 'notes', degree: 3 })
-    expect(graph.nodes.find(n => n.path === 'memory/projects/apollo.md')?.area).toBe('projects')
+    const tree = (await app.inject({ method: 'GET', url: '/api/explorer/tree', headers: { cookie } })).json() as ExplorerTree
+    expect(tree.path).toBe('')
+    expect(tree.entries.map(e => e.name)).toEqual(['library', 'memory'])
+    expect(tree.entries.every(e => e.kind === 'dir')).toBe(true)
   })
 
-  it('filters to edges touching a selected area', async () => {
+  it('lists a subdirectory with files after directories, with sizes', async () => {
     const { app, cookie } = await fixture()
-    const graph = (await app.inject({ method: 'GET', url: '/api/explorer?area=projects', headers: { cookie } })).json() as ExplorerGraph
-
-    // Only the alice → apollo edge touches the projects area.
-    expect(graph.edges).toEqual([{ from: 'memory/people/alice.md', to: 'memory/projects/apollo.md', label: 'Apollo' }])
-    expect(graph.nodes.map(n => n.path)).toEqual(['memory/people/alice.md', 'memory/projects/apollo.md'])
-    // Areas list still reflects the whole graph so the filter can be changed.
-    expect(graph.areas).toContain('reports')
+    const tree = (await app.inject({ method: 'GET', url: '/api/explorer/tree?path=memory/notes', headers: { cookie } })).json() as ExplorerTree
+    expect(tree.entries).toEqual([
+      { name: 'index.md', path: 'memory/notes/index.md', kind: 'file', size: 21 },
+      { name: 'plain.txt', path: 'memory/notes/plain.txt', kind: 'file', size: 10 },
+    ])
   })
 
-  it('derives an area from a path', () => {
-    expect(areaOf('memory/people/alice.md')).toBe('people')
-    expect(areaOf('memory/index.md')).toBe('memory')
-    expect(areaOf('library/originals/x.pdf')).toBe('library')
-    expect(areaOf('reports/2026/weekly.md')).toBe('reports')
-  })
-
-  it('builds an empty graph from no edges', () => {
-    expect(buildGraph([], null)).toEqual({ areas: [], nodes: [], edges: [] })
-  })
-
-  it('serves node detail with title, preview, and links in both directions', async () => {
+  it('404s a missing folder and a file path given to tree', async () => {
     const { app, cookie } = await fixture()
-    const detail = (await app.inject({ method: 'GET', url: '/api/explorer/node?path=memory/notes/index.md', headers: { cookie } })).json()
-
-    expect(detail).toMatchObject({ path: 'memory/notes/index.md', area: 'notes', title: 'Index', exists: true })
-    expect(detail.preview).toContain('Alice')
-    expect(detail.outgoing).toContainEqual({ to: 'memory/people/alice.md', label: 'Alice' })
-    expect(detail.outgoing).toContainEqual({ to: 'reports/2026/weekly.md', label: 'weekly' })
-    // Linked from the weekly report.
-    expect(detail.incoming).toContainEqual({ from: 'reports/2026/weekly.md', label: 'notes' })
+    expect((await app.inject({ method: 'GET', url: '/api/explorer/tree?path=nope', headers: { cookie } })).statusCode).toBe(404)
+    expect((await app.inject({ method: 'GET', url: '/api/explorer/tree?path=memory/notes/index.md', headers: { cookie } })).statusCode).toBe(404)
   })
 
-  it('reports a dangling link target in node detail as not existing', async () => {
+  it('serves a markdown file with title and content', async () => {
     const { app, cookie } = await fixture()
-    // apollo.md is linked from alice but never created on disk.
-    const detail = (await app.inject({ method: 'GET', url: '/api/explorer/node?path=memory/projects/apollo.md', headers: { cookie } })).json()
-    expect(detail).toMatchObject({ exists: false, title: 'apollo', preview: '' })
-    expect(detail.incoming).toContainEqual({ from: 'memory/people/alice.md', label: 'Apollo' })
-    expect(detail.outgoing).toEqual([])
+    const file = (await app.inject({ method: 'GET', url: '/api/explorer/file?path=memory/notes/index.md', headers: { cookie } })).json() as ExplorerFile
+    expect(file).toMatchObject({ path: 'memory/notes/index.md', title: 'index', kind: 'markdown', truncated: false })
+    expect(file.content).toContain('A hub note.')
   })
 
-  it('rejects unsafe or missing paths in node detail', async () => {
+  it('serves a plain-text file as text and a binary file with empty content', async () => {
     const { app, cookie } = await fixture()
-    expect((await app.inject({ method: 'GET', url: '/api/explorer/node', headers: { cookie } })).statusCode).toBe(400)
-    expect((await app.inject({ method: 'GET', url: '/api/explorer/node?path=../etc/passwd', headers: { cookie } })).statusCode).toBe(400)
-    expect((await app.inject({ method: 'GET', url: '/api/explorer/node?path=/etc/passwd', headers: { cookie } })).statusCode).toBe(400)
-    // Detail requires authentication too.
-    expect((await app.inject({ method: 'GET', url: '/api/explorer/node?path=memory/notes/index.md' })).statusCode).toBe(401)
+    const text = (await app.inject({ method: 'GET', url: '/api/explorer/file?path=memory/notes/plain.txt', headers: { cookie } })).json() as ExplorerFile
+    expect(text).toMatchObject({ kind: 'text', content: 'just text\n' })
+    const bin = (await app.inject({ method: 'GET', url: '/api/explorer/file?path=library/blob.bin', headers: { cookie } })).json() as ExplorerFile
+    expect(bin).toMatchObject({ kind: 'binary', content: '', size: 4 })
+  })
+
+  it('404s missing files and never follows symlinks', async () => {
+    const { app, cookie, ws } = await fixture()
+    expect((await app.inject({ method: 'GET', url: '/api/explorer/file?path=memory/none.md', headers: { cookie } })).statusCode).toBe(404)
+    symlinkSync('/etc/hostname', path.join(ws, 'memory', 'leak.md'))
+    expect((await app.inject({ method: 'GET', url: '/api/explorer/file?path=memory/leak.md', headers: { cookie } })).statusCode).toBe(404)
+  })
+
+  it('rejects unsafe paths on both endpoints', async () => {
+    const { app, cookie } = await fixture()
+    for (const bad of ['../etc/passwd', '/etc/passwd', 'a/../b', 'a\\b', '.git/config']) {
+      // .git is dotfile-hidden from tree listings; the file endpoint must also refuse traversal.
+      const tree = await app.inject({ method: 'GET', url: `/api/explorer/tree?path=${encodeURIComponent(bad)}`, headers: { cookie } })
+      expect([400, 404]).toContain(tree.statusCode)
+      const file = await app.inject({ method: 'GET', url: `/api/explorer/file?path=${encodeURIComponent(bad)}`, headers: { cookie } })
+      expect([400, 404]).toContain(file.statusCode)
+    }
+    expect((await app.inject({ method: 'GET', url: '/api/explorer/file', headers: { cookie } })).statusCode).toBe(400)
+  })
+
+  it('derives safe-path verdicts and titles', () => {
+    expect(isSafeVaultPath('memory/notes/index.md')).toBe(true)
+    expect(isSafeVaultPath('../x')).toBe(false)
+    expect(isSafeVaultPath('/x')).toBe(false)
+    expect(isSafeVaultPath('a//b')).toBe(false)
+    expect(titleOf('memory/people/alice-smith.md')).toBe('alice smith')
   })
 })
