@@ -4,7 +4,7 @@ Principal direction (2026-07-12): replace the radio-tower brand mark with a
 "brain" mark across logo and favicons. Keep the design-kit language: blue
 tile (#12279E), white line work, amber accent (#D9821F), invert variant.
 
-- [ ] m65-01: design the brain mark and update the SVG assets
+- [x] m65-01: design the brain mark and update the SVG assets
       (`design/assets/logo-mark.svg`, `logo-mark-invert.svg`,
       `/favicon.svg`, `design/assets/favicons/favicon.svg`).
       Verify: `cd app && npm run build` + Playwright screenshots of the

@@ -230,3 +230,5 @@ Milestone 63 complete and archived. Handoff: no active milestone; container rebu
 ## 2026-07-12 14:39 — session end
 Milestone 64 complete and archived. Handoff: no active milestone; container rebuild pending for 62-64.
 - 14:42 STARTED m65-01: design brain mark, update SVG brand assets
+- 14:45 DONE m65-01: brain mark (side profile + node network, kit colours) in logo-mark, invert, and SVG favicons; verified by build + in-app Playwright screenshots.
+- 14:45 STARTED m65-02: regenerate raster favicons + webmanifest name
