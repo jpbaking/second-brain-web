@@ -1,6 +1,6 @@
 # STATUS — single source of truth
 
-Updated: 2026-07-12 (no active milestone; milestone 67 complete)
+Updated: 2026-07-12 (active: milestone 68 — explorer download)
 
 ## Where we are
 
@@ -102,7 +102,7 @@ object). Milestones 48–49 need `./compose-helper.sh up` (rebuild) to go live.
 
 ## Next step
 
-Await direction. Rebuild (./compose-helper.sh up) pending for milestones 62–67.
+m68-01 (download endpoint). Rebuild (./compose-helper.sh up) pending for milestones 62–67.
 
 ## Read before working
 
