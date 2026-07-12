@@ -71,6 +71,21 @@ describe('provider API', () => {
     expect(list.body).not.toContain('hasKey')
   })
 
+  it('reports reasoning capabilities from the model catalog', async () => {
+    const { app, cookie, dataDir } = await authedApp('k')
+    const db = openCoreDb(dataDir)
+    createProfile(db, { displayName: 'Sonnet', providerId: 'claude-code', modelId: 'claude-sonnet-5' })
+    createProfile(db, { displayName: 'Local', providerId: 'openai-compatible', modelId: 'some-local-model' })
+    db.close()
+    const list = await app.inject({ method: 'GET', url: '/api/providers', headers: { cookie } })
+    expect(list.statusCode).toBe(200)
+    const profiles = list.json().profiles as Array<{ displayName: string, reasoning: { supported: boolean | null, effort: boolean | null } }>
+    const sonnet = profiles.find(p => p.displayName === 'Sonnet')
+    const local = profiles.find(p => p.displayName === 'Local')
+    expect(sonnet?.reasoning.supported).toBe(true)
+    expect(local?.reasoning).toEqual({ supported: null, effort: null })
+  })
+
   it('does not expose provider mutation routes', async () => {
     const { app, cookie } = await authedApp('k')
     expect((await app.inject({ method: 'POST', url: '/api/providers', headers: { cookie }, payload: {} })).statusCode).toBe(404)

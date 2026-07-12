@@ -15,7 +15,7 @@ includes `reasoning` / `reasoning-effort`. Catalog covers `anthropic`,
 catalog (same model ids); `openai-compatible` (LM Studio) is uncatalogued —
 treat capabilities as unknown and still offer the controls.
 
-- [ ] **m50-01** Server: expose per-profile model capabilities. Extend the
+- [x] **m50-01** Server: expose per-profile model capabilities. Extend the
   `/api/providers` profile payload with `modelId` and
   `reasoning: { supported: boolean | null, effort: boolean | null }` (null =
   unknown/uncatalogued) resolved from the generated catalog (claude-code →

@@ -6,6 +6,7 @@ import {
   listProfiles,
 } from './store.js'
 import { testProvider } from './test.js'
+import { modelReasoningCapabilities } from './capabilities.js'
 import type { AppConfig } from '../config.js'
 import type { FastifyInstance } from 'fastify'
 
@@ -22,7 +23,8 @@ export function registerProviderRoutes (app: FastifyInstance, config: AppConfig)
       return {
         profiles: listProfiles(db).map(({ keyLast4: _keyLast4, hasKey, ...profile }) => ({
           ...profile,
-          key: hasKey ? 'configured' : 'none'
+          key: hasKey ? 'configured' : 'none',
+          reasoning: modelReasoningCapabilities(profile.providerId, profile.modelId)
         }))
       }
     } finally {
