@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import { AppHero } from './AppHero.js'
 
 export interface ScheduledJob {
   id: string
@@ -69,10 +70,7 @@ export function SchedulesScreen () {
 
   return (
     <div className='app-page'>
-      <header className='app-hero'>
-        <h1 className='app-title'>Scheduled Briefs</h1>
-        <p className='app-tagline'>Configure background agent workflows that run periodically.</p>
-      </header>
+      <AppHero title='Scheduled Briefs' tagline='Configure background agent workflows that run periodically.' />
 
       <main className='stack-3'>
         {error !== null && (

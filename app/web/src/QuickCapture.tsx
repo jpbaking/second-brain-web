@@ -1,4 +1,5 @@
 import { useRef, useState } from 'react'
+import { AppHero } from './AppHero.js'
 
 export function QuickCapture () {
   const [mode, setMode] = useState<'note' | 'upload'>('note')
@@ -42,10 +43,7 @@ export function QuickCapture () {
 
   return (
     <div className='app-page'>
-      <header className='app-hero'>
-        <h1 className='app-title'>Quick capture</h1>
-        <p className='app-tagline'>Jot down a thought to process later.</p>
-      </header>
+      <AppHero title='Quick capture' tagline='Jot down a thought to process later.' />
 
       <main className='action-card' aria-live='polite'>
         <div className='tab-list' role='tablist' aria-label='Capture type'>

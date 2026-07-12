@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import { AppHero } from './AppHero.js'
 
 interface ProviderProfile {
   id: string
@@ -49,15 +50,7 @@ export function ProviderSettings () {
 
   return (
     <div className='app-page'>
-      <header className='app-hero'>
-        <a className='app-brand' href='/' aria-label='Second Brain home'>
-          <img src='/design/assets/logo-mark-invert.svg' alt='' />
-          <span className='app-wordmark'>Second Brain</span>
-        </a>
-        <p className='app-kicker'>Private console</p>
-        <h1 className='app-title'>Providers</h1>
-        <p className='app-tagline'>Provider profiles available to your secretary.</p>
-      </header>
+      <AppHero title='Providers' tagline='Provider profiles available to your secretary.' />
 
       <main className='action-card'>
         <div className='alert alert-info' role='status'>

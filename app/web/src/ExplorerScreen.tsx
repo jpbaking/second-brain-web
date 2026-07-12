@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from 'react'
+import { AppHero } from './AppHero.js'
 
 interface ExplorerEdge { from: string, to: string, label: string }
 interface ExplorerNode { path: string, area: string, degree: number }
@@ -70,10 +71,7 @@ export function ExplorerScreen () {
 
   return (
     <div className='app-page'>
-      <header className='app-hero'>
-        <h1 className='app-title'>Explorer</h1>
-        <p className='app-tagline'>How the pages in your vault link to one another.</p>
-      </header>
+      <AppHero title='Explorer' tagline='How the pages in your vault link to one another.' />
 
       <main className='action-card stack-3'>
         <div className='report-toolbar'>

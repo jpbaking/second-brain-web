@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import { AppHero } from './AppHero.js'
 
 interface VaultMarker { path: string, present: boolean }
 interface VaultDetection { present: boolean, markers: VaultMarker[], missing: string[] }
@@ -98,15 +99,7 @@ export function VaultSettings () {
 
   return (
     <div className='app-page'>
-      <header className='app-hero'>
-        <a className='app-brand' href='/' aria-label='Second Brain home'>
-          <img src='/design/assets/logo-mark-invert.svg' alt='' />
-          <span className='app-wordmark'>Second Brain</span>
-        </a>
-        <p className='app-kicker'>Private console</p>
-        <h1 className='app-title'>Vault settings</h1>
-        <p className='app-tagline'>Point the console at your vault repository and clone it locally.</p>
-      </header>
+      <AppHero title='Vault settings' tagline='Point the console at your vault repository and clone it locally.' />
 
       <main className='action-card'>
         {error !== null && (

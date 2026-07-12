@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import { AppHero } from './AppHero.js'
 
 type FollowUpKind = 'reminder' | 'commitment'
 type CommitmentDirection = 'i-owe' | 'waiting-on'
@@ -97,10 +98,7 @@ export function FollowUpsScreen () {
 
   return (
     <div className='app-page'>
-      <header className='app-hero'>
-        <h1 className='app-title'>Follow-ups</h1>
-        <p className='app-tagline'>Reminders and commitments the secretary is keeping watch on.</p>
-      </header>
+      <AppHero title='Follow-ups' tagline='Reminders and commitments the secretary is keeping watch on.' />
 
       <main className='action-card stack-3'>
         <div className='tab-list' role='tablist' aria-label='Follow-up filters'>

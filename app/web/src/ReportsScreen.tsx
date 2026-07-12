@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from 'react'
+import { AppHero } from './AppHero.js'
 
 type ReportType = 'html' | 'pdf' | 'markdown'
 
@@ -69,10 +70,7 @@ export function ReportsScreen () {
 
   return (
     <div className='app-page'>
-      <header className='app-hero'>
-        <h1 className='app-title'>Reports</h1>
-        <p className='app-tagline'>Generated reviews and briefings from your vault.</p>
-      </header>
+      <AppHero title='Reports' tagline='Generated reviews and briefings from your vault.' />
 
       <main className='action-card stack-3'>
         <div className='report-toolbar'>

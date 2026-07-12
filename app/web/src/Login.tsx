@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { AppHero } from './AppHero.js'
 
 type Step = 'password' | 'totp'
 
@@ -69,15 +70,7 @@ export function Login () {
 
   return (
     <div className='app-page'>
-      <header className='app-hero narrow'>
-        <a className='app-brand' href='/' aria-label='Second Brain home'>
-          <img src='/design/assets/logo-mark-invert.svg' alt='' />
-          <span className='app-wordmark'>Second Brain</span>
-        </a>
-        <p className='app-kicker'>Private console</p>
-        <h1 className='app-title'>Sign in</h1>
-        <p className='app-tagline'>Owner access needs your password and a one-time code.</p>
-      </header>
+      <AppHero title='Sign in' tagline='Owner access needs your password and a one-time code.' narrow />
 
       <main className='action-card narrow'>
         {error !== null && (

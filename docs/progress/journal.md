@@ -167,3 +167,7 @@ descriptions and selection; workflows run from fresh chats. Rebuild needed.
 ## 2026-07-12 13:24 — session start
 Tree clean at ff23488. Principal go: make the logo/title lockup consistent on
 all pages except chat. Opened milestone 60; next m60-01.
+- 13:25 STARTED m60-01: add one branded hero component and migrate non-chat screens.
+- 13:26 DONE m60-01: all non-chat screens and setup gates use one branded
+  AppHero; titles/taglines preserved and sign-in remains narrow. Web lint and
+  production build passed.

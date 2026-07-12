@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import { AppHero } from './AppHero.js'
 
 interface SystemStatus {
   dataDir: {
@@ -39,10 +40,7 @@ export function BackupScreen () {
 
   return (
     <div className='app-page'>
-      <header className='app-hero'>
-        <h1 className='app-title'>System Backup</h1>
-        <p className='app-tagline'>Download database snapshots and view operational status.</p>
-      </header>
+      <AppHero title='System Backup' tagline='Download database snapshots and view operational status.' />
 
       <main className='action-card'>
         {error !== null && (

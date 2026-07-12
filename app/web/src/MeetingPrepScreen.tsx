@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { AppHero } from './AppHero.js'
 
 export function MeetingPrepScreen () {
   const [title, setTitle] = useState('')
@@ -37,10 +38,7 @@ export function MeetingPrepScreen () {
 
   return (
     <div className='app-page'>
-      <header className='app-hero'>
-        <h1 className='app-title'>Meeting Prep</h1>
-        <p className='app-tagline'>Start a guided prep session with the agent.</p>
-      </header>
+      <AppHero title='Meeting Prep' tagline='Start a guided prep session with the agent.' />
 
       <main className='action-card'>
         {error !== null && (

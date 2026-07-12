@@ -10,6 +10,7 @@ import { FollowUpsScreen } from './FollowUpsScreen.js'
 import { SearchScreen } from './SearchScreen.js'
 import { ExplorerScreen } from './ExplorerScreen.js'
 import { MeetingPrepScreen } from './MeetingPrepScreen.js'
+import { AppHero } from './AppHero.js'
 import { BackupScreen } from './BackupScreen.js'
 import { SchedulesScreen } from './SchedulesScreen.js'
 import { AppShell } from './AppShell.js'
@@ -110,15 +111,7 @@ function StatusPage () {
 
   return (
     <div className='app-page'>
-      <header className='app-hero'>
-        <a className='app-brand' href='/' aria-label='Second Brain home'>
-          <img src='/design/assets/logo-mark-invert.svg' alt='' />
-          <span className='app-wordmark'>Second Brain</span>
-        </a>
-        <p className='app-kicker'>Private console</p>
-        <h1 className='app-title'>Setup status</h1>
-        <p className='app-tagline'>Local service checks before vault operations are enabled.</p>
-      </header>
+      <AppHero title='Setup status' tagline='Local service checks before vault operations are enabled.' />
 
       <main className='action-card' aria-live='polite'>
         {error !== null && (

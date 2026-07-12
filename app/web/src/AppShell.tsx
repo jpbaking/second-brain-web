@@ -1,6 +1,7 @@
 import './app-shell.css'
 import { useCallback, useEffect, useState } from 'react'
 import type { ReactNode } from 'react'
+import { AppHero } from './AppHero.js'
 
 /**
  * Authenticated app shell (milestone 16): a chat-first layout in the style of
@@ -129,15 +130,7 @@ export function AppShell ({ path: initialPath, children }: { path: string, child
     showRecents = false
     content = (
       <div className='app-page'>
-        <header className='app-hero'>
-          <a className='app-brand' href='/' aria-label='Second Brain home'>
-            <img src='/design/assets/logo-mark-invert.svg' alt='' />
-            <span className='app-wordmark'>Second Brain</span>
-          </a>
-          <p className='app-kicker'>Setup required</p>
-          <h1 className='app-title'>No providers configured</h1>
-          <p className='app-tagline'>You must configure at least one LLM provider to use Second Brain.</p>
-        </header>
+        <AppHero title='No providers configured' tagline='You must configure at least one LLM provider to use Second Brain.' kicker='Setup required' />
         <main className='action-card'>
           <div className='alert alert-danger' role='alert'>
             <span className='alert-title'>Action required</span>

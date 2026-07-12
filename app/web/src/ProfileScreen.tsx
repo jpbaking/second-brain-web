@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react'
+import { AppHero } from './AppHero.js'
 
 interface PrincipalProfile {
   themeMode?: 'light' | 'dark' | 'system'
@@ -68,10 +69,7 @@ export function ProfileScreen () {
 
   return (
     <div className='app-page'>
-      <header className='app-hero'>
-        <h1 className='app-title'>Principal Profile</h1>
-        <p className='app-tagline'>Private settings for your working preferences.</p>
-      </header>
+      <AppHero title='Principal Profile' tagline='Private settings for your working preferences.' />
 
       <main className='action-card'>
         {error && <div className='alert alert-danger'>{error}</div>}

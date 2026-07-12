@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
+import { AppHero } from './AppHero.js'
 
 type SearchKind = 'memory' | 'catalog' | 'report'
 
@@ -77,10 +78,7 @@ export function SearchScreen () {
 
   return (
     <div className='app-page'>
-      <header className='app-hero'>
-        <h1 className='app-title'>Search</h1>
-        <p className='app-tagline'>Look across your memory, catalogue, and reports.</p>
-      </header>
+      <AppHero title='Search' tagline='Look across your memory, catalogue, and reports.' />
 
       <main className='action-card stack-3'>
         <div className='report-toolbar'>

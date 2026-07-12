@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import { ReviewCommitModal } from './ReviewCommitModal.js'
+import { AppHero } from './AppHero.js'
 
 interface GitStatus {
   isRepo: boolean
@@ -67,15 +68,7 @@ export function CommandCenter () {
   const git = data?.git
   return (
     <div className='app-page'>
-      <header className='app-hero'>
-        <a className='app-brand' href='/' aria-label='Second Brain home'>
-          <img src='/design/assets/logo-mark-invert.svg' alt='' />
-          <span className='app-wordmark'>Second Brain</span>
-        </a>
-        <p className='app-kicker'>Private console</p>
-        <h1 className='app-title'>Command centre</h1>
-        <p className='app-tagline'>Your vault at a glance before you type anything.</p>
-      </header>
+      <AppHero title='Command centre' tagline='Your vault at a glance before you type anything.' />
 
       <main className='action-card' aria-live='polite'>
         {error !== null && (
