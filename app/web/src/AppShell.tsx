@@ -108,9 +108,10 @@ export function AppShell ({ path: initialPath, children }: { path: string, child
     if (res.ok) await loadSessions()
   }
 
+  const [clearPromptOpen, setClearPromptOpen] = useState(false)
+
   const clearChats = async (preservePinned: boolean) => {
-    const message = preservePinned ? 'Delete every unpinned chat?' : 'Delete all chats, including pinned chats?'
-    if (!window.confirm(message)) return
+    setClearPromptOpen(false)
     const res = await fetch(`/api/chat/sessions?preservePinned=${preservePinned}`, { method: 'DELETE', credentials: 'same-origin' })
     if (res.ok) window.location.assign('/chat/new')
   }
@@ -168,7 +169,12 @@ export function AppShell ({ path: initialPath, children }: { path: string, child
 
         {showRecents && (
           <nav className='sidebar-recents' aria-label='Recent chats'>
-            <h2 className='sidebar-heading'>Chats</h2>
+            <div className='sidebar-heading-row'>
+              <h2 className='sidebar-heading'>Chats</h2>
+              {sessions.length > 0 && (
+                <button type='button' className='sidebar-chat-clear-trigger' onClick={() => setClearPromptOpen(true)}>Clear</button>
+              )}
+            </div>
             {sessions.length === 0
               ? <p className='sidebar-empty'>No chats yet.</p>
               : (
@@ -188,12 +194,6 @@ export function AppShell ({ path: initialPath, children }: { path: string, child
                   ))}
                 </ul>
                 )}
-            {sessions.length > 0 && (
-              <div className='sidebar-chat-clear'>
-                <button type='button' onClick={() => { clearChats(true).catch(() => {}) }}>Clear unpinned</button>
-                <button type='button' onClick={() => { clearChats(false).catch(() => {}) }}>Clear all</button>
-              </div>
-            )}
           </nav>
         )}
 
@@ -223,6 +223,20 @@ export function AppShell ({ path: initialPath, children }: { path: string, child
           {content}
         </div>
       </div>
+
+      {clearPromptOpen && (
+        <div className='review-backdrop' role='dialog' aria-modal='true' aria-labelledby='clear-chats-title' onClick={() => setClearPromptOpen(false)}>
+          <div className='action-card review-dialog' onClick={e => e.stopPropagation()}>
+            <h2 id='clear-chats-title' className='card-title'>Clear chats</h2>
+            <p className='clear-chats-prompt'>Choose what to delete.</p>
+            <div className='form-actions clear-chats-actions'>
+              <button type='button' className='btn btn-secondary' onClick={() => { clearChats(false).catch(() => {}) }}>Clear all</button>
+              <button type='button' className='btn btn-secondary' onClick={() => { clearChats(true).catch(() => {}) }}>Clear non-favourites</button>
+              <button type='button' className='btn btn-danger' onClick={() => setClearPromptOpen(false)}>Cancel</button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   )
 }

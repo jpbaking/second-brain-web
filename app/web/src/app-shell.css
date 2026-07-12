@@ -67,6 +67,26 @@
   color: var(--muted);
 }
 
+.sidebar-heading-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: .5rem;
+}
+
+.sidebar-heading-row .sidebar-heading {
+  margin: 0;
+}
+
+.sidebar-chat-clear-trigger {
+  border: 0;
+  background: transparent;
+  color: var(--text-muted);
+  cursor: pointer;
+  font-size: .75rem;
+  padding: 0;
+}
+
 .sidebar-recents {
   flex: 1 1 auto;
   min-height: 0;
@@ -114,9 +134,6 @@
   position: absolute; right: .25rem; top: .2rem; border: 0; background: transparent;
   color: var(--text-muted); cursor: pointer; padding: .25rem;
 }
-.sidebar-chat-clear { display: flex; gap: .5rem; padding: .5rem; }
-.sidebar-chat-clear button { border: 0; background: transparent; color: var(--text-muted); cursor: pointer; font-size: .75rem; }
-
 .sidebar-nav {
   display: flex;
   flex-direction: column;
@@ -813,6 +830,15 @@
   place-items: center;
   padding: var(--space-3);
   background: rgb(20 23 38 / 55%);
+}
+
+.clear-chats-prompt {
+  margin: 0 0 var(--space-2);
+}
+
+.clear-chats-actions {
+  justify-content: flex-end;
+  margin-top: 0;
 }
 
 .review-dialog {
