@@ -1,6 +1,6 @@
 # STATUS — single source of truth
 
-Updated: 2026-07-12 (active: milestone 50 — composer model menu)
+Updated: 2026-07-12 (no active milestone; milestone 50 complete)
 
 ## Where we are
 
@@ -18,14 +18,19 @@ Updated: 2026-07-12 (active: milestone 50 — composer model menu)
   `cd app && npm install && npm run build && npm start` with
   `SECOND_BRAIN_WEB_DATA_DIR` at a private `0700` dir.
 - Key facts: all app source under `app/` (npm workspace root — run every npm
-  command from there). Core DB schema v14; sidecar v3. Server suite: 364
+  command from there). Core DB schema v15; sidecar v3. Server suite: 366
   tests green. UI routes: `/` = chat, `/command-centre`, `/capture`,
   `/follow-ups`, `/reports`, `/search`, `/explorer`, `/vault`, `/providers`,
   `/login`, `/setup`.
 
 ## Active milestone
 
-Milestone 50 — composer model menu (thinking + effort): docs/progress/milestones/milestone-50-composer-model-menu.md, next item m50-01.
+Milestone 50 (composer model menu) is complete. Archived checklist:
+`docs/progress/milestones/archive/milestone-50-composer-model-menu.md`. The
+composer names the real active model (no placeholder) with a popup menu:
+model submenu, Thinking toggle, Effort slider (catalog-gated); persisted
+per session (schema v15) and passed to the SDK at start. Milestones 48–50
+need `./compose-helper.sh up` (rebuild) to go live.
 
 Previous: milestone 49 (chat-scoped file upload) — composer paperclip,
 files under `dataDir/chat-uploads/<sessionId>/`, images → SDK `userImages`
@@ -35,7 +40,7 @@ object). Milestones 48–49 need `./compose-helper.sh up` (rebuild) to go live.
 
 ## Next step
 
-Work milestone 50, item m50-01.
+Await direction.
 
 ## Read before working
 

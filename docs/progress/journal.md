@@ -18,3 +18,9 @@ collapse, and archiving the fully-ticked milestone-37 checklist.
 - 09:42 DONE m50-02: schema v15 thinking/reasoning_effort columns, PATCH accepts + validates, start config carries them to the SDK; verified by `npm test --workspace server -- chat-api agent-session migrations` → 22 green.
 - 09:42 STARTED m50-03: composer model menu UI (model submenu, thinking toggle, effort selector; no Default provider placeholder)
 - 09:45 DONE m50-03: composer model menu (trigger = real model name, switch-model submenu, thinking switch + ✦ marker, effort slider gated by catalog capability); verified by lint/build + Playwright screenshots.
+- 09:45 STARTED m50-04: full verify + archive
+- 09:46 DONE m50-04: full verify — lint green, server 366 + web 9 green (status/migrations tests bumped to schema v15), build green. Checklist archived.
+
+## 2026-07-12 09:46 — session end
+Milestone 50 complete. No active milestone; await direction. Rebuild needed
+for 48–50 to go live.

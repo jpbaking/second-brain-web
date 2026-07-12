@@ -33,6 +33,6 @@ treat capabilities as unknown and still offer the controls.
   hidden when the catalog says unsupported), wired to the PATCH endpoint.
   Approvals select stays.
   Verify: `cd app && npm run lint && npm run build` + Playwright screenshot
-- [ ] **m50-04** Full verify + archive: lint, full suite, build; screenshot
+- [x] **m50-04** Full verify + archive: lint, full suite, build; screenshot
   evidence; archive this checklist, update STATUS.
   Verify: `cd app && npm run lint && npm test && npm run build`
