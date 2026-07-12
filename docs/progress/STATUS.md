@@ -1,6 +1,6 @@
 # STATUS — single source of truth
 
-Updated: 2026-07-12 (no active milestone; milestone 62 complete)
+Updated: 2026-07-12 (active: milestone 63 — chat-row menu with rename)
 
 ## Where we are
 
@@ -25,7 +25,9 @@ Updated: 2026-07-12 (no active milestone; milestone 62 complete)
 
 ## Active milestone
 
-Milestone 62 (sidebar polish) is complete: collapsed-logo hover shows an
+Milestone 63 (chat-row "…" menu with rename) is ACTIVE: docs/progress/milestones/milestone-63-chat-row-menu.md. Next item: m63-01.
+
+Previous: milestone 62 (sidebar polish) is complete: collapsed-logo hover shows an
 open-sidebar affordance; New chat/Capture blue-bold follows the current
 page; chat search matches message bodies (`GET /api/chat/sessions?q=`,
 `searchSessions` in chat-store); star and a new delete button appear only
@@ -84,7 +86,7 @@ object). Milestones 48–49 need `./compose-helper.sh up` (rebuild) to go live.
 
 ## Next step
 
-Await direction. (To see milestone 62 live: `./compose-helper.sh up`.)
+Work milestone 63 (m63-01). To see milestones 62–63 live: ./compose-helper.sh up.
 
 ## Read before working
 
