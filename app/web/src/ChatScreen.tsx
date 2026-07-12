@@ -129,6 +129,29 @@ function CopyButton ({ text }: { text: string }) {
   )
 }
 
+function MessageCopyButton ({ text }: { text: string }) {
+  const [copied, setCopied] = useState(false)
+  return (
+    <button
+      type='button'
+      className='chat-message-copy'
+      aria-label='Copy response as Markdown'
+      title='Copy response as Markdown'
+      onClick={() => {
+        navigator.clipboard.writeText(text).then(() => {
+          setCopied(true)
+          setTimeout(() => setCopied(false), 1500)
+        }).catch(() => {})
+      }}
+    >
+      {copied
+        ? <svg width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='currentColor' strokeWidth='2' strokeLinecap='round' strokeLinejoin='round' aria-hidden='true'><path d='M20 6 9 17l-5-5' /></svg>
+        : <svg width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='currentColor' strokeWidth='2' strokeLinecap='round' strokeLinejoin='round' aria-hidden='true'><rect x='9' y='9' width='13' height='13' rx='2' /><path d='M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1' /></svg>}
+      <span>{copied ? 'Copied' : 'Copy'}</span>
+    </button>
+  )
+}
+
 // Fenced code block: line numbers (CSS counters, excluded from copy/select)
 // and a copy button; clicking opens the zoom modal when zoomable.
 function CodeBlock ({ code, lang, zoomable = false }: { code: string, lang: string | null, zoomable?: boolean }) {
@@ -759,17 +782,20 @@ export function ChatScreen ({ mode }: { mode: ChatMode }) {
                         </div>
                       )}
                       {l.text !== '' && (
-                        <div className={`chat-bubble${l.role === 'assistant' ? ' prose' : ''}`}>
-                          {l.role === 'assistant'
-                            ? (
-                              <StreamingContext.Provider value={l.complete === false}>
-                                <ReactMarkdown remarkPlugins={[remarkGfm]} components={markdownComponents}>
-                                  {l.text}
-                                </ReactMarkdown>
-                              </StreamingContext.Provider>
-                              )
-                            : l.text}
-                        </div>
+                        <>
+                          <div className={`chat-bubble${l.role === 'assistant' ? ' prose' : ''}`}>
+                            {l.role === 'assistant'
+                              ? (
+                                <StreamingContext.Provider value={l.complete === false}>
+                                  <ReactMarkdown remarkPlugins={[remarkGfm]} components={markdownComponents}>
+                                    {l.text}
+                                  </ReactMarkdown>
+                                </StreamingContext.Provider>
+                                )
+                              : l.text}
+                          </div>
+                          {l.role === 'assistant' && <MessageCopyButton text={l.text} />}
+                        </>
                       )}
                     </div>
                     )

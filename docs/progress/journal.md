@@ -104,3 +104,7 @@ HTML/Excel-compatible TSV copy control; rebuild needed to go live.
 ## 2026-07-12 13:00 — session start
 Tree clean at ecdbfad. Principal go: add a Copy action below every assistant
 message for its raw Markdown response. Opened milestone 56; next m56-01.
+- 13:00 STARTED m56-01: add a raw Markdown Copy action below assistant messages.
+- 13:00 DONE m56-01: every non-empty assistant message has a labelled Copy
+  action for its exact raw Markdown with brief Copied confirmation. Verified
+  by web lint and production build.
