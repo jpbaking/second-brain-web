@@ -25,8 +25,8 @@ Updated: 2026-07-12 (milestone 61 active)
 
 ## Active milestone
 
-Milestone 61 (Gemini-inspired sidebar) is active. m61-01 is complete; next:
-m61-02 validate the bottom secondary-pages menu and responsive drawer.
+Milestone 61 (Gemini-inspired sidebar) is active. m61-01 and m61-02 are
+complete; next: m61-03 full verification and archive.
 
 Previous: milestone 60 (consistent non-chat page heroes) is complete. Every non-chat
 screen uses one shared logo, kicker, title, and subtitle hero structure.
@@ -77,7 +77,7 @@ object). Milestones 48–49 need `./compose-helper.sh up` (rebuild) to go live.
 
 ## Next step
 
-Implement m61-02 from
+Run m61-03 from
 `docs/progress/milestones/milestone-61-gemini-sidebar.md`.
 
 ## Read before working

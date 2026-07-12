@@ -187,3 +187,7 @@ primary actions, chat search, and bottom secondary-pages menu. Opened milestone
 - 13:40 DONE m61-01: persistent desktop collapse (logo reopens), icon-led New
   chat/Capture/Search chats, and instant recent-title filtering implemented.
   Web lint and production build passed.
+- 13:40 STARTED m61-02: validate bottom overflow navigation and mobile drawer behaviour.
+- 13:41 DONE m61-02: secondary pages are ordered in an icon-labelled bottom
+  overflow beside Sign out; collapsed clicks expand before opening menus; the
+  mobile drawer retains its dedicated close control. Web lint/build passed.
