@@ -67,6 +67,21 @@ describe('structured logging', () => {
     expect(all).not.toContain(cookieSecret)
   })
 
+  it('logs vault-lock poll requests at trace and other requests at info', async () => {
+    const { app, lines } = await appWithCapturedLogs()
+    await app.inject({ method: 'GET', url: '/api/vault/lock' })
+    await app.inject({ method: 'GET', url: '/api/health' })
+
+    const records = lines.map(line => JSON.parse(line) as { level: string, msg: string, req?: { url?: string }, reqId?: string })
+    const lockId = records.find(r => r.req?.url === '/api/vault/lock')?.reqId
+    expect(lockId).toBeDefined()
+    const lockRecords = records.filter(r => r.reqId === lockId)
+    // Both the received and completed lines of the poll sit at trace.
+    expect(lockRecords.length).toBeGreaterThanOrEqual(2)
+    expect(lockRecords.every(r => r.level === 'trace')).toBe(true)
+    expect(records.find(r => r.req?.url === '/api/health')?.level).toBe('info')
+  })
+
   it('configures the root log4js level from the environment', () => {
     expect(resolveLogLevel({})).toBe('info')
     expect(configureLogging({ SECOND_BRAIN_WEB_LOG_LEVEL: 'WARN' })).toBe('warn')

@@ -45,9 +45,9 @@ export function buildApp (config?: AppConfig, deps?: AppDeps): FastifyInstance {
 
   if (loggingEnabled) {
     // The chat screen polls the vault write-lock endpoint continuously, so its
-    // request logs drown out the rest at info level.
-    const requestLogLevel = (req: { method: string, url: string }): 'debug' | 'info' =>
-      req.method === 'GET' && req.url.split('?')[0] === '/api/vault/lock' ? 'debug' : 'info'
+    // request logs drown out the rest — keep them below debug too.
+    const requestLogLevel = (req: { method: string, url: string }): 'trace' | 'info' =>
+      req.method === 'GET' && req.url.split('?')[0] === '/api/vault/lock' ? 'trace' : 'info'
 
     app.addHook('onRequest', (req, _reply, done) => {
       logger[requestLogLevel(req)]('request received', {

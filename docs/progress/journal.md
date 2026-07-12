@@ -237,3 +237,8 @@ step.
 Repair committed. Rebuild required for the container to pick it up
 (./compose-helper.sh up — also cures the stale-image "unknown provider type
 chatgpt" setup error). m73-06 live ChatGPT check still with the principal.
+- 06:18 STARTED repair: principal request — vault-lock poll HTTP logs from
+  debug down to trace.
+- 06:18 DONE repair: GET /api/vault/lock request received/completed now log
+  at trace; verified by structured-logs.test.ts 5 green (new case asserts
+  trace for the poll, info for other requests) + lint clean.
