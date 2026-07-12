@@ -1,6 +1,6 @@
 # STATUS — single source of truth
 
-Updated: 2026-07-12 (no active milestone; milestone 63 complete)
+Updated: 2026-07-12 (active: milestone 64 — landing + brand link)
 
 ## Where we are
 
@@ -25,7 +25,9 @@ Updated: 2026-07-12 (no active milestone; milestone 63 complete)
 
 ## Active milestone
 
-Milestone 63 (chat-row "…" menu) is complete: the hover trash button became a per-row "…" menu with Rename (inline edit, existing PATCH title route) and Delete. **Milestones 62–63 need `./compose-helper.sh up` (rebuild) to go live.**
+Milestone 64 (new-chat landing + brand → command centre) is ACTIVE: docs/progress/milestones/milestone-64-landing-and-brand.md. Next: m64-01.
+
+Previous: milestone 63 (chat-row "…" menu) is complete: the hover trash button became a per-row "…" menu with Rename (inline edit, existing PATCH title route) and Delete. **Milestones 62–63 need `./compose-helper.sh up` (rebuild) to go live.**
 
 Previous: milestone 62 (sidebar polish) is complete: collapsed-logo hover shows an
 open-sidebar affordance; New chat/Capture blue-bold follows the current
@@ -86,7 +88,7 @@ object). Milestones 48–49 need `./compose-helper.sh up` (rebuild) to go live.
 
 ## Next step
 
-Await direction. (To see milestones 62–63 live: `./compose-helper.sh up`.)
+Work milestone 64 (m64-01). Rebuild (./compose-helper.sh up) pending for 62+.
 
 ## Read before working
 
