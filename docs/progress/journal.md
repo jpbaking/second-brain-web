@@ -237,3 +237,9 @@ Milestone 64 complete and archived. Handoff: no active milestone; container rebu
 
 ## 2026-07-12 14:50 — session end
 Milestone 65 complete and archived. Handoff: no active milestone; container rebuild pending for 62-65.
+
+## 2026-07-12 15:08 — session start
+Tree clean at 16cbe12. Principal directed: revamp /explorer into a simple
+read-only vault file browser (rendered md preview; graph dropped). Opened
+milestone 66.
+- 15:14 STARTED progress: milestone 66 checklist + STATUS pointed at m66-01.

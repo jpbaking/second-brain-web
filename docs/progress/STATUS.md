@@ -1,6 +1,6 @@
 # STATUS — single source of truth
 
-Updated: 2026-07-12 (no active milestone; milestone 65 complete)
+Updated: 2026-07-12 (active: milestone 66 — explorer file browser)
 
 ## Where we are
 
@@ -25,7 +25,13 @@ Updated: 2026-07-12 (no active milestone; milestone 65 complete)
 
 ## Active milestone
 
-Milestone 65 (brain logo mark + favicons) is complete: the radio-tower mark is replaced by a brain mark (side profile + node network, kit colours) across logo-mark, invert, SVG and raster favicons; webmanifest named Second Brain. **Milestones 62–65 need `./compose-helper.sh up` to go live.**
+Milestone 66 — revamp `/explorer` into a read-only vault file browser
+(rendered Markdown preview; link-graph UI and endpoints dropped; link
+extraction kept for search reindex). Checklist:
+`docs/progress/milestones/milestone-66-explorer-file-browser.md`.
+Next item: m66-01.
+
+Previous: milestone 65 (brain logo mark + favicons) is complete: the radio-tower mark is replaced by a brain mark (side profile + node network, kit colours) across logo-mark, invert, SVG and raster favicons; webmanifest named Second Brain. **Milestones 62–65 need `./compose-helper.sh up` to go live.**
 
 Previous: milestone 64 (new-chat landing + brand → command centre) is complete: login/`/` always shows the fresh new-chat state (auto-open of the last chat removed), and the expanded sidebar logo+title link to /command-centre while the collapsed logo keeps its open-sidebar role. **Milestones 62–64 need `./compose-helper.sh up` to go live.**
 
@@ -90,7 +96,7 @@ object). Milestones 48–49 need `./compose-helper.sh up` (rebuild) to go live.
 
 ## Next step
 
-Await direction. Rebuild (./compose-helper.sh up) pending for milestones 62–65.
+m66-01 (server file-browser API). Rebuild (./compose-helper.sh up) pending for milestones 62–65.
 
 ## Read before working
 
