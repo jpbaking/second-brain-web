@@ -23,7 +23,7 @@ download); no link data in the file view; graph dropped entirely.
   (react-markdown + remarkGfm) or plain text; kit classes only; update
   hero tagline; remove graph CSS that is now unused.
   Verify: `cd app && npm run lint && npm run build`
-- [ ] **m66-03** Full verify + archive: `cd app && npm run lint && npm test
+- [x] **m66-03** Full verify + archive: `cd app && npm run lint && npm test
   && npm run build`; Playwright/headless screenshot of `/explorer` browsing
   into a folder and previewing a Markdown file; then archive this checklist,
   update `STATUS.md` + `BACKLOG.md`.

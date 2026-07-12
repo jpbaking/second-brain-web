@@ -1,6 +1,6 @@
 # STATUS — single source of truth
 
-Updated: 2026-07-12 (active: milestone 66 — explorer file browser)
+Updated: 2026-07-12 (no active milestone; milestone 66 complete)
 
 ## Where we are
 
@@ -25,11 +25,13 @@ Updated: 2026-07-12 (active: milestone 66 — explorer file browser)
 
 ## Active milestone
 
-Milestone 66 — revamp `/explorer` into a read-only vault file browser
-(rendered Markdown preview; link-graph UI and endpoints dropped; link
-extraction kept for search reindex). Checklist:
-`docs/progress/milestones/milestone-66-explorer-file-browser.md`.
-Next item: m66-03.
+Milestone 66 (explorer file browser) is complete: `/explorer` is now a
+read-only vault file browser (breadcrumbs, directory listing,
+rendered-Markdown/plain-text preview; `GET /api/explorer/tree` + `/file`).
+The link-graph UI and endpoints are gone; link extraction stays for search
+reindex. New Playwright e2e: `app/test/e2e/explorer.spec.ts` (global-setup
+now seeds a provider + vault remote). **Milestones 62–66 need
+`./compose-helper.sh up` to go live.**
 
 Previous: milestone 65 (brain logo mark + favicons) is complete: the radio-tower mark is replaced by a brain mark (side profile + node network, kit colours) across logo-mark, invert, SVG and raster favicons; webmanifest named Second Brain. **Milestones 62–65 need `./compose-helper.sh up` to go live.**
 
@@ -96,7 +98,7 @@ object). Milestones 48–49 need `./compose-helper.sh up` (rebuild) to go live.
 
 ## Next step
 
-m66-03 (full verify + archive). Rebuild (./compose-helper.sh up) pending for milestones 62–65.
+Await direction. Rebuild (./compose-helper.sh up) pending for milestones 62–66.
 
 ## Read before working
 

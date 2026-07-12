@@ -1,4 +1,4 @@
-import { mkdtempSync, rmSync } from 'node:fs'
+import { mkdtempSync, rmSync, writeFileSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import path from 'node:path'
 import type { FullConfig } from '@playwright/test'
@@ -8,6 +8,9 @@ import { buildApp } from '../../server/dist/app.js'
 import { loadConfig } from '../../server/dist/config.js'
 import { prepareDatabases } from '../../server/dist/migrations.js'
 import { generateOwnerAuth, writeOwnerAuth } from '../../server/dist/auth/bootstrap.js'
+import { provisionProviderProfiles } from '../../server/dist/providers/provisioning.js'
+import { writeVaultConfig } from '../../server/dist/vault/config.js'
+import { openCoreDb } from '../../server/dist/db.js'
 
 class FakeRunner {
   async start() { return { sessionId: 'sdk-1' } }
@@ -22,6 +25,14 @@ export default async function globalSetup(config: FullConfig) {
   const appConfig = loadConfig({ SECOND_BRAIN_WEB_DATA_DIR: path.join(root, 'data'), SECOND_BRAIN_WEB_SECRETS_KEY: 'test-key' })
   prepareDatabases(appConfig.dataDir)
   
+  // Seed one provider and a vault remote so the onboarding gate opens.
+  const providersFile = path.join(root, 'providers.yaml')
+  writeFileSync(providersFile, 'providers:\n  test:\n    provider: anthropic\n    model: test-model\n')
+  provisionProviderProfiles(appConfig.dataDir, { SECOND_BRAIN_WEB_PROVIDERS_FILE: providersFile })
+  const coreDb = openCoreDb(appConfig.dataDir)
+  writeVaultConfig(coreDb, { remoteUrl: 'git@example.com:vault.git' })
+  coreDb.close()
+
   const { password, state } = await generateOwnerAuth()
   writeOwnerAuth(appConfig.dataDir, state, { SECOND_BRAIN_WEB_SECRETS_KEY: appConfig.secretsKey })
   

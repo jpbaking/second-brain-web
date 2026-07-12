@@ -247,3 +247,5 @@ milestone 66.
 - 15:13 DONE m66-01: verified by `npm test --workspace server -- explorer-api.test.ts` → 9 tests green; lint clean.
 - 15:13 STARTED m66-02: rewrite ExplorerScreen as file browser (breadcrumbs, listing, md preview).
 - 15:15 DONE m66-02: ExplorerScreen rewritten as file browser; verified by `npm run lint && npm run build` → clean.
+- 15:15 STARTED m66-03: full verify (lint+test+build) + screenshot + archive.
+- 15:20 DONE m66-03: full suite 384 green, lint+build clean; new Playwright e2e explorer.spec.ts passes (login → browse memory/notes → rendered md preview, screenshot reviewed). Checklist archived.

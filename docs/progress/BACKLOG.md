@@ -28,6 +28,7 @@ See `docs/project-plan/phase-008-feature-backlog-and-design-hooks.md` for other 
 
 ## Completed (one line each; evidence in `milestones/archive/` and the journal)
 
+- ~~Explorer revamp: read-only vault file browser~~ — milestone 66.
 - ~~Gemini-inspired collapsible sidebar and chat search~~ — milestone 61.
 - ~~Consistent branded heroes across non-chat pages~~ — milestone 60.
 - ~~Workflow slash-autocomplete UX and fresh-chat execution~~ — milestone 59.
