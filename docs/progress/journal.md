@@ -39,3 +39,4 @@ Opened milestone 51 (chatDefaults in principal profile prefs). Next m51-01.
 Milestone 51 complete. No active milestone; rebuild needed for 48–51 to go live.
 - 10:11 STARTED repair: model menu spans the full composer width
 - 10:13 DONE repair: model menu anchored to the composer, spanning its full width (bounding-box asserted ±2px in a Playwright probe + screenshot). Lint/build green.
+- 10:22 STARTED milestone 52 (principal go): approval requests must show the tool's intended action (path/command/content preview). Opened checklist; next m52-01.

@@ -1,6 +1,6 @@
 # STATUS — single source of truth
 
-Updated: 2026-07-12 (no active milestone; milestone 51 complete)
+Updated: 2026-07-12 (active: milestone 52 — approval detail)
 
 ## Where we are
 
@@ -25,7 +25,9 @@ Updated: 2026-07-12 (no active milestone; milestone 51 complete)
 
 ## Active milestone
 
-Milestone 51 (new-chat defaults) is complete: composer settings changed in a
+Milestone 52 — approval detail: docs/progress/milestones/milestone-52-approval-detail.md, next m52-01.
+
+Previous: milestone 51 (new-chat defaults) is complete: composer settings changed in a
 new-chat state persist to profile `chatDefaults` and seed future new chats.
 
 Previous: milestone 50 (composer model menu) is complete. Archived checklist:
@@ -43,7 +45,7 @@ object). Milestones 48–49 need `./compose-helper.sh up` (rebuild) to go live.
 
 ## Next step
 
-Await direction.
+Work milestone 52.
 
 ## Read before working
 
