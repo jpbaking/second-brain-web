@@ -249,3 +249,6 @@ milestone 66.
 - 15:15 DONE m66-02: ExplorerScreen rewritten as file browser; verified by `npm run lint && npm run build` → clean.
 - 15:15 STARTED m66-03: full verify (lint+test+build) + screenshot + archive.
 - 15:20 DONE m66-03: full suite 384 green, lint+build clean; new Playwright e2e explorer.spec.ts passes (login → browse memory/notes → rendered md preview, screenshot reviewed). Checklist archived.
+
+## 2026-07-12 15:20 — session end
+Milestone 66 complete and archived. /explorer is a read-only vault file browser with rendered md preview; e2e spec added. Handoff: no active milestone; rebuild pending for 62–66.
