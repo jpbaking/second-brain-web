@@ -1,6 +1,6 @@
 # STATUS — single source of truth
 
-Updated: 2026-07-13 (milestone 72 active; m72-02 complete)
+Updated: 2026-07-13 (milestone 72 active; m72-02a complete)
 
 ## Where we are
 
@@ -31,13 +31,13 @@ Updated: 2026-07-13 (milestone 72 active; m72-02 complete)
 
 ## Active milestone
 
-**Milestone 72 — repository-wide exception boundaries.** m72-01/02 established
-safe wrapping plus AgentRunnerError and ClineAgentRunnerError boundaries.
+**Milestone 72 — repository-wide exception boundaries.** Runner boundaries are
+complete; Cline SDK debug and sanitized provider HTTP trace logging are wired.
 **Milestones 62–71 need `./compose-helper.sh up` (rebuild) to go live.**
 
 ## Next step
 
-Implement **m72-02a**: Cline SDK debug + provider request/response trace logs.
+Implement **m72-03**: agent services, chat persistence, workflows, scheduler.
 
 ## Read before working
 

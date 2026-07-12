@@ -119,3 +119,9 @@ logging and provider request/response tracing before m72-03.
 - 01:41 DONE progress: inserted m72-02a with explicit trace-level redaction and
   deterministic verification requirements; STATUS now points to it. No
   application code changed yet.
+- 01:42 STARTED m72-02a: bridge Cline BasicLogger to log4js and trace sanitized
+  provider fetch request/response metadata without bodies, headers, or queries.
+- 01:45 DONE m72-02a: `cline.sdk` maps BasicLogger debug/operational levels and
+  `cline.provider` traces sanitized fetch start/response/failure metadata;
+  query/header/body/content/error details are excluded. Verified by 3 files /
+  11 tests, server lint, and server build clean.

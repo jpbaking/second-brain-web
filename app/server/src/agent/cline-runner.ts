@@ -8,7 +8,9 @@ import { applyWebToolsRegistration } from './web-tools-registration.js'
 import { deployKeyPath, vaultWorkspacePath } from '../vault/config.js'
 import { buildGitSshCommand } from '../vault/git.js'
 import { safeErrorData, wrapError, type SafeErrorData } from '../errors.js'
+import { createClineSdkLogger, createTracedProviderFetch } from './cline-logging.js'
 import type { AgentRunner, AgentStartInput, AgentStartResult } from './runner.js'
+import type { BasicLogger } from '@cline/shared'
 
 export const ClineAgentRunnerError = extendError<SafeErrorData>('ClineAgentRunnerError', {
   parent: AgentRunnerError,
@@ -18,15 +20,19 @@ export const ClineAgentRunnerError = extendError<SafeErrorData>('ClineAgentRunne
 type ClineCoreLike = Pick<ClineCore, 'start' | 'send' | 'subscribe' | 'readMessages' | 'stop'>
 
 export interface ClineAgentRunnerDeps {
-  createCore: (options: { clientName: string, backendMode: 'local' }) => Promise<ClineCoreLike>
+  createCore: (options: { clientName: string, backendMode: 'local', logger: BasicLogger, fetch: typeof fetch }) => Promise<ClineCoreLike>
   enterVaultCwd: typeof enterVaultCwd
   applyWebToolsRegistration: typeof applyWebToolsRegistration
+  sdkLogger: BasicLogger
+  providerFetch: typeof fetch
 }
 
 const defaultDeps: ClineAgentRunnerDeps = {
   createCore: async options => await ClineCore.create(options),
   enterVaultCwd,
   applyWebToolsRegistration,
+  sdkLogger: createClineSdkLogger(),
+  providerFetch: createTracedProviderFetch(),
 }
 
 /**
@@ -106,7 +112,12 @@ export class ClineAgentRunner implements AgentRunner {
       }
       let core: ClineCoreLike
       try {
-        core = await this.deps.createCore({ clientName: this.clientName, backendMode: 'local' })
+        core = await this.deps.createCore({
+          clientName: this.clientName,
+          backendMode: 'local',
+          logger: this.deps.sdkLogger,
+          fetch: this.deps.providerFetch,
+        })
       } catch (error) {
         throw this.failure(error, 'initialise', 'sdk-create')
       }
