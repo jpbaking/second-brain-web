@@ -4,7 +4,8 @@ import { fileURLToPath } from 'node:url'
 import { ClineCore } from '@cline/core'
 import { agentStorageEnv } from './runner.js'
 import { applyWebToolsRegistration } from './web-tools-registration.js'
-import { vaultWorkspacePath } from '../vault/config.js'
+import { deployKeyPath, vaultWorkspacePath } from '../vault/config.js'
+import { buildGitSshCommand } from '../vault/git.js'
 import type { AgentRunner, AgentStartInput, AgentStartResult } from './runner.js'
 
 /**
@@ -21,6 +22,14 @@ export function enterVaultCwd (dataDir: string): boolean {
   if (!existsSync(vault)) return false
   process.chdir(vault)
   return true
+}
+
+/** Git environment inherited by SDK shell tools and their child processes. */
+export function agentGitEnv (dataDir: string): NodeJS.ProcessEnv {
+  return {
+    GIT_SSH_COMMAND: buildGitSshCommand(deployKeyPath(dataDir)),
+    GIT_TERMINAL_PROMPT: '0',
+  }
 }
 
 /**
@@ -42,7 +51,7 @@ export class ClineAgentRunner implements AgentRunner {
   private async ensureCore (): Promise<ClineCore> {
     if (this.core === undefined) {
       // Point SDK storage under our 0700 data root before it resolves paths.
-      Object.assign(process.env, agentStorageEnv(this.dataDir))
+      Object.assign(process.env, agentStorageEnv(this.dataDir), agentGitEnv(this.dataDir))
       // Move into the vault checkout so the claude-code subprocess inherits it
       // as its cwd (m39). Runs lazily on the first chat, by which point the
       // vault exists.

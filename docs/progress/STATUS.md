@@ -25,8 +25,8 @@ Updated: 2026-07-12 (milestone 58 active)
 
 ## Active milestone
 
-Milestone 58 (agent deploy-key Git access) is active. Next: m58-01, export the
-canonical hardened deploy-key SSH command into the agent runtime.
+Milestone 58 (agent deploy-key Git access) is active. m58-01 is complete;
+next: m58-02 full verification and archive.
 
 Previous: milestone 57 (table copy spacing) is complete. The table copy control sits in
 a separate action row with clear space before the header.
@@ -67,7 +67,7 @@ object). Milestones 48–49 need `./compose-helper.sh up` (rebuild) to go live.
 
 ## Next step
 
-Implement m58-01 from
+Run m58-02 from
 `docs/progress/milestones/milestone-58-agent-deploy-key.md`.
 
 ## Read before working

@@ -133,3 +133,7 @@ above the table rather than overlapping its header; rebuild needed to go live.
 ## 2026-07-12 13:10 — session start
 Tree clean at fbca669. Principal go: let chat-side Git inherit the deploy key
 already used by Save & Sync. Opened milestone 58; next m58-01.
+- 13:10 STARTED m58-01: export hardened deploy-key Git environment before Cline starts.
+- 13:11 DONE m58-01: agent subprocesses inherit the canonical deploy key via
+  the same hardened SSH command as Save & Sync, with terminal prompts disabled.
+  Focused regression test 3 green; server build passed.
