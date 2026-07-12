@@ -50,3 +50,10 @@ Tree clean at 42772a4. Principal request: trim progress files.
 Tree clean at ddad165. Principal: footer forces scroll on short pages; ensure /capture footer. Opened milestone 70.
 - 15:50 STARTED m70-01: flex layout so page+footer share one viewport.
 - 15:54 DONE m70-01: page+footer share one viewport (.app-page flexes, footer absorbs bottom padding); verified by lint+build clean, `npx playwright test` → 3 green with no-scroll asserts on /login, /explorer, /capture; capture screenshot reviewed. Checklist archived.
+
+## 2026-07-13 01:00 — session start
+Tree clean at 693ea1d. Principal directed Java-style exception cause chains via
+`error-extender` and `log4js` runtime logging with an `.env`-configurable root
+level. Baseline `npm test` is clean: 78 server files / 385 tests and 1 web file
+/ 9 tests. Opened milestone 71.
+- 01:00 STARTED progress: milestone 71 checklist + STATUS pointed at m71-01.

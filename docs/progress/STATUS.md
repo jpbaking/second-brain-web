@@ -1,6 +1,6 @@
 # STATUS — single source of truth
 
-Updated: 2026-07-12 (no active milestone; milestone 70 complete)
+Updated: 2026-07-13 (milestone 71 active)
 
 ## Where we are
 
@@ -30,16 +30,19 @@ Updated: 2026-07-12 (no active milestone; milestone 70 complete)
 
 ## Active milestone
 
-None. Milestone 70 (footer layout: page + footer share one viewport, no forced scroll; verified on /login, /explorer, /capture) is complete, after 69 (copyright footer).
+**Milestone 71 — traceable exceptions and configurable logging.** Principal
+directed adoption of `error-extender` cause chains and `log4js`, with the root
+log level configurable in `.env`.
 **Milestones 62–70 need `./compose-helper.sh up` (rebuild) to go live.**
 
 ## Next step
 
-Await direction. Rebuild (./compose-helper.sh up) pending for milestones 62–70.
+Implement **m71-01**: logging foundation, HTTP logging, and env/configure wiring.
 
 ## Read before working
 
 - `AGENTS-PLAYBOOK.md` — always, top to bottom.
+- `docs/progress/milestones/milestone-71-exceptions-and-logging.md`.
 - `docs/progress/BACKLOG.md` — the work queue.
 
 ## Questions for the principal
