@@ -24,3 +24,8 @@ collapse, and archiving the fully-ticked milestone-37 checklist.
 ## 2026-07-12 09:46 — session end
 Milestone 50 complete. No active milestone; await direction. Rebuild needed
 for 48–50 to go live.
+
+## 2026-07-12 10:03 — session start (continued conversation)
+Principal go: new-chat composer settings become defaults for future new chats.
+Opened milestone 51 (chatDefaults in principal profile prefs). Next m51-01.
+- 10:03 STARTED m51-01: chatDefaults on PrincipalProfile + API round-trip test

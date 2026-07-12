@@ -1,6 +1,6 @@
 # STATUS — single source of truth
 
-Updated: 2026-07-12 (no active milestone; milestone 50 complete)
+Updated: 2026-07-12 (active: milestone 51 — new-chat defaults)
 
 ## Where we are
 
@@ -25,7 +25,9 @@ Updated: 2026-07-12 (no active milestone; milestone 50 complete)
 
 ## Active milestone
 
-Milestone 50 (composer model menu) is complete. Archived checklist:
+Milestone 51 — new-chat defaults: docs/progress/milestones/milestone-51-new-chat-defaults.md, next m51-01.
+
+Previous: milestone 50 (composer model menu) is complete. Archived checklist:
 `docs/progress/milestones/archive/milestone-50-composer-model-menu.md`. The
 composer names the real active model (no placeholder) with a popup menu:
 model submenu, Thinking toggle, Effort slider (catalog-gated); persisted
@@ -40,7 +42,7 @@ object). Milestones 48–49 need `./compose-helper.sh up` (rebuild) to go live.
 
 ## Next step
 
-Await direction.
+Work milestone 51.
 
 ## Read before working
 
