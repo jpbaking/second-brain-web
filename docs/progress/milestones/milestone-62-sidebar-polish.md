@@ -21,7 +21,7 @@ Principal direction (2026-07-12): five sidebar improvements.
       favourited rows keep the leading ★ marker.
       Verify: `cd app && npm run build` then Playwright screenshots of a chat
       row idle vs hovered.
-- [ ] m62-05: hover also reveals a Delete button left of the star; it calls
+- [x] m62-05: hover also reveals a Delete button left of the star; it calls
       `DELETE /api/chat/sessions/:id` and refreshes the list.
       Verify: `cd app && npm run build` then Playwright: hover row, click
       delete, row disappears from the list.

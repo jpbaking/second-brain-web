@@ -209,3 +209,4 @@ Tree clean at d6b310e. Principal directed five sidebar improvements; opened mile
 - 14:16 DONE m62-03: searchSessions over titles+bodies (GET /api/chat/sessions?q=, debounced sidebar). chat-store tests 8 green; e2e probe green.
 - 14:16 STARTED m62-04+05: hover-only star and hover delete button on chat rows
 - 14:18 DONE m62-04: star hidden until row hover/focus (pinned rows keep leading ★); Playwright probe green + screenshots.
+- 14:18 DONE m62-05: hover delete button left of star calls DELETE /api/chat/sessions/:id and refreshes list (active chat -> /chat/new). Code shared the m62-04 commit (same JSX/CSS block); verified by its own Playwright probe (delete removes row). 
