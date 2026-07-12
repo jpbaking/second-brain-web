@@ -37,7 +37,7 @@ safe wrapping plus AgentRunnerError and ClineAgentRunnerError boundaries.
 
 ## Next step
 
-Implement **m72-03**: agent services, chat persistence, workflows, scheduler.
+Implement **m72-02a**: Cline SDK debug + provider request/response trace logs.
 
 ## Read before working
 

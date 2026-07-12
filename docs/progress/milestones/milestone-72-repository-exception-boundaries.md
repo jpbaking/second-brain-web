@@ -52,6 +52,17 @@ exceptions with complete `cause` chains and safe structured context.
   model.
   Verify: `cd app && npm test --workspace server -- cline-runner-errors.test.ts cline-runner-cwd.test.ts web-tools-registration.test.ts && npm run lint --workspace server && npm run build --workspace server`
 
+- [ ] **m72-02a — Cline SDK and provider trace logging.** Bridge the SDK's
+  `BasicLogger` to named log4js categories with runtime-allow-listed metadata,
+  and inject a traced `fetch` for local provider traffic. SDK operational
+  diagnostics log at debug; provider request/response summaries log at trace
+  with method, sanitized host/path, status, duration, safe provider/session
+  identifiers, attachment counts, and provider request ids where available.
+  Never log query strings, headers, keys, prompts, request/response bodies, or
+  streamed content. Cover level routing, sanitization, success, HTTP failure,
+  and thrown fetch causes without making a live provider call.
+  Verify: `cd app && npm test --workspace server -- cline-logging.test.ts cline-runner-errors.test.ts structured-logs.test.ts && npm run lint --workspace server && npm run build --workspace server`
+
 - [ ] **m72-03 — agent services and chat persistence.** Introduce domain
   exceptions for agent sessions, chat storage, workflows, approvals, and
   scheduler execution; replace remaining raw errors in `agent/session.ts`,

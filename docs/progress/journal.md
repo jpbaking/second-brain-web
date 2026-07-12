@@ -112,3 +112,10 @@ clean: 2 files / 15 tests.
 m72-01 committed as 7b3cecf and m72-02 as b16d102. Tree clean; milestone 72
 remains active. Handoff: begin m72-03 with agent/session.ts, chat-store.ts,
 workflows, approvals, and scheduler only.
+
+## 2026-07-13 01:41 — session start
+Tree clean at d9465f6. Active: milestone 72. Principal added Cline SDK debug
+logging and provider request/response tracing before m72-03.
+- 01:41 DONE progress: inserted m72-02a with explicit trace-level redaction and
+  deterministic verification requirements; STATUS now points to it. No
+  application code changed yet.
