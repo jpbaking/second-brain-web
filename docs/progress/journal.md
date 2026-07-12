@@ -183,3 +183,7 @@ structure; chat views are unchanged. Rebuild needed to go live.
 Tree clean at d6305c8. Principal go: Gemini-inspired collapsible sidebar with
 primary actions, chat search, and bottom secondary-pages menu. Opened milestone
 61; next m61-01.
+- 13:36 STARTED m61-01: build collapsible icon-led sidebar and chat-title search.
+- 13:40 DONE m61-01: persistent desktop collapse (logo reopens), icon-led New
+  chat/Capture/Search chats, and instant recent-title filtering implemented.
+  Web lint and production build passed.

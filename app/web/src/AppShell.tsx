@@ -13,21 +13,21 @@ import { AppHero } from './AppHero.js'
 
 interface ChatSessionSummary { id: string, title: string, status: string, pinned: boolean }
 
-interface NavItem { href: string, label: string }
+type IconName = 'new' | 'capture' | 'search' | 'command' | 'prep' | 'follow' | 'reports' | 'explorer' | 'profile' | 'schedules' | 'vault' | 'backup' | 'providers' | 'signout' | 'more' | 'collapse'
+interface NavItem { href: string, label: string, icon: IconName }
 
 const NAV_ITEMS: NavItem[] = [
-  { href: '/command-centre', label: 'Command centre' },
-  { href: '/capture', label: 'Capture' },
-  { href: '/prep', label: 'Meeting prep' },
-  { href: '/follow-ups', label: 'Follow-ups' },
-  { href: '/reports', label: 'Reports' },
-  { href: '/search', label: 'Search' },
-  { href: '/explorer', label: 'Explorer' },
-  { href: '/profile', label: 'Profile' },
-  { href: '/schedules', label: 'Schedules' },
-  { href: '/vault', label: 'Vault' },
-  { href: '/backup', label: 'Backup' },
-  { href: '/providers', label: 'Providers' },
+  { href: '/command-centre', label: 'Command centre', icon: 'command' },
+  { href: '/prep', label: 'Meeting prep', icon: 'prep' },
+  { href: '/follow-ups', label: 'Follow-ups', icon: 'follow' },
+  { href: '/reports', label: 'Reports', icon: 'reports' },
+  { href: '/search', label: 'Vault search', icon: 'search' },
+  { href: '/explorer', label: 'Explorer', icon: 'explorer' },
+  { href: '/schedules', label: 'Schedules', icon: 'schedules' },
+  { href: '/vault', label: 'Vault', icon: 'vault' },
+  { href: '/backup', label: 'Backup', icon: 'backup' },
+  { href: '/profile', label: 'Profile', icon: 'profile' },
+  { href: '/providers', label: 'Providers', icon: 'providers' },
 ]
 
 const RECENTS_SHOWN = 20
@@ -50,8 +50,35 @@ async function logout (): Promise<void> {
   window.location.assign('/login')
 }
 
+function SidebarIcon ({ name }: { name: IconName }) {
+  const common = { width: 18, height: 18, viewBox: '0 0 24 24', fill: 'none', stroke: 'currentColor', strokeWidth: 1.8, strokeLinecap: 'round' as const, strokeLinejoin: 'round' as const, 'aria-hidden': true }
+  const paths: Record<IconName, ReactNode> = {
+    new: <><path d='M12 5v14M5 12h14' /><path d='M4 4h16v16H4z' /></>,
+    capture: <><path d='m21 12-9.2 9.2a6 6 0 0 1-8.5-8.5l8.6-8.6a4 4 0 1 1 5.7 5.7L9 18.4a2 2 0 0 1-2.8-2.8l8.5-8.5' /></>,
+    search: <><circle cx='11' cy='11' r='7' /><path d='m20 20-4-4' /></>,
+    command: <><path d='M4 5h16M4 12h10M4 19h16' /><circle cx='17' cy='12' r='2' /></>,
+    prep: <><path d='M7 3v4M17 3v4M4 9h16v11H4z' /><path d='m8 14 2 2 5-5' /></>,
+    follow: <><path d='M18 8a6 6 0 1 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9' /><path d='M10 21h4' /></>,
+    reports: <><path d='M6 2h9l4 4v16H6z' /><path d='M14 2v5h5M9 13h6M9 17h6' /></>,
+    explorer: <><circle cx='12' cy='12' r='9' /><path d='m15 9-2 5-5 2 2-5z' /></>,
+    profile: <><circle cx='12' cy='8' r='4' /><path d='M4 21a8 8 0 0 1 16 0' /></>,
+    schedules: <><circle cx='12' cy='12' r='9' /><path d='M12 7v5l3 2' /></>,
+    vault: <><rect x='3' y='5' width='18' height='15' rx='2' /><path d='M3 10h18M8 5V3h8v2' /></>,
+    backup: <><path d='M20 7v5h-5M4 17v-5h5' /><path d='M6 8a7 7 0 0 1 12-2l2 6M18 16a7 7 0 0 1-12 2l-2-6' /></>,
+    providers: <><path d='M8 12h8M12 8v8' /><circle cx='12' cy='12' r='9' /></>,
+    signout: <><path d='M10 17l5-5-5-5M15 12H3' /><path d='M14 3h7v18h-7' /></>,
+    more: <><circle cx='5' cy='12' r='1' fill='currentColor' /><circle cx='12' cy='12' r='1' fill='currentColor' /><circle cx='19' cy='12' r='1' fill='currentColor' /></>,
+    collapse: <><path d='m14 7-5 5 5 5' /><rect x='3' y='3' width='18' height='18' rx='3' /></>,
+  }
+  return <svg {...common}>{paths[name]}</svg>
+}
+
 export function AppShell ({ path: initialPath, children }: { path: string, children: ReactNode }) {
   const [open, setOpen] = useState(false)
+  const [collapsed, setCollapsed] = useState(() => window.localStorage.getItem('sbw-sidebar-collapsed') === 'true')
+  const [searchOpen, setSearchOpen] = useState(false)
+  const [chatQuery, setChatQuery] = useState('')
+  const [moreOpen, setMoreOpen] = useState(false)
   const [sessions, setSessions] = useState<ChatSessionSummary[]>([])
   // ChatScreen rewrites the URL (history.replaceState) when auto-opening the
   // last active chat or creating one — track the live pathname so the sidebar
@@ -101,6 +128,14 @@ export function AppShell ({ path: initialPath, children }: { path: string, child
   }, [])
 
   const chatId = activeChatId(path)
+  const visibleSessions = sessions
+    .filter(session => session.title.toLowerCase().includes(chatQuery.trim().toLowerCase()))
+    .slice(0, RECENTS_SHOWN)
+
+  const setDesktopCollapsed = (value: boolean) => {
+    setCollapsed(value)
+    window.localStorage.setItem('sbw-sidebar-collapsed', String(value))
+  }
 
   const togglePin = async (session: ChatSessionSummary) => {
     const res = await fetch(`/api/chat/sessions/${session.id}`, {
@@ -146,19 +181,33 @@ export function AppShell ({ path: initialPath, children }: { path: string, child
   }
 
   return (
-    <div className='shell'>
+    <div className={`shell${collapsed ? ' is-sidebar-collapsed' : ''}`}>
       {open && <div className='shell-scrim' onClick={() => setOpen(false)} aria-hidden='true' />}
 
       <aside className={`sidebar${open ? ' is-open' : ''}`} aria-label='Sidebar'>
         <div className='sidebar-head'>
-          <a className='sidebar-brand' href='/'>
+          <button className='sidebar-brand sidebar-brand-open' type='button' aria-label='Open sidebar' title='Open sidebar' onClick={() => setDesktopCollapsed(false)}>
             <img src='/design/assets/logo-mark.svg' alt='' />
             <span>Second Brain</span>
-          </a>
+          </button>
+          <button className='sidebar-collapse' type='button' aria-label='Close sidebar' title='Close sidebar' onClick={() => setDesktopCollapsed(true)}><SidebarIcon name='collapse' /></button>
           <button className='sidebar-dismiss' type='button' aria-label='Close menu' onClick={() => setOpen(false)}>×</button>
         </div>
 
-        {showNewChat && <a className='btn btn-primary sidebar-new-chat' href='/chat/new' data-testid='new-chat'>+ New chat</a>}
+        {showNewChat && (
+          <nav className='sidebar-primary' aria-label='Primary actions'>
+            <a className='sidebar-action' href='/chat/new' data-testid='new-chat'><SidebarIcon name='new' /><span>New chat</span></a>
+            <a className='sidebar-action' href='/capture'><SidebarIcon name='capture' /><span>Capture</span></a>
+            <button className={`sidebar-action${searchOpen ? ' is-active' : ''}`} type='button' aria-expanded={searchOpen} onClick={() => { if (collapsed) setDesktopCollapsed(false); setSearchOpen(value => !value); setChatQuery('') }}><SidebarIcon name='search' /><span>Search chats</span></button>
+          </nav>
+        )}
+
+        {showRecents && searchOpen && (
+          <div className='sidebar-chat-search'>
+            <SidebarIcon name='search' />
+            <input type='search' autoFocus value={chatQuery} onChange={event => setChatQuery(event.target.value)} placeholder='Search chats' aria-label='Search chats' />
+          </div>
+        )}
 
         {showRecents && (
           <nav className='sidebar-recents' aria-label='Recent chats'>
@@ -170,41 +219,41 @@ export function AppShell ({ path: initialPath, children }: { path: string, child
             </div>
             {sessions.length === 0
               ? <p className='sidebar-empty'>No chats yet.</p>
-              : (
-                <ul data-testid='chat-list'>
-                  {sessions.slice(0, RECENTS_SHOWN).map(s => (
-                    <li key={s.id}>
-                      <a
-                        className={`sidebar-chat${s.id === chatId ? ' is-active' : ''}`}
-                        href={`/chat/${s.id}`}
-                        aria-current={s.id === chatId ? 'page' : undefined}
-                        title={s.title}
-                      >
-                        {s.pinned ? '★ ' : ''}{s.title}
-                      </a>
-                      <button className='sidebar-chat-pin' type='button' aria-label={s.pinned ? `Unpin ${s.title}` : `Pin ${s.title}`} onClick={() => { togglePin(s).catch(() => {}) }}>{s.pinned ? '★' : '☆'}</button>
-                    </li>
-                  ))}
-                </ul>
-                )}
+              : visibleSessions.length === 0
+                ? <p className='sidebar-empty'>No matching chats.</p>
+                : (
+                  <ul data-testid='chat-list'>
+                    {visibleSessions.map(s => (
+                      <li key={s.id}>
+                        <a
+                          className={`sidebar-chat${s.id === chatId ? ' is-active' : ''}`}
+                          href={`/chat/${s.id}`}
+                          aria-current={s.id === chatId ? 'page' : undefined}
+                          title={s.title}
+                        >
+                          {s.pinned ? '★ ' : ''}{s.title}
+                        </a>
+                        <button className='sidebar-chat-pin' type='button' aria-label={s.pinned ? `Unpin ${s.title}` : `Pin ${s.title}`} onClick={() => { togglePin(s).catch(() => {}) }}>{s.pinned ? '★' : '☆'}</button>
+                      </li>
+                    ))}
+                  </ul>
+                  )}
           </nav>
         )}
 
-        <nav className='sidebar-nav' aria-label='Screens'>
-          {navItems.map(item => (
-            <a
-              key={item.href}
-              className={`sidebar-link${isActive(path, item.href) ? ' is-active' : ''}`}
-              href={item.href}
-              aria-current={isActive(path, item.href) ? 'page' : undefined}
-            >
-              {item.label}
-            </a>
-          ))}
-          <button className='sidebar-link sidebar-signout' type='button' data-testid='sign-out' onClick={() => { logout().catch(() => {}) }}>
-            Sign out
-          </button>
-        </nav>
+        <div className='sidebar-bottom'>
+          {moreOpen && (
+            <nav className='sidebar-more-menu' aria-label='Other pages'>
+              {navItems.map(item => (
+                <a key={item.href} className={`sidebar-more-item${isActive(path, item.href) ? ' is-active' : ''}`} href={item.href} aria-current={isActive(path, item.href) ? 'page' : undefined}>
+                  <SidebarIcon name={item.icon} /><span>{item.label}</span>
+                </a>
+              ))}
+            </nav>
+          )}
+          <button className='sidebar-bottom-action sidebar-signout' type='button' data-testid='sign-out' onClick={() => { logout().catch(() => {}) }}><SidebarIcon name='signout' /><span>Sign out</span></button>
+          <button className={`sidebar-bottom-action sidebar-more-trigger${moreOpen ? ' is-active' : ''}`} type='button' aria-label='More pages' title='More pages' aria-expanded={moreOpen} onClick={() => { if (collapsed) { setDesktopCollapsed(false); setMoreOpen(true) } else setMoreOpen(value => !value) }}><SidebarIcon name='more' /></button>
+        </div>
       </aside>
 
       <div className='shell-main'>
