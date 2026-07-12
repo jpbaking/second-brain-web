@@ -1,6 +1,6 @@
 # STATUS — single source of truth
 
-Updated: 2026-07-12 (active: milestone 68 — explorer download)
+Updated: 2026-07-12 (no active milestone; milestone 68 complete)
 
 ## Where we are
 
@@ -25,7 +25,13 @@ Updated: 2026-07-12 (active: milestone 68 — explorer download)
 
 ## Active milestone
 
-Milestone 67 (amber Secretary label) is complete: the "Secretary" author
+Milestone 68 (explorer download) is complete: hovering or focusing a file
+row in `/explorer` reveals a download icon at the right of the row;
+`GET /api/explorer/download` streams the raw file (any type) as an
+attachment with the same path guards as the other explorer endpoints.
+**Milestones 62–68 need `./compose-helper.sh up` to go live.**
+
+Previous: milestone 67 (amber Secretary label) is complete: the "Secretary" author
 label above assistant chat messages uses `var(--accent-amber)` instead of
 muted grey. **Milestones 62–67 need `./compose-helper.sh up` to go live.**
 
@@ -102,7 +108,7 @@ object). Milestones 48–49 need `./compose-helper.sh up` (rebuild) to go live.
 
 ## Next step
 
-m68-02 (hover download icon in UI). Rebuild (./compose-helper.sh up) pending for milestones 62–67.
+Await direction. Rebuild (./compose-helper.sh up) pending for milestones 62–68.
 
 ## Read before working
 

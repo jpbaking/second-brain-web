@@ -1468,14 +1468,34 @@
 }
 
 .explorer-row {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
   border-bottom: 1px solid var(--line);
+}
+
+.explorer-download {
+  display: inline-flex;
+  align-items: center;
+  padding: var(--space-1);
+  color: var(--muted);
+  visibility: hidden;
+}
+
+.explorer-row:hover .explorer-download,
+.explorer-row:focus-within .explorer-download {
+  visibility: visible;
+}
+
+.explorer-download:hover {
+  color: var(--accent, var(--ink));
 }
 
 .explorer-entry {
   display: flex;
   align-items: baseline;
   gap: var(--space-2);
-  width: 100%;
+  flex: 1;
   min-width: 0;
   padding-block: var(--space-2);
   background: none;

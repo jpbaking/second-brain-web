@@ -25,10 +25,21 @@ test('browses vault folders and previews a markdown file', async ({ page }) => {
   await page.getByRole('button', { name: 'memory' }).click();
   await page.getByRole('button', { name: 'notes' }).click();
 
+  // The download control is hidden until the row is hovered or focused.
+  const row = page.locator('.explorer-row', { hasText: 'welcome.md' })
+  const download = row.getByRole('link', { name: 'Download welcome.md' })
+  await expect(download).toBeHidden()
+
   // Preview the markdown file, rendered.
   await page.getByRole('button', { name: /welcome\.md/ }).click();
   await expect(page.getByRole('heading', { name: 'Welcome' })).toBeVisible();
   await expect(page.locator('.prose strong')).toHaveText('rendered');
+
+  // Hovering the row reveals the download control, which serves the raw file.
+  await row.hover()
+  await expect(download).toBeVisible()
+  const [saved] = await Promise.all([page.waitForEvent('download'), download.click()])
+  expect(saved.suggestedFilename()).toBe('welcome.md')
 
   await page.screenshot({ path: process.env.E2E_SCREENSHOT_DIR !== undefined ? path.join(process.env.E2E_SCREENSHOT_DIR, 'explorer.png') : 'test-results/explorer.png', fullPage: true });
 });

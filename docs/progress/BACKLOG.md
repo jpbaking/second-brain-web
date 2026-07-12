@@ -28,6 +28,7 @@ See `docs/project-plan/phase-008-feature-backlog-and-design-hooks.md` for other 
 
 ## Completed (one line each; evidence in `milestones/archive/` and the journal)
 
+- ~~Explorer hover download icon + raw download endpoint~~ — milestone 68.
 - ~~Amber "Secretary" author label in chat~~ — milestone 67.
 - ~~Explorer revamp: read-only vault file browser~~ — milestone 66.
 - ~~Gemini-inspired collapsible sidebar and chat search~~ — milestone 61.
