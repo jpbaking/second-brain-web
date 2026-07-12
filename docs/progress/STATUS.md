@@ -1,6 +1,6 @@
 # STATUS — single source of truth
 
-Updated: 2026-07-12 (active: milestone 63 — chat-row menu with rename)
+Updated: 2026-07-12 (no active milestone; milestone 63 complete)
 
 ## Where we are
 
@@ -25,7 +25,7 @@ Updated: 2026-07-12 (active: milestone 63 — chat-row menu with rename)
 
 ## Active milestone
 
-Milestone 63 (chat-row "…" menu with rename) is ACTIVE: docs/progress/milestones/milestone-63-chat-row-menu.md. Next item: m63-01.
+Milestone 63 (chat-row "…" menu) is complete: the hover trash button became a per-row "…" menu with Rename (inline edit, existing PATCH title route) and Delete. **Milestones 62–63 need `./compose-helper.sh up` (rebuild) to go live.**
 
 Previous: milestone 62 (sidebar polish) is complete: collapsed-logo hover shows an
 open-sidebar affordance; New chat/Capture blue-bold follows the current
@@ -86,7 +86,7 @@ object). Milestones 48–49 need `./compose-helper.sh up` (rebuild) to go live.
 
 ## Next step
 
-Work milestone 63 (m63-01). To see milestones 62–63 live: ./compose-helper.sh up.
+Await direction. (To see milestones 62–63 live: `./compose-helper.sh up`.)
 
 ## Read before working
 

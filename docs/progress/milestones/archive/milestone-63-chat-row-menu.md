@@ -11,5 +11,5 @@ per-row "…" menu holding Rename and Delete; renaming edits the title inline
       Verify: `cd app && npm run build` then Playwright probe: open menu,
       rename a chat, assert new title in list; delete via menu removes row;
       screenshots of menu open and inline edit.
-- [ ] m63-02: full check (`cd app && npm run lint && npm test && npm run
+- [x] m63-02: full check (`cd app && npm run lint && npm test && npm run
       build`), remove probe, archive checklist, update STATUS.
