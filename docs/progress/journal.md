@@ -86,3 +86,7 @@ control with HTML and Excel-compatible TSV clipboard formats. Opened milestone
 ## 2026-07-12 12:49 — session end
 Milestone 54 complete. Rendered Markdown tables copy as rich HTML and
 Excel-compatible TSV from one control; rebuild needed to go live.
+
+## 2026-07-12 12:53 — session start
+Tree clean at 59f46f8. Principal go: add the same rich/TSV table copy control
+to the expanded table modal. Opened milestone 55; next m55-01.
