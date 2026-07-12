@@ -1,5 +1,6 @@
 export interface ChatEvent { seq: number, type: string, payload: unknown, createdAt?: string }
-export interface PendingApproval { toolCallId: string, toolName: string }
+export interface ApprovalDetail { path?: string, command?: string, preview?: string, truncated?: boolean }
+export interface PendingApproval { toolCallId: string, toolName: string, detail?: ApprovalDetail }
 export interface ReasoningBlock { text: string, createdAt?: string }
 export interface ActivityEntry { text: string, createdAt?: string }
 export interface MessageAttachment { name: string, kind: 'image' | 'file' }
@@ -140,8 +141,14 @@ export function foldTranscript (events: ChatEvent[], isLive: boolean): { lines: 
       }
       updateAssistant(e.seq, e.createdAt)
     } else if (e.type === 'approval_request') {
-      const p = e.payload as { toolCallId?: string, toolName?: string }
-      if (typeof p?.toolCallId === 'string') approvals.set(p.toolCallId, { toolCallId: p.toolCallId, toolName: p.toolName ?? 'tool' })
+      const p = e.payload as { toolCallId?: string, toolName?: string, detail?: ApprovalDetail }
+      if (typeof p?.toolCallId === 'string') {
+        approvals.set(p.toolCallId, {
+          toolCallId: p.toolCallId,
+          toolName: p.toolName ?? 'tool',
+          ...(p.detail !== undefined && p.detail !== null ? { detail: p.detail } : {}),
+        })
+      }
       isProcessing = false
     } else if (e.type === 'approval_resolved' || e.type === 'approval_auto_denied') {
       const p = e.payload as { toolCallId?: string }

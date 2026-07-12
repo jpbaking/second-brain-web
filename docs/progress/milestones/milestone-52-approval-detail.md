@@ -9,7 +9,7 @@ SDK approval request already carries the tool `input`; surface it.
   `approval_request` event (path/command verbatim; content/diff or remaining
   input JSON as a size-capped preview).
   Verify: `cd app && npm test --workspace server -- tool-policy.test.ts chat-approvals.test.ts`
-- [ ] **m52-02** Web: the approval card names the target — path or command
+- [x] **m52-02** Web: the approval card names the target — path or command
   inline, plus a collapsible monospace preview when present.
   Verify: `cd app && npm run lint && npm run build` + Playwright screenshot
 - [ ] **m52-03** Full verify + archive: lint, full suite, build; archive this

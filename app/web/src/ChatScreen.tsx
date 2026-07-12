@@ -721,8 +721,17 @@ export function ChatScreen ({ mode }: { mode: ChatMode }) {
           )}
 
           {approvals.map(a => (
-            <div key={a.toolCallId} className='alert alert-warn chat-alert' role='status'>
+            <div key={a.toolCallId} className='alert alert-warn chat-alert chat-approval' role='status'>
               <span className='alert-title'>Approve {a.toolName}?</span>
+              {(a.detail?.path !== undefined || a.detail?.command !== undefined) && (
+                <code className='chat-approval-target'>{a.detail.path ?? a.detail.command}</code>
+              )}
+              {a.detail?.preview !== undefined && (
+                <details className='chat-approval-preview'>
+                  <summary>Show {a.detail.command !== undefined ? 'details' : 'content'}{a.detail.truncated === true ? ' (truncated)' : ''}</summary>
+                  <pre>{a.detail.preview}</pre>
+                </details>
+              )}
               <span className='chat-approval-actions'>
                 <button className='btn btn-primary btn-sm' type='button' onClick={() => { resolveApproval(a.toolCallId, true).catch(() => {}) }}>Approve</button>
                 <button className='btn btn-secondary btn-sm' type='button' onClick={() => { resolveApproval(a.toolCallId, false).catch(() => {}) }}>Deny</button>
