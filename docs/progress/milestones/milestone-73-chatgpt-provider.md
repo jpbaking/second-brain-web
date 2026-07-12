@@ -70,7 +70,7 @@ OAuth handled by `./configure` (not compose-helper — see design notes).
   claude-code's CLI-auth style ([OAuth] instead of key controls), never
   exposing the blob. Verify: `cd app && npm run lint && npm test && npm run
   build`; screenshot of `/providers` with a chatgpt profile.
-- [ ] **m73-06 — docs + live verification.** README/provider docs mention
+- [ ] **m73-06 — docs + live verification.** [blocked: docs done; live chat turn needs the principal to run ./configure ChatGPT login + rebuild] README/provider docs mention
   the chatgpt provider and `./configure` login; run a live chat turn on a
   chatgpt profile (or journal BLOCKED if the principal must supply the
   login). Verify: live turn streams a reply, or a BLOCKED entry with exact

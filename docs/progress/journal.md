@@ -173,3 +173,17 @@ provider support (backlog + implementation). Milestone 72 paused at m72-03.
   provider-test.test.ts 12 green, lint, web build, and a headless-Chromium
   harness (login → /providers screenshot + API test → "ChatGPT login present
   and current."). 
+- 02:29 STARTED m73-06: document the chatgpt provider; live verification
+  needs the principal's ChatGPT login.
+- 02:33 DONE m73-06 (docs half): README documents the chatgpt provider and
+  its configure login flow.
+- 02:33 BLOCKED m73-06 (live half): a real chat turn needs the principal's
+  ChatGPT account — the OAuth exchange cannot be completed by the agent.
+  Everything else is verified: unit suites, scripted configure runs, and a
+  headless-browser /providers check. Question added to STATUS.
+
+## 2026-07-13 02:34 — session end
+Milestone 73 items 01–05 committed; m73-06 docs committed, live check
+blocked on the principal's ChatGPT login. Milestone 72 paused at m72-03.
+Handoff: after the principal confirms a live turn, tick m73-06, archive the
+checklist, update BACKLOG, and resume milestone 72.

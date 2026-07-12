@@ -40,7 +40,7 @@ to go live.**
 
 ## Next step
 
-Implement **m73-06**: docs + live verification (needs principal ChatGPT login).
+Finish **m73-06**: docs are committed; the live verification needs the principal (see Questions).
 
 ## Read before working
 
@@ -50,7 +50,10 @@ Implement **m73-06**: docs + live verification (needs principal ChatGPT login).
 
 ## Questions for the principal
 
-- None currently.
+- m73-06 live check: please run `./compose-helper.sh up` (rebuild), then
+  `./configure` → add provider → `chatgpt` and complete the browser sign-in,
+  save, restart, and send one chat turn on the ChatGPT profile. Everything
+  up to the real OAuth exchange is verified with fakes/scripted runs.
 
 ## Known issues / parked TODOs
 

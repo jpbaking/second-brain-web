@@ -45,8 +45,13 @@ directory rather than overwriting it — nothing is clobbered:
   the list it reports, `f` to filter a long list), or per existing provider
   **rename / change model / change key / delete**. Untouched providers keep
   their existing key.
-  `claude-code` is the subscription-backed exception: choose it, enter a model
+  `claude-code` is a subscription-backed exception: choose it, enter a model
   such as `sonnet`, and no API key is stored.
+  `chatgpt` runs on a ChatGPT subscription: choosing it starts a browser
+  sign-in (open the printed URL, or paste the authorisation code manually
+  when the localhost callback cannot reach the CLI). The OAuth tokens are
+  stored encrypted like API keys and refresh themselves automatically; use
+  the provider's **log in again** action if the login ever expires.
 - `.config/deploy_key` — a generated vault SSH deploy key (needs `ssh-keygen`);
   its public half is printed and also shown on the Vault page to register with
   your Git host.
