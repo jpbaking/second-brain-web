@@ -1,6 +1,6 @@
 # STATUS — single source of truth
 
-Updated: 2026-07-13 (milestone 72 planned; implementation not started)
+Updated: 2026-07-13 (milestone 72 active; m72-01 complete)
 
 ## Where we are
 
@@ -31,13 +31,13 @@ Updated: 2026-07-13 (milestone 72 planned; implementation not started)
 
 ## Active milestone
 
-**Milestone 72 — repository-wide exception boundaries.** Checklist written and
-approved for planning only this turn; no application code has changed yet.
+**Milestone 72 — repository-wide exception boundaries.** m72-01 established
+safe metadata/wrapping helpers and the generic AgentRunnerError boundary.
 **Milestones 62–71 need `./compose-helper.sh up` (rebuild) to go live.**
 
 ## Next step
 
-Begin **m72-01**: exception contract helpers and `AgentRunnerError` in runner.ts.
+Implement **m72-02**: the `ClineAgentRunnerError` adapter boundary.
 
 ## Read before working
 

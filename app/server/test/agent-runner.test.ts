@@ -1,6 +1,7 @@
 import path from 'node:path'
 import { describe, expect, it } from 'vitest'
-import { agentStorageEnv, normaliseOpenAiBaseUrl, sdkProviderId, toModelConfig } from '../src/agent/runner.js'
+import { AgentRunnerError, agentStorageEnv, normaliseOpenAiBaseUrl, sdkProviderId, toModelConfig } from '../src/agent/runner.js'
+import { AppError } from '../src/errors.js'
 import type { ProviderSnapshot } from '../src/providers/snapshot.js'
 
 function snap (over: Partial<ProviderSnapshot>): ProviderSnapshot {
@@ -25,7 +26,20 @@ describe('sdkProviderId', () => {
     expect(sdkProviderId('openai-compatible')).toBe('openai-compatible')
   })
   it('throws on an unsupported provider id', () => {
-    expect(() => sdkProviderId('unknown')).toThrow(/unsupported/)
+    let thrown: unknown
+    try {
+      sdkProviderId('unknown')
+    } catch (error) {
+      thrown = error
+    }
+    expect(thrown).toBeInstanceOf(AgentRunnerError)
+    expect(thrown).toBeInstanceOf(AppError)
+    expect((thrown as InstanceType<typeof AgentRunnerError>).message).toMatch(/unsupported/)
+    expect((thrown as InstanceType<typeof AgentRunnerError>).data).toEqual({
+      code: 'AGENT_RUNNER_UNSUPPORTED_PROVIDER',
+      operation: 'resolve-provider',
+      resourceId: 'unknown',
+    })
   })
 })
 

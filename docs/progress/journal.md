@@ -92,3 +92,13 @@ across 18 files.
 ## 2026-07-13 01:28 — session end
 Milestone 72 is planned but implementation has not started. Handoff: begin
 m72-01 only when the principal directs implementation.
+
+## 2026-07-13 01:31 — session start
+Tree clean at 7f67bec. Active: milestone 72, next item: m72-01. Principal
+directed implementation. Baseline `errors.test.ts agent-runner.test.ts` is
+clean: 2 files / 15 tests.
+- 01:31 STARTED m72-01: add reusable safe exception metadata/wrapping helpers
+  and make runner.ts expose AgentRunnerError for its deliberate failures.
+- 01:32 DONE m72-01: added runtime-allow-listed SafeErrorData, cause-preserving
+  wrapError, and AgentRunnerError for unsupported provider resolution;
+  verified by 2 files / 17 tests, server lint, and server build clean.

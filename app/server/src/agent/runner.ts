@@ -1,5 +1,12 @@
 import path from 'node:path'
+import { extendError } from 'error-extender'
+import { AppError, safeErrorData } from '../errors.js'
 import type { ProviderSnapshot } from '../providers/snapshot.js'
+
+export const AgentRunnerError = extendError('AgentRunnerError', {
+  parent: AppError,
+  defaultData: safeErrorData({ code: 'AGENT_RUNNER_ERROR' }),
+})
 
 /**
  * Agent runner (phase-004 Cline SDK Chat, milestone 5A). Maps a m05 provider
@@ -46,7 +53,16 @@ const PROVIDER_ID_MAP: Record<string, string> = {
 
 export function sdkProviderId (providerId: string): string {
   const mapped = PROVIDER_ID_MAP[providerId]
-  if (mapped === undefined) throw new Error(`unsupported provider id: ${providerId}`)
+  if (mapped === undefined) {
+    throw new AgentRunnerError({
+      message: `unsupported provider id: ${providerId}`,
+      data: safeErrorData({
+        code: 'AGENT_RUNNER_UNSUPPORTED_PROVIDER',
+        operation: 'resolve-provider',
+        resourceId: providerId,
+      }),
+    })
+  }
   return mapped
 }
 

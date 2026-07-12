@@ -36,7 +36,7 @@ exceptions with complete `cause` chains and safe structured context.
 
 ## Checklist
 
-- [ ] **m72-01 — exception contract + generic runner boundary.** Add typed,
+- [x] **m72-01 — exception contract + generic runner boundary.** Add typed,
   reusable safe error metadata/wrapping helpers and an `AgentRunnerError`
   parent in `agent/runner.ts`; ensure every exception deliberately originating
   from that module crosses its boundary as `AgentRunnerError`, while preserving

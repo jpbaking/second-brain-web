@@ -2,7 +2,8 @@ import { mkdtempSync, rmSync, writeFileSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import path from 'node:path'
 import { afterEach, describe, expect, it } from 'vitest'
-import { AppError } from '../src/errors.js'
+import { extendError } from 'error-extender'
+import { AppError, safeErrorData, wrapError } from '../src/errors.js'
 import { ConfigError } from '../src/config.js'
 import { getAppLogger } from '../src/logging.js'
 import { ProviderProvisioningError, provisionProviderProfiles } from '../src/providers/provisioning.js'
@@ -56,5 +57,32 @@ describe('application exceptions', () => {
     const record = JSON.parse(lines[0] ?? '{}') as { error?: { stack?: string }, operation?: string }
     expect(record.operation).toBe('test')
     expect(record.error?.stack).toContain('Caused by: Error: root failure')
+  })
+
+  it('allow-lists structured context and drops accidental secret fields', () => {
+    const wider = {
+      code: 'TEST_FAILURE',
+      operation: 'connect',
+      resourceId: 'provider-one',
+      apiKey: 'must-not-survive',
+      prompt: 'must-not-survive',
+    }
+
+    expect(safeErrorData(wider)).toEqual({
+      code: 'TEST_FAILURE',
+      operation: 'connect',
+      resourceId: 'provider-one',
+    })
+  })
+
+  it('wraps lower-level failures once and retains their cause stacks', () => {
+    const BoundaryError = extendError('BoundaryError', { parent: AppError })
+    const wrapped = wrapError(BoundaryError, new Error('low-level failure'), {
+      message: 'boundary operation failed',
+    })
+
+    expect(wrapped).toBeInstanceOf(BoundaryError)
+    expect(wrapped.stack).toContain('Caused by: Error: low-level failure')
+    expect(wrapError(BoundaryError, wrapped, { message: 'duplicate wrapper' })).toBe(wrapped)
   })
 })
