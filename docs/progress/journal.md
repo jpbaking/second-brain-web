@@ -45,3 +45,7 @@ Tree clean at b5adf86. Principal directed: copyright footer on all pages except 
 ## 2026-07-12 15:47 — session start
 Tree clean at 42772a4. Principal request: trim progress files.
 - 15:47 DONE trim: STATUS 132→55 lines (Previous tail collapsed into Where-we-are), journal rotated again (274→43 lines; milestones 50–65 entries moved verbatim to journal-archive-2026-07.md). BACKLOG (77 lines) and milestone archives untouched (read-only).
+
+## 2026-07-12 15:50 — session start
+Tree clean at ddad165. Principal: footer forces scroll on short pages; ensure /capture footer. Opened milestone 70.
+- 15:50 STARTED m70-01: flex layout so page+footer share one viewport.

@@ -1,6 +1,6 @@
 # STATUS — single source of truth
 
-Updated: 2026-07-12 (no active milestone; milestone 69 complete)
+Updated: 2026-07-12 (active: milestone 70 — footer layout)
 
 ## Where we are
 
@@ -35,7 +35,7 @@ None. Milestone 69 (copyright footer on all non-chat pages) is complete.
 
 ## Next step
 
-Await direction. Rebuild (./compose-helper.sh up) pending for milestones 62–69.
+m70-01 (footer layout). Rebuild (./compose-helper.sh up) pending for milestones 62–69.
 
 ## Read before working
 
