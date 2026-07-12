@@ -6,10 +6,10 @@ import * as readline from 'node:readline'
 import { Writable } from 'node:stream'
 import { encryptSecret } from '../secrets/crypto.js'
 import { listModels } from '../providers/models.js'
-import { isLogLevel, LOG_LEVELS } from '../logging.js'
+import { LOG_LEVELS } from '../logging.js'
 import {
   DEFAULT_BIND, DEFAULT_PORT, KNOWN_PROVIDERS,
-  getEnv, isValidPort, isValidProvider, isValidProviderId,
+  getEnv, isValidPort, isValidProviderId,
   parseEnv, parseProviders, providerSummary, serializeEnv, serializeProviders, setEnv, slugify,
   type EnvEntry, type ProviderEntry, type ProviderMap,
 } from './configure-lib.js'
@@ -155,15 +155,31 @@ async function selectFromList (models: string[], current?: string): Promise<stri
   }
 }
 
+/**
+ * Numbered pick from a short fixed list. Blank keeps `current` when given;
+ * without a current value the choice is required.
+ */
+async function selectOption (label: string, options: readonly string[], current?: string): Promise<string> {
+  for (;;) {
+    say(`  ${label}:`)
+    options.forEach((o, i) => say(`    ${i + 1}) ${o}${o === current ? '  (current)' : ''}`))
+    const hint = current === undefined ? '' : ` (blank keeps ${current})`
+    const choice = await ask(`  Select [1-${options.length}]${hint}: `)
+    if (choice === '' && current !== undefined) return current
+    const n = Number(choice)
+    if (/^\d+$/.test(choice) && n >= 1 && n <= options.length) {
+      const chosen = options[n - 1]
+      if (chosen !== undefined) return chosen
+    }
+    if (closed) return current ?? ''
+    say(`  Enter a number between 1 and ${options.length}${current === undefined ? '.' : `, or blank to keep ${current}.`}`)
+  }
+}
+
 // ---- provider actions -------------------------------------------------------
 
 async function addProvider (state: State): Promise<void> {
-  let provider = ''
-  for (;;) {
-    provider = await ask(`  Provider (${KNOWN_PROVIDERS.join('|')}): `)
-    if (isValidProvider(provider)) break
-    say(`  Invalid provider — choose ${KNOWN_PROVIDERS.join(', ')}.`)
-  }
+  const provider = await selectOption('Provider', KNOWN_PROVIDERS)
   const baseUrl = provider === 'openai-compatible' ? await askRequired('  Base URL: ') : ''
   const apiKey = provider === 'claude-code' ? '' : await askSecret('  API key (blank for none): ')
 
@@ -243,13 +259,9 @@ async function editRuntime (state: State): Promise<void> {
     if (isValidPort(port)) { state.port = port; break }
     say('  Port must be a number between 1 and 65535.')
   }
-  const dev = await confirm('  Enable development mode? (disables Secure auth cookies — plain-HTTP LAN only)', state.nodeEnv === 'development' ? 'y' : 'n')
-  state.nodeEnv = dev ? 'development' : 'production'
-  for (;;) {
-    const level = (await askDefault(`  Root log level (${LOG_LEVELS.join('|')})`, state.logLevel)).toLowerCase()
-    if (isLogLevel(level)) { state.logLevel = level; break }
-    say(`  Log level must be one of ${LOG_LEVELS.join(', ')}.`)
-  }
+  say('  development disables Secure auth cookies — plain-HTTP LAN only.')
+  state.nodeEnv = await selectOption('Node environment', ['production', 'development'], state.nodeEnv)
+  state.logLevel = await selectOption('Root log level', LOG_LEVELS, state.logLevel)
 }
 
 async function editSecretsKey (state: State): Promise<void> {
