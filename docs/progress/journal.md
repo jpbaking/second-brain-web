@@ -191,3 +191,10 @@ primary actions, chat search, and bottom secondary-pages menu. Opened milestone
 - 13:41 DONE m61-02: secondary pages are ordered in an icon-labelled bottom
   overflow beside Sign out; collapsed clicks expand before opening menus; the
   mobile drawer retains its dedicated close control. Web lint/build passed.
+- 13:41 STARTED m61-03: run the full project gate and archive milestone 61.
+- 13:41 DONE m61-03: full gate green — lint clean, server 382 + web 9 tests
+  passed, and server + web builds passed. Milestone 61 archived.
+
+## 2026-07-12 13:41 — session end
+Milestone 61 complete. Collapsible icon-led sidebar, chat-title search, and
+bottom secondary navigation shipped; rebuild needed to go live.
