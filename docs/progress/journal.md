@@ -210,3 +210,7 @@ Tree clean at d6b310e. Principal directed five sidebar improvements; opened mile
 - 14:16 STARTED m62-04+05: hover-only star and hover delete button on chat rows
 - 14:18 DONE m62-04: star hidden until row hover/focus (pinned rows keep leading ★); Playwright probe green + screenshots.
 - 14:18 DONE m62-05: hover delete button left of star calls DELETE /api/chat/sessions/:id and refreshes list (active chat -> /chat/new). Code shared the m62-04 commit (same JSX/CSS block); verified by its own Playwright probe (delete removes row). 
+- 14:20 DONE m62-06: full check green (lint clean; server 383 + web 9 tests; build ok; all 5 Playwright probes passed). Probe spec removed; checklist archived.
+
+## 2026-07-12 14:20 — session end
+Milestone 62 complete and archived. Tree clean after commit. Handoff: no active milestone; live container needs ./compose-helper.sh up to pick up the sidebar changes.

@@ -25,5 +25,5 @@ Principal direction (2026-07-12): five sidebar improvements.
       `DELETE /api/chat/sessions/:id` and refreshes the list.
       Verify: `cd app && npm run build` then Playwright: hover row, click
       delete, row disappears from the list.
-- [ ] m62-06: full check (`cd app && npm run lint && npm test && npm run
+- [x] m62-06: full check (`cd app && npm run lint && npm test && npm run
       build`), archive checklist, update STATUS/BACKLOG.

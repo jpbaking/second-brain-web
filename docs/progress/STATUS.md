@@ -1,6 +1,6 @@
 # STATUS — single source of truth
 
-Updated: 2026-07-12 (active: milestone 62 — sidebar polish)
+Updated: 2026-07-12 (no active milestone; milestone 62 complete)
 
 ## Where we are
 
@@ -25,11 +25,11 @@ Updated: 2026-07-12 (active: milestone 62 — sidebar polish)
 
 ## Active milestone
 
-Milestone 62 (sidebar polish) is ACTIVE:
-`docs/progress/milestones/milestone-62-sidebar-polish.md`. Five
-principal-directed items: collapsed-logo hover → open affordance, active
-state for New chat/Capture, chat search over message bodies, hover-only
-star, hover delete button. Next item: m62-01.
+Milestone 62 (sidebar polish) is complete: collapsed-logo hover shows an
+open-sidebar affordance; New chat/Capture blue-bold follows the current
+page; chat search matches message bodies (`GET /api/chat/sessions?q=`,
+`searchSessions` in chat-store); star and a new delete button appear only
+on chat-row hover. **Needs `./compose-helper.sh up` (rebuild) to go live.**
 
 Previous: milestone 61 (Gemini-inspired sidebar) is complete. The sidebar is persistently
 collapsible with icon-led primary actions, chat-title search, recents, and a
@@ -84,7 +84,7 @@ object). Milestones 48–49 need `./compose-helper.sh up` (rebuild) to go live.
 
 ## Next step
 
-Work milestone 62, starting at m62-01.
+Await direction. (To see milestone 62 live: `./compose-helper.sh up`.)
 
 ## Read before working
 
