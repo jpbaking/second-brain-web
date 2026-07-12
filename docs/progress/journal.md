@@ -187,3 +187,21 @@ Milestone 73 items 01–05 committed; m73-06 docs committed, live check
 blocked on the principal's ChatGPT login. Milestone 72 paused at m72-03.
 Handoff: after the principal confirms a live turn, tick m73-06, archive the
 checklist, update BACKLOG, and resume milestone 72.
+
+## 2026-07-13 02:51 — session start
+Tree clean at 2025b79. Principal reports m73 bug: chatgpt login via browser
+callback succeeds but configure's manual-code prompt has already grabbed
+stdin — the abandoned read steals the next typed line.
+- 02:52 STARTED repair: cancellable line reads in configure; browser-callback
+  win cancels the manual code prompt and says so.
+- 03:00 DONE repair: configure line reads now go through a cancellable waiter
+  queue; a browser-completed (or failed) chatgpt login cancels the pending
+  manual-code prompt and prints "Signed in via the browser." Verified by a
+  live race harness (real localhost:1455 callback while the prompt was
+  pending → subsequent 'q' reached the menu), scripted menu/edit/runtime
+  regressions, lint, build, and server suite 412 green.
+
+## 2026-07-13 03:00 — session end
+Repair committed on top of milestone 73. m73-06 live check remains with the
+principal — the login flow should now complete hands-free after the browser
+step.

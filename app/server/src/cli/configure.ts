@@ -45,13 +45,48 @@ const rl = readline.createInterface({
   output: echo,
   terminal: Boolean(process.stdin.isTTY),
 })
-const lineIterator = rl[Symbol.asyncIterator]()
+// Lines are dispatched through an explicit waiter queue (not the async
+// iterator) so a read can be *cancelled*: the chatgpt OAuth flow races a
+// manual paste-the-code prompt against the browser callback, and when the
+// browser wins the abandoned prompt must not swallow the next typed line.
 let closed = false
-rl.on('close', () => { closed = true })
+const pendingLines: string[] = []
+interface LineWaiter { resolve: (line: string | null) => void }
+const lineWaiters: LineWaiter[] = []
+rl.on('line', line => {
+  const waiter = lineWaiters.shift()
+  if (waiter !== undefined) waiter.resolve(line)
+  else pendingLines.push(line)
+})
+rl.on('close', () => {
+  closed = true
+  for (const waiter of lineWaiters.splice(0)) waiter.resolve(null)
+})
+
+/** Begin a line read that can be abandoned. `cancel()` detaches the waiter
+ *  (resolving it with null) and reports whether it was still pending. */
+function readLineCancellable (): { promise: Promise<string | null>, cancel: () => boolean } {
+  const queued = pendingLines.shift()
+  if (queued !== undefined || closed) {
+    return { promise: Promise.resolve(queued ?? null), cancel: () => false }
+  }
+  const waiter: LineWaiter = { resolve: () => {} }
+  const promise = new Promise<string | null>(resolve => { waiter.resolve = resolve })
+  lineWaiters.push(waiter)
+  return {
+    promise,
+    cancel: () => {
+      const index = lineWaiters.indexOf(waiter)
+      if (index === -1) return false
+      lineWaiters.splice(index, 1)
+      waiter.resolve(null)
+      return true
+    },
+  }
+}
 
 async function nextLine (): Promise<string | null> {
-  const { value, done } = await lineIterator.next()
-  return done === true ? null : value
+  return await readLineCancellable().promise
 }
 
 async function ask (query: string): Promise<string> {
@@ -188,6 +223,10 @@ async function selectOption (label: string, options: readonly string[], current?
  */
 async function loginChatGpt (): Promise<string | null> {
   say('  ChatGPT uses your subscription — sign in with the browser link below.')
+  // The SDK races the localhost callback against manual code entry. Keep a
+  // handle on the manual prompt so a browser-completed sign-in cancels it —
+  // otherwise the abandoned read swallows the next line typed into the menu.
+  let manual: ReturnType<typeof readLineCancellable> | null = null
   try {
     const credentials = await loginOpenAICodex({
       onAuth: (info: { url: string, instructions?: string }) => {
@@ -197,8 +236,17 @@ async function loginChatGpt (): Promise<string | null> {
       },
       onProgress: (message: string) => say(`  ${message}`),
       onPrompt: async (prompt: { message: string, defaultValue?: string }) => await askDefault(`  ${prompt.message}`, prompt.defaultValue ?? ''),
-      onManualCodeInput: async () => await askRequired('  Paste the authorisation code: '),
+      onManualCodeInput: async () => {
+        process.stdout.write('  Waiting for the browser sign-in — or paste the authorisation code: ')
+        manual = readLineCancellable()
+        const line = await manual.promise
+        return line === null ? '' : line.trim()
+      },
     })
+    if (manual !== null && (manual as ReturnType<typeof readLineCancellable>).cancel()) {
+      say('')
+      say('  Signed in via the browser.')
+    }
     return JSON.stringify({
       access: credentials.access,
       refresh: credentials.refresh,
@@ -206,6 +254,7 @@ async function loginChatGpt (): Promise<string | null> {
       ...(credentials.accountId !== undefined ? { accountId: credentials.accountId } : {}),
     })
   } catch (err) {
+    if (manual !== null) (manual as ReturnType<typeof readLineCancellable>).cancel()
     say(`  ChatGPT login failed: ${err instanceof Error ? err.message : String(err)}`)
     return null
   }
