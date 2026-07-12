@@ -12,6 +12,17 @@ See `docs/project-plan/phase-008-feature-backlog-and-design-hooks.md` for other 
 
 ## Improvements
 
+- ChatGPT (subscription) provider via the Cline SDK's `openai-codex`
+  provider — active as milestone 73. The SDK ships the ChatGPT OAuth flow
+  (`loginOpenAICodex` in `@cline/core`) and the runtime accepts
+  `accessToken`/`refreshToken`/`accountId` through
+  `CoreModelConfig.providerConfig`, so — unlike `claude-code`, whose
+  credential lives in the CLI's own home directory inside the running
+  container — ChatGPT credentials are plain values `./configure` can obtain
+  interactively and store encrypted with `SECOND_BRAIN_WEB_SECRETS_KEY`.
+  Follow-up (not in milestone 73): ChatGPT OAuth login from the web
+  `/providers` page.
+
 - Repository-wide named exception boundaries and preserved cause chains across
   server, CLI, HTTP, and browser code — active as milestone 72.
 

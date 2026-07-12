@@ -136,3 +136,12 @@ Tree clean at 2cd498b. Principal request (outside milestone): demote vault write
 - 01:51 DONE repair: verified by `npm run lint` + `npm test` (server 399 green, web 9 green).
 - 01:56 STARTED repair: configure CLI — numbered select for provider, log level, and node env instead of free-typed input.
 - 01:59 DONE repair: configure CLI numbered selects; verified by piped end-to-end run (runtime + add provider + save) and `npm test` server suite 399 green.
+
+## 2026-07-13 01:59 — session start
+Tree clean at 385832f. Principal directed new work: ChatGPT subscription
+provider support (backlog + implementation). Milestone 72 paused at m72-03.
+- 02:00 STARTED progress: research SDK support, write BACKLOG entry and
+  milestone 73 checklist, point STATUS at it.
+- 02:04 DONE progress: BACKLOG entry, milestone-73-chatgpt-provider.md
+  checklist (6 items with design notes), STATUS points at m73-01;
+  milestone 72 paused at m72-03.

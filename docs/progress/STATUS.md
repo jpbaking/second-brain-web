@@ -1,6 +1,6 @@
 # STATUS — single source of truth
 
-Updated: 2026-07-13 (milestone 72 active; m72-02a complete)
+Updated: 2026-07-13 (milestone 73 active; milestone 72 paused at m72-03)
 
 ## Where we are
 
@@ -31,18 +31,21 @@ Updated: 2026-07-13 (milestone 72 active; m72-02a complete)
 
 ## Active milestone
 
-**Milestone 72 — repository-wide exception boundaries.** Runner boundaries are
-complete; Cline SDK debug and sanitized provider HTTP trace logging are wired.
-**Milestones 62–71 need `./compose-helper.sh up` (rebuild) to go live.**
+**Milestone 73 — ChatGPT (subscription) provider** (principal-directed
+2026-07-13). Auth via `./configure` using the Cline SDK's built-in ChatGPT
+OAuth (`openai-codex`); credentials stored encrypted like API keys. Design
+notes in the checklist. **Milestone 72 is paused at m72-03** — resume it
+after 73 ships. **Milestones 62–71 need `./compose-helper.sh up` (rebuild)
+to go live.**
 
 ## Next step
 
-Implement **m72-03**: agent services, chat persistence, workflows, scheduler.
+Implement **m73-01**: provider id plumbing (`chatgpt` → `openai-codex`).
 
 ## Read before working
 
 - `AGENTS-PLAYBOOK.md` — always, top to bottom.
-- `docs/progress/milestones/milestone-72-repository-exception-boundaries.md`.
+- `docs/progress/milestones/milestone-73-chatgpt-provider.md`.
 - `docs/progress/BACKLOG.md` — the work queue.
 
 ## Questions for the principal
