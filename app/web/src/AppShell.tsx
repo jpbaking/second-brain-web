@@ -13,7 +13,7 @@ import { AppHero } from './AppHero.js'
 
 interface ChatSessionSummary { id: string, title: string, status: string, pinned: boolean }
 
-type IconName = 'new' | 'capture' | 'search' | 'command' | 'prep' | 'follow' | 'reports' | 'explorer' | 'profile' | 'schedules' | 'vault' | 'backup' | 'providers' | 'signout' | 'more' | 'collapse' | 'expand'
+type IconName = 'new' | 'capture' | 'search' | 'command' | 'prep' | 'follow' | 'reports' | 'explorer' | 'profile' | 'schedules' | 'vault' | 'backup' | 'providers' | 'signout' | 'more' | 'collapse' | 'expand' | 'trash'
 interface NavItem { href: string, label: string, icon: IconName }
 
 const NAV_ITEMS: NavItem[] = [
@@ -68,6 +68,7 @@ function SidebarIcon ({ name }: { name: IconName }) {
     providers: <><path d='M8 12h8M12 8v8' /><circle cx='12' cy='12' r='9' /></>,
     signout: <><path d='M10 17l5-5-5-5M15 12H3' /><path d='M14 3h7v18h-7' /></>,
     more: <><circle cx='5' cy='12' r='1' fill='currentColor' /><circle cx='12' cy='12' r='1' fill='currentColor' /><circle cx='19' cy='12' r='1' fill='currentColor' /></>,
+    trash: <><path d='M4 7h16M10 11v6M14 11v6' /><path d='M6 7l1 14h10l1-14M9 7V4h6v3' /></>,
     collapse: <><path d='m14 7-5 5 5 5' /><rect x='3' y='3' width='18' height='18' rx='3' /></>,
     expand: <><path d='m10 7 5 5-5 5' /><rect x='3' y='3' width='18' height='18' rx='3' /></>,
   }
@@ -155,6 +156,14 @@ export function AppShell ({ path: initialPath, children }: { path: string, child
       method: 'PATCH', credentials: 'same-origin', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ pinned: !session.pinned })
     })
     if (res.ok) await loadSessions()
+  }
+
+  const deleteChat = async (session: ChatSessionSummary) => {
+    const res = await fetch(`/api/chat/sessions/${session.id}`, { method: 'DELETE', credentials: 'same-origin' })
+    if (!res.ok) return
+    setSearchResults(results => results === null ? null : results.filter(other => other.id !== session.id))
+    if (session.id === activeChatId(path)) { window.location.assign('/chat/new'); return }
+    await loadSessions()
   }
 
   const [clearPromptOpen, setClearPromptOpen] = useState(false)
@@ -247,6 +256,7 @@ export function AppShell ({ path: initialPath, children }: { path: string, child
                         >
                           {s.pinned ? '★ ' : ''}{s.title}
                         </a>
+                        <button className='sidebar-chat-delete' type='button' aria-label={`Delete ${s.title}`} title='Delete chat' onClick={() => { deleteChat(s).catch(() => {}) }}><SidebarIcon name='trash' /></button>
                         <button className='sidebar-chat-pin' type='button' aria-label={s.pinned ? `Unpin ${s.title}` : `Pin ${s.title}`} onClick={() => { togglePin(s).catch(() => {}) }}>{s.pinned ? '★' : '☆'}</button>
                       </li>
                     ))}

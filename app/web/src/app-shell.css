@@ -201,10 +201,24 @@
 }
 
 .sidebar-recents li { position: relative; }
-.sidebar-chat-pin {
-  position: absolute; right: .25rem; top: .2rem; border: 0; background: transparent;
-  color: var(--text-muted); cursor: pointer; padding: .25rem;
+/* Row actions are hover/focus-only (m62-04/05); pinned rows keep the leading
+   ★ in the title as their always-visible marker. */
+.sidebar-chat-pin,
+.sidebar-chat-delete {
+  display: none; position: absolute; top: .2rem; border: 0; background: transparent;
+  color: var(--text-muted); cursor: pointer; padding: .25rem; line-height: 1;
 }
+.sidebar-chat-pin { right: .25rem; }
+.sidebar-chat-delete { right: 1.6rem; }
+.sidebar-chat-delete svg { width: 14px; height: 14px; display: block; }
+.sidebar-recents li:hover .sidebar-chat-pin,
+.sidebar-recents li:focus-within .sidebar-chat-pin,
+.sidebar-recents li:hover .sidebar-chat-delete,
+.sidebar-recents li:focus-within .sidebar-chat-delete { display: block; }
+.sidebar-recents li:hover .sidebar-chat,
+.sidebar-recents li:focus-within .sidebar-chat { padding-right: 3.4rem; }
+.sidebar-chat-pin:hover,
+.sidebar-chat-delete:hover { color: var(--ink); }
 .sidebar-bottom {
   position: relative;
   display: grid;

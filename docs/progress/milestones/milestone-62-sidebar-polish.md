@@ -17,7 +17,7 @@ Principal direction (2026-07-12): five sidebar improvements.
       `GET /api/chat/sessions?q=`, sidebar search box uses it (debounced).
       Verify: `cd app && npm test --workspace server -- chat-store.test.ts`
       (new searchSessions tests green) and `npm run build`.
-- [ ] m62-04: favourite star only appears on row hover (or focus); already
+- [x] m62-04: favourite star only appears on row hover (or focus); already
       favourited rows keep the leading ★ marker.
       Verify: `cd app && npm run build` then Playwright screenshots of a chat
       row idle vs hovered.
