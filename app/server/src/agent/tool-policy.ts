@@ -95,6 +95,63 @@ function commandOnlyTouchesCatalogs (command: string): boolean {
   return refs.length > 0 && refs.every((r) => isCatalogPath(normaliseVaultPath(r)))
 }
 
+/** Bounded, human-readable summary of what a tool call intends to do (m52). */
+export interface ToolInputDetail {
+  path?: string
+  command?: string
+  preview?: string
+  truncated: boolean
+}
+
+const PREVIEW_MAX_CHARS = 2000
+
+/**
+ * Summarise a tool request's input for the approval card: the target path or
+ * command verbatim, plus a size-capped preview of the content/diff being
+ * written (or, for unknown tools, of the whole input as JSON). Persisted on
+ * the approval_request event, so keep it bounded — file writes can be huge.
+ */
+export function summariseToolInput (toolName: string, input: Record<string, unknown> | null | undefined): ToolInputDetail {
+  const detail: ToolInputDetail = { truncated: false }
+  const source = input ?? {}
+  const rest: Record<string, unknown> = { ...source }
+
+  if (typeof source.path === 'string' && source.path !== '') {
+    detail.path = source.path
+    delete rest.path
+  }
+  if ((toolName === 'bash' || toolName === 'execute_command') && typeof source.command === 'string') {
+    detail.command = source.command.length > PREVIEW_MAX_CHARS ? source.command.slice(0, PREVIEW_MAX_CHARS) : source.command
+    detail.truncated = source.command.length > PREVIEW_MAX_CHARS
+    delete rest.command
+  }
+
+  // Content-ish fields first (editor/write/diff tools), else remaining input.
+  let preview: string | undefined
+  for (const key of ['content', 'diff', 'text', 'contents']) {
+    if (typeof rest[key] === 'string' && rest[key] !== '') {
+      preview = rest[key]
+      delete rest[key]
+      break
+    }
+  }
+  if (preview === undefined && Object.keys(rest).length > 0) {
+    try {
+      preview = JSON.stringify(rest, null, 2)
+    } catch { /* unserialisable input: leave the preview out */ }
+    if (preview === '{}') preview = undefined
+  }
+  if (preview !== undefined) {
+    if (preview.length > PREVIEW_MAX_CHARS) {
+      detail.preview = preview.slice(0, PREVIEW_MAX_CHARS)
+      detail.truncated = true
+    } else {
+      detail.preview = preview
+    }
+  }
+  return detail
+}
+
 /**
  * The full guard decision for one tool request. Wire this into the SDK's
  * `requestToolApproval`: `deny` refuses hard, `allow` auto-approves, `ask`

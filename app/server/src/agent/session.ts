@@ -1,7 +1,7 @@
 import { createSession, deleteSessions, getSession, getSessionBySdkId, listSessions, readEventsSince, setSdkSessionId, saveCompaction, updateSessionConfig } from './chat-store.js'
 import { toModelConfig } from './runner.js'
 import { DEFAULT_SYSTEM_PROMPT } from './system-prompt.js'
-import { TOOL_POLICIES, evaluateTool, isMutatingTool } from './tool-policy.js'
+import { TOOL_POLICIES, evaluateTool, isMutatingTool, summariseToolInput } from './tool-policy.js'
 import { acquireLock, heartbeatLock, releaseLock } from '../vault/lock.js'
 import { readGitStatus } from '../vault/git-status.js'
 import { scanReports } from '../reports/scan.js'
@@ -411,7 +411,7 @@ export class AgentSessionService {
       // Cannot correlate a resolution — fail closed rather than hang the turn.
       return { approved: false, reason: 'approval could not be routed' }
     }
-    this.emitEvent(session.id, 'approval_request', { toolCallId, toolName: req.toolName })
+    this.emitEvent(session.id, 'approval_request', { toolCallId, toolName: req.toolName, detail: summariseToolInput(req.toolName, req.input) })
     return await new Promise<ToolApprovalDecision>((resolve) => {
       this.pendingApprovals.set(toolCallId, { resolve, chatSessionId: session.id, toolName: req.toolName })
     })

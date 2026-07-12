@@ -4,6 +4,7 @@ import {
   isProtectedLibraryWrite,
   isMoveOnlyCommand,
   normaliseVaultPath,
+  summariseToolInput,
 } from '../src/agent/tool-policy.js'
 
 describe('normaliseVaultPath', () => {
@@ -104,5 +105,31 @@ describe('evaluateTool — the guard decision', () => {
     expect(evaluateTool({ toolName: 'bash', input: { command: 'ls' } }, 'high-trust').decision).toBe('allow')
     // Library writes are STILL denied
     expect(evaluateTool({ toolName: 'editor', input: { path: 'library/original.md' } }, 'high-trust').decision).toBe('deny')
+  })
+})
+
+describe('summariseToolInput', () => {
+  it('extracts path and content preview for write tools', () => {
+    const d = summariseToolInput('editor', { path: 'memory/notes/reminders.md', content: '- [ ] car wash 10am' })
+    expect(d).toEqual({ path: 'memory/notes/reminders.md', preview: '- [ ] car wash 10am', truncated: false })
+  })
+
+  it('extracts the command for shell tools', () => {
+    const d = summariseToolInput('execute_command', { command: 'git status' })
+    expect(d.command).toBe('git status')
+    expect(d.preview).toBeUndefined()
+  })
+
+  it('caps huge content and flags truncation', () => {
+    const d = summariseToolInput('write_file', { path: 'a.md', content: 'x'.repeat(5000) })
+    expect(d.preview?.length).toBe(2000)
+    expect(d.truncated).toBe(true)
+  })
+
+  it('falls back to a JSON preview of unknown input, and empty stays empty', () => {
+    const d = summariseToolInput('mystery_tool', { target: 'z', count: 3 })
+    expect(d.preview).toContain('"target": "z"')
+    expect(summariseToolInput('mystery_tool', {})).toEqual({ truncated: false })
+    expect(summariseToolInput('mystery_tool', null)).toEqual({ truncated: false })
   })
 })

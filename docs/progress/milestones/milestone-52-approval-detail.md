@@ -4,7 +4,7 @@ Principal report (2026-07-12): the approval card only says "Approve editor?" —
 it is unclear what the agent actually intends to create/update/execute. The
 SDK approval request already carries the tool `input`; surface it.
 
-- [ ] **m52-01** Server: `summariseToolInput(toolName, input)` → bounded
+- [x] **m52-01** Server: `summariseToolInput(toolName, input)` → bounded
   `detail` ({ path?, command?, preview?, truncated }) persisted on the
   `approval_request` event (path/command verbatim; content/diff or remaining
   input JSON as a size-capped preview).
