@@ -254,3 +254,4 @@ Tree clean at 296de9c. No active milestone; principal reported a /capture bug (s
 Tree clean at fbb090d. Principal-directed: add copy option to user chat messages.
 - 07:36 STARTED repair-scoped tweak: reuse MessageCopyButton for user messages in ChatScreen, right-aligned.
 - 07:38 DONE: user chat messages now have a copy control (shared MessageCopyButton, right-aligned). Verified by `npx playwright test` → 4 e2e specs green (new chat-copy.spec.ts) + lint + build.
+- 07:57 STARTED release: bump 0.0.1 → 0.9.0-beta and publish GitHub release.

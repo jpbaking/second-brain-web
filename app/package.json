@@ -1,6 +1,6 @@
 {
   "name": "second-brain-web",
-  "version": "0.0.1",
+  "version": "0.9.0-beta",
   "private": true,
   "type": "module",
   "description": "Self-hosted single-user web console for a second-brain vault",
