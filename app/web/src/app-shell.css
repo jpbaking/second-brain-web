@@ -909,8 +909,22 @@
   overflow-x: auto;
 }
 
-.prose .chat-table-wrap > table {
+.prose .chat-table-wrap {
   margin-block: 1.6em;
+}
+
+.prose .chat-table-wrap > table {
+  margin-block: 0;
+}
+
+.chat-table-actions {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: var(--space-3);
+}
+
+.chat-table-copy {
+  position: static;
 }
 
 .chat-copy-btn {
@@ -1014,6 +1028,10 @@
 .chat-zoom-body .mermaid-diagram,
 .chat-zoom-body > table,
 .chat-zoom-body > .chat-table-wrap > table {
+  margin-block: 0;
+}
+
+.chat-zoom-body > .chat-table-wrap {
   margin-block: 0;
 }
 

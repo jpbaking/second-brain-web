@@ -25,8 +25,8 @@ Updated: 2026-07-12 (milestone 57 active)
 
 ## Active milestone
 
-Milestone 57 (table copy spacing) is active. Next: m57-01, move the table copy
-control into a separate action row above the table.
+Milestone 57 (table copy spacing) is active. m57-01 is complete; next: m57-02
+full verification and archive.
 
 Previous: milestone 56 (copy raw assistant responses) is complete. Every non-empty
 assistant message has a Copy action for its exact original Markdown.
@@ -64,7 +64,7 @@ object). Milestones 48–49 need `./compose-helper.sh up` (rebuild) to go live.
 
 ## Next step
 
-Implement m57-01 from
+Run m57-02 from
 `docs/progress/milestones/milestone-57-table-copy-spacing.md`.
 
 ## Read before working

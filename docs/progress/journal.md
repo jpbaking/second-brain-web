@@ -119,3 +119,6 @@ for its exact raw Markdown; rebuild needed to go live.
 ## 2026-07-12 13:05 — session start
 Tree clean at 0cd3f40. Principal reported the table copy control sits too
 close to the header. Opened milestone 57; next m57-01.
+- 13:05 STARTED m57-01: move table copy into a spaced action row.
+- 13:05 DONE m57-01: table copy sits in a separate right-aligned action row
+  with spacing before the table header. Verified by web lint and build.
