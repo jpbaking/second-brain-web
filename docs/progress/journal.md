@@ -156,3 +156,10 @@ Opened milestone 59; next m59-01.
 - 13:20 DONE m59-02: workflow chips hidden; autocomplete shows one-line
   descriptions and a strong selected state; fresh-chat selection creates a
   correctly configured session then runs the workflow. Web lint/build passed.
+- 13:20 STARTED m59-03: run the full project gate and archive milestone 59.
+- 13:21 DONE m59-03: full gate green — lint clean, server 382 + web 9 tests
+  passed, and server + web builds passed. Milestone 59 archived.
+
+## 2026-07-12 13:21 — session end
+Milestone 59 complete. Workflow chips are hidden; slash autocomplete shows
+descriptions and selection; workflows run from fresh chats. Rebuild needed.

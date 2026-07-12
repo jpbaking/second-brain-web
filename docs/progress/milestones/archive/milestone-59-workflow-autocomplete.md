@@ -7,5 +7,5 @@
   selected state in slash autocomplete, and allow selection to create and run
   a fresh chat using its chosen defaults. Verification:
   `npm run lint --workspace web && npm run build --workspace web`.
-- [ ] **m59-03** — Run the full project verification gate and archive the
+- [x] **m59-03** — Run the full project verification gate and archive the
   milestone. Verification: `npm run lint && npm test && npm run build`.
