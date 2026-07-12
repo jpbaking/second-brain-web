@@ -223,3 +223,4 @@ Milestone 63 complete and archived. Handoff: no active milestone; container rebu
 - 14:31 STARTED repair: rename must not bump updated_at (renamed chats jumped to top of list)
 - 14:32 DONE repair: renameSession no longer bumps updated_at (rename keeps list position; only activity/pin reorder). Verified by chat-store test asserting updatedAt unchanged; full suite 383+9 green.
 - 14:35 STARTED m64-01: land on new-chat state at / (drop auto-open of last chat)
+- 14:38 DONE m64-01: `/` lands on new-chat state (auto-open mode removed); probe green (welcome shown despite existing chats, explicit open still works).

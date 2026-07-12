@@ -11,10 +11,9 @@ import type { ChatEvent } from './chat-transcript.js'
  * Chat-first conversation surface (milestone 16). The sidebar (AppShell) owns
  * the session list; this screen renders one conversation filling the main
  * pane, with a sticky bottom composer — in the style of the Claude/ChatGPT/
- * Gemini web apps. Landing behaviour: `auto` opens the most recently active
- * chat (rewriting the URL) or falls through to the new-chat state; `new`
- * always starts fresh and creates the session on the first send, deriving the
- * title from the message.
+ * Gemini web apps. Landing behaviour (m64-01): `new` is the landing state —
+ * it always starts fresh and creates the session on the first send, deriving
+ * the title from the message; `session` opens an explicit chat.
  */
 
 interface ChatSession { id: string, title: string, status: string, providerProfileId: string | null }
@@ -47,7 +46,7 @@ function normaliseMode (value: unknown): string | undefined {
   return APPROVAL_MODES.some(m => m.id === value) ? value as string : undefined
 }
 
-export type ChatMode = { kind: 'auto' } | { kind: 'new' } | { kind: 'session', id: string }
+export type ChatMode = { kind: 'new' } | { kind: 'session', id: string }
 
 async function getJson (url: string): Promise<Response> {
   return await fetch(url, { credentials: 'same-origin' })
@@ -378,7 +377,7 @@ export function ChatScreen ({ mode }: { mode: ChatMode }) {
   const [providers, setProviders] = useState<ProviderProfile[]>([])
   const [workflows, setWorkflows] = useState<WorkflowSummary[]>([])
   const [activeId, setActiveId] = useState<string | null>(mode.kind === 'session' ? mode.id : null)
-  const [ready, setReady] = useState(mode.kind !== 'auto')
+  const ready = true
   const [events, setEvents] = useState<ChatEvent[]>([])
   const [input, setInput] = useState('')
   const [error, setError] = useState<string | null>(null)
@@ -520,25 +519,8 @@ export function ChatScreen ({ mode }: { mode: ChatMode }) {
     if (mode.kind === 'session') {
       openStream(mode.id)
       loadSessionConfig(mode.id).catch(() => {})
-    } else if (mode.kind === 'new') {
+    } else {
       applyChatDefaults().catch(() => {})
-    } else if (mode.kind === 'auto') {
-      // Landing: open the most recently active chat, or show the new-chat state.
-      getJson('/api/chat/sessions').then(async res => {
-        if (res.status === 401) { window.location.assign('/login'); return }
-        const list = res.ok ? (await res.json() as { sessions: ChatSession[] }).sessions : []
-        const latest = list[0]
-        if (latest !== undefined) {
-          window.history.replaceState(null, '', `/chat/${latest.id}`)
-          window.dispatchEvent(new Event('chats-changed'))
-          setActiveId(latest.id)
-          openStream(latest.id)
-          loadSessionConfig(latest.id).catch(() => {})
-        } else {
-          applyChatDefaults().catch(() => {})
-        }
-        setReady(true)
-      }).catch(() => { setError('Could not load chats.'); setReady(true) })
     }
     getJson('/api/providers').then(async r => r.ok ? (await r.json() as { profiles: ProviderProfile[] }).profiles : [])
       .then(setProviders).catch(() => {})

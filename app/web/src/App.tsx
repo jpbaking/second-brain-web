@@ -81,12 +81,11 @@ function routedScreen (path: string) {
   }
 }
 
-/** Landing behaviour: last active chat, an explicit chat, or a fresh one. */
-function chatMode (path: string): { kind: 'auto' } | { kind: 'new' } | { kind: 'session', id: string } {
-  if (path === '/chat/new') return { kind: 'new' }
+/** Landing behaviour (m64-01): an explicit chat, or the fresh new-chat state. */
+function chatMode (path: string): { kind: 'new' } | { kind: 'session', id: string } {
   const match = /^\/chat\/([^/]+)$/.exec(path)
-  if (match !== null && match[1] !== undefined) return { kind: 'session', id: match[1] }
-  return { kind: 'auto' }
+  if (match !== null && match[1] !== undefined && match[1] !== 'new') return { kind: 'session', id: match[1] }
+  return { kind: 'new' }
 }
 
 function StatusPage () {

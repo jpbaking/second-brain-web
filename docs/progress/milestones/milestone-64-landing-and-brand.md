@@ -5,7 +5,7 @@ Principal direction (2026-07-12): login should land on the new-chat state
 should navigate to /command-centre (collapsed logo keeps its open-sidebar
 role).
 
-- [ ] m64-01: `/` renders the new-chat state; remove the auto-open-last-chat
+- [x] m64-01: `/` renders the new-chat state; remove the auto-open-last-chat
       landing mode.
       Verify: `cd app && npm run build` then Playwright probe: log in with
       existing chats and assert the new-chat welcome shows and the URL stays
