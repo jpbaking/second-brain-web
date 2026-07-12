@@ -79,3 +79,10 @@ control with HTML and Excel-compatible TSV clipboard formats. Opened milestone
 - 12:50 DONE m54-01: rendered tables have one copy control writing `text/html`
   and Excel-compatible TSV together, with a TSV fallback. Verified by web
   lint and production build.
+- 12:50 STARTED m54-02: run the full project gate and archive milestone 54.
+- 12:49 DONE m54-02: full gate green — lint clean, server 381 + web 9 tests
+  passed, and server + web builds passed. Milestone 54 archived.
+
+## 2026-07-12 12:49 — session end
+Milestone 54 complete. Rendered Markdown tables copy as rich HTML and
+Excel-compatible TSV from one control; rebuild needed to go live.

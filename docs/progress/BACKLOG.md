@@ -28,6 +28,7 @@ See `docs/project-plan/phase-008-feature-backlog-and-design-hooks.md` for other 
 
 ## Completed (one line each; evidence in `milestones/archive/` and the journal)
 
+- ~~Excel-compatible Markdown table copy~~ — milestone 54.
 - ~~Chat-scoped file upload (attachments)~~ — milestone 49.
 - ~~Web search tools (SearXNG + MCP)~~ — milestone 48.
 - ~~Mermaid support~~ — milestone 47.

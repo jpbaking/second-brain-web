@@ -4,5 +4,5 @@
   that writes both `text/html` table markup and tab-separated `text/plain`,
   falling back to plain TSV where rich clipboard writes are unavailable.
   Verification: `npm run lint --workspace web && npm run build --workspace web`.
-- [ ] **m54-02** — Run the full project verification gate and archive the
+- [x] **m54-02** — Run the full project verification gate and archive the
   milestone. Verification: `npm run lint && npm test && npm run build`.
