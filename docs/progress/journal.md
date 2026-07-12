@@ -129,3 +129,7 @@ close to the header. Opened milestone 57; next m57-01.
 ## 2026-07-12 13:07 — session end
 Milestone 57 complete. Table copy controls now occupy a separate action row
 above the table rather than overlapping its header; rebuild needed to go live.
+
+## 2026-07-12 13:10 — session start
+Tree clean at fbca669. Principal go: let chat-side Git inherit the deploy key
+already used by Save & Sync. Opened milestone 58; next m58-01.

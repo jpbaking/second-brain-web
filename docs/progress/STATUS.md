@@ -1,6 +1,6 @@
 # STATUS — single source of truth
 
-Updated: 2026-07-12 (no active milestone; milestone 57 complete)
+Updated: 2026-07-12 (milestone 58 active)
 
 ## Where we are
 
@@ -25,7 +25,10 @@ Updated: 2026-07-12 (no active milestone; milestone 57 complete)
 
 ## Active milestone
 
-Milestone 57 (table copy spacing) is complete. The table copy control sits in
+Milestone 58 (agent deploy-key Git access) is active. Next: m58-01, export the
+canonical hardened deploy-key SSH command into the agent runtime.
+
+Previous: milestone 57 (table copy spacing) is complete. The table copy control sits in
 a separate action row with clear space before the header.
 
 Previous: milestone 56 (copy raw assistant responses) is complete. Every non-empty
@@ -64,7 +67,8 @@ object). Milestones 48–49 need `./compose-helper.sh up` (rebuild) to go live.
 
 ## Next step
 
-Await direction.
+Implement m58-01 from
+`docs/progress/milestones/milestone-58-agent-deploy-key.md`.
 
 ## Read before working
 
