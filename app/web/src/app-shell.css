@@ -1435,6 +1435,14 @@
   color: var(--muted);
 }
 
+.app-footer {
+  padding: var(--space-3);
+  text-align: center;
+  font-family: var(--font-mono);
+  font-size: var(--ui-kicker);
+  color: var(--muted);
+}
+
 .explorer-crumbs {
   display: flex;
   flex-wrap: wrap;

@@ -14,6 +14,7 @@ import { AppHero } from './AppHero.js'
 import { BackupScreen } from './BackupScreen.js'
 import { SchedulesScreen } from './SchedulesScreen.js'
 import { AppShell } from './AppShell.js'
+import { AppFooter } from './AppFooter.js'
 
 import { ProfileScreen } from './ProfileScreen.js'
 
@@ -47,8 +48,8 @@ export function App () {
   const path = typeof window === 'undefined' ? '/' : window.location.pathname
 
   // Login and setup render outside the authenticated shell.
-  if (path === '/login') return <Login />
-  if (path === '/setup') return <StatusPage />
+  if (path === '/login') return <><Login /><AppFooter /></>
+  if (path === '/setup') return <><StatusPage /><AppFooter /></>
 
   return (
     <AppShell path={path}>

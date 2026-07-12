@@ -271,3 +271,4 @@ Tree clean at 55c164e. Principal directed: hover download icon on /explorer rows
 ## 2026-07-12 15:43 — session start
 Tree clean at b5adf86. Principal directed: copyright footer on all pages except chat. Opened milestone 69.
 - 15:43 STARTED m69-01: AppFooter component + shell/login/setup wiring + e2e.
+- 15:45 DONE m69-01: verified by lint+build clean, full `npx playwright test` → 3 green (footer on login+explorer, none on chat), screenshot reviewed. Checklist archived.

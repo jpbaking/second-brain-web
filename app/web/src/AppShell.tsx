@@ -2,6 +2,7 @@ import './app-shell.css'
 import { useCallback, useEffect, useState } from 'react'
 import type { ReactNode } from 'react'
 import { AppHero } from './AppHero.js'
+import { AppFooter } from './AppFooter.js'
 
 /**
  * Authenticated app shell (milestone 16): a chat-first layout in the style of
@@ -345,6 +346,7 @@ export function AppShell ({ path: initialPath, children }: { path: string, child
         </header>
         <div className='shell-content' data-chat={isChatPath(path) ? 'true' : undefined}>
           {content}
+          {!isChatPath(path) && <AppFooter />}
         </div>
       </div>
 

@@ -4,8 +4,9 @@ import { totpCode } from '../../server/dist/auth/totp.js';
 test('successfully logs in with password and TOTP', async ({ page }) => {
   await page.goto('/login');
 
-  // Step 1: Password
+  // Step 1: Password (copyright footer shows on login)
   await expect(page.getByTestId('password-step')).toBeVisible();
+  await expect(page.locator('.app-footer')).toHaveText('© 2026 Joseph Baking');
   await page.locator('#password').fill(process.env.E2E_PASSWORD!);
   await page.getByRole('button', { name: 'Continue' }).click();
 
@@ -21,4 +22,6 @@ test('successfully logs in with password and TOTP', async ({ page }) => {
   // Should redirect to command centre (/)
   await expect(page).toHaveURL('/');
   await expect(page.getByRole('heading', { name: 'What can I help with?' })).toBeVisible();
+  // Chat surfaces carry no footer.
+  await expect(page.locator('.app-footer')).toHaveCount(0);
 });

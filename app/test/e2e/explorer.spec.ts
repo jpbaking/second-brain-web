@@ -22,6 +22,7 @@ test('browses vault folders and previews a markdown file', async ({ page }) => {
   // Browse: root → memory → notes.
   await page.goto('/explorer');
   await expect(page.getByRole('heading', { name: 'Explorer' })).toBeVisible();
+  await expect(page.locator('.app-footer')).toHaveText('© 2026 Joseph Baking');
   await page.getByRole('button', { name: 'memory' }).click();
   await page.getByRole('button', { name: 'notes' }).click();
 

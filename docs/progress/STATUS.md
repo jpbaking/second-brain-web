@@ -1,6 +1,6 @@
 # STATUS — single source of truth
 
-Updated: 2026-07-12 (active: milestone 69 — copyright footer)
+Updated: 2026-07-12 (no active milestone; milestone 69 complete)
 
 ## Where we are
 
@@ -25,7 +25,12 @@ Updated: 2026-07-12 (active: milestone 69 — copyright footer)
 
 ## Active milestone
 
-Milestone 68 (explorer download) is complete: hovering or focusing a file
+Milestone 69 (copyright footer) is complete: a shared `AppFooter`
+("© 2026 Joseph Baking") renders on every page including /login and /setup,
+but not on chat surfaces (`/`, `/chat*`). **Milestones 62–69 need
+`./compose-helper.sh up` to go live.**
+
+Previous: milestone 68 (explorer download) is complete: hovering or focusing a file
 row in `/explorer` reveals a download icon at the right of the row;
 `GET /api/explorer/download` streams the raw file (any type) as an
 attachment with the same path guards as the other explorer endpoints.
@@ -108,7 +113,7 @@ object). Milestones 48–49 need `./compose-helper.sh up` (rebuild) to go live.
 
 ## Next step
 
-m69-01 (footer). Rebuild (./compose-helper.sh up) pending for milestones 62–68.
+Await direction. Rebuild (./compose-helper.sh up) pending for milestones 62–69.
 
 ## Read before working
 
