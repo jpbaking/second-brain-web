@@ -137,3 +137,10 @@ already used by Save & Sync. Opened milestone 58; next m58-01.
 - 13:11 DONE m58-01: agent subprocesses inherit the canonical deploy key via
   the same hardened SSH command as Save & Sync, with terminal prompts disabled.
   Focused regression test 3 green; server build passed.
+- 13:11 STARTED m58-02: run the full project gate and archive milestone 58.
+- 13:12 DONE m58-02: full gate green — lint clean, server 382 + web 9 tests
+  passed, and server + web builds passed. Milestone 58 archived.
+
+## 2026-07-12 13:12 — session end
+Milestone 58 complete. Chat-side Git now inherits the canonical deploy key via
+the same hardened SSH command as Save & Sync; rebuild needed to go live.

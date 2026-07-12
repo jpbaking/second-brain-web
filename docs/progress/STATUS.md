@@ -1,6 +1,6 @@
 # STATUS — single source of truth
 
-Updated: 2026-07-12 (milestone 58 active)
+Updated: 2026-07-12 (no active milestone; milestone 58 complete)
 
 ## Where we are
 
@@ -25,8 +25,8 @@ Updated: 2026-07-12 (milestone 58 active)
 
 ## Active milestone
 
-Milestone 58 (agent deploy-key Git access) is active. m58-01 is complete;
-next: m58-02 full verification and archive.
+Milestone 58 (agent deploy-key Git access) is complete. Agent-launched Git
+inherits the same canonical hardened deploy-key SSH command as Save & Sync.
 
 Previous: milestone 57 (table copy spacing) is complete. The table copy control sits in
 a separate action row with clear space before the header.
@@ -67,8 +67,7 @@ object). Milestones 48–49 need `./compose-helper.sh up` (rebuild) to go live.
 
 ## Next step
 
-Run m58-02 from
-`docs/progress/milestones/milestone-58-agent-deploy-key.md`.
+Await direction.
 
 ## Read before working
 

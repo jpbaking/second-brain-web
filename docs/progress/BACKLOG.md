@@ -28,6 +28,7 @@ See `docs/project-plan/phase-008-feature-backlog-and-design-hooks.md` for other 
 
 ## Completed (one line each; evidence in `milestones/archive/` and the journal)
 
+- ~~Give chat-side Git access to the deploy key~~ — milestone 58.
 - ~~Space table copy control away from its header~~ — milestone 57.
 - ~~Copy raw Markdown from assistant messages~~ — milestone 56.
 - ~~Table copy in the expanded preview modal~~ — milestone 55.
