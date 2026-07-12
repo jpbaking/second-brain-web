@@ -59,3 +59,8 @@ Milestone 52 complete. No active milestone; rebuild needed for 48–52 to go liv
 
 ## 2026-07-12 10:58 — session end
 Milestone 53 complete. No active milestone; rebuild needed for 48–53 to go live.
+- 12:02 STARTED repair: approval modes bypass selected preset for SDK reads, absolute in-vault paths, and tool calls during session start
+- 12:04 DONE repair: all vault tools now route through the dynamic mode policy; absolute paths beneath the configured vault stay in-vault; approvals during SDK start use the selected session mode. Verified by focused 36 tests, full lint, server 379 + web 9 tests, and full build.
+
+## 2026-07-12 12:04 — session end
+Approval-mode routing repaired. No active milestone; rebuild needed to go live.

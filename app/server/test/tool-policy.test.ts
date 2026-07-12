@@ -115,7 +115,9 @@ describe('evaluateTool — the guard decision', () => {
     expect(evaluateTool({ toolName: 'bash', input: { command: 'rm notes/a.md' } }, 'auto').decision).toBe('allow')
     expect(evaluateTool({ toolName: 'editor', input: { path: 'reports/summary.md' } }, 'auto').decision).toBe('allow')
     expect(evaluateTool({ toolName: 'bash', input: { command: 'rm -rf /tmp/x' } }, 'auto').decision).toBe('ask')
+    expect(evaluateTool({ toolName: 'bash', input: { command: 'rm /vault/notes/a.md' } }, 'auto', '/vault').decision).toBe('allow')
     expect(evaluateTool({ toolName: 'editor', input: { path: '/etc/hosts' } }, 'auto').decision).toBe('ask')
+    expect(evaluateTool({ toolName: 'editor', input: { path: '/vault/reports/summary.md' } }, 'auto', '/vault').decision).toBe('allow')
     // Library originals are STILL denied
     expect(evaluateTool({ toolName: 'editor', input: { path: 'library/original.md' } }, 'auto').decision).toBe('deny')
     expect(evaluateTool({ toolName: 'bash', input: { command: 'rm library/2026/original.txt' } }, 'auto').decision).toBe('deny')
@@ -154,10 +156,13 @@ describe('mode helper predicates', () => {
 
   it('detects paths and commands reaching outside the vault', () => {
     expect(isOutsideVaultPath('/etc/hosts')).toBe(true)
+    expect(isOutsideVaultPath('/vault/notes/a.md', '/vault')).toBe(false)
+    expect(isOutsideVaultPath('/vaultish/notes/a.md', '/vault')).toBe(true)
     expect(isOutsideVaultPath('~/notes.md')).toBe(true)
     expect(isOutsideVaultPath('../sibling.md')).toBe(true)
     expect(isOutsideVaultPath('memory/notes/a.md')).toBe(false)
     expect(commandReachesOutsideVault('cat /etc/passwd')).toBe(true)
+    expect(commandReachesOutsideVault('cat /vault/notes/a.md', '/vault')).toBe(false)
     expect(commandReachesOutsideVault('ls ../..')).toBe(true)
     expect(commandReachesOutsideVault('ls memory/notes')).toBe(false)
   })

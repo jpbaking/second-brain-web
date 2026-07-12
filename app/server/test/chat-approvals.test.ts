@@ -11,7 +11,7 @@ import { totpCode } from '../src/auth/totp.js'
 import { CHALLENGE_COOKIE, SESSION_COOKIE } from '../src/auth/cookies.js'
 import { AgentSessionService } from '../src/agent/session.js'
 import { readEventsSince } from '../src/agent/chat-store.js'
-import type { AgentRunner, AgentStartInput, AgentStartResult } from '../src/agent/runner.js'
+import type { AgentRunner, AgentStartInput, AgentStartResult, ToolApprovalDecision } from '../src/agent/runner.js'
 import type { ProviderSnapshot } from '../src/providers/snapshot.js'
 import type { DatabaseSync } from 'node:sqlite'
 import type { FastifyInstance } from 'fastify'
@@ -23,9 +23,11 @@ const apps: FastifyInstance[] = []
 
 /** Captures the requestToolApproval capability handed in at start(). */
 class CapturingRunner implements AgentRunner {
+  input: AgentStartInput | undefined
   approval: AgentStartInput['capabilities'] | undefined
   private n = 0
   async start (input: AgentStartInput): Promise<AgentStartResult> {
+    this.input = input
     if (input.capabilities !== undefined) this.approval = input.capabilities
     return { sessionId: `sdk-${++this.n}` }
   }
@@ -64,6 +66,38 @@ async function startedSession (db: DatabaseSync, runner: AgentRunner): Promise<{
 }
 
 describe('AgentSessionService approvals', () => {
+  it('routes vault reads through the callback so chat mode can ask', async () => {
+    const db = freshDb()
+    const runner = new CapturingRunner()
+    const svc = new AgentSessionService(db, runner, { snapshotFor: () => snap(), vaultCwd: '/vault' })
+    const session = svc.create({ title: 'Chat', approvalPreset: 'chat' })
+    await svc.sendMessage(session.id, 'hi')
+
+    expect((runner.input?.toolPolicies as Record<string, { autoApprove: boolean }>).read_file.autoApprove).toBe(false)
+    const pending = svc.requestToolApproval({ sessionId: 'sdk-1', toolCallId: 'chat-read', toolName: 'read_file', input: { path: '/vault/a.md' } })
+    svc.flushEvents()
+    const request = readEventsSince(db, session.id, 0).find(e => e.type === 'approval_request')
+    expect(request?.payload).toMatchObject({ toolCallId: 'chat-read' })
+    expect(svc.resolveApproval('chat-read', false)).toBe(true)
+    await expect(pending).resolves.toEqual({ approved: false })
+  })
+
+  it('uses the selected mode for approvals raised synchronously during start', async () => {
+    const db = freshDb()
+    class StartApprovalRunner extends CapturingRunner {
+      decision: ToolApprovalDecision | undefined
+      override async start (input: AgentStartInput): Promise<AgentStartResult> {
+        this.decision = await input.capabilities?.requestToolApproval({ sessionId: 'not-bound-yet', toolCallId: 'early', toolName: 'editor', input: { path: '/vault/a.md' } })
+        return await super.start(input)
+      }
+    }
+    const runner = new StartApprovalRunner()
+    const svc = new AgentSessionService(db, runner, { snapshotFor: () => snap(), vaultCwd: '/vault' })
+    const session = svc.create({ title: 'Auto', approvalPreset: 'auto' })
+    await svc.sendMessage(session.id, 'hi')
+    expect(runner.decision).toEqual({ approved: true })
+  })
+
   it('auto-denies a library/ write without parking (guard runs first)', async () => {
     const db = freshDb()
     const { svc, chatId } = await startedSession(db, new CapturingRunner())

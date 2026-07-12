@@ -108,10 +108,15 @@ export function touchesGitDir (rawPathOrCommand: string): boolean {
  * cwd (the agent runs with cwd = the vault checkout). Fails open to "outside"
  * on anything ambiguous.
  */
-export function isOutsideVaultPath (raw: string): boolean {
+export function isOutsideVaultPath (raw: string, vaultCwd?: string): boolean {
   if (raw.startsWith('~')) return true
   const norm = normaliseVaultPath(raw)
-  return /^([/\\]|[A-Za-z]:)/.test(norm) || norm === '..' || norm.startsWith('../')
+  if (/^([/\\]|[A-Za-z]:)/.test(norm)) {
+    if (vaultCwd === undefined) return true
+    const vault = normaliseVaultPath(vaultCwd).replace(/\/$/, '')
+    return norm !== vault && !norm.startsWith(`${vault}/`)
+  }
+  return norm === '..' || norm.startsWith('../')
 }
 
 /**
@@ -119,8 +124,9 @@ export function isOutsideVaultPath (raw: string): boolean {
  * home-relative path token, or upward traversal. `cd` counts like any other
  * reference. Heuristic and fail-closed: ambiguous commands read as outside.
  */
-export function commandReachesOutsideVault (command: string): boolean {
-  return /(^|[\s"'=])(~|\/)[^\s"']*/.test(command) || /(^|[\s"'=/])\.\.(\/|\s|$)/.test(command)
+export function commandReachesOutsideVault (command: string, vaultCwd?: string): boolean {
+  const pathRefs = [...command.matchAll(/(^|[\s"'=])((?:~|\/)[^\s"']*)/g)].map(match => match[2] ?? '')
+  return pathRefs.some(ref => isOutsideVaultPath(ref, vaultCwd)) || /(^|[\s"'=/])\.\.(\/|\s|$)/.test(command)
 }
 
 /**
@@ -220,7 +226,7 @@ export function summariseToolInput (toolName: string, input: Record<string, unkn
  * Invariants in EVERY mode: the library/ originals guard denies, `.git` is
  * protected, and unknown tools are never silently auto-approved (m00-10).
  */
-export function evaluateTool (req: ToolApprovalRequest, preset: ApprovalPreset = 'normal'): ToolPolicyResult {
+export function evaluateTool (req: ToolApprovalRequest, preset: ApprovalPreset = 'normal', vaultCwd?: string): ToolPolicyResult {
   const name = req.toolName
   const input = req.input ?? {}
 
@@ -242,7 +248,7 @@ export function evaluateTool (req: ToolApprovalRequest, preset: ApprovalPreset =
     }
     if (preset === 'chat' || preset === 'manual') return { decision: 'ask' }
     // normal / auto: in-vault edits are git-reversible; outside the vault asks.
-    if (isOutsideVaultPath(rawPath)) return { decision: 'ask', reason: 'write outside the vault' }
+    if (isOutsideVaultPath(rawPath, vaultCwd)) return { decision: 'ask', reason: 'write outside the vault' }
     return { decision: 'allow' }
   }
 
@@ -258,7 +264,7 @@ export function evaluateTool (req: ToolApprovalRequest, preset: ApprovalPreset =
     if (preset === 'manual') {
       return isSafeReadCommand(command) ? { decision: 'allow' } : { decision: 'ask' }
     }
-    if (commandReachesOutsideVault(command)) return { decision: 'ask', reason: 'command reaches outside the vault' }
+    if (commandReachesOutsideVault(command, vaultCwd)) return { decision: 'ask', reason: 'command reaches outside the vault' }
     if (isDestructiveCommand(command) && preset !== 'auto') return { decision: 'ask', reason: 'destructive command' }
     return { decision: 'allow' }
   }
@@ -281,8 +287,12 @@ export const TOOL_POLICIES = {
   new_file: { autoApprove: false },
   bash: { autoApprove: false },
   execute_command: { autoApprove: false },
-  search: { autoApprove: true },
-  read_file: { autoApprove: true },
+  // Vault reads must enter the callback so Chat mode can require consent.
+  search: { autoApprove: false },
+  read: { autoApprove: false },
+  read_file: { autoApprove: false },
+  list_files: { autoApprove: false },
+  list_code_definition_names: { autoApprove: false },
   web__search: { autoApprove: true },
   web__fetch: { autoApprove: true },
   fetch: { enabled: false },

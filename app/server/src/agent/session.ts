@@ -386,9 +386,14 @@ export class AgentSessionService {
    */
   async requestToolApproval (req: SdkApprovalRequest): Promise<ToolApprovalDecision> {
     const sdkSessionId = req.sessionId
-    const session = sdkSessionId === undefined ? undefined : getSessionBySdkId(this.db, sdkSessionId)
+    let session = sdkSessionId === undefined ? undefined : getSessionBySdkId(this.db, sdkSessionId)
+    // The SDK can request approval synchronously inside start(), before its
+    // session id has been returned and persisted. Preserve the selected mode.
+    if (session === undefined && this.pendingStartChatSessionId !== null) {
+      session = getSession(this.db, this.pendingStartChatSessionId)
+    }
     const preset = session?.approvalPreset ?? 'normal'
-    const decision = evaluateTool({ toolName: req.toolName, input: req.input ?? null }, preset)
+    const decision = evaluateTool({ toolName: req.toolName, input: req.input ?? null }, preset, this.opts.vaultCwd)
 
     if (decision.decision === 'deny') {
       if (session !== undefined) {
