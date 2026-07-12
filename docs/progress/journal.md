@@ -178,3 +178,8 @@ all pages except chat. Opened milestone 60; next m60-01.
 ## 2026-07-12 13:27 — session end
 Milestone 60 complete. All non-chat pages now share the same branded hero
 structure; chat views are unchanged. Rebuild needed to go live.
+
+## 2026-07-12 13:35 — session start
+Tree clean at d6305c8. Principal go: Gemini-inspired collapsible sidebar with
+primary actions, chat search, and bottom secondary-pages menu. Opened milestone
+61; next m61-01.

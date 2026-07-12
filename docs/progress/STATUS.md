@@ -1,6 +1,6 @@
 # STATUS — single source of truth
 
-Updated: 2026-07-12 (no active milestone; milestone 60 complete)
+Updated: 2026-07-12 (milestone 61 active)
 
 ## Where we are
 
@@ -25,7 +25,10 @@ Updated: 2026-07-12 (no active milestone; milestone 60 complete)
 
 ## Active milestone
 
-Milestone 60 (consistent non-chat page heroes) is complete. Every non-chat
+Milestone 61 (Gemini-inspired sidebar) is active. Next: m61-01, add desktop
+collapse plus icon-led primary actions and chat-title search.
+
+Previous: milestone 60 (consistent non-chat page heroes) is complete. Every non-chat
 screen uses one shared logo, kicker, title, and subtitle hero structure.
 
 Previous: milestone 59 (workflow autocomplete UX) is complete. Workflow chips are
@@ -74,7 +77,8 @@ object). Milestones 48–49 need `./compose-helper.sh up` (rebuild) to go live.
 
 ## Next step
 
-Await direction.
+Implement m61-01 from
+`docs/progress/milestones/milestone-61-gemini-sidebar.md`.
 
 ## Read before working
 
