@@ -1,5 +1,6 @@
 import { execFile } from 'node:child_process'
 import { promisify } from 'node:util'
+import { parseChatGptCredentials } from '../agent/runner.js'
 
 /**
  * Provider connectivity test (phase-004 Provider Settings UX). Sends a minimal,
@@ -41,12 +42,29 @@ async function testClaudeCodeAuth (timeoutMs: number): Promise<ProviderTestResul
   }
 }
 
+/** Offline check of the stored ChatGPT OAuth blob; refresh happens at use. */
+function testChatGptAuth (blob: string | undefined): ProviderTestResult {
+  if (blob === undefined) {
+    return { ok: false, status: null, message: 'No ChatGPT login stored. Run ./configure to log in.' }
+  }
+  try {
+    const credentials = parseChatGptCredentials(blob)
+    const message = credentials.expires > Date.now()
+      ? 'ChatGPT login present and current.'
+      : 'ChatGPT login present; the access token will refresh at next use.'
+    return { ok: true, status: null, message }
+  } catch {
+    return { ok: false, status: null, message: 'Stored ChatGPT login is invalid. Run ./configure to log in again.' }
+  }
+}
+
 function stripSlash (url: string): string {
   return url.replace(/\/+$/, '')
 }
 
 export async function testProvider (input: ProviderTestInput, timeoutMs = 10_000): Promise<ProviderTestResult> {
   if (input.providerId === 'claude-code') return await testClaudeCodeAuth(timeoutMs)
+  if (input.providerId === 'chatgpt') return testChatGptAuth(input.apiKey)
 
   let url: string
   const headers: Record<string, string> = {}

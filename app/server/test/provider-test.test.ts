@@ -139,6 +139,24 @@ describe('testProvider (unit)', () => {
     expect(result.message).not.toContain(badKey)
   })
 
+  it('validates a chatgpt OAuth blob offline without touching the network', async () => {
+    const blob = JSON.stringify({ access: 'at', refresh: 'rt', expires: Date.now() + 60_000 })
+    const result = await testProvider({ providerId: 'chatgpt', baseUrl: null, modelId: 'gpt-5.5', apiKey: blob })
+    expect(result).toEqual({ ok: true, status: null, message: 'ChatGPT login present and current.' })
+    const stale = JSON.stringify({ access: 'at', refresh: 'rt', expires: Date.now() - 60_000 })
+    expect((await testProvider({ providerId: 'chatgpt', baseUrl: null, modelId: 'gpt-5.5', apiKey: stale })).message)
+      .toMatch(/refresh at next use/)
+  })
+
+  it('rejects a missing or malformed chatgpt login with a configure hint', async () => {
+    const missing = await testProvider({ providerId: 'chatgpt', baseUrl: null, modelId: 'gpt-5.5' })
+    expect(missing.ok).toBe(false)
+    expect(missing.message).toContain('./configure')
+    const malformed = await testProvider({ providerId: 'chatgpt', baseUrl: null, modelId: 'gpt-5.5', apiKey: 'sk-not-a-blob' })
+    expect(malformed.ok).toBe(false)
+    expect(malformed.message).toContain('invalid')
+  })
+
   it('reports unreachable when the endpoint is down', async () => {
     // Nothing is listening on this port.
     const result = await testProvider(

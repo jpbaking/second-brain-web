@@ -75,7 +75,9 @@ export function ProviderSettings () {
                       <div className='data-value'>
                         {profile.providerId} · {profile.modelId}
                         {profile.baseUrl !== null ? ` · ${profile.baseUrl}` : ''}
-                        {profile.key === 'configured' ? ' · key configured' : ' · no key'}
+                        {profile.providerId === 'chatgpt'
+                          ? (profile.key === 'configured' ? ' · OAuth login' : ' · not logged in')
+                          : profile.key === 'configured' ? ' · key configured' : ' · no key'}
                       </div>
                     </div>
                     <button className='btn btn-secondary' type='button' disabled={testing === profile.id} onClick={() => { testProfile(profile).catch(() => {}) }}>

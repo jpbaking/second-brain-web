@@ -66,7 +66,7 @@ OAuth handled by `./configure` (not compose-helper — see design notes).
   `providers.yaml`; provisioning imports it into the profile secret.
   Verify: `npm test --workspace server -- configure` suites green; manual
   `./configure` run adds a chatgpt provider end-to-end.
-- [ ] **m73-05 — web `/providers` display.** A chatgpt profile renders like
+- [x] **m73-05 — web `/providers` display.** A chatgpt profile renders like
   claude-code's CLI-auth style ([OAuth] instead of key controls), never
   exposing the blob. Verify: `cd app && npm run lint && npm test && npm run
   build`; screenshot of `/providers` with a chatgpt profile.

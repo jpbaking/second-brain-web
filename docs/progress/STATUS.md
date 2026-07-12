@@ -40,7 +40,7 @@ to go live.**
 
 ## Next step
 
-Implement **m73-05**: web /providers display for chatgpt profiles.
+Implement **m73-06**: docs + live verification (needs principal ChatGPT login).
 
 ## Read before working
 

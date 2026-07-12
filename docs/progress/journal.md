@@ -166,3 +166,10 @@ provider support (backlog + implementation). Milestone 72 paused at m72-03.
   blob into providers.yaml. Verified by scripted runs (menu [OAuth] label,
   catalog model switch, abandoned login leaves state untouched) + server
   suite 410 green ×2 + lint + build. Full live login deferred to m73-06.
+- 02:22 STARTED m73-05: web /providers page rendering for chatgpt profiles
+  (OAuth badge, no key controls).
+- 02:28 DONE m73-05: /providers shows "OAuth login" for chatgpt profiles and
+  the test endpoint validates the stored blob offline. Verified by
+  provider-test.test.ts 12 green, lint, web build, and a headless-Chromium
+  harness (login → /providers screenshot + API test → "ChatGPT login present
+  and current."). 
