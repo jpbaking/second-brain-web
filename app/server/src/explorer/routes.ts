@@ -1,4 +1,4 @@
-import { existsSync, lstatSync, readFileSync, readdirSync, statSync } from 'node:fs'
+import { createReadStream, existsSync, lstatSync, readFileSync, readdirSync, statSync } from 'node:fs'
 import path from 'node:path'
 import { vaultWorkspacePath } from '../vault/config.js'
 import type { AppConfig } from '../config.js'
@@ -51,6 +51,22 @@ export function registerExplorerRoutes (app: FastifyInstance, config: AppConfig)
       })
       .sort((a, b) => (a.kind === b.kind ? a.name.localeCompare(b.name) : a.kind === 'dir' ? -1 : 1))
     return { path: target, entries } satisfies ExplorerTree
+  })
+
+  app.get('/api/explorer/download', async (req, reply) => {
+    const target = (req.query as { path?: string }).path
+    if (typeof target !== 'string' || !isSafeVaultPath(target)) {
+      return await reply.code(400).send({ error: 'A valid vault path is required.' })
+    }
+    const full = path.join(vaultWorkspacePath(config.dataDir), ...target.split('/'))
+    if (!existsSync(full) || !lstatSync(full).isFile()) {
+      return await reply.code(404).send({ error: 'No such file in the vault.' })
+    }
+    const name = target.split('/').pop() ?? target
+    return await reply
+      .header('content-type', 'application/octet-stream')
+      .header('content-disposition', `attachment; filename="${name.replaceAll('"', '')}"`)
+      .send(createReadStream(full))
   })
 
   app.get('/api/explorer/file', async (req, reply) => {

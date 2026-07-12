@@ -264,3 +264,4 @@ Tree clean at 4d95d1f. Principal directed: amber "Secretary" label in chat. Open
 ## 2026-07-12 15:38 — session start
 Tree clean at 55c164e. Principal directed: hover download icon on /explorer rows. Opened milestone 68.
 - 15:38 STARTED m68-01: /api/explorer/download endpoint + tests.
+- 15:39 DONE m68-01: verified by `npm test --workspace server -- explorer-api.test.ts` → 10 green.

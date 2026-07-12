@@ -102,7 +102,7 @@ object). Milestones 48–49 need `./compose-helper.sh up` (rebuild) to go live.
 
 ## Next step
 
-m68-01 (download endpoint). Rebuild (./compose-helper.sh up) pending for milestones 62–67.
+m68-02 (hover download icon in UI). Rebuild (./compose-helper.sh up) pending for milestones 62–67.
 
 ## Read before working
 

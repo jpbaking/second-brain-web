@@ -100,6 +100,22 @@ describe('explorer file-browser API', () => {
     expect(bin).toMatchObject({ kind: 'binary', content: '', size: 4 })
   })
 
+  it('downloads any file raw with an attachment disposition', async () => {
+    const { app, cookie } = await fixture()
+    const md = await app.inject({ method: 'GET', url: '/api/explorer/download?path=memory/notes/index.md', headers: { cookie } })
+    expect(md.statusCode).toBe(200)
+    expect(md.headers['content-disposition']).toBe('attachment; filename="index.md"')
+    expect(md.body).toBe('# Index\n\nA hub note.\n')
+    const bin = await app.inject({ method: 'GET', url: '/api/explorer/download?path=library/blob.bin', headers: { cookie } })
+    expect(bin.statusCode).toBe(200)
+    expect(bin.headers['content-type']).toBe('application/octet-stream')
+    expect(bin.rawPayload).toEqual(Buffer.from([0x89, 0x50, 0x00, 0x47]))
+    // Same guards as the other endpoints.
+    expect((await app.inject({ method: 'GET', url: '/api/explorer/download?path=memory/none.md', headers: { cookie } })).statusCode).toBe(404)
+    expect((await app.inject({ method: 'GET', url: '/api/explorer/download?path=../etc/passwd', headers: { cookie } })).statusCode).toBe(400)
+    expect((await app.inject({ method: 'GET', url: '/api/explorer/download?path=memory/notes/index.md' })).statusCode).toBe(401)
+  })
+
   it('404s missing files and never follows symlinks', async () => {
     const { app, cookie, ws } = await fixture()
     expect((await app.inject({ method: 'GET', url: '/api/explorer/file?path=memory/none.md', headers: { cookie } })).statusCode).toBe(404)
