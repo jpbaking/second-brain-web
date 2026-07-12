@@ -105,6 +105,31 @@ describe('AgentSessionService approvals', () => {
     expect(svc.resolveApproval('t3', false, 'not allowed')).toBe(true)
     expect(await pending).toEqual({ approved: false, reason: 'not allowed' })
   })
+
+  it('a new message auto-denies a still-parked approval instead of queuing behind it', async () => {
+    const db = freshDb()
+    const { svc, chatId } = await startedSession(db, new CapturingRunner())
+    const pending = svc.requestToolApproval({
+      sessionId: 'sdk-1', toolCallId: 't4', toolName: 'editor', input: { path: '/outside/scratch.md' },
+    })
+    svc.flushEvents()
+    expect(readEventsSince(db, chatId, 0).some(e => e.type === 'approval_request')).toBe(true)
+
+    await svc.sendMessage(chatId, 'never mind, do this instead')
+    expect(await pending).toEqual({ approved: false, reason: 'superseded by new message' })
+
+    svc.flushEvents()
+    const events = readEventsSince(db, chatId, 0)
+    const resolved = events.find(e => e.type === 'approval_resolved')
+    expect(resolved?.payload).toEqual({ toolCallId: 't4', approved: false })
+    // The new message is recorded, and after the auto-deny in the event stream.
+    const resolvedIdx = events.findIndex(e => e.type === 'approval_resolved')
+    const messageIdx = events.findIndex(e => e.type === 'user_message' && (e.payload as { text: string }).text === 'never mind, do this instead')
+    expect(messageIdx).toBeGreaterThan(resolvedIdx)
+
+    // Resolving the same toolCallId again (e.g. a stale approval click) is a no-op.
+    expect(svc.resolveApproval('t4', true)).toBe(false)
+  })
 })
 
 import { readLock } from '../src/vault/lock.js'

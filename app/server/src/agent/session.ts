@@ -437,6 +437,19 @@ export class AgentSessionService {
     return true
   }
 
+  /** Deny whichever approval is parked for this session, if any — a new
+   *  message supersedes a pending tool-call decision rather than queuing
+   *  behind it. At most one approval is ever parked per session (the SDK
+   *  turn blocks on it), so the first match is the only match. */
+  private denyPendingApprovalForSession (chatSessionId: string): void {
+    for (const [toolCallId, parked] of this.pendingApprovals) {
+      if (parked.chatSessionId === chatSessionId) {
+        this.resolveApproval(toolCallId, false, 'superseded by new message')
+        break
+      }
+    }
+  }
+
   /** Persist a chat event and fan it out to SSE clients. */
   private emitEvent (chatSessionId: string, type: string, payload: unknown): void {
     this.fanOut(chatSessionId, this.appendEventBatched(chatSessionId, type, payload))
@@ -575,6 +588,8 @@ export class AgentSessionService {
    * userFiles, and display names persisted on the user_message event.
    */
   async sendMessage (chatSessionId: string, text: string, attachments?: MessageAttachments): Promise<{ accepted: true }> {
+    // A new message supersedes any approval still awaiting a human decision.
+    this.denyPendingApprovalForSession(chatSessionId)
     // emitEvent (not bare appendEventBatched) so connected SSE clients see the user's
     // own message live, not only on replay.
     const names = attachments?.names ?? []
