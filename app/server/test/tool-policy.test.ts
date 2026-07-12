@@ -9,6 +9,7 @@ import {
   isDestructiveCommand,
   isOutsideVaultPath,
   commandReachesOutsideVault,
+  isForbiddenGitCommand,
 } from '../src/agent/tool-policy.js'
 
 describe('normaliseVaultPath', () => {
@@ -43,12 +44,15 @@ describe('isProtectedLibraryWrite', () => {
 
 describe('isMoveOnlyCommand', () => {
   it('recognises mv and git mv', () => {
-    expect(isMoveOnlyCommand('mv library/a.txt library/b.txt')).toBe(true)
-    expect(isMoveOnlyCommand('  git mv library/a.txt library/b.txt')).toBe(true)
+    expect(isMoveOnlyCommand('mv inbox/a.txt library/2026/2026-07-12_a.txt')).toBe(true)
+    expect(isMoveOnlyCommand('  git mv -- inbox/a.txt library/2026/2026-07-12_a.txt')).toBe(true)
   })
   it('rejects other commands', () => {
     expect(isMoveOnlyCommand('rm library/a.txt')).toBe(false)
     expect(isMoveOnlyCommand('echo hi > library/a.txt')).toBe(false)
+    expect(isMoveOnlyCommand('mv library/2026/a.txt library/2026/b.txt')).toBe(false)
+    expect(isMoveOnlyCommand('mv inbox/a.txt library/a.txt')).toBe(false)
+    expect(isMoveOnlyCommand('mv inbox/a.txt library/2026/a.txt; rm memory/x.md')).toBe(false)
   })
 })
 
@@ -64,12 +68,14 @@ describe('evaluateTool — the guard decision', () => {
     expect(evaluateTool({ toolName: 'editor', input: { path: 'library/2026/catalog.md' } }).decision).not.toBe('deny')
   })
 
-  it('DENIES a bash write under library but ALLOWS mv / git mv and catalog writes', () => {
+  it('DENIES shell writes under library but ALLOWS reads and one inbox-to-shard move', () => {
     expect(evaluateTool({ toolName: 'bash', input: { command: 'rm library/2026/original.txt' } }).decision).toBe('deny')
     expect(evaluateTool({ toolName: 'bash', input: { command: 'echo x >> library/2026/original.txt' } }).decision).toBe('deny')
-    expect(evaluateTool({ toolName: 'bash', input: { command: 'mv library/2026/a.txt library/2026/b.txt' } }).decision).not.toBe('deny')
-    expect(evaluateTool({ toolName: 'bash', input: { command: 'git mv library/2026/a.txt library/2026/b.txt' } }).decision).not.toBe('deny')
-    expect(evaluateTool({ toolName: 'bash', input: { command: 'echo done >> library/2026/catalog.md' } }).decision).not.toBe('deny')
+    expect(evaluateTool({ toolName: 'bash', input: { command: 'mv inbox/a.txt library/2026/2026-07-12_a.txt' } }).decision).not.toBe('deny')
+    expect(evaluateTool({ toolName: 'bash', input: { command: 'git mv inbox/a.txt library/2026/2026-07-12_a.txt' } }).decision).not.toBe('deny')
+    expect(evaluateTool({ toolName: 'bash', input: { command: 'cat library/2026/catalog.md' } }).decision).not.toBe('deny')
+    expect(evaluateTool({ toolName: 'bash', input: { command: 'echo done >> library/2026/catalog.md' } }).decision).toBe('deny')
+    expect(evaluateTool({ toolName: 'bash', input: { command: 'mv inbox/a.txt library/2026/a.txt; rm memory/x.md' } }).decision).toBe('deny')
   })
 
   it('allows bash that does not touch library', () => {
@@ -104,7 +110,7 @@ describe('evaluateTool — the guard decision', () => {
     expect(evaluateTool({ toolName: 'editor', input: { path: 'reports/summary.md' } }, 'normal').decision).toBe('allow')
     expect(evaluateTool({ toolName: 'bash', input: { command: 'mkdir -p notes && touch notes/a.md' } }, 'normal').decision).toBe('allow')
     expect(evaluateTool({ toolName: 'bash', input: { command: 'rm notes/a.md' } }, 'normal').decision).toBe('ask')
-    expect(evaluateTool({ toolName: 'bash', input: { command: 'git reset --hard HEAD~1' } }, 'normal').decision).toBe('ask')
+    expect(evaluateTool({ toolName: 'bash', input: { command: 'git reset --hard HEAD~1' } }, 'normal').decision).toBe('deny')
     expect(evaluateTool({ toolName: 'editor', input: { path: '/etc/hosts' } }, 'normal').decision).toBe('ask')
     expect(evaluateTool({ toolName: 'editor', input: { path: '../outside.md' } }, 'normal').decision).toBe('ask')
     expect(evaluateTool({ toolName: 'bash', input: { command: 'cat /etc/passwd' } }, 'normal').decision).toBe('ask')
@@ -118,6 +124,9 @@ describe('evaluateTool — the guard decision', () => {
     expect(evaluateTool({ toolName: 'bash', input: { command: 'rm /vault/notes/a.md' } }, 'auto', '/vault').decision).toBe('allow')
     expect(evaluateTool({ toolName: 'editor', input: { path: '/etc/hosts' } }, 'auto').decision).toBe('ask')
     expect(evaluateTool({ toolName: 'editor', input: { path: '/vault/reports/summary.md' } }, 'auto', '/vault').decision).toBe('allow')
+    expect(evaluateTool({ toolName: 'bash', input: { command: 'git reset --hard HEAD~1' } }, 'auto').decision).toBe('deny')
+    expect(evaluateTool({ toolName: 'bash', input: { command: 'git clean -fd' } }, 'auto').decision).toBe('deny')
+    expect(evaluateTool({ toolName: 'bash', input: { command: 'git push origin main' } }, 'auto').decision).toBe('ask')
     // Library originals are STILL denied
     expect(evaluateTool({ toolName: 'editor', input: { path: 'library/original.md' } }, 'auto').decision).toBe('deny')
     expect(evaluateTool({ toolName: 'bash', input: { command: 'rm library/2026/original.txt' } }, 'auto').decision).toBe('deny')
@@ -127,7 +136,7 @@ describe('evaluateTool — the guard decision', () => {
     expect(evaluateTool({ toolName: 'read_file', input: { path: 'memory/employer.md' } }, 'chat').decision).toBe('ask')
     expect(evaluateTool({ toolName: 'search', input: { query: 'x' } }, 'chat').decision).toBe('ask')
     expect(evaluateTool({ toolName: 'bash', input: { command: 'ls' } }, 'chat').decision).toBe('ask')
-    expect(evaluateTool({ toolName: 'editor', input: { path: 'a.md' } }, 'chat').decision).toBe('ask')
+    expect(evaluateTool({ toolName: 'editor', input: { path: 'a.md' } }, 'chat')).toEqual({ decision: 'ask', reason: 'chat mode: vault access needs permission' })
   })
 
   it('protects .git in every mode', () => {
@@ -141,6 +150,10 @@ describe('mode helper predicates', () => {
   it('classifies safe read commands', () => {
     expect(isSafeReadCommand('grep -rn TODO memory/ | head -5')).toBe(true)
     expect(isSafeReadCommand('git status && git diff')).toBe(true)
+    expect(isSafeReadCommand('git branch --show-current')).toBe(true)
+    expect(isSafeReadCommand('git branch --list')).toBe(true)
+    expect(isSafeReadCommand('git branch feature')).toBe(false)
+    expect(isSafeReadCommand('git branch -D feature')).toBe(false)
     expect(isSafeReadCommand('echo hi > file.md')).toBe(false)
     expect(isSafeReadCommand('find . -name "*.tmp" -delete')).toBe(false)
     expect(isSafeReadCommand('sed -i s/a/b/ x.md')).toBe(false)
@@ -152,6 +165,17 @@ describe('mode helper predicates', () => {
     expect(isDestructiveCommand('git clean -fd')).toBe(true)
     expect(isDestructiveCommand('git restore .')).toBe(true)
     expect(isDestructiveCommand('mkdir new && mv a b')).toBe(false)
+  })
+
+  it('hard-denies forbidden Git history operations', () => {
+    expect(isForbiddenGitCommand('git reset --hard HEAD~1')).toBe(true)
+    expect(isForbiddenGitCommand('git clean -fd')).toBe(true)
+    expect(isForbiddenGitCommand('git rebase -i main')).toBe(true)
+    expect(isForbiddenGitCommand('git commit --amend')).toBe(true)
+    expect(isForbiddenGitCommand('git merge --squash feature')).toBe(true)
+    expect(isForbiddenGitCommand('git push --force-with-lease')).toBe(true)
+    expect(isForbiddenGitCommand('git push origin +main')).toBe(true)
+    expect(isForbiddenGitCommand('git commit -m okay')).toBe(false)
   })
 
   it('detects paths and commands reaching outside the vault', () => {

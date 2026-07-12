@@ -76,9 +76,26 @@ export function isProtectedLibraryWrite (rawPath: string): boolean {
   return isUnderLibrary(norm) && !isCatalogPath(norm)
 }
 
-/** Only `mv` / `git mv` relocate originals — the sole permitted shell mutation. */
+/**
+ * The sole permitted shell mutation involving originals: one plain `mv` or
+ * `git mv`, from inbox/ into a dated library/YYYY/ shard. Shell composition is
+ * rejected so a valid-looking move cannot smuggle a second operation.
+ */
 export function isMoveOnlyCommand (command: string): boolean {
-  return /^\s*(git\s+mv|mv)\s+\S/.test(command)
+  if (/[;&|<>\n\r`]/.test(command) || /\$\(/.test(command)) return false
+  const words = command.trim().split(/\s+/)
+  const offset = words[0] === 'git' && words[1] === 'mv' ? 2 : words[0] === 'mv' ? 1 : -1
+  if (offset < 0) return false
+  const args = words.slice(offset).filter(word => word !== '--')
+  if (args.length !== 2 || args.some(word => word.startsWith('-'))) return false
+  const [source = '', destination = ''] = args.map(normaliseVaultPath)
+  const sourceParts = source.split('/')
+  const destinationParts = destination.split('/')
+  const inboxAt = sourceParts.lastIndexOf('inbox')
+  const libraryAt = destinationParts.lastIndexOf('library')
+  return inboxAt >= 0 && inboxAt < sourceParts.length - 1 &&
+    libraryAt >= 0 && /^\d{4}$/.test(destinationParts[libraryAt + 1] ?? '') &&
+    libraryAt + 2 < destinationParts.length
 }
 
 /**
@@ -89,11 +106,6 @@ export function isMoveOnlyCommand (command: string): boolean {
  */
 export function commandTouchesLibrary (command: string): boolean {
   return /(^|[\s"'=/])library\//.test(command)
-}
-
-function commandOnlyTouchesCatalogs (command: string): boolean {
-  const refs = command.match(/library\/[^\s"';|&>]*/g) ?? []
-  return refs.length > 0 && refs.every((r) => isCatalogPath(normaliseVaultPath(r)))
 }
 
 /* --- Approval-mode helpers (m53) ------------------------------------- */
@@ -135,7 +147,17 @@ export function commandReachesOutsideVault (command: string, vaultCwd?: string):
  * including redirection — is not safe.
  */
 const SAFE_COMMAND_VERBS = new Set(['ls', 'cat', 'head', 'tail', 'grep', 'rg', 'wc', 'pwd', 'stat', 'file', 'tree', 'du', 'find', 'diff', 'sort', 'uniq', 'cut', 'awk', 'sed'])
-const SAFE_GIT_SUBCOMMANDS = new Set(['status', 'log', 'diff', 'show', 'branch', 'blame', 'shortlog', 'describe', 'rev-parse'])
+const SAFE_GIT_SUBCOMMANDS = new Set(['status', 'log', 'diff', 'show', 'blame', 'shortlog', 'describe', 'rev-parse'])
+
+function isSafeReadGitCommand (words: string[]): boolean {
+  const subcommand = words[1] ?? ''
+  if (SAFE_GIT_SUBCOMMANDS.has(subcommand)) return true
+  if (subcommand !== 'branch') return false
+  const args = words.slice(2)
+  if (args.length === 0) return true
+  const readFlags = new Set(['--list', '-l', '--show-current', '--all', '-a', '--remotes', '-r', '--verbose', '-v', '-vv', '--no-color', '--color'])
+  return args.every(arg => readFlags.has(arg) || arg.startsWith('--contains=') || arg.startsWith('--no-contains=') || arg.startsWith('--merged=') || arg.startsWith('--no-merged='))
+}
 
 export function isSafeReadCommand (command: string): boolean {
   if (/[<>]/.test(command)) return false // redirection writes files
@@ -146,19 +168,32 @@ export function isSafeReadCommand (command: string): boolean {
   return segments.every(segment => {
     const words = segment.split(/\s+/)
     const verb = words[0] ?? ''
-    if (verb === 'git') return SAFE_GIT_SUBCOMMANDS.has(words[1] ?? '')
+    if (verb === 'git') return isSafeReadGitCommand(words)
     return SAFE_COMMAND_VERBS.has(verb)
   })
 }
 
 /**
- * Commands that delete or irreversibly rewrite state — allowed unattended
- * only in Auto mode (and never against `.git` or `library/` originals).
+ * Commands that delete or irreversibly rewrite state — filesystem operations
+ * are unattended only in Auto; forbidden Git operations are handled below.
  */
 export function isDestructiveCommand (command: string): boolean {
   return /\b(rm|rmdir|unlink|shred|truncate)\b/.test(command) ||
     /\bfind\b[^|;&]*-delete\b/.test(command) ||
     /\bgit\s+(reset\s+--hard|clean\b|checkout\s+--\s|restore\b|push\s+.*(--force|-f)\b)/.test(command)
+}
+
+/** Vault rules forbid rewriting/cleaning Git history in every approval mode. */
+export function isForbiddenGitCommand (command: string): boolean {
+  return /\bgit\s+(?:-[^\s]+\s+)*(?:reset\b|clean\b|rebase\b)/.test(command) ||
+    /\bgit\s+(?:-[^\s]+\s+)*commit\b[^|;&]*(?:--amend)\b/.test(command) ||
+    /\bgit\b[^|;&]*--squash\b/.test(command) ||
+    /\bgit\s+(?:-[^\s]+\s+)*push\b[^|;&]*(?:--force(?:-with-lease)?|-f|\s\+[^\s]+)/.test(command)
+}
+
+/** Pushing always needs a fresh principal decision, including in Auto mode. */
+export function isGitPushCommand (command: string): boolean {
+  return /\bgit\s+(?:-[^\s]+\s+)*push\b/.test(command)
 }
 
 /** Bounded, human-readable summary of what a tool call intends to do (m52). */
@@ -246,7 +281,8 @@ export function evaluateTool (req: ToolApprovalRequest, preset: ApprovalPreset =
     if (touchesGitDir(rawPath)) {
       return { decision: 'deny', reason: 'the vault .git directory is protected' }
     }
-    if (preset === 'chat' || preset === 'manual') return { decision: 'ask' }
+    if (preset === 'chat') return { decision: 'ask', reason: 'chat mode: vault access needs permission' }
+    if (preset === 'manual') return { decision: 'ask' }
     // normal / auto: in-vault edits are git-reversible; outside the vault asks.
     if (isOutsideVaultPath(rawPath, vaultCwd)) return { decision: 'ask', reason: 'write outside the vault' }
     return { decision: 'allow' }
@@ -254,9 +290,10 @@ export function evaluateTool (req: ToolApprovalRequest, preset: ApprovalPreset =
 
   if (name === 'bash' || name === 'execute_command') {
     const command = typeof input.command === 'string' ? input.command : ''
-    if (commandTouchesLibrary(command) && !isMoveOnlyCommand(command) && !commandOnlyTouchesCatalogs(command)) {
-      return { decision: 'deny', reason: 'under library/ only move/rename (mv, git mv) and catalog writes are allowed' }
+    if (commandTouchesLibrary(command) && !isMoveOnlyCommand(command) && !isSafeReadCommand(command)) {
+      return { decision: 'deny', reason: 'library/ originals are immutable; shell access is limited to reads or one inbox-to-library/YYYY move' }
     }
+    if (isForbiddenGitCommand(command)) return { decision: 'deny', reason: 'vault Git history must not be rewritten or cleaned' }
     if (touchesGitDir(command) && (isDestructiveCommand(command) || !isSafeReadCommand(command))) {
       return { decision: 'deny', reason: 'the vault .git directory is protected' }
     }
@@ -265,6 +302,7 @@ export function evaluateTool (req: ToolApprovalRequest, preset: ApprovalPreset =
       return isSafeReadCommand(command) ? { decision: 'allow' } : { decision: 'ask' }
     }
     if (commandReachesOutsideVault(command, vaultCwd)) return { decision: 'ask', reason: 'command reaches outside the vault' }
+    if (isGitPushCommand(command)) return { decision: 'ask', reason: 'pushing requires the principal\'s explicit permission for this task' }
     if (isDestructiveCommand(command) && preset !== 'auto') return { decision: 'ask', reason: 'destructive command' }
     return { decision: 'allow' }
   }

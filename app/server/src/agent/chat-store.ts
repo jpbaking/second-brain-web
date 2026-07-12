@@ -14,9 +14,10 @@ import type { DatabaseSync } from 'node:sqlite'
 export type ChatSessionStatus = 'active' | 'closed'
 /**
  * Approval modes (m53). Manual: only vault reads + safe commands auto-run.
- * Normal: vault operations auto-run (git-reversible), destructive/outside
- * ask. Auto: everything in the vault, destructive included. Chat: no vault
- * access without asking. Legacy values map via {@link normalisePreset}.
+ * Normal: vault operations auto-run, destructive/outside ask. Auto includes
+ * destructive filesystem work, while vault invariants and Git-history
+ * protections remain absolute. Chat: no vault access without asking. Legacy
+ * values map via {@link normalisePreset}.
  */
 export type ApprovalPreset = 'manual' | 'normal' | 'auto' | 'chat'
 export const APPROVAL_PRESETS = ['manual', 'normal', 'auto', 'chat'] as const

@@ -34,8 +34,8 @@ const EFFORT_STOPS = [null, 'none', 'minimal', 'low', 'medium', 'high', 'xhigh']
 /** Approval modes (m53); descriptions mirror the server's policy matrix. */
 const APPROVAL_MODES = [
   { id: 'manual', name: 'Manual', desc: 'Reads and safe commands run; every change asks for approval' },
-  { id: 'normal', name: 'Normal', desc: 'Vault edits and commands run (git keeps them reversible); destructive or outside-vault actions ask' },
-  { id: 'auto', name: 'Auto', desc: 'Everything in the vault runs, destructive commands included; outside the vault still asks' },
+  { id: 'normal', name: 'Normal', desc: 'Vault edits and commands run; destructive or outside-vault actions ask; vault invariants always apply' },
+  { id: 'auto', name: 'Auto', desc: 'Destructive vault commands run too; outside-vault actions ask; protected originals and Git history stay guarded' },
   { id: 'chat', name: 'Chat', desc: 'Just chatting — vault access asks first, or switch modes' },
 ] as const
 

@@ -64,3 +64,8 @@ Milestone 53 complete. No active milestone; rebuild needed for 48–53 to go liv
 
 ## 2026-07-12 12:04 — session end
 Approval-mode routing repaired. No active milestone; rebuild needed to go live.
+- 12:40 STARTED repair: align the app system prompt and hard tool policy with the vault's new AGENTS.md, rule routing, structural invariants, validation, and version-control contract
+- 12:44 DONE repair: system prompt now routes through AGENTS.md and task-specific rules/workflows/skills, carries structure/health/commit validation requirements, and the policy strictly guards library moves, Git history/pushes, Manual Git reads, and Chat reasons. Mode UI copy aligned. Verified by full lint, server 381 + web 9 tests, full build, and focused policy/prompt tests.
+
+## 2026-07-12 12:44 — session end
+Vault agent contract and approval modes aligned with the current second-brain rules. Rebuild needed to go live.
