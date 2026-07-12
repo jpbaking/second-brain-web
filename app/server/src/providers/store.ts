@@ -114,6 +114,14 @@ export function getProfileSecret (db: DatabaseSync, id: string): { ciphertext: s
   return { ciphertext: row.key_ciphertext, last4: row.key_last4 }
 }
 
+/** Replace only the stored secret ciphertext (m73 chatgpt token rotation). */
+export function rotateProfileSecret (db: DatabaseSync, id: string, ciphertext: string, now: Date = new Date()): boolean {
+  const changes = db.prepare(
+    'UPDATE provider_profiles SET key_ciphertext = ?, key_last4 = NULL, updated_at = ? WHERE id = ?'
+  ).run(ciphertext, now.toISOString(), id).changes
+  return Number(changes) > 0
+}
+
 function clearDefaults (db: DatabaseSync): void {
   db.prepare('UPDATE provider_profiles SET is_default = 0 WHERE is_default = 1').run()
 }

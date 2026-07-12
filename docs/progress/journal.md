@@ -153,3 +153,9 @@ provider support (backlog + implementation). Milestone 72 paused at m72-03.
   SDK providerConfig accessToken/refreshToken/accountId.
 - 02:10 DONE m73-02: parseChatGptCredentials + providerConfig OAuth mapping
   in toModelConfig; verified by agent-runner.test.ts 16 green + lint clean.
+- 02:11 STARTED m73-03: refresh chatgpt OAuth credentials at session start
+  and persist rotated blobs to the profile secret.
+- 02:14 DONE m73-03: freshenChatGptProfileSecret refreshes via injectable
+  getValidOpenAICodexCredentials, persists rotated blobs (rotateProfileSecret),
+  hooked into ensureLive for chatgpt profiles; verified by chatgpt-auth.test.ts
+  6 green + full server suite 410 green + lint clean.

@@ -1,4 +1,5 @@
 import { openCoreDb } from '../db.js'
+import { freshenChatGptProfileSecret } from '../providers/chatgpt-auth.js'
 import { resolveDefaultSnapshot, resolveSnapshot } from '../providers/snapshot.js'
 import { vaultWorkspacePath } from '../vault/config.js'
 import { AgentSessionService } from '../agent/session.js'
@@ -26,6 +27,7 @@ export function registerChatRoutes (app: FastifyInstance, config: AppConfig, run
       ? resolveDefaultSnapshot(db, secretsEnv)
       : resolveSnapshot(db, profileId, secretsEnv),
     vaultCwd: vaultWorkspacePath(config.dataDir),
+    refreshChatGptCredentials: async (profileId) => { await freshenChatGptProfileSecret(db, profileId, secretsEnv) },
   })
   app.addHook('onClose', () => { service.dispose(); db.close() })
 

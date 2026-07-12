@@ -52,6 +52,8 @@ export interface AgentSessionOptions {
   vaultCwd: string
   systemPrompt?: string
   enableTools?: boolean
+  /** Refresh (and persist) a chatgpt profile's OAuth tokens before start (m73). */
+  refreshChatGptCredentials?: (profileId: string) => Promise<void>
 }
 
 /** A subscribe() envelope from the SDK (loose — exact shape bound at runtime). */
@@ -545,7 +547,12 @@ export class AgentSessionService {
 
     const session = getSession(this.db, chatSessionId)
     if (session === undefined) throw new Error(`unknown chat session: ${chatSessionId}`)
-    const config = this.startConfig(this.capturedConfig(chatSessionId), session)
+    const captured = this.capturedConfig(chatSessionId)
+    if (captured.providerId === 'chatgpt' && this.opts.refreshChatGptCredentials !== undefined) {
+      // Rotates the stored blob when stale, so the snapshot below is fresh.
+      await this.opts.refreshChatGptCredentials(captured.providerProfileId)
+    }
+    const config = this.startConfig(captured, session)
 
     const approvalWiring = {
       capabilities: { requestToolApproval: (req: SdkApprovalRequest) => this.requestToolApproval(req) },

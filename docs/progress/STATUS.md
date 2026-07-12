@@ -40,7 +40,7 @@ to go live.**
 
 ## Next step
 
-Implement **m73-03**: token refresh + persistence before session start.
+Implement **m73-04**: configure CLI ChatGPT login.
 
 ## Read before working
 

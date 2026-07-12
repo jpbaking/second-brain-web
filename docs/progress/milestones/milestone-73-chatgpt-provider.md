@@ -54,7 +54,7 @@ OAuth handled by `./configure` (not compose-helper — see design notes).
   `accessToken`/`refreshToken`/`accountId` (no `apiKey`).
   Verify: `npm test --workspace server -- runner.test.ts` green with new
   cases incl. malformed-blob error path.
-- [ ] **m73-03 — token refresh + persistence.** Before session start, run
+- [x] **m73-03 — token refresh + persistence.** Before session start, run
   chatgpt credentials through `getValidOpenAICodexCredentials` (injected so
   tests fake it); when rotated, re-encrypt and persist to the profile secret.
   Verify: `npm test --workspace server -- ` new test file green (rotated blob
