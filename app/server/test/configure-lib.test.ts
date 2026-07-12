@@ -85,6 +85,7 @@ describe('validators and slug', () => {
   })
   it('validates provider types', () => {
     expect(isValidProvider('gemini')).toBe(true)
+    expect(isValidProvider('chatgpt')).toBe(true)
     expect(isValidProvider('claude-code')).toBe(true)
     expect(isValidProvider('bogus')).toBe(false)
   })

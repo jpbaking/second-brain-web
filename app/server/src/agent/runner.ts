@@ -37,6 +37,7 @@ export interface AgentModelConfig {
 /**
  * Map a m05 provider id to the SDK provider id.
  * - `anthropic`         → `anthropic`      (official Anthropic API)
+ * - `chatgpt`           → `openai-codex`   (ChatGPT subscription OAuth)
  * - `claude-code`       → `claude-code`    (local Claude CLI subscription)
  * - `gemini`            → `gemini`         (official Gemini API)
  * - `openai`            → `openai-native`  (official OpenAI API)
@@ -45,6 +46,7 @@ export interface AgentModelConfig {
  */
 const PROVIDER_ID_MAP: Record<string, string> = {
   anthropic: 'anthropic',
+  chatgpt: 'openai-codex',
   'claude-code': 'claude-code',
   gemini: 'gemini',
   openai: 'openai-native',

@@ -40,7 +40,7 @@ to go live.**
 
 ## Next step
 
-Implement **m73-01**: provider id plumbing (`chatgpt` → `openai-codex`).
+Implement **m73-02**: OAuth credential blob through snapshot + runner.
 
 ## Read before working
 

@@ -41,7 +41,7 @@ OAuth handled by `./configure` (not compose-helper — see design notes).
 
 ## Checklist
 
-- [ ] **m73-01 — provider id plumbing.** Add `chatgpt` to
+- [x] **m73-01 — provider id plumbing.** Add `chatgpt` to
   `KNOWN_PROVIDERS` (configure-lib + provisioning), `PROVIDER_ID_MAP`
   (`chatgpt` → `openai-codex`), and `CATALOG_PROVIDER` (`chatgpt` →
   `openai-codex`); provisioning rejects `base_url` for `chatgpt`.

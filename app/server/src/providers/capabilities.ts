@@ -17,6 +17,7 @@ export interface ReasoningCapabilities {
  *  Anthropic models, so it resolves against the anthropic catalog. */
 const CATALOG_PROVIDER: Record<string, string> = {
   anthropic: 'anthropic',
+  chatgpt: 'openai-codex',
   'claude-code': 'anthropic',
   gemini: 'gemini',
   openai: 'openai-native',

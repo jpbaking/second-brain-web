@@ -20,6 +20,7 @@ function snap (over: Partial<ProviderSnapshot>): ProviderSnapshot {
 describe('sdkProviderId', () => {
   it('maps m05 provider ids to SDK provider ids', () => {
     expect(sdkProviderId('anthropic')).toBe('anthropic')
+    expect(sdkProviderId('chatgpt')).toBe('openai-codex')
     expect(sdkProviderId('claude-code')).toBe('claude-code')
     expect(sdkProviderId('gemini')).toBe('gemini')
     expect(sdkProviderId('openai')).toBe('openai-native')

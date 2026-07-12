@@ -145,3 +145,7 @@ provider support (backlog + implementation). Milestone 72 paused at m72-03.
 - 02:04 DONE progress: BACKLOG entry, milestone-73-chatgpt-provider.md
   checklist (6 items with design notes), STATUS points at m73-01;
   milestone 72 paused at m72-03.
+- 02:05 STARTED m73-01: add chatgpt provider id plumbing (known providers,
+  SDK id map, catalog map, provisioning rules).
+- 02:07 DONE m73-01: chatgpt known-provider + id maps + provisioning
+  base_url rejection; verified by 3 test files / 37 tests green. 

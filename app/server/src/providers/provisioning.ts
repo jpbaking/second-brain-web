@@ -7,7 +7,7 @@ import { getAppLogger } from '../logging.js'
 import { secretsKeyConfigured } from '../secrets/crypto.js'
 
 const PROFILE_ID = /^[a-z][a-z0-9-]*$/
-const KNOWN_PROVIDERS = new Set(['anthropic', 'claude-code', 'gemini', 'openai', 'openai-compatible'])
+const KNOWN_PROVIDERS = new Set(['anthropic', 'chatgpt', 'claude-code', 'gemini', 'openai', 'openai-compatible'])
 const PROFILE_FIELDS = new Set(['display_name', 'provider', 'model', 'base_url', 'key', 'enabled'])
 
 interface ProvisionedProfile {
@@ -81,6 +81,9 @@ function parseProfiles (source: string): ProvisionedProfile[] {
     }
     if (providerId === 'openai-compatible' && baseUrl === undefined) {
       throw new ProviderProvisioningError({ message: `provider "${id}" needs base_url for openai-compatible.` })
+    }
+    if (providerId === 'chatgpt' && baseUrl !== undefined) {
+      throw new ProviderProvisioningError({ message: `provider "${id}" talks to ChatGPT directly and must not contain base_url.` })
     }
     const key = optionalString(entry.key, `provider "${id}" key`)
     if (providerId === 'claude-code' && key !== undefined) {

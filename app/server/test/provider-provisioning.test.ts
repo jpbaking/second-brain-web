@@ -131,6 +131,7 @@ describe('provider YAML provisioning', () => {
     ['missing compatible URL', 'providers:\n  profile:\n    provider: openai-compatible\n    model: m\n', 'needs base_url'],
     ['plaintext key', 'providers:\n  profile:\n    provider: openai\n    model: m\n    key: plaintext\n', 'run ./configure'],
     ['Claude Code key', 'providers:\n  profile:\n    provider: claude-code\n    model: sonnet\n    key: v1:ciphertext\n', 'must not contain a key'],
+    ['ChatGPT base_url', 'providers:\n  profile:\n    provider: chatgpt\n    model: gpt-5.1-codex\n    base_url: https://example.test\n', 'must not contain base_url'],
     ['non-boolean enabled', 'providers:\n  profile:\n    provider: openai\n    model: m\n    enabled: yes\n', 'enabled must be a boolean'],
     ['unknown field', 'providers:\n  profile:\n    provider: openai\n    model: m\n    default: true\n', 'unknown field']
   ])('rejects %s', (_label, source, message) => {
