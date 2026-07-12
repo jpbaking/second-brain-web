@@ -69,3 +69,13 @@ level. Baseline `npm test` is clean: 78 server files / 385 tests and 1 web file
   wrapper boundaries retain `cause`, and startup/scheduler/session/MCP failures
   use named log4js categories (MCP logs stay on stderr); verified by 9 targeted
   files / 56 tests, workspace lint clean, and server TypeScript build clean.
+- 01:11 STARTED m71-03: document the operator log-level setting, run the full
+  gate, and archive milestone 71.
+- 01:13 DONE m71-03: README documents log levels and JSON output; full gate is
+  clean (`npm run lint && npm test && npm run build`) — 79 server files / 390
+  tests, 1 web file / 9 tests, both builds. Real log4js probe at root `warn`
+  emitted only the warn record as valid JSON. Checklist archived.
+
+## 2026-07-13 01:13 — session end
+Milestone 71 complete and archived. Handoff: no active milestone; rebuild is
+pending for milestones 62–71.

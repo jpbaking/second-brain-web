@@ -16,6 +16,6 @@ cause chains from `error-extender`, replace runtime console/Pino logging with
   full chained stacks.
   Verify: `cd app && npm test --workspace server -- errors.test.ts provider-provisioning.test.ts migrations.test.ts secrets.test.ts upload.test.ts chat-uploads.test.ts workflow.test.ts reports-api.test.ts && npm run lint`
 
-- [ ] **m71-03** Run the complete server/web verification, document the final
+- [x] **m71-03** Run the complete server/web verification, document the final
   operator setting, archive the milestone, and return STATUS to no active work.
   Verify: `cd app && npm run lint && npm test && npm run build`

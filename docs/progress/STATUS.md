@@ -1,20 +1,21 @@
 # STATUS — single source of truth
 
-Updated: 2026-07-13 (milestone 71 active)
+Updated: 2026-07-13 (no active milestone; milestone 71 complete)
 
 ## Where we are
 
-- **Everything planned so far is DONE** — milestones 0–69. Foundation
+- **Everything planned so far is DONE** — milestones 0–71. Foundation
   (0–49): auth, vault clone/health/commit/push, declarative providers,
   Cline SDK chat (approvals, write lock, streaming, markdown/mermaid,
   compaction, workflows), capture + inbox uploads, reports, follow-ups,
   FTS search, schedules, backups, profile, chat-first UI, production
   hardening, web search tools, chat-scoped file attachments. Recent
-  (50–69): composer model menu, new-chat defaults, approval modes +
+  (50–71): composer model menu, new-chat defaults, approval modes +
   detail, table/raw-markdown copy, deploy-key agent Git, workflow
   autocomplete, page heroes, collapsible sidebar + chat search + row
   menus, new-chat landing, brain brand mark, explorer file browser with
-  download, amber Secretary label, copyright footer. Evidence:
+  download, amber Secretary label, copyright footer, traceable exceptions,
+  and configurable structured logging. Evidence:
   checklists in `docs/progress/milestones/archive/`; narrative in
   `journal.md` + `journal-archive-2026-07.md`.
 - **The app is production-runnable.** From the repo root: `./configure`
@@ -24,25 +25,24 @@ Updated: 2026-07-13 (milestone 71 active)
   `SECOND_BRAIN_WEB_DATA_DIR` at a private `0700` dir.
 - Key facts: all app source under `app/` (npm workspace root — run every
   npm command from there). Core DB schema v16; sidecar v3. Server suite:
-  385 tests green; 3 Playwright e2e specs in `app/test/e2e/`. UI routes:
+  390 tests green; 3 Playwright e2e specs in `app/test/e2e/`. UI routes:
   `/` = chat, `/command-centre`, `/capture`, `/follow-ups`, `/reports`,
   `/search`, `/explorer`, `/vault`, `/providers`, `/login`, `/setup`.
 
 ## Active milestone
 
-**Milestone 71 — traceable exceptions and configurable logging.** Principal
-directed adoption of `error-extender` cause chains and `log4js`, with the root
-log level configurable in `.env`.
-**Milestones 62–70 need `./compose-helper.sh up` (rebuild) to go live.**
+None. Milestone 71 added a shared `error-extender` hierarchy with cause-chain
+stacks and structured `log4js` runtime logging; `SECOND_BRAIN_WEB_LOG_LEVEL`
+configures the root level through `.env`/`./configure`.
+**Milestones 62–71 need `./compose-helper.sh up` (rebuild) to go live.**
 
 ## Next step
 
-Run **m71-03**: full lint/test/build, document, and archive milestone 71.
+Await direction. Rebuild (`./compose-helper.sh up`) pending for milestones 62–71.
 
 ## Read before working
 
 - `AGENTS-PLAYBOOK.md` — always, top to bottom.
-- `docs/progress/milestones/milestone-71-exceptions-and-logging.md`.
 - `docs/progress/BACKLOG.md` — the work queue.
 
 ## Questions for the principal

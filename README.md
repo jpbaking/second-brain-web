@@ -36,7 +36,10 @@ Docker image). It **loads and edits** your config in the gitignored `.config/`
 directory rather than overwriting it — nothing is clobbered:
 
 - `.config/.env` — the secrets key and compose settings (bind address, port,
-  environment). Unknown keys you added by hand are preserved.
+  environment, and root log level). Unknown keys you added by hand are
+  preserved. `SECOND_BRAIN_WEB_LOG_LEVEL` accepts `trace`, `debug`, `info`
+  (default), `warn`, `error`, `fatal`, or `off`; runtime logs are one JSON
+  object per line.
 - `.config/providers.yaml` — provider profiles, API keys stored only as
   ciphertext. Add a provider (pick provider → enter key → choose a model from
   the list it reports, `f` to filter a long list), or per existing provider
