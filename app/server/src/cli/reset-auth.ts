@@ -31,6 +31,8 @@ async function main (): Promise<void> {
     `  One-time password:  ${password}\n\n` +
     '  TOTP setup — add this otpauth URI to your authenticator app:\n' +
     `    ${otpauthUri}\n\n` +
+    '  Or enter the secret manually:\n' +
+    `    ${state.totp.secretBase32}\n\n` +
     'The password is shown once — record it now. Any previous password, TOTP ' +
     'secret, and signed-in sessions are now invalid.\n' +
     `Encrypted auth state written to ${file} (mode 600).\n`

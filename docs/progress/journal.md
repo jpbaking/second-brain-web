@@ -205,3 +205,7 @@ stdin — the abandoned read steals the next typed line.
 Repair committed on top of milestone 73. m73-06 live check remains with the
 principal — the login flow should now complete hands-free after the browser
 step.
+- 03:09 STARTED repair: reset-auth prints the bare TOTP secret on its own
+  line alongside the otpauth URI (principal request).
+- 03:10 DONE repair: verified by a live scripts/reset-auth.sh run showing the
+  "Or enter the secret manually" line, lint clean, reset tests green.
