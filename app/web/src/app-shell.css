@@ -104,7 +104,7 @@
 .sidebar-action:hover,
 .sidebar-action.is-active { background: var(--base); }
 
-.sidebar-action:first-child { color: var(--brand-blue); font-weight: var(--fw-semibold); }
+.sidebar-action.is-active { color: var(--brand-blue); font-weight: var(--fw-semibold); }
 
 .sidebar-chat-search {
   display: flex;

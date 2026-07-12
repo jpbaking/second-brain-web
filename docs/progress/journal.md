@@ -203,3 +203,6 @@ bottom secondary navigation shipped; rebuild needed to go live.
 Tree clean at d6b310e. Principal directed five sidebar improvements; opened milestone 62 (sidebar polish). Next: m62-01.
 - 14:07 STARTED m62-01: collapsed brand hover swaps logo for open-sidebar icon
 - 14:12 DONE m62-01: collapsed brand hover shows open-sidebar icon; verified by build + Playwright probe (1 passed) + screenshots.
+- 14:13 STARTED m62-02: New chat/Capture active state follows current path
+- 14:14 DONE m62-02: New chat/Capture blue-bold follows current path; Playwright probe green + screenshot. 
+- 14:14 STARTED m62-03: chat search over message bodies (server searchSessions + sidebar wiring)

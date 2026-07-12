@@ -37,7 +37,8 @@ async function login (page: Page): Promise<void> {
   await expect(page.getByTestId('totp-step')).toBeVisible()
   await page.locator('#code').fill(totpCode(process.env.E2E_TOTP_SECRET!, { digits: 6, period: 30 }))
   await page.getByRole('button', { name: 'Sign in' }).click()
-  await expect(page).toHaveURL('/')
+  await expect(page).not.toHaveURL(/\/login/)
+  await expect(page.getByTestId('new-chat')).toBeVisible()
 }
 
 test('m62-01 collapsed brand hover swaps logo for open icon', async ({ page }) => {

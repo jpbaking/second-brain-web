@@ -7,7 +7,7 @@ Principal direction (2026-07-12): five sidebar improvements.
       behaviour.
       Verify: `cd app && npm run build` then Playwright screenshot of the
       collapsed sidebar with and without hover over the brand button.
-- [ ] m62-02: New chat and Capture actions get the active (blue-bold) state
+- [x] m62-02: New chat and Capture actions get the active (blue-bold) state
       from the current path — Capture active on /capture, New chat active only
       on chat paths.
       Verify: `cd app && npm run build` then Playwright screenshot on /capture

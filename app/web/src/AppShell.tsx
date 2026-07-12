@@ -198,8 +198,8 @@ export function AppShell ({ path: initialPath, children }: { path: string, child
 
         {showNewChat && (
           <nav className='sidebar-primary' aria-label='Primary actions'>
-            <a className='sidebar-action' href='/chat/new' data-testid='new-chat'><SidebarIcon name='new' /><span>New chat</span></a>
-            <a className='sidebar-action' href='/capture'><SidebarIcon name='capture' /><span>Capture</span></a>
+            <a className={`sidebar-action${isChatPath(path) ? ' is-active' : ''}`} href='/chat/new' data-testid='new-chat' aria-current={isChatPath(path) ? 'page' : undefined}><SidebarIcon name='new' /><span>New chat</span></a>
+            <a className={`sidebar-action${isActive(path, '/capture') ? ' is-active' : ''}`} href='/capture' aria-current={isActive(path, '/capture') ? 'page' : undefined}><SidebarIcon name='capture' /><span>Capture</span></a>
             <button className={`sidebar-action${searchOpen ? ' is-active' : ''}`} type='button' aria-expanded={searchOpen} onClick={() => { if (collapsed) setDesktopCollapsed(false); setSearchOpen(value => !value); setChatQuery('') }}><SidebarIcon name='search' /><span>Search chats</span></button>
           </nav>
         )}
