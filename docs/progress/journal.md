@@ -171,3 +171,10 @@ all pages except chat. Opened milestone 60; next m60-01.
 - 13:26 DONE m60-01: all non-chat screens and setup gates use one branded
   AppHero; titles/taglines preserved and sign-in remains narrow. Web lint and
   production build passed.
+- 13:26 STARTED m60-02: run the full project gate and archive milestone 60.
+- 13:27 DONE m60-02: full gate green — lint clean, server 382 + web 9 tests
+  passed, and server + web builds passed. Milestone 60 archived.
+
+## 2026-07-12 13:27 — session end
+Milestone 60 complete. All non-chat pages now share the same branded hero
+structure; chat views are unchanged. Rebuild needed to go live.
