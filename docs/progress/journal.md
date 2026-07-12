@@ -215,3 +215,4 @@ Tree clean at d6b310e. Principal directed five sidebar improvements; opened mile
 ## 2026-07-12 14:20 — session end
 Milestone 62 complete and archived. Tree clean after commit. Handoff: no active milestone; live container needs ./compose-helper.sh up to pick up the sidebar changes.
 - 14:25 STARTED m63-01: per-row … menu (Rename inline + Delete) replacing hover trash
+- 14:27 DONE m63-01: per-row … menu (Rename inline via PATCH title, Delete); Playwright probe green (rename/escape/outside-click/delete) + screenshots.

@@ -13,7 +13,7 @@ import { AppHero } from './AppHero.js'
 
 interface ChatSessionSummary { id: string, title: string, status: string, pinned: boolean }
 
-type IconName = 'new' | 'capture' | 'search' | 'command' | 'prep' | 'follow' | 'reports' | 'explorer' | 'profile' | 'schedules' | 'vault' | 'backup' | 'providers' | 'signout' | 'more' | 'collapse' | 'expand' | 'trash'
+type IconName = 'new' | 'capture' | 'search' | 'command' | 'prep' | 'follow' | 'reports' | 'explorer' | 'profile' | 'schedules' | 'vault' | 'backup' | 'providers' | 'signout' | 'more' | 'collapse' | 'expand'
 interface NavItem { href: string, label: string, icon: IconName }
 
 const NAV_ITEMS: NavItem[] = [
@@ -68,7 +68,6 @@ function SidebarIcon ({ name }: { name: IconName }) {
     providers: <><path d='M8 12h8M12 8v8' /><circle cx='12' cy='12' r='9' /></>,
     signout: <><path d='M10 17l5-5-5-5M15 12H3' /><path d='M14 3h7v18h-7' /></>,
     more: <><circle cx='5' cy='12' r='1' fill='currentColor' /><circle cx='12' cy='12' r='1' fill='currentColor' /><circle cx='19' cy='12' r='1' fill='currentColor' /></>,
-    trash: <><path d='M4 7h16M10 11v6M14 11v6' /><path d='M6 7l1 14h10l1-14M9 7V4h6v3' /></>,
     collapse: <><path d='m14 7-5 5 5 5' /><rect x='3' y='3' width='18' height='18' rx='3' /></>,
     expand: <><path d='m10 7 5 5-5 5' /><rect x='3' y='3' width='18' height='18' rx='3' /></>,
   }
@@ -156,6 +155,37 @@ export function AppShell ({ path: initialPath, children }: { path: string, child
       method: 'PATCH', credentials: 'same-origin', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ pinned: !session.pinned })
     })
     if (res.ok) await loadSessions()
+  }
+
+  // Per-row "…" menu and inline rename (m63-01).
+  const [rowMenuFor, setRowMenuFor] = useState<string | null>(null)
+  const [renamingId, setRenamingId] = useState<string | null>(null)
+  const [titleDraft, setTitleDraft] = useState('')
+
+  useEffect(() => {
+    if (rowMenuFor === null) return
+    const close = () => setRowMenuFor(null)
+    window.addEventListener('click', close)
+    return () => window.removeEventListener('click', close)
+  }, [rowMenuFor])
+
+  const startRename = (session: ChatSessionSummary) => {
+    setRowMenuFor(null)
+    setRenamingId(session.id)
+    setTitleDraft(session.title)
+  }
+
+  const commitRename = async () => {
+    const id = renamingId
+    const title = titleDraft.trim()
+    setRenamingId(null)
+    if (id === null || title === '') return
+    const res = await fetch(`/api/chat/sessions/${id}`, {
+      method: 'PATCH', credentials: 'same-origin', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ title })
+    })
+    if (!res.ok) return
+    setSearchResults(results => results === null ? null : results.map(other => other.id === id ? { ...other, title } : other))
+    await loadSessions()
   }
 
   const deleteChat = async (session: ChatSessionSummary) => {
@@ -248,16 +278,41 @@ export function AppShell ({ path: initialPath, children }: { path: string, child
                   <ul data-testid='chat-list'>
                     {visibleSessions.map(s => (
                       <li key={s.id}>
-                        <a
-                          className={`sidebar-chat${s.id === chatId ? ' is-active' : ''}`}
-                          href={`/chat/${s.id}`}
-                          aria-current={s.id === chatId ? 'page' : undefined}
-                          title={s.title}
-                        >
-                          {s.pinned ? '★ ' : ''}{s.title}
-                        </a>
-                        <button className='sidebar-chat-delete' type='button' aria-label={`Delete ${s.title}`} title='Delete chat' onClick={() => { deleteChat(s).catch(() => {}) }}><SidebarIcon name='trash' /></button>
-                        <button className='sidebar-chat-pin' type='button' aria-label={s.pinned ? `Unpin ${s.title}` : `Pin ${s.title}`} onClick={() => { togglePin(s).catch(() => {}) }}>{s.pinned ? '★' : '☆'}</button>
+                        {renamingId === s.id
+                          ? (
+                            <input
+                              className='sidebar-chat-rename'
+                              autoFocus
+                              value={titleDraft}
+                              aria-label={`Rename ${s.title}`}
+                              onChange={event => setTitleDraft(event.target.value)}
+                              onKeyDown={event => {
+                                if (event.key === 'Enter') { commitRename().catch(() => {}) }
+                                if (event.key === 'Escape') setRenamingId(null)
+                              }}
+                              onBlur={() => setRenamingId(null)}
+                            />
+                            )
+                          : (
+                            <>
+                              <a
+                                className={`sidebar-chat${s.id === chatId ? ' is-active' : ''}`}
+                                href={`/chat/${s.id}`}
+                                aria-current={s.id === chatId ? 'page' : undefined}
+                                title={s.title}
+                              >
+                                {s.pinned ? '★ ' : ''}{s.title}
+                              </a>
+                              <button className={`sidebar-chat-menu-trigger${rowMenuFor === s.id ? ' is-open' : ''}`} type='button' aria-label={`Chat actions for ${s.title}`} title='Chat actions' aria-expanded={rowMenuFor === s.id} onClick={event => { event.stopPropagation(); setRowMenuFor(open => open === s.id ? null : s.id) }}><SidebarIcon name='more' /></button>
+                              <button className='sidebar-chat-pin' type='button' aria-label={s.pinned ? `Unpin ${s.title}` : `Pin ${s.title}`} onClick={() => { togglePin(s).catch(() => {}) }}>{s.pinned ? '★' : '☆'}</button>
+                              {rowMenuFor === s.id && (
+                                <div className='sidebar-chat-menu' role='menu'>
+                                  <button type='button' role='menuitem' onClick={() => startRename(s)}>Rename</button>
+                                  <button type='button' role='menuitem' onClick={() => { deleteChat(s).catch(() => {}) }}>Delete</button>
+                                </div>
+                              )}
+                            </>
+                            )}
                       </li>
                     ))}
                   </ul>

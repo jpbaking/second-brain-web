@@ -4,7 +4,7 @@ Principal direction (2026-07-12): replace the hover trash button with a small
 per-row "…" menu holding Rename and Delete; renaming edits the title inline
 (Enter saves via the existing `PATCH /api/chat/sessions/:id`, Escape cancels).
 
-- [ ] m63-01: hover "…" trigger left of the star opens a per-row menu with
+- [x] m63-01: hover "…" trigger left of the star opens a per-row menu with
       Rename and Delete; Delete behaves as before; Rename swaps the row title
       for an inline input (Enter save, Escape cancel, empty input ignored) and
       the sidebar list refreshes with the new title.

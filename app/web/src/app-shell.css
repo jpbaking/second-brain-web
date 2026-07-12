@@ -201,24 +201,67 @@
 }
 
 .sidebar-recents li { position: relative; }
-/* Row actions are hover/focus-only (m62-04/05); pinned rows keep the leading
-   ★ in the title as their always-visible marker. */
+/* Row actions are hover/focus-only (m62-04, m63-01); pinned rows keep the
+   leading ★ in the title as their always-visible marker. */
 .sidebar-chat-pin,
-.sidebar-chat-delete {
+.sidebar-chat-menu-trigger {
   display: none; position: absolute; top: .2rem; border: 0; background: transparent;
   color: var(--text-muted); cursor: pointer; padding: .25rem; line-height: 1;
 }
 .sidebar-chat-pin { right: .25rem; }
-.sidebar-chat-delete { right: 1.6rem; }
-.sidebar-chat-delete svg { width: 14px; height: 14px; display: block; }
+.sidebar-chat-menu-trigger { right: 1.6rem; }
+.sidebar-chat-menu-trigger svg { width: 14px; height: 14px; display: block; }
 .sidebar-recents li:hover .sidebar-chat-pin,
 .sidebar-recents li:focus-within .sidebar-chat-pin,
-.sidebar-recents li:hover .sidebar-chat-delete,
-.sidebar-recents li:focus-within .sidebar-chat-delete { display: block; }
+.sidebar-recents li:hover .sidebar-chat-menu-trigger,
+.sidebar-recents li:focus-within .sidebar-chat-menu-trigger,
+.sidebar-chat-menu-trigger.is-open { display: block; }
 .sidebar-recents li:hover .sidebar-chat,
 .sidebar-recents li:focus-within .sidebar-chat { padding-right: 3.4rem; }
 .sidebar-chat-pin:hover,
-.sidebar-chat-delete:hover { color: var(--ink); }
+.sidebar-chat-menu-trigger:hover { color: var(--ink); }
+
+.sidebar-chat-menu {
+  position: absolute;
+  right: .25rem;
+  top: calc(100% + 2px);
+  z-index: 30;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 130px;
+  padding: var(--space-1);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-md);
+  background: var(--surface);
+  box-shadow: var(--shadow-card);
+}
+
+.sidebar-chat-menu button {
+  border: 0;
+  border-radius: var(--radius-sm);
+  padding: 6px 8px;
+  background: transparent;
+  color: var(--ink);
+  font: inherit;
+  font-size: var(--ui-small);
+  text-align: left;
+  cursor: pointer;
+}
+
+.sidebar-chat-menu button:hover { background: var(--base); }
+
+.sidebar-chat-rename {
+  width: 100%;
+  padding: 5px 7px;
+  border: 1px solid var(--brand-blue);
+  border-radius: var(--radius-sm);
+  background: var(--surface);
+  color: var(--ink);
+  font: inherit;
+  font-size: var(--ui-small);
+  outline: none;
+}
 .sidebar-bottom {
   position: relative;
   display: grid;
