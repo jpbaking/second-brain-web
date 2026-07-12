@@ -144,3 +144,8 @@ already used by Save & Sync. Opened milestone 58; next m58-01.
 ## 2026-07-12 13:12 — session end
 Milestone 58 complete. Chat-side Git now inherits the canonical deploy key via
 the same hardened SSH command as Save & Sync; rebuild needed to go live.
+
+## 2026-07-12 13:17 — session start
+Tree clean at 4130f22. Principal go: hide workflow chips; improve slash
+autocomplete selection and descriptions; run workflows from a fresh chat.
+Opened milestone 59; next m59-01.

@@ -1,6 +1,6 @@
 # STATUS — single source of truth
 
-Updated: 2026-07-12 (no active milestone; milestone 58 complete)
+Updated: 2026-07-12 (milestone 59 active)
 
 ## Where we are
 
@@ -25,7 +25,10 @@ Updated: 2026-07-12 (no active milestone; milestone 58 complete)
 
 ## Active milestone
 
-Milestone 58 (agent deploy-key Git access) is complete. Agent-launched Git
+Milestone 59 (workflow autocomplete UX) is active. Next: m59-01, expose
+workflow descriptions derived from their Markdown introductions.
+
+Previous: milestone 58 (agent deploy-key Git access) is complete. Agent-launched Git
 inherits the same canonical hardened deploy-key SSH command as Save & Sync.
 
 Previous: milestone 57 (table copy spacing) is complete. The table copy control sits in
@@ -67,7 +70,8 @@ object). Milestones 48–49 need `./compose-helper.sh up` (rebuild) to go live.
 
 ## Next step
 
-Await direction.
+Implement m59-01 from
+`docs/progress/milestones/milestone-59-workflow-autocomplete.md`.
 
 ## Read before working
 
