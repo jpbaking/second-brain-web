@@ -49,3 +49,4 @@ Tree clean at 42772a4. Principal request: trim progress files.
 ## 2026-07-12 15:50 — session start
 Tree clean at ddad165. Principal: footer forces scroll on short pages; ensure /capture footer. Opened milestone 70.
 - 15:50 STARTED m70-01: flex layout so page+footer share one viewport.
+- 15:54 DONE m70-01: page+footer share one viewport (.app-page flexes, footer absorbs bottom padding); verified by lint+build clean, `npx playwright test` → 3 green with no-scroll asserts on /login, /explorer, /capture; capture screenshot reviewed. Checklist archived.

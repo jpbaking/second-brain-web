@@ -23,6 +23,16 @@ test('browses vault folders and previews a markdown file', async ({ page }) => {
   await page.goto('/explorer');
   await expect(page.getByRole('heading', { name: 'Explorer' })).toBeVisible();
   await expect(page.locator('.app-footer')).toHaveText('© 2026 Joseph Baking');
+  await expect(page.locator('.app-footer')).toBeInViewport();
+  expect(await page.evaluate(() => document.documentElement.scrollHeight - window.innerHeight)).toBeLessThanOrEqual(1);
+
+  // Capture (a short shell page) also shows the footer without scrolling.
+  await page.goto('/capture');
+  await expect(page.getByRole('heading', { name: 'Capture' })).toBeVisible();
+  await expect(page.locator('.app-footer')).toBeInViewport();
+  expect(await page.evaluate(() => document.documentElement.scrollHeight - window.innerHeight)).toBeLessThanOrEqual(1);
+  await page.screenshot({ path: process.env.E2E_SCREENSHOT_DIR !== undefined ? path.join(process.env.E2E_SCREENSHOT_DIR, 'capture.png') : 'test-results/capture.png' });
+  await page.goto('/explorer');
   await page.getByRole('button', { name: 'memory' }).click();
   await page.getByRole('button', { name: 'notes' }).click();
 

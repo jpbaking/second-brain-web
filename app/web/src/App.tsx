@@ -48,8 +48,8 @@ export function App () {
   const path = typeof window === 'undefined' ? '/' : window.location.pathname
 
   // Login and setup render outside the authenticated shell.
-  if (path === '/login') return <><Login /><AppFooter /></>
-  if (path === '/setup') return <><StatusPage /><AppFooter /></>
+  if (path === '/login') return <div className='page-with-footer'><Login /><AppFooter /></div>
+  if (path === '/setup') return <div className='page-with-footer'><StatusPage /><AppFooter /></div>
 
   return (
     <AppShell path={path}>

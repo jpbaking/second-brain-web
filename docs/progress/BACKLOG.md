@@ -28,6 +28,7 @@ See `docs/project-plan/phase-008-feature-backlog-and-design-hooks.md` for other 
 
 ## Completed (one line each; evidence in `milestones/archive/` and the journal)
 
+- ~~Footer fits one viewport, no forced scroll~~ — milestone 70.
 - ~~Copyright footer on all non-chat pages (incl. login/setup)~~ — milestone 69.
 - ~~Explorer hover download icon + raw download endpoint~~ — milestone 68.
 - ~~Amber "Secretary" author label in chat~~ — milestone 67.

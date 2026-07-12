@@ -1435,8 +1435,26 @@
   color: var(--muted);
 }
 
+/* Page + footer share one viewport: the page flexes instead of insisting on
+   its kit min-height of 100vh, so short pages do not scroll. */
+.page-with-footer {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+.shell-content:not([data-chat]) > .app-page,
+.page-with-footer > .app-page {
+  flex: 1 0 auto;
+  min-height: 0;
+  width: 100%;
+  /* The footer supplies the bottom whitespace instead. */
+  padding-bottom: 0;
+}
+
 .app-footer {
-  padding: var(--space-3);
+  margin-top: auto;
+  padding: var(--space-2) var(--space-3);
   text-align: center;
   font-family: var(--font-mono);
   font-size: var(--ui-kicker);

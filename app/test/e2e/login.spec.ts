@@ -7,6 +7,9 @@ test('successfully logs in with password and TOTP', async ({ page }) => {
   // Step 1: Password (copyright footer shows on login)
   await expect(page.getByTestId('password-step')).toBeVisible();
   await expect(page.locator('.app-footer')).toHaveText('© 2026 Joseph Baking');
+  await expect(page.locator('.app-footer')).toBeInViewport();
+  // The footer must not force a scrollbar on a short page.
+  expect(await page.evaluate(() => document.documentElement.scrollHeight - window.innerHeight)).toBeLessThanOrEqual(1);
   await page.locator('#password').fill(process.env.E2E_PASSWORD!);
   await page.getByRole('button', { name: 'Continue' }).click();
 

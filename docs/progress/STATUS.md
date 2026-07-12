@@ -1,6 +1,6 @@
 # STATUS — single source of truth
 
-Updated: 2026-07-12 (active: milestone 70 — footer layout)
+Updated: 2026-07-12 (no active milestone; milestone 70 complete)
 
 ## Where we are
 
@@ -30,12 +30,12 @@ Updated: 2026-07-12 (active: milestone 70 — footer layout)
 
 ## Active milestone
 
-None. Milestone 69 (copyright footer on all non-chat pages) is complete.
-**Milestones 62–69 need `./compose-helper.sh up` (rebuild) to go live.**
+None. Milestone 70 (footer layout: page + footer share one viewport, no forced scroll; verified on /login, /explorer, /capture) is complete, after 69 (copyright footer).
+**Milestones 62–70 need `./compose-helper.sh up` (rebuild) to go live.**
 
 ## Next step
 
-m70-01 (footer layout). Rebuild (./compose-helper.sh up) pending for milestones 62–69.
+Await direction. Rebuild (./compose-helper.sh up) pending for milestones 62–70.
 
 ## Read before working
 
