@@ -12,7 +12,8 @@ See `docs/project-plan/phase-008-feature-backlog-and-design-hooks.md` for other 
 
 ## Improvements
 
-- **Chat-scoped file upload (attachments)** — attach files to a chat message
+- ~~**Chat-scoped file upload (attachments)**~~ — completed in milestone 49:
+  attach files to a chat message
   without touching the inbox; files live only in that chat's context, like the
   Cline VS Code extension. SDK support confirmed (2026-07-12): `ClineCore`
   `start`/`send` both take `userImages?: string[]` (data URIs → image blocks)

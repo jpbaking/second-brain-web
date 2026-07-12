@@ -1132,3 +1132,10 @@ milestone 49 (chat-scoped attachments). Next item: m49-01.
 - 09:01 DONE m49-03: session delete and clear-all remove chat-uploads dirs; verified by `npm test --workspace server -- chat-uploads.test.ts` → 13 green.
 - 09:01 STARTED m49-04: composer attach button, pending chips, send attachmentIds, transcript attachment names
 - 09:03 DONE m49-04: attach button + pending chips + attachmentIds on send + transcript attachment chips; verified by `npm run lint && npm run build` → green.
+- 09:03 STARTED m49-05: full lint/test/build, archive checklist
+- 09:05 DONE m49-05: full verify — lint green, server 364 + web 9 tests green, build green. Checklist archived.
+
+## 2026-07-12 09:05 — session end
+Milestone 49 (chat-scoped file upload) complete and archived. No active
+milestone; await direction. Container rebuild needed for the feature to go
+live (./compose-helper.sh up).

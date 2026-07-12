@@ -32,6 +32,6 @@ deleted. Backlog entry: "Chat-scoped file upload (attachments)" (SDK findings
   includes `attachmentIds`, and user messages in the transcript show their
   attachment names.
   Verify: `cd app && npm run lint && npm run build`
-- [ ] **m49-05** Full verify + archive: lint, full test suite, build all
+- [x] **m49-05** Full verify + archive: lint, full test suite, build all
   green; archive this checklist, update STATUS and BACKLOG.
   Verify: `cd app && npm run lint && npm test && npm run build`

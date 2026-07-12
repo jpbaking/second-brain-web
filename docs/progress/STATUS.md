@@ -1,6 +1,6 @@
 # STATUS — single source of truth
 
-Updated: 2026-07-12 (active: milestone 49 — chat file upload)
+Updated: 2026-07-12 (no active milestone; milestone 49 complete)
 
 ## Where we are
 
@@ -29,10 +29,14 @@ Updated: 2026-07-12 (active: milestone 49 — chat file upload)
 
 ## Active milestone
 
-**Milestone 49 — Chat-scoped file upload (attachments).** Checklist:
-`docs/progress/milestones/milestone-49-chat-file-upload.md`. Next item:
-m49-01 (server attachment store + routes). Principal go: 2026-07-12
-("implement the chat file upload").
+Milestone 49 (Chat-scoped file upload) is complete. Archived checklist:
+`docs/progress/milestones/archive/milestone-49-chat-file-upload.md`. The
+composer's paperclip uploads files to `dataDir/chat-uploads/<sessionId>/`;
+images reach the agent as data URIs (`userImages`), other files by path
+(`userFiles`); uploads are removed on session delete/clear. Note: m49-02 also
+fixed the Cline `send` envelope — the SDK's send takes a single
+`{ sessionId, prompt, ... }` object, not `(sessionId, {type, text})`.
+Needs `./compose-helper.sh up` (rebuild) to go live.
 
 Archived: Milestone 48 (Web Search Tools — SearXNG) is complete. Archived checklist:
 `docs/progress/milestones/archive/milestone-48-web-search.md`. Chat agent now
