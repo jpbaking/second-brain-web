@@ -16,6 +16,10 @@ export interface AgentModelConfig {
   apiKey?: string
   baseUrl?: string
   headers?: Record<string, string>
+  /** Request model-side thinking when supported (m50). */
+  thinking?: boolean
+  /** Explicit reasoning-effort level for capable models (m50). */
+  reasoningEffort?: string
   claudeCode?: {
     /** Keep Claude Code as inference only; Cline owns tools and approvals. */
     tools: string[]

@@ -476,8 +476,9 @@ export class AgentSessionService {
     return getSession(this.db, chatSessionId) as ChatSession
   }
 
-  /** Build the SDK start config from the captured config plus the current key. */
-  private startConfig (captured: CapturedConfig): AgentModelConfig & {
+  /** Build the SDK start config from the captured config plus the current key
+   *  and the session's mutable reasoning tuning (m50). */
+  private startConfig (captured: CapturedConfig, session?: ChatSession): AgentModelConfig & {
     cwd: string
     systemPrompt?: string
     enableTools: boolean
@@ -496,6 +497,8 @@ export class AgentSessionService {
     })
     return {
       ...model,
+      ...(session?.thinking === true ? { thinking: true } : {}),
+      ...(session?.reasoningEffort != null ? { reasoningEffort: session.reasoningEffort } : {}),
       cwd: this.opts.vaultCwd,
       systemPrompt: this.opts.systemPrompt ?? DEFAULT_SYSTEM_PROMPT,
       // The SDK requires all three runtime feature flags (config.enableTools →
@@ -517,7 +520,7 @@ export class AgentSessionService {
 
     const session = getSession(this.db, chatSessionId)
     if (session === undefined) throw new Error(`unknown chat session: ${chatSessionId}`)
-    const config = this.startConfig(this.capturedConfig(chatSessionId))
+    const config = this.startConfig(this.capturedConfig(chatSessionId), session)
 
     const approvalWiring = {
       capabilities: { requestToolApproval: (req: SdkApprovalRequest) => this.requestToolApproval(req) },
@@ -652,7 +655,7 @@ export class AgentSessionService {
     if (session.compactionSummary !== null) {
       initialMessages = [{ role: 'user', content: `SYSTEM: Resuming session from compacted context:\n\n<compaction_summary>\n${session.compactionSummary}\n</compaction_summary>` }]
     }
-    const config = this.startConfig(this.capturedConfig(chatSessionId))
+    const config = this.startConfig(this.capturedConfig(chatSessionId), session)
     const result = await this.runner.start({
       config,
       initialMessages,

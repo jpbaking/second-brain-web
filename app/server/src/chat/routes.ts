@@ -5,7 +5,8 @@ import { AgentSessionService } from '../agent/session.js'
 import { deleteSessionUploads, imageDataUri, resolveAttachments } from './uploads.js'
 import type { MessageAttachments } from '../agent/session.js'
 import { WorkflowNotFoundError, expandWorkflow, listWorkflows } from '../agent/workflows.js'
-import { closeSession, getSession, listSessions, readEventsSince, renameSession, setSessionPinned } from '../agent/chat-store.js'
+import { REASONING_EFFORTS, closeSession, getSession, listSessions, readEventsSince, renameSession, setSessionPinned, updateSessionTuning } from '../agent/chat-store.js'
+import type { ReasoningEffort } from '../agent/chat-store.js'
 import type { AgentRunner } from '../agent/runner.js'
 import type { AppConfig } from '../config.js'
 import type { FastifyInstance } from 'fastify'
@@ -59,9 +60,23 @@ export function registerChatRoutes (app: FastifyInstance, config: AppConfig, run
 
   app.patch('/api/chat/sessions/:id', async (req, reply) => {
     const id = (req.params as { id: string }).id
-    const body = (req.body ?? {}) as { title?: unknown, providerProfileId?: unknown, approvalPreset?: unknown, pinned?: unknown }
+    const body = (req.body ?? {}) as { title?: unknown, providerProfileId?: unknown, approvalPreset?: unknown, pinned?: unknown, thinking?: unknown, reasoningEffort?: unknown }
     const title = str(body.title)
     if (title !== undefined && !renameSession(db, id, title)) return await reply.code(404).send({ error: 'session not found' })
+    // Reasoning tuning (m50): applied at the session's next SDK (re)start.
+    if (body.thinking !== undefined || body.reasoningEffort !== undefined) {
+      const current = getSession(db, id)
+      if (current === undefined) return await reply.code(404).send({ error: 'session not found' })
+      const thinking = typeof body.thinking === 'boolean' ? body.thinking : current.thinking
+      let reasoningEffort = current.reasoningEffort
+      if (body.reasoningEffort !== undefined) {
+        if (body.reasoningEffort !== null && !REASONING_EFFORTS.includes(body.reasoningEffort as ReasoningEffort)) {
+          return await reply.code(400).send({ error: `reasoningEffort must be null or one of: ${REASONING_EFFORTS.join(', ')}` })
+        }
+        reasoningEffort = body.reasoningEffort as ReasoningEffort | null
+      }
+      updateSessionTuning(db, id, thinking, reasoningEffort)
+    }
     if (body.providerProfileId !== undefined || body.approvalPreset !== undefined) {
       const current = getSession(db, id)
       if (current === undefined) return await reply.code(404).send({ error: 'session not found' })
@@ -76,7 +91,9 @@ export function registerChatRoutes (app: FastifyInstance, config: AppConfig, run
       if (!setSessionPinned(db, id, body.pinned)) return await reply.code(404).send({ error: 'session not found' })
       return getSession(db, id)
     }
-    if (title === undefined) return await reply.code(400).send({ error: 'an update is required' })
+    if (title === undefined && body.thinking === undefined && body.reasoningEffort === undefined) {
+      return await reply.code(400).send({ error: 'an update is required' })
+    }
     return getSession(db, id)
   })
 

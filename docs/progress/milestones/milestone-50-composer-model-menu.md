@@ -21,7 +21,7 @@ treat capabilities as unknown and still offer the controls.
   unknown/uncatalogued) resolved from the generated catalog (claude-code →
   anthropic lookup).
   Verify: `cd app && npm test --workspace server -- provider-api.test.ts`
-- [ ] **m50-02** Server: persist `thinking` (bool) and `reasoningEffort`
+- [x] **m50-02** Server: persist `thinking` (bool) and `reasoningEffort`
   (enum) per chat session — schema v15 columns on `chat_sessions`, accepted by
   `PATCH /api/chat/sessions/:id`, returned by session GET/list, and passed
   into the SDK model config at (re)start.

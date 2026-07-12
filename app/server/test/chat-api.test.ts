@@ -134,6 +134,27 @@ describe('chat API', () => {
     expect(runner.starts[0]?.prompt).toContain('compaction_summary')
   })
 
+  it('persists reasoning tuning via PATCH and passes it to the SDK start config', async () => {
+    const { app, cookie, runner, dataDir } = await authedApp()
+    seedDefaultProvider(dataDir)
+    const id = (await app.inject({ method: 'POST', url: '/api/chat/sessions', headers: { cookie }, payload: { title: 'T' } })).json().id
+
+    const patched = await app.inject({ method: 'PATCH', url: `/api/chat/sessions/${id}`, headers: { cookie }, payload: { thinking: true, reasoningEffort: 'high' } })
+    expect(patched.statusCode).toBe(200)
+    expect(patched.json()).toMatchObject({ thinking: true, reasoningEffort: 'high' })
+
+    const bad = await app.inject({ method: 'PATCH', url: `/api/chat/sessions/${id}`, headers: { cookie }, payload: { reasoningEffort: 'ultra' } })
+    expect(bad.statusCode).toBe(400)
+
+    await app.inject({ method: 'POST', url: `/api/chat/sessions/${id}/messages`, headers: { cookie }, payload: { text: 'hi' } })
+    await new Promise(resolve => setTimeout(resolve, 10))
+    expect(runner.starts).toHaveLength(1)
+    expect(runner.starts[0]?.config).toMatchObject({ thinking: true, reasoningEffort: 'high' })
+
+    const cleared = await app.inject({ method: 'PATCH', url: `/api/chat/sessions/${id}`, headers: { cookie }, payload: { thinking: false, reasoningEffort: null } })
+    expect(cleared.json()).toMatchObject({ thinking: false, reasoningEffort: null })
+  })
+
   it('404s messages/commands for an unknown session', async () => {
     const { app, cookie } = await authedApp()
     const msg = await app.inject({ method: 'POST', url: '/api/chat/sessions/ghost/messages', headers: { cookie }, payload: { text: 'x' } })

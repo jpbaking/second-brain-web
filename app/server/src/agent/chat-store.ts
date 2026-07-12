@@ -13,6 +13,9 @@ import type { DatabaseSync } from 'node:sqlite'
 
 export type ChatSessionStatus = 'active' | 'closed'
 export type ApprovalPreset = 'read-only' | 'normal' | 'high-trust'
+/** SDK reasoning-effort levels (@cline/shared REASONING_EFFORT_RATIOS). */
+export const REASONING_EFFORTS = ['none', 'minimal', 'low', 'medium', 'high', 'xhigh'] as const
+export type ReasoningEffort = typeof REASONING_EFFORTS[number]
 
 export interface ChatSession {
   id: string
@@ -21,6 +24,8 @@ export interface ChatSession {
   sdkSessionId: string | null
   status: ChatSessionStatus
   approvalPreset: ApprovalPreset
+  thinking: boolean
+  reasoningEffort: ReasoningEffort | null
   pinned: boolean
   compactionSummary: string | null
   compactedAt: string | null
@@ -50,6 +55,8 @@ interface SessionRow {
   sdk_session_id: string | null
   status: string
   approval_preset: string
+  thinking: number
+  reasoning_effort: string | null
   pinned: number
   compaction_summary: string | null
   compacted_at: string | null
@@ -74,6 +81,8 @@ function toSession (row: SessionRow): ChatSession {
     sdkSessionId: row.sdk_session_id,
     status: row.status === 'closed' ? 'closed' : 'active',
     approvalPreset: (row.approval_preset as ApprovalPreset) || 'normal',
+    thinking: row.thinking === 1,
+    reasoningEffort: (row.reasoning_effort as ReasoningEffort | null) ?? null,
     pinned: row.pinned === 1,
     compactionSummary: row.compaction_summary,
     compactedAt: row.compacted_at,
@@ -142,6 +151,12 @@ export function renameSession (db: DatabaseSync, id: string, title: string, now:
 export function updateSessionConfig (db: DatabaseSync, id: string, providerProfileId: string, approvalPreset: ApprovalPreset, now: Date = new Date()): boolean {
   return db.prepare('UPDATE chat_sessions SET provider_profile_id = ?, approval_preset = ?, updated_at = ? WHERE id = ?')
     .run(providerProfileId, approvalPreset, now.toISOString(), id).changes > 0
+}
+
+/** Update the per-session reasoning tuning (m50). Effort null = provider default. */
+export function updateSessionTuning (db: DatabaseSync, id: string, thinking: boolean, reasoningEffort: ReasoningEffort | null, now: Date = new Date()): boolean {
+  return db.prepare('UPDATE chat_sessions SET thinking = ?, reasoning_effort = ?, updated_at = ? WHERE id = ?')
+    .run(thinking ? 1 : 0, reasoningEffort, now.toISOString(), id).changes > 0
 }
 
 export function saveCompaction (db: DatabaseSync, id: string, summary: string, now: Date = new Date()): boolean {

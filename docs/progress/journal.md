@@ -14,3 +14,5 @@ collapse, and archiving the fully-ticked milestone-37 checklist.
 - 09:37 STARTED milestone 50 (principal go): composer model menu — real model name, model submenu, thinking toggle + effort selector (SDK: CoreModelConfig.thinking/reasoningEffort; capabilities via @cline/llms generated catalog). Opened checklist, next m50-01.
 - 09:37 STARTED m50-01: per-profile model capabilities on /api/providers
 - 09:39 DONE m50-01: /api/providers profiles now carry modelId + reasoning capabilities from the generated catalog; verified by `npm test --workspace server -- provider-api.test.ts` → 4 green.
+- 09:39 STARTED m50-02: persist thinking/reasoningEffort per session (schema v15), PATCH + SDK start config
+- 09:42 DONE m50-02: schema v15 thinking/reasoning_effort columns, PATCH accepts + validates, start config carries them to the SDK; verified by `npm test --workspace server -- chat-api agent-session migrations` → 22 green.

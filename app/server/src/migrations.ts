@@ -183,6 +183,15 @@ const coreMigrations: Migration[] = [
     version: 14,
     sql: 'ALTER TABLE chat_sessions ADD COLUMN pinned INTEGER NOT NULL DEFAULT 0',
   },
+  {
+    version: 15,
+    // Per-session reasoning tuning (milestone 50): request model thinking and
+    // an explicit effort level, passed into the SDK model config at start.
+    sql: `
+      ALTER TABLE chat_sessions ADD COLUMN thinking INTEGER NOT NULL DEFAULT 0;
+      ALTER TABLE chat_sessions ADD COLUMN reasoning_effort TEXT;
+    `,
+  },
 ]
 
 const sidecarMigrations: Migration[] = [
