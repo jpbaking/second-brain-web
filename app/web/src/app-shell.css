@@ -884,6 +884,15 @@
   position: relative;
 }
 
+.chat-table-wrap {
+  position: relative;
+  overflow-x: auto;
+}
+
+.prose .chat-table-wrap > table {
+  margin-block: 1.6em;
+}
+
 .chat-copy-btn {
   position: absolute;
   top: var(--space-2);

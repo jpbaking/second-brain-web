@@ -289,14 +289,62 @@ const markdownComponents = {
 // React children are reused as the modal's content.
 function ZoomableTable ({ children }: { children?: ReactNode }) {
   const openZoom = useContext(ZoomContext)
+  const tableRef = useRef<HTMLTableElement>(null)
+  const [copied, setCopied] = useState(false)
+
+  const copyTable = async () => {
+    const table = tableRef.current
+    if (table === null) return
+    const tsv = Array.from(table.rows, row => Array.from(row.cells, cell =>
+      cell.innerText.replace(/[\t\r\n]+/g, ' ').trim()
+    ).join('\t')).join('\n')
+
+    try {
+      if (typeof ClipboardItem !== 'undefined' && navigator.clipboard.write !== undefined) {
+        await navigator.clipboard.write([new ClipboardItem({
+          'text/html': new Blob([table.outerHTML], { type: 'text/html' }),
+          'text/plain': new Blob([tsv], { type: 'text/plain' })
+        })])
+      } else {
+        await navigator.clipboard.writeText(tsv)
+      }
+      setCopied(true)
+      setTimeout(() => setCopied(false), 1500)
+    } catch {
+      // Some browsers expose rich clipboard APIs but reject their use. Give
+      // those browsers the same TSV fallback as older implementations.
+      navigator.clipboard.writeText(tsv).then(() => {
+        setCopied(true)
+        setTimeout(() => setCopied(false), 1500)
+      }).catch(() => {})
+    }
+  }
+
   return (
-    <table
-      style={{ cursor: 'zoom-in' }}
-      title='Click to expand'
-      onClick={() => openZoom({ kind: 'table', children })}
-    >
-      {children}
-    </table>
+    <div className='chat-table-wrap'>
+      <button
+        type='button'
+        className='chat-copy-btn'
+        aria-label='Copy table'
+        title='Copy table for Excel'
+        onClick={e => {
+          e.stopPropagation()
+          copyTable().catch(() => {})
+        }}
+      >
+        {copied
+          ? <svg width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='currentColor' strokeWidth='2' strokeLinecap='round' strokeLinejoin='round' aria-hidden='true'><path d='M20 6 9 17l-5-5' /></svg>
+          : <svg width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='currentColor' strokeWidth='2' strokeLinecap='round' strokeLinejoin='round' aria-hidden='true'><rect x='9' y='9' width='13' height='13' rx='2' /><path d='M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1' /></svg>}
+      </button>
+      <table
+        ref={tableRef}
+        style={{ cursor: 'zoom-in' }}
+        title='Click to expand'
+        onClick={() => openZoom({ kind: 'table', children })}
+      >
+        {children}
+      </table>
+    </div>
   )
 }
 

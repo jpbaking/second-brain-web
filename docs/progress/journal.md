@@ -74,3 +74,8 @@ Vault agent contract and approval modes aligned with the current second-brain ru
 Tree clean at 8cba1f9. Principal go: rendered Markdown tables get one copy
 control with HTML and Excel-compatible TSV clipboard formats. Opened milestone
 54; next m54-01.
+- 12:48 STARTED m54-01: add a single rich/TSV clipboard control to rendered
+  Markdown tables.
+- 12:50 DONE m54-01: rendered tables have one copy control writing `text/html`
+  and Excel-compatible TSV together, with a TSV fallback. Verified by web
+  lint and production build.

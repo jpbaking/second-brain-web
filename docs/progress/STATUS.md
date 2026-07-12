@@ -25,8 +25,8 @@ Updated: 2026-07-12 (milestone 54 active)
 
 ## Active milestone
 
-Milestone 54 (Excel-compatible Markdown table copy) is active. Next: m54-01,
-add one copy control that writes HTML table markup and TSV together.
+Milestone 54 (Excel-compatible Markdown table copy) is active. m54-01 is
+complete; next: m54-02 full verification and archive.
 
 Previous: milestone 53 (approval modes) is complete: Manual/Normal/Auto/Chat modes
 with a vault-scoped policy matrix (schema v16 migrates legacy presets;
@@ -54,7 +54,7 @@ object). Milestones 48–49 need `./compose-helper.sh up` (rebuild) to go live.
 
 ## Next step
 
-Implement m54-01 from
+Run m54-02 from
 `docs/progress/milestones/milestone-54-table-copy.md`.
 
 ## Read before working
