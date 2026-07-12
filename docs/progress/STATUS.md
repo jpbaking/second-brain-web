@@ -1,6 +1,6 @@
 # STATUS — single source of truth
 
-Updated: 2026-07-12 (no active milestone; milestone 52 complete)
+Updated: 2026-07-12 (active: milestone 53 — approval modes)
 
 ## Where we are
 
@@ -25,7 +25,9 @@ Updated: 2026-07-12 (no active milestone; milestone 52 complete)
 
 ## Active milestone
 
-Milestone 52 (approval detail) is complete: approval cards show the target
+Milestone 53 — approval modes: docs/progress/milestones/milestone-53-approval-modes.md, next m53-01.
+
+Previous: milestone 52 (approval detail) is complete: approval cards show the target
 path/command and a size-capped, collapsible preview of the pending change.
 
 Previous: milestone 51 (new-chat defaults) is complete: composer settings changed in a
@@ -46,7 +48,7 @@ object). Milestones 48–49 need `./compose-helper.sh up` (rebuild) to go live.
 
 ## Next step
 
-Await direction.
+Work milestone 53.
 
 ## Read before working
 

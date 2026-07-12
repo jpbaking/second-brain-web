@@ -48,3 +48,4 @@ Milestone 51 complete. No active milestone; rebuild needed for 48–51 to go liv
 
 ## 2026-07-12 10:26 — session end
 Milestone 52 complete. No active milestone; rebuild needed for 48–52 to go live.
+- 10:49 STARTED milestone 53 (principal go): four approval modes Manual/Normal/Auto/Chat with vault-scoped policy matrix + modes menu UI. Next m53-01.
