@@ -31,5 +31,5 @@ system prompt).
   styling, narrower) with names + descriptions + active check; chatDefaults
   keep working (legacy values normalised).
   Verify: `cd app && npm run lint && npm run build` + Playwright screenshot
-- [ ] **m53-04** Full verify + archive.
+- [x] **m53-04** Full verify + archive.
   Verify: `cd app && npm run lint && npm test && npm run build`

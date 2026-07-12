@@ -1,6 +1,6 @@
 # STATUS — single source of truth
 
-Updated: 2026-07-12 (active: milestone 53 — approval modes)
+Updated: 2026-07-12 (no active milestone; milestone 53 complete)
 
 ## Where we are
 
@@ -18,14 +18,17 @@ Updated: 2026-07-12 (active: milestone 53 — approval modes)
   `cd app && npm install && npm run build && npm start` with
   `SECOND_BRAIN_WEB_DATA_DIR` at a private `0700` dir.
 - Key facts: all app source under `app/` (npm workspace root — run every npm
-  command from there). Core DB schema v15; sidecar v3. Server suite: 371
+  command from there). Core DB schema v16; sidecar v3. Server suite: 376
   tests green. UI routes: `/` = chat, `/command-centre`, `/capture`,
   `/follow-ups`, `/reports`, `/search`, `/explorer`, `/vault`, `/providers`,
   `/login`, `/setup`.
 
 ## Active milestone
 
-Milestone 53 — approval modes: docs/progress/milestones/milestone-53-approval-modes.md, next m53-01.
+Milestone 53 (approval modes) is complete: Manual/Normal/Auto/Chat modes
+with a vault-scoped policy matrix (schema v16 migrates legacy presets;
+`.git` protected in every mode; library/ guard unchanged) and a modes popup
+menu in the composer.
 
 Previous: milestone 52 (approval detail) is complete: approval cards show the target
 path/command and a size-capped, collapsible preview of the pending change.
@@ -37,7 +40,7 @@ Previous: milestone 50 (composer model menu) is complete. Archived checklist:
 `docs/progress/milestones/archive/milestone-50-composer-model-menu.md`. The
 composer names the real active model (no placeholder) with a popup menu:
 model submenu, Thinking toggle, Effort slider (catalog-gated); persisted
-per session (schema v15) and passed to the SDK at start. Milestones 48–50
+per session (schema v16) and passed to the SDK at start. Milestones 48–50
 need `./compose-helper.sh up` (rebuild) to go live.
 
 Previous: milestone 49 (chat-scoped file upload) — composer paperclip,
@@ -48,7 +51,7 @@ object). Milestones 48–49 need `./compose-helper.sh up` (rebuild) to go live.
 
 ## Next step
 
-Work milestone 53.
+Await direction.
 
 ## Read before working
 

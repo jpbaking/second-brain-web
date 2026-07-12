@@ -54,3 +54,8 @@ Milestone 52 complete. No active milestone; rebuild needed for 48–52 to go liv
 - 10:55 DONE m53-02: schema v16 legacy-preset migration, route normalisation, internal sessions → auto, .git line in system prompt; full server suite 376 green.
 - 10:55 STARTED m53-03: modes popup menu in the composer
 - 10:57 DONE m53-03: modes popup menu (names + descriptions + check, legacy values normalised, chatDefaults compatible); verified by lint/build + Playwright screenshot and mode-switch assertion.
+- 10:57 STARTED m53-04: full verify + archive
+- 10:58 DONE m53-04: full verify — lint green, server 376 + web 9 green, build green. Checklist archived.
+
+## 2026-07-12 10:58 — session end
+Milestone 53 complete. No active milestone; rebuild needed for 48–53 to go live.
