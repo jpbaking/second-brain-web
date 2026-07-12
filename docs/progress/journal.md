@@ -267,3 +267,7 @@ Tree clean at 55c164e. Principal directed: hover download icon on /explorer rows
 - 15:39 DONE m68-01: verified by `npm test --workspace server -- explorer-api.test.ts` → 10 green.
 - 15:39 STARTED m68-02: hover download icon on file rows + e2e.
 - 15:41 DONE m68-02: verified by lint+build clean and `npx playwright test explorer.spec.ts` → download asserted (welcome.md), hover screenshot reviewed. Checklist archived.
+
+## 2026-07-12 15:43 — session start
+Tree clean at b5adf86. Principal directed: copyright footer on all pages except chat. Opened milestone 69.
+- 15:43 STARTED m69-01: AppFooter component + shell/login/setup wiring + e2e.

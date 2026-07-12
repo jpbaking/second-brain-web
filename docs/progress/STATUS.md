@@ -1,6 +1,6 @@
 # STATUS — single source of truth
 
-Updated: 2026-07-12 (no active milestone; milestone 68 complete)
+Updated: 2026-07-12 (active: milestone 69 — copyright footer)
 
 ## Where we are
 
@@ -108,7 +108,7 @@ object). Milestones 48–49 need `./compose-helper.sh up` (rebuild) to go live.
 
 ## Next step
 
-Await direction. Rebuild (./compose-helper.sh up) pending for milestones 62–68.
+m69-01 (footer). Rebuild (./compose-helper.sh up) pending for milestones 62–68.
 
 ## Read before working
 
