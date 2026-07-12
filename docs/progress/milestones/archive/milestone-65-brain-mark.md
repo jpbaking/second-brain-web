@@ -14,5 +14,5 @@ tile (#12279E), white line work, amber accent (#D9821F), invert variant.
       Second Brain.
       Verify: rasters decode at expected sizes (`file`/dimensions check)
       and browser tab shows the new icon in a Playwright run.
-- [ ] m65-03: full check (`cd app && npm run lint && npm test && npm run
+- [x] m65-03: full check (`cd app && npm run lint && npm test && npm run
       build`), archive checklist, update STATUS.

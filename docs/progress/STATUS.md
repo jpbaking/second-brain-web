@@ -1,6 +1,6 @@
 # STATUS — single source of truth
 
-Updated: 2026-07-12 (active: milestone 65 — brain mark)
+Updated: 2026-07-12 (no active milestone; milestone 65 complete)
 
 ## Where we are
 
@@ -25,7 +25,7 @@ Updated: 2026-07-12 (active: milestone 65 — brain mark)
 
 ## Active milestone
 
-Milestone 65 (brain logo mark + favicons) is ACTIVE: docs/progress/milestones/milestone-65-brain-mark.md. Next: m65-01.
+Milestone 65 (brain logo mark + favicons) is complete: the radio-tower mark is replaced by a brain mark (side profile + node network, kit colours) across logo-mark, invert, SVG and raster favicons; webmanifest named Second Brain. **Milestones 62–65 need `./compose-helper.sh up` to go live.**
 
 Previous: milestone 64 (new-chat landing + brand → command centre) is complete: login/`/` always shows the fresh new-chat state (auto-open of the last chat removed), and the expanded sidebar logo+title link to /command-centre while the collapsed logo keeps its open-sidebar role. **Milestones 62–64 need `./compose-helper.sh up` to go live.**
 
@@ -90,7 +90,7 @@ object). Milestones 48–49 need `./compose-helper.sh up` (rebuild) to go live.
 
 ## Next step
 
-Work milestone 65 (m65-01). Rebuild (./compose-helper.sh up) pending for 62+.
+Await direction. Rebuild (./compose-helper.sh up) pending for milestones 62–65.
 
 ## Read before working
 
