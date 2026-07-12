@@ -5,7 +5,7 @@ import { AgentSessionService } from '../agent/session.js'
 import { deleteSessionUploads, imageDataUri, resolveAttachments } from './uploads.js'
 import type { MessageAttachments } from '../agent/session.js'
 import { WorkflowNotFoundError, expandWorkflow, listWorkflowSummaries } from '../agent/workflows.js'
-import { REASONING_EFFORTS, closeSession, getSession, listSessions, normalisePreset, readEventsSince, renameSession, setSessionPinned, updateSessionTuning } from '../agent/chat-store.js'
+import { REASONING_EFFORTS, closeSession, getSession, listSessions, normalisePreset, readEventsSince, renameSession, searchSessions, setSessionPinned, updateSessionTuning } from '../agent/chat-store.js'
 import type { ReasoningEffort } from '../agent/chat-store.js'
 import type { AgentRunner } from '../agent/runner.js'
 import type { AppConfig } from '../config.js'
@@ -33,8 +33,9 @@ export function registerChatRoutes (app: FastifyInstance, config: AppConfig, run
     return typeof value === 'string' && value.trim() !== '' ? value.trim() : undefined
   }
 
-  app.get('/api/chat/sessions', async () => {
-    return { sessions: listSessions(db) }
+  app.get('/api/chat/sessions', async (req) => {
+    const q = str((req.query as { q?: unknown }).q)
+    return { sessions: q === undefined ? listSessions(db) : searchSessions(db, q) }
   })
 
   app.post('/api/chat/sessions', async (req, reply) => {

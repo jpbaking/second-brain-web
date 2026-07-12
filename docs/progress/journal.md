@@ -206,3 +206,5 @@ Tree clean at d6b310e. Principal directed five sidebar improvements; opened mile
 - 14:13 STARTED m62-02: New chat/Capture active state follows current path
 - 14:14 DONE m62-02: New chat/Capture blue-bold follows current path; Playwright probe green + screenshot. 
 - 14:14 STARTED m62-03: chat search over message bodies (server searchSessions + sidebar wiring)
+- 14:16 DONE m62-03: searchSessions over titles+bodies (GET /api/chat/sessions?q=, debounced sidebar). chat-store tests 8 green; e2e probe green.
+- 14:16 STARTED m62-04+05: hover-only star and hover delete button on chat rows

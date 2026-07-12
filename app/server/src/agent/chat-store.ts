@@ -137,6 +137,31 @@ export function listSessions (db: DatabaseSync): ChatSession[] {
   return rows.map(toSession)
 }
 
+/**
+ * Sessions whose title or message bodies match `query` (m62-03). Bodies are
+ * the user_message and assistant chunk events; matching runs over the raw
+ * payload JSON, which is where the text lives. Empty query = all sessions.
+ */
+export function searchSessions (db: DatabaseSync, query: string): ChatSession[] {
+  const trimmed = query.trim()
+  if (trimmed === '') return listSessions(db)
+  const like = `%${trimmed.replace(/[\\%_]/g, ch => `\\${ch}`)}%`
+  const rows = db.prepare(`
+    SELECT * FROM chat_sessions
+    WHERE status = 'active' AND (
+      title LIKE ? ESCAPE '\\'
+      OR EXISTS (
+        SELECT 1 FROM chat_events e
+        WHERE e.session_id = chat_sessions.id
+          AND e.type IN ('user_message', 'chunk')
+          AND e.payload_json LIKE ? ESCAPE '\\'
+      )
+    )
+    ORDER BY pinned DESC, updated_at DESC
+  `).all(like, like) as unknown as SessionRow[]
+  return rows.map(toSession)
+}
+
 export function setSessionPinned (db: DatabaseSync, id: string, pinned: boolean): boolean {
   return db.prepare('UPDATE chat_sessions SET pinned = ? WHERE id = ?').run(pinned ? 1 : 0, id).changes > 0
 }

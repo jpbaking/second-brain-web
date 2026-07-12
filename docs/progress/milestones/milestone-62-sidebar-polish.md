@@ -12,7 +12,7 @@ Principal direction (2026-07-12): five sidebar improvements.
       on chat paths.
       Verify: `cd app && npm run build` then Playwright screenshot on /capture
       showing Capture highlighted and New chat not.
-- [ ] m62-03: chat search matches message bodies, not just titles — server
+- [x] m62-03: chat search matches message bodies, not just titles — server
       search over chat_events (user_message text + assistant text) exposed via
       `GET /api/chat/sessions?q=`, sidebar search box uses it (debounced).
       Verify: `cd app && npm test --workspace server -- chat-store.test.ts`

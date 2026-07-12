@@ -81,6 +81,10 @@ export function AppShell ({ path: initialPath, children }: { path: string, child
   const [chatQuery, setChatQuery] = useState('')
   const [moreOpen, setMoreOpen] = useState(false)
   const [sessions, setSessions] = useState<ChatSessionSummary[]>([])
+  // null = no active search; otherwise the server-side match set (m62-03:
+  // the query runs over titles and message bodies, so it cannot be a local
+  // title filter).
+  const [searchResults, setSearchResults] = useState<ChatSessionSummary[] | null>(null)
   // ChatScreen rewrites the URL (history.replaceState) when auto-opening the
   // last active chat or creating one — track the live pathname so the sidebar
   // highlight follows.
@@ -128,10 +132,18 @@ export function AppShell ({ path: initialPath, children }: { path: string, child
     })
   }, [])
 
+  useEffect(() => {
+    if (chatQuery.trim() === '') { setSearchResults(null); return }
+    const timer = window.setTimeout(() => {
+      fetch(`/api/chat/sessions?q=${encodeURIComponent(chatQuery.trim())}`, { credentials: 'same-origin' })
+        .then(async res => { if (res.ok) setSearchResults((await res.json() as { sessions: ChatSessionSummary[] }).sessions) })
+        .catch(() => {})
+    }, 200)
+    return () => window.clearTimeout(timer)
+  }, [chatQuery])
+
   const chatId = activeChatId(path)
-  const visibleSessions = sessions
-    .filter(session => session.title.toLowerCase().includes(chatQuery.trim().toLowerCase()))
-    .slice(0, RECENTS_SHOWN)
+  const visibleSessions = (searchResults ?? sessions).slice(0, RECENTS_SHOWN)
 
   const setDesktopCollapsed = (value: boolean) => {
     setCollapsed(value)

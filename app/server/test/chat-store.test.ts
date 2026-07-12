@@ -14,6 +14,7 @@ import {
   listSessions,
   readEventsSince,
   renameSession,
+  searchSessions,
   setSdkSessionId,
   saveCompaction,
 } from '../src/agent/chat-store.js'
@@ -124,6 +125,27 @@ describe('chat event log', () => {
     expect(e.payload).toBe(null)
     expect(readEventsSince(db, s.id)[0]?.payload).toBe(null)
     expect(() => appendEvent(db, 'ghost', 'x')).toThrow(/unknown chat session/)
+  })
+
+  it('searches titles and message bodies', () => {
+    const db = freshDb()
+    const groceries = createSession(db, { title: 'Grocery list' })
+    appendEvent(db, groceries.id, 'user_message', { text: 'add bananas and oat milk' })
+    const trip = createSession(db, { title: 'Weekend trip' })
+    appendEvent(db, trip.id, 'chunk', { type: 'done', text: 'Consider the picnic grove.' })
+    const closed = createSession(db, { title: 'oat milk archive' })
+    closeSession(db, closed.id)
+
+    // title match
+    expect(searchSessions(db, 'weekend').map(s => s.id)).toEqual([trip.id])
+    // user message body match (case-insensitive), closed sessions excluded
+    expect(searchSessions(db, 'OAT MILK').map(s => s.id)).toEqual([groceries.id])
+    // assistant chunk body match
+    expect(searchSessions(db, 'picnic').map(s => s.id)).toEqual([trip.id])
+    // LIKE wildcards are literals, not patterns
+    expect(searchSessions(db, '%')).toEqual([])
+    // empty query returns everything active
+    expect(searchSessions(db, '  ').length).toBe(2)
   })
 
   it('cascades events on session delete via FK', () => {
