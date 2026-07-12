@@ -101,7 +101,7 @@ describe('post-upload inbox processing', () => {
 
     const sessions = await app.inject({ method: 'GET', url: '/api/chat/sessions', headers: { cookie } })
     expect(sessions.json().sessions[0].title).toBe(`Inbox: ${uploaded.json().uploadId}`)
-    expect(sessions.json().sessions[0].approvalPreset).toBe('high-trust')
+    expect(sessions.json().sessions[0].approvalPreset).toBe('auto')
   })
 
   it('rejects invalid or missing upload identifiers without dispatching', async () => {

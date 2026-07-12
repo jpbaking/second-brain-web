@@ -39,7 +39,7 @@ describe('status endpoint', () => {
       exists: true,
       state: 'ready',
       integrity: 'ok',
-      schemaVersion: 15
+      schemaVersion: 16
     })
     expect(body.databases.sidecar).toMatchObject({
       // bumped by sidecar migrations: vault_search (m10-02), vault_links (m11-02)

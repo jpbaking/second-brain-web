@@ -5,7 +5,7 @@ import { AgentSessionService } from '../agent/session.js'
 import { deleteSessionUploads, imageDataUri, resolveAttachments } from './uploads.js'
 import type { MessageAttachments } from '../agent/session.js'
 import { WorkflowNotFoundError, expandWorkflow, listWorkflows } from '../agent/workflows.js'
-import { REASONING_EFFORTS, closeSession, getSession, listSessions, readEventsSince, renameSession, setSessionPinned, updateSessionTuning } from '../agent/chat-store.js'
+import { REASONING_EFFORTS, closeSession, getSession, listSessions, normalisePreset, readEventsSince, renameSession, setSessionPinned, updateSessionTuning } from '../agent/chat-store.js'
 import type { ReasoningEffort } from '../agent/chat-store.js'
 import type { AgentRunner } from '../agent/runner.js'
 import type { AppConfig } from '../config.js'
@@ -41,7 +41,7 @@ export function registerChatRoutes (app: FastifyInstance, config: AppConfig, run
     const body = (req.body ?? {}) as { title?: unknown, providerProfileId?: unknown, approvalPreset?: unknown, pinned?: unknown }
     const title = str(body.title) ?? 'New chat'
     const providerProfileId = str(body.providerProfileId) ?? null
-    const approvalPreset = (body.approvalPreset === 'read-only' || body.approvalPreset === 'high-trust') ? body.approvalPreset : 'normal'
+    const approvalPreset = normalisePreset(body.approvalPreset) ?? 'normal'
     try {
       const session = service.create({ title, providerProfileId, approvalPreset })
       return await reply.code(201).send(session)
@@ -81,7 +81,7 @@ export function registerChatRoutes (app: FastifyInstance, config: AppConfig, run
       const current = getSession(db, id)
       if (current === undefined) return await reply.code(404).send({ error: 'session not found' })
       const providerProfileId = str(body.providerProfileId) ?? current.providerProfileId
-      const approvalPreset = body.approvalPreset === 'read-only' || body.approvalPreset === 'high-trust' || body.approvalPreset === 'normal' ? body.approvalPreset : current.approvalPreset
+      const approvalPreset = normalisePreset(body.approvalPreset) ?? current.approvalPreset
       if (providerProfileId === null) return await reply.code(400).send({ error: 'providerProfileId is required' })
       try { return await service.updateConfig(id, providerProfileId, approvalPreset) } catch (err) {
         return await reply.code(400).send({ error: err instanceof Error ? err.message : 'could not update session' })

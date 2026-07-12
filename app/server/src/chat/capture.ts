@@ -38,9 +38,9 @@ export function registerCaptureRoutes (app: FastifyInstance, service: AgentSessi
     try {
       // Quick capture is fire-and-forget (phase-001: "minimal friction",
       // usable on phone), so the filing session auto-approves its own writes
-      // via the high-trust preset. The library/ originals guard still applies
+      // via the auto mode. The library/ originals guard still applies
       // regardless of preset, so this cannot corrupt immutable originals.
-      session = service.create({ title: titleFrom(content), approvalPreset: 'high-trust' })
+      session = service.create({ title: titleFrom(content), approvalPreset: 'auto' })
     } catch (err) {
       // No enabled provider profile configured yet.
       return await reply.code(400).send({ error: err instanceof Error ? err.message : 'could not start capture' })

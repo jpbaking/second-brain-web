@@ -192,6 +192,15 @@ const coreMigrations: Migration[] = [
       ALTER TABLE chat_sessions ADD COLUMN reasoning_effort TEXT;
     `,
   },
+  {
+    version: 16,
+    // Approval modes (milestone 53): read-only/normal/high-trust become
+    // manual/normal/auto (+ new 'chat'); rewrite stored legacy values.
+    sql: `
+      UPDATE chat_sessions SET approval_preset = 'manual' WHERE approval_preset = 'read-only';
+      UPDATE chat_sessions SET approval_preset = 'auto' WHERE approval_preset = 'high-trust';
+    `,
+  },
 ]
 
 const sidecarMigrations: Migration[] = [

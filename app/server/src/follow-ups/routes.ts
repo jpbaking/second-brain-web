@@ -31,7 +31,7 @@ export function registerFollowUpRoutes (app: FastifyInstance, config: AppConfig)
  * capture: the same tool-policy guard, vault write lock, and inspectable event
  * stream apply, and the immutable `library/` originals guard still holds. The
  * owner explicitly asked for the change, so the filing session auto-approves
- * its own writes via the high-trust preset.
+ * its own writes via the auto mode.
  */
 export function registerFollowUpActionRoutes (app: FastifyInstance, config: AppConfig, service: AgentSessionService): void {
   app.post('/api/follow-ups/:id/complete', async (req, reply) => {
@@ -58,7 +58,7 @@ function findItem (config: AppConfig, id: string | undefined): FollowUpItem | un
 async function dispatch (service: AgentSessionService, reply: import('fastify').FastifyReply, title: string, instruction: string): Promise<unknown> {
   let session
   try {
-    session = service.create({ title, approvalPreset: 'high-trust' })
+    session = service.create({ title, approvalPreset: 'auto' })
   } catch (err) {
     return await reply.code(400).send({ error: err instanceof Error ? err.message : 'could not start follow-up action' })
   }

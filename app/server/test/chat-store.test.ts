@@ -44,7 +44,7 @@ describe('chat session store', () => {
     expect(s).toMatchObject({ title: 'First', providerProfileId: 'prof-1', sdkSessionId: null, status: 'active', approvalPreset: 'normal' })
 
     const s2 = createSession(db, { title: 'Second', approvalPreset: 'high-trust' })
-    expect(s2.approvalPreset).toBe('high-trust')
+    expect(s2.approvalPreset).toBe('auto') // legacy name normalised (m53)
 
     expect(getSession(db, s.id)?.title).toBe('First')
     expect(listSessions(db)).toHaveLength(2)

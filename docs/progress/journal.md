@@ -50,3 +50,5 @@ Milestone 51 complete. No active milestone; rebuild needed for 48–51 to go liv
 Milestone 52 complete. No active milestone; rebuild needed for 48–52 to go live.
 - 10:49 STARTED milestone 53 (principal go): four approval modes Manual/Normal/Auto/Chat with vault-scoped policy matrix + modes menu UI. Next m53-01.
 - 10:53 DONE m53-01: mode matrix in evaluateTool + helper predicates + .git guard; verified by `npm test --workspace server -- tool-policy chat-approvals` → 33 green.
+- 10:53 STARTED m53-02: schema v16 preset migration, route validation, internal auto sessions, system prompt .git line
+- 10:55 DONE m53-02: schema v16 legacy-preset migration, route normalisation, internal sessions → auto, .git line in system prompt; full server suite 376 green.

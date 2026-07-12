@@ -22,7 +22,7 @@ system prompt).
   command, destructive command, outside-vault path/command, `.git`
   protection), and the mode matrix in `evaluateTool`; existing tests updated.
   Verify: `cd app && npm test --workspace server -- tool-policy.test.ts chat-approvals.test.ts`
-- [ ] **m53-02** Wiring: schema v16 migrates stored presets; routes validate
+- [x] **m53-02** Wiring: schema v16 migrates stored presets; routes validate
   the new values (legacy accepted); internal auto-sessions (inbox uploads,
   capture, follow-ups) use `auto`; system prompt gains the `.git` protection
   line.

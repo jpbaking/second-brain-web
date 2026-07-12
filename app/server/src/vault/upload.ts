@@ -147,7 +147,7 @@ export function registerUploadRoutes (app: FastifyInstance, config: AppConfig, s
 
     let session
     try {
-      session = service.create({ title: `Inbox: ${uploadId}`, approvalPreset: 'high-trust' })
+      session = service.create({ title: `Inbox: ${uploadId}`, approvalPreset: 'auto' })
     } catch (error) {
       return await reply.code(400).send({ error: error instanceof Error ? error.message : 'Could not start inbox processing.' })
     }
