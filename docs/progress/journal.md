@@ -249,3 +249,8 @@ Tree clean at 296de9c. No active milestone; principal reported a /capture bug (s
 - 07:16 DONE REPAIR: snapshot FileList to array in QuickCapture.addFiles before setState; verified by `cd app && npm run lint && npm run build && npm test` → lint clean, build ok, 425 tests green. Runtime drag-drop not re-driven in a browser this session — principal to confirm.
 - 07:20 STARTED REPAIR: capture "Open chat" links to bare /chat (new-chat state) instead of /chat/<processing session id>.
 - 07:22 DONE REPAIR: "Open chat" now links to /chat/<sessionId>; verified by `cd app && npm run lint && npm run build && npm test` → clean, 425 tests green. Commit follows.
+
+## 2026-07-13 07:34 — session start
+Tree clean at fbb090d. Principal-directed: add copy option to user chat messages.
+- 07:36 STARTED repair-scoped tweak: reuse MessageCopyButton for user messages in ChatScreen, right-aligned.
+- 07:38 DONE: user chat messages now have a copy control (shared MessageCopyButton, right-aligned). Verified by `npx playwright test` → 4 e2e specs green (new chat-copy.spec.ts) + lint + build.

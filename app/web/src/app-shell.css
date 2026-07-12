@@ -481,6 +481,10 @@
   cursor: pointer;
 }
 
+.chat-msg-user .chat-message-copy {
+  align-self: flex-end;
+}
+
 .chat-message-copy:hover {
   background: var(--surface);
   color: var(--ink);

@@ -129,14 +129,14 @@ function CopyButton ({ text }: { text: string }) {
   )
 }
 
-function MessageCopyButton ({ text }: { text: string }) {
+function MessageCopyButton ({ text, label }: { text: string, label: string }) {
   const [copied, setCopied] = useState(false)
   return (
     <button
       type='button'
       className='chat-message-copy'
-      aria-label='Copy response as Markdown'
-      title='Copy response as Markdown'
+      aria-label={label}
+      title={label}
       onClick={() => {
         navigator.clipboard.writeText(text).then(() => {
           setCopied(true)
@@ -792,7 +792,7 @@ export function ChatScreen ({ mode }: { mode: ChatMode }) {
                                 )
                               : l.text}
                           </div>
-                          {l.role === 'assistant' && <MessageCopyButton text={l.text} />}
+                          <MessageCopyButton text={l.text} label={l.role === 'assistant' ? 'Copy response as Markdown' : 'Copy message'} />
                         </>
                       )}
                     </div>
