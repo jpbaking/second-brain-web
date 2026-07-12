@@ -23,7 +23,7 @@ deleted. Backlog entry: "Chat-scoped file upload (attachments)" (SDK findings
   `userImages`/`userFiles` fields), and persists attachment names on the
   `user_message` event.
   Verify: `cd app && npm test --workspace server -- agent-session.test.ts chat-uploads.test.ts`
-- [ ] **m49-03** Cleanup: deleting a session (`DELETE /api/chat/sessions/:id`)
+- [x] **m49-03** Cleanup: deleting a session (`DELETE /api/chat/sessions/:id`)
   and clear-all (`DELETE /api/chat/sessions`, honouring `preservePinned`)
   remove the session's `chat-uploads/<sessionId>/` directory.
   Verify: `cd app && npm test --workspace server -- chat-uploads.test.ts`

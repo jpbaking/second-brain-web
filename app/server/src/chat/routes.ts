@@ -2,7 +2,7 @@ import { openCoreDb } from '../db.js'
 import { resolveDefaultSnapshot, resolveSnapshot } from '../providers/snapshot.js'
 import { vaultWorkspacePath } from '../vault/config.js'
 import { AgentSessionService } from '../agent/session.js'
-import { imageDataUri, resolveAttachments } from './uploads.js'
+import { deleteSessionUploads, imageDataUri, resolveAttachments } from './uploads.js'
 import type { MessageAttachments } from '../agent/session.js'
 import { WorkflowNotFoundError, expandWorkflow, listWorkflows } from '../agent/workflows.js'
 import { closeSession, getSession, listSessions, readEventsSince, renameSession, setSessionPinned } from '../agent/chat-store.js'
@@ -83,12 +83,17 @@ export function registerChatRoutes (app: FastifyInstance, config: AppConfig, run
   app.delete('/api/chat/sessions/:id', async (req, reply) => {
     const id = (req.params as { id: string }).id
     if (!closeSession(db, id)) return await reply.code(404).send({ error: 'session not found' })
+    await deleteSessionUploads(config.dataDir, id)
     return { ok: true }
   })
 
   app.delete('/api/chat/sessions', async (req) => {
     const preservePinned = (req.query as { preservePinned?: string }).preservePinned === 'true'
-    return { deleted: await service.clearSessions(preservePinned) }
+    // Capture the doomed ids before the rows go, then remove their uploads.
+    const targets = listSessions(db).filter(session => !preservePinned || !session.pinned).map(session => session.id)
+    const deleted = await service.clearSessions(preservePinned)
+    await Promise.all(targets.map(async id => await deleteSessionUploads(config.dataDir, id)))
+    return { deleted }
   })
 
   app.get('/api/chat/sessions/:id/events', async (req, reply) => {

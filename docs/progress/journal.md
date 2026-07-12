@@ -1128,3 +1128,5 @@ milestone 49 (chat-scoped attachments). Next item: m49-01.
 - 06:26 DONE m49-01: chat-uploads store + POST/DELETE routes; verified by `npm test --workspace server -- chat-uploads.test.ts` → 9 tests green. Commit 737a1f8.
 - 06:26 STARTED m49-02: wire attachmentIds through message POST → AgentSessionService → AgentRunner (userImages/userFiles)
 - 09:00 DONE m49-02: attachmentIds → userImages/userFiles through routes, service, runner; also fixed the Cline send envelope (SDK runTurn takes one input object). Verified by `npm test --workspace server -- chat-uploads.test.ts agent-session.test.ts` → 23 green.
+- 09:00 STARTED m49-03: delete chat-uploads dir on session delete / clear-all
+- 09:01 DONE m49-03: session delete and clear-all remove chat-uploads dirs; verified by `npm test --workspace server -- chat-uploads.test.ts` → 13 green.

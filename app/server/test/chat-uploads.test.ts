@@ -235,6 +235,43 @@ describe('messages with attachments', () => {
   })
 })
 
+describe('attachment cleanup', () => {
+  async function uploadOne (app: FastifyInstance, cookie: string, id: string): Promise<void> {
+    const body = multipart([{ name: 'notes.txt', content: 'x' }])
+    const res = await app.inject({
+      method: 'POST',
+      url: `/api/chat/sessions/${id}/uploads`,
+      headers: { cookie, 'content-type': body.contentType },
+      payload: body.payload,
+    })
+    expect(res.statusCode).toBe(201)
+  }
+
+  it('removes the session uploads directory when a session is deleted', async () => {
+    const { app, cookie, config } = await authedApp()
+    const id = await createSession(app, cookie)
+    await uploadOne(app, cookie, id)
+    expect(existsSync(sessionUploadsDir(config.dataDir, id))).toBe(true)
+    const res = await app.inject({ method: 'DELETE', url: `/api/chat/sessions/${id}`, headers: { cookie } })
+    expect(res.statusCode).toBe(200)
+    expect(existsSync(sessionUploadsDir(config.dataDir, id))).toBe(false)
+  })
+
+  it('clear-all removes upload directories but preserves pinned sessions', async () => {
+    const { app, cookie, config } = await authedApp()
+    const keep = await createSession(app, cookie)
+    const drop = await createSession(app, cookie)
+    await uploadOne(app, cookie, keep)
+    await uploadOne(app, cookie, drop)
+    const pin = await app.inject({ method: 'PATCH', url: `/api/chat/sessions/${keep}`, headers: { cookie }, payload: { pinned: true } })
+    expect(pin.statusCode).toBe(200)
+    const res = await app.inject({ method: 'DELETE', url: '/api/chat/sessions?preservePinned=true', headers: { cookie } })
+    expect(res.statusCode).toBe(200)
+    expect(existsSync(sessionUploadsDir(config.dataDir, drop))).toBe(false)
+    expect(existsSync(sessionUploadsDir(config.dataDir, keep))).toBe(true)
+  })
+})
+
 describe('attachment helpers', () => {
   it('sanitises names and refuses traversal', () => {
     expect(safeAttachmentName('dir/sub/file.txt')).toBe('file.txt')
